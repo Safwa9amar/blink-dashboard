@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
+import { useLocale } from "next-intl";
+import { useRouter } from "next/navigation";
+import { setLocale as setLocaleAction } from "@/i18n/actions";
 import { BlinkLogoSvg } from "./blink-logo";
 
 export function ThemeToggle() {
@@ -34,15 +37,28 @@ export function ThemeToggle() {
 }
 
 export function LangToggle() {
-  const langs = ["EN", "FR", "AR"];
-  const [idx, setIdx] = useState(0);
+  const locales = ["en", "fr", "ar"] as const;
+  const labels = ["EN", "FR", "AR"];
+  const locale = useLocale();
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
+  const currentIdx = locales.indexOf(locale as typeof locales[number]);
+
+  function handleClick() {
+    const nextIdx = (currentIdx + 1) % locales.length;
+    startTransition(async () => {
+      await setLocaleAction(locales[nextIdx]);
+      router.refresh();
+    });
+  }
 
   return (
-    <button onClick={() => setIdx((idx + 1) % 3)} aria-label="Language"
-      className="h-[38px] px-3.5 rounded-[10px] flex items-center gap-2 text-[13px] font-semibold tracking-wide cursor-pointer"
+    <button onClick={handleClick} disabled={isPending} aria-label="Language"
+      className="h-[38px] px-3.5 rounded-[10px] flex items-center gap-2 text-[13px] font-semibold tracking-wide cursor-pointer disabled:opacity-50"
       style={{ border:"1px solid var(--line)", background:"var(--surface)", color:"var(--ink-2)" }}>
       <span className="w-1.5 h-1.5 rounded-full bg-[var(--brand)]" />
-      {langs[idx]}
+      {labels[currentIdx === -1 ? 0 : currentIdx]}
     </button>
   );
 }
