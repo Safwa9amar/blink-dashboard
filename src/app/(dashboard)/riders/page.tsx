@@ -1,8 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
+import { getTranslations } from "next-intl/server";
 import { PageHeader, DataTable } from "@/components/ui";
 
 export default async function RidersPage() {
   const supabase = await createClient();
+  const t = await getTranslations("riders");
+  const tc = await getTranslations("common");
+
   const { data: riders, error } = await supabase
     .from("rider_profiles")
     .select("*, users(first_name, last_name, phone_number)")
@@ -12,14 +16,14 @@ export default async function RidersPage() {
   const columns = [
     {
       key: "rider_id",
-      label: "Rider ID",
+      label: t("rider_id"),
       render: (row: Record<string, unknown>) => (
         <span className="font-mono text-primary font-medium">{row.rider_id as string}</span>
       ),
     },
     {
       key: "name",
-      label: "Name",
+      label: t("name"),
       render: (row: Record<string, unknown>) => {
         const user = row.users as { first_name: string | null; last_name: string | null } | null;
         return (
@@ -31,7 +35,7 @@ export default async function RidersPage() {
     },
     {
       key: "phone",
-      label: "Phone",
+      label: t("phone"),
       render: (row: Record<string, unknown>) => {
         const user = row.users as { phone_number: string } | null;
         return user?.phone_number ?? "—";
@@ -39,19 +43,19 @@ export default async function RidersPage() {
     },
     {
       key: "wilaya",
-      label: "Wilaya",
+      label: t("wilaya"),
       render: (row: Record<string, unknown>) => (row.wilaya as string) ?? "—",
     },
     {
       key: "vehicle_type",
-      label: "Vehicle",
+      label: t("vehicle"),
       render: (row: Record<string, unknown>) => (
         <span className="capitalize">{(row.vehicle_type as string) ?? "—"}</span>
       ),
     },
     {
       key: "created_at",
-      label: "Created",
+      label: tc("created"),
       render: (row: Record<string, unknown>) => (
         <span className="text-subtext">
           {new Date(row.created_at as string).toLocaleDateString()}
@@ -62,8 +66,8 @@ export default async function RidersPage() {
 
   return (
     <div>
-      <PageHeader title="Riders" description="Manage rider profiles and vehicles" />
-      <DataTable columns={columns} data={riders} error={error?.message} emptyMessage="No riders found." />
+      <PageHeader title={t("title")} description={t("description")} />
+      <DataTable columns={columns} data={riders} error={error?.message} emptyMessage={t("empty")} />
     </div>
   );
 }

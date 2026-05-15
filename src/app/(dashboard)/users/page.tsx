@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getTranslations } from "next-intl/server";
 import { PageHeader, DataTable, Badge } from "@/components/ui";
 
 const roleVariant: Record<string, "primary" | "success" | "info" | "warning" | "default"> = {
@@ -11,6 +12,9 @@ const roleVariant: Record<string, "primary" | "success" | "info" | "warning" | "
 
 export default async function UsersPage() {
   const supabase = await createClient();
+  const t = await getTranslations("users");
+  const tc = await getTranslations("common");
+
   const { data: users, error } = await supabase
     .from("users")
     .select("*")
@@ -20,17 +24,17 @@ export default async function UsersPage() {
   const columns = [
     {
       key: "name",
-      label: "Name",
+      label: t("name"),
       render: (row: Record<string, unknown>) => (
         <span className="font-medium text-text">
           {[row.first_name, row.last_name].filter(Boolean).join(" ") || "—"}
         </span>
       ),
     },
-    { key: "phone_number", label: "Phone" },
+    { key: "phone_number", label: t("phone") },
     {
       key: "role",
-      label: "Role",
+      label: t("role"),
       render: (row: Record<string, unknown>) => (
         <Badge variant={roleVariant[row.role as string] ?? "default"}>
           {row.role as string}
@@ -39,14 +43,14 @@ export default async function UsersPage() {
     },
     {
       key: "gender",
-      label: "Gender",
+      label: t("gender"),
       render: (row: Record<string, unknown>) => (
         <span className="capitalize">{(row.gender as string) ?? "—"}</span>
       ),
     },
     {
       key: "created_at",
-      label: "Created",
+      label: tc("created"),
       render: (row: Record<string, unknown>) => (
         <span className="text-subtext">
           {new Date(row.created_at as string).toLocaleDateString()}
@@ -57,8 +61,8 @@ export default async function UsersPage() {
 
   return (
     <div>
-      <PageHeader title="Users" description="Manage all platform users" />
-      <DataTable columns={columns} data={users} error={error?.message} emptyMessage="No users found." />
+      <PageHeader title={t("title")} description={t("description")} />
+      <DataTable columns={columns} data={users} error={error?.message} emptyMessage={t("empty")} />
     </div>
   );
 }

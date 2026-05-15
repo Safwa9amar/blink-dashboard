@@ -1,0 +1,150 @@
+{
+  "common": {
+    "sign_in": "Se connecter",
+    "sign_out": "Se déconnecter",
+    "signing_in": "Connexion en cours...",
+    "email": "Email",
+    "password": "Mot de passe",
+    "loading": "Chargement...",
+    "no_data": "Aucune donnée trouvée.",
+    "actions": "Actions",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "export": "Exporter",
+    "created": "Créé",
+    "da": "DA"
+  },
+  "auth": {
+    "title": "Tableau de Bord Blink",
+    "subtitle": "Connectez-vous à votre compte administrateur",
+    "email_placeholder": "admin@blink.com",
+    "password_placeholder": "••••••••"
+  },
+  "sidebar": {
+    "admin_dashboard": "Tableau de Bord",
+    "overview": "Aperçu",
+    "users": "Utilisateurs",
+    "riders": "Livreurs",
+    "orders": "Commandes",
+    "trips": "Trajets",
+    "transactions": "Transactions",
+    "agent_shops": "Boutiques Agents",
+    "notifications": "Notifications"
+  },
+  "overview": {
+    "title": "Aperçu",
+    "description": "Votre plateforme Blink en un coup d'œil",
+    "total_users": "Total Utilisateurs",
+    "active_riders": "Livreurs Actifs",
+    "orders": "Commandes",
+    "trips": "Trajets",
+    "transactions": "Transactions",
+    "recent_orders": "Commandes Récentes",
+    "recent_orders_desc": "Dernière activité des commandes",
+    "recent_trips": "Trajets Récents",
+    "recent_trips_desc": "Dernière activité des trajets",
+    "placeholder_text": "Les données apparaîtront ici une fois connecté."
+  },
+  "users": {
+    "title": "Utilisateurs",
+    "description": "Gérer tous les utilisateurs de la plateforme",
+    "name": "Nom",
+    "phone": "Téléphone",
+    "role": "Rôle",
+    "gender": "Genre",
+    "empty": "Aucun utilisateur trouvé."
+  },
+  "riders": {
+    "title": "Livreurs",
+    "description": "Gérer les profils des livreurs et véhicules",
+    "rider_id": "ID Livreur",
+    "name": "Nom",
+    "phone": "Téléphone",
+    "wilaya": "Wilaya",
+    "vehicle": "Véhicule",
+    "empty": "Aucun livreur trouvé."
+  },
+  "orders": {
+    "title": "Commandes",
+    "description": "Suivre et gérer toutes les commandes",
+    "store": "Boutique",
+    "type": "Type",
+    "status": "Statut",
+    "total": "Total",
+    "items": "Articles",
+    "empty": "Aucune commande trouvée.",
+    "statuses": {
+      "delivered": "livrée",
+      "canceled": "annulée",
+      "merchant_rejected": "refusée par le marchand",
+      "on_the_way": "en route",
+      "searching": "recherche",
+      "processing": "en traitement",
+      "preparation": "en préparation",
+      "pickup": "ramassage",
+      "heading_to_store": "en route vers la boutique"
+    }
+  },
+  "trips": {
+    "title": "Trajets",
+    "description": "Surveiller tous les trajets des livreurs",
+    "id": "ID",
+    "pickup": "Départ",
+    "dropoff": "Arrivée",
+    "status": "Statut",
+    "distance": "Distance",
+    "payout": "Paiement",
+    "empty": "Aucun trajet trouvé.",
+    "statuses": {
+      "completed": "terminé",
+      "canceled": "annulé",
+      "upcoming": "à venir",
+      "under_review": "en révision"
+    }
+  },
+  "transactions": {
+    "title": "Transactions",
+    "description": "Suivre les dépôts et retraits",
+    "type": "Type",
+    "method": "Méthode",
+    "amount": "Montant",
+    "fees": "Frais",
+    "total": "Total",
+    "status": "Statut",
+    "empty": "Aucune transaction trouvée.",
+    "types": {
+      "deposit": "dépôt",
+      "withdrawal": "retrait"
+    }
+  },
+  "agent_shops": {
+    "title": "Boutiques Agents",
+    "description": "Gérer les points de dépôt des agents",
+    "shop_name": "Nom de la Boutique",
+    "phone": "Téléphone",
+    "status": "Statut",
+    "hours": "Horaires",
+    "rating": "Note",
+    "address": "Adresse",
+    "empty": "Aucune boutique agent trouvée.",
+    "statuses": {
+      "open": "ouvert",
+      "closed": "fermé"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "description": "Voir toutes les notifications envoyées",
+    "type": "Type",
+    "title_col": "Titre",
+    "description_col": "Description",
+    "read": "Lu",
+    "empty": "Aucune notification trouvée."
+  },
+  "language": {
+    "title": "Langue",
+    "english": "Anglais",
+    "arabic": "Arabe",
+    "french": "Français"
+  }
+}

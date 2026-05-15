@@ -3,18 +3,20 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
+import { LanguageSwitcher } from "./language-switcher";
 
 const navItems = [
-  { label: "Overview", href: "/", icon: "grid" },
-  { label: "Users", href: "/users", icon: "users" },
-  { label: "Riders", href: "/riders", icon: "bike" },
-  { label: "Orders", href: "/orders", icon: "package" },
-  { label: "Trips", href: "/trips", icon: "map" },
-  { label: "Transactions", href: "/transactions", icon: "credit-card" },
-  { label: "Agent Shops", href: "/agent-shops", icon: "store" },
-  { label: "Notifications", href: "/notifications", icon: "bell" },
-];
+  { key: "overview", href: "/", icon: "grid" },
+  { key: "users", href: "/users", icon: "users" },
+  { key: "riders", href: "/riders", icon: "bike" },
+  { key: "orders", href: "/orders", icon: "package" },
+  { key: "trips", href: "/trips", icon: "map" },
+  { key: "transactions", href: "/transactions", icon: "credit-card" },
+  { key: "agent_shops", href: "/agent-shops", icon: "store" },
+  { key: "notifications", href: "/notifications", icon: "bell" },
+] as const;
 
 const icons: Record<string, React.ReactNode> = {
   grid: (
@@ -63,6 +65,8 @@ export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
+  const t = useTranslations("sidebar");
+  const tc = useTranslations("common");
 
   async function handleSignOut() {
     await supabase.auth.signOut();
@@ -71,13 +75,15 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="w-64 h-screen bg-card border-r border-border flex flex-col fixed left-0 top-0">
+    <aside className="w-64 h-screen bg-card border-e border-border flex flex-col fixed start-0 top-0">
       <div className="p-6 border-b border-border">
         <div className="flex items-center gap-3">
           <Image src="/images/logo-b.png" alt="Blink" width={32} height={32} />
           <div>
             <h1 className="text-lg font-bold text-text">Blink</h1>
-            <p className="text-[10px] text-subtext font-medium uppercase tracking-widest">Admin Dashboard</p>
+            <p className="text-[10px] text-subtext font-medium uppercase tracking-widest">
+              {t("admin_dashboard")}
+            </p>
           </div>
         </div>
       </div>
@@ -97,13 +103,19 @@ export function Sidebar() {
               }`}
             >
               {icons[item.icon]}
-              {item.label}
+              {t(item.key)}
             </Link>
           );
         })}
       </nav>
 
-      <div className="p-3 border-t border-border">
+      <div className="p-3 border-t border-border space-y-2">
+        <div className="flex items-center justify-between px-3">
+          <span className="text-xs text-subtext font-medium uppercase tracking-wider">
+            {useTranslations("language")("title")}
+          </span>
+          <LanguageSwitcher />
+        </div>
         <button
           onClick={handleSignOut}
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-subtext hover:text-danger hover:bg-danger-light transition-colors cursor-pointer"
@@ -111,7 +123,7 @@ export function Sidebar() {
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
           </svg>
-          Sign out
+          {tc("sign_out")}
         </button>
       </div>
     </aside>

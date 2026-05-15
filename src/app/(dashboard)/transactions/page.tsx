@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getTranslations } from "next-intl/server";
 import { PageHeader, DataTable, Badge } from "@/components/ui";
 
 const statusVariant: Record<string, "success" | "danger" | "warning" | "default"> = {
@@ -9,6 +10,9 @@ const statusVariant: Record<string, "success" | "danger" | "warning" | "default"
 
 export default async function TransactionsPage() {
   const supabase = await createClient();
+  const t = await getTranslations("transactions");
+  const tc = await getTranslations("common");
+
   const { data: transactions, error } = await supabase
     .from("transactions")
     .select("*")
@@ -18,44 +22,44 @@ export default async function TransactionsPage() {
   const columns = [
     {
       key: "type",
-      label: "Type",
+      label: t("type"),
       render: (row: Record<string, unknown>) => (
         <Badge variant={(row.type as string) === "deposit" ? "success" : "info"}>
-          {row.type as string}
+          {t(`types.${row.type as string}` as Parameters<typeof t>[0])}
         </Badge>
       ),
     },
     {
       key: "method",
-      label: "Method",
+      label: t("method"),
       render: (row: Record<string, unknown>) => (
         <span className="capitalize">{(row.method as string) ?? "—"}</span>
       ),
     },
     {
       key: "amount",
-      label: "Amount",
+      label: t("amount"),
       render: (row: Record<string, unknown>) => (
-        <span className="font-mono">{(row.amount as number)?.toFixed(2)} DA</span>
+        <span className="font-mono">{(row.amount as number)?.toFixed(2)} {tc("da")}</span>
       ),
     },
     {
       key: "fees",
-      label: "Fees",
+      label: t("fees"),
       render: (row: Record<string, unknown>) => (
-        <span className="font-mono text-subtext">{(row.fees as number)?.toFixed(2)} DA</span>
+        <span className="font-mono text-subtext">{(row.fees as number)?.toFixed(2)} {tc("da")}</span>
       ),
     },
     {
       key: "total",
-      label: "Total",
+      label: t("total"),
       render: (row: Record<string, unknown>) => (
-        <span className="font-mono font-medium text-text">{(row.total as number)?.toFixed(2)} DA</span>
+        <span className="font-mono font-medium text-text">{(row.total as number)?.toFixed(2)} {tc("da")}</span>
       ),
     },
     {
       key: "status",
-      label: "Status",
+      label: t("status"),
       render: (row: Record<string, unknown>) => (
         <Badge variant={statusVariant[row.status as string] ?? "default"}>
           {row.status as string}
@@ -64,7 +68,7 @@ export default async function TransactionsPage() {
     },
     {
       key: "created_at",
-      label: "Created",
+      label: tc("created"),
       render: (row: Record<string, unknown>) => (
         <span className="text-subtext">
           {new Date(row.created_at as string).toLocaleDateString()}
@@ -75,8 +79,8 @@ export default async function TransactionsPage() {
 
   return (
     <div>
-      <PageHeader title="Transactions" description="Track deposits and withdrawals" />
-      <DataTable columns={columns} data={transactions} error={error?.message} emptyMessage="No transactions found." />
+      <PageHeader title={t("title")} description={t("description")} />
+      <DataTable columns={columns} data={transactions} error={error?.message} emptyMessage={t("empty")} />
     </div>
   );
 }

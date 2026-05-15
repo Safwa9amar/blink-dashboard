@@ -1,0 +1,150 @@
+{
+  "common": {
+    "sign_in": "تسجيل الدخول",
+    "sign_out": "تسجيل الخروج",
+    "signing_in": "جاري تسجيل الدخول...",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "loading": "جاري التحميل...",
+    "no_data": "لا توجد بيانات.",
+    "actions": "إجراءات",
+    "search": "بحث",
+    "filter": "تصفية",
+    "export": "تصدير",
+    "created": "تاريخ الإنشاء",
+    "da": "د.ج"
+  },
+  "auth": {
+    "title": "لوحة تحكم بلينك",
+    "subtitle": "سجّل الدخول إلى حسابك الإداري",
+    "email_placeholder": "admin@blink.com",
+    "password_placeholder": "••••••••"
+  },
+  "sidebar": {
+    "admin_dashboard": "لوحة الإدارة",
+    "overview": "نظرة عامة",
+    "users": "المستخدمون",
+    "riders": "السائقون",
+    "orders": "الطلبات",
+    "trips": "الرحلات",
+    "transactions": "المعاملات",
+    "agent_shops": "متاجر الوكلاء",
+    "notifications": "الإشعارات"
+  },
+  "overview": {
+    "title": "نظرة عامة",
+    "description": "منصة بلينك الخاصة بك في لمحة",
+    "total_users": "إجمالي المستخدمين",
+    "active_riders": "السائقون النشطون",
+    "orders": "الطلبات",
+    "trips": "الرحلات",
+    "transactions": "المعاملات",
+    "recent_orders": "الطلبات الأخيرة",
+    "recent_orders_desc": "آخر نشاط الطلبات",
+    "recent_trips": "الرحلات الأخيرة",
+    "recent_trips_desc": "آخر نشاط الرحلات",
+    "placeholder_text": "ستظهر البيانات هنا بمجرد الاتصال."
+  },
+  "users": {
+    "title": "المستخدمون",
+    "description": "إدارة جميع مستخدمي المنصة",
+    "name": "الاسم",
+    "phone": "الهاتف",
+    "role": "الدور",
+    "gender": "الجنس",
+    "empty": "لم يتم العثور على مستخدمين."
+  },
+  "riders": {
+    "title": "السائقون",
+    "description": "إدارة ملفات السائقين والمركبات",
+    "rider_id": "معرّف السائق",
+    "name": "الاسم",
+    "phone": "الهاتف",
+    "wilaya": "الولاية",
+    "vehicle": "المركبة",
+    "empty": "لم يتم العثور على سائقين."
+  },
+  "orders": {
+    "title": "الطلبات",
+    "description": "تتبع وإدارة جميع الطلبات",
+    "store": "المتجر",
+    "type": "النوع",
+    "status": "الحالة",
+    "total": "المجموع",
+    "items": "العناصر",
+    "empty": "لم يتم العثور على طلبات.",
+    "statuses": {
+      "delivered": "تم التوصيل",
+      "canceled": "ملغي",
+      "merchant_rejected": "رفض التاجر",
+      "on_the_way": "في الطريق",
+      "searching": "جاري البحث",
+      "processing": "قيد المعالجة",
+      "preparation": "قيد التحضير",
+      "pickup": "جاري الاستلام",
+      "heading_to_store": "متجه للمتجر"
+    }
+  },
+  "trips": {
+    "title": "الرحلات",
+    "description": "مراقبة جميع رحلات السائقين",
+    "id": "المعرّف",
+    "pickup": "نقطة الانطلاق",
+    "dropoff": "نقطة الوصول",
+    "status": "الحالة",
+    "distance": "المسافة",
+    "payout": "المبلغ",
+    "empty": "لم يتم العثور على رحلات.",
+    "statuses": {
+      "completed": "مكتملة",
+      "canceled": "ملغية",
+      "upcoming": "قادمة",
+      "under_review": "قيد المراجعة"
+    }
+  },
+  "transactions": {
+    "title": "المعاملات",
+    "description": "تتبع الإيداعات والسحوبات",
+    "type": "النوع",
+    "method": "الطريقة",
+    "amount": "المبلغ",
+    "fees": "الرسوم",
+    "total": "المجموع",
+    "status": "الحالة",
+    "empty": "لم يتم العثور على معاملات.",
+    "types": {
+      "deposit": "إيداع",
+      "withdrawal": "سحب"
+    }
+  },
+  "agent_shops": {
+    "title": "متاجر الوكلاء",
+    "description": "إدارة مواقع إيداع الوكلاء",
+    "shop_name": "اسم المتجر",
+    "phone": "الهاتف",
+    "status": "الحالة",
+    "hours": "ساعات العمل",
+    "rating": "التقييم",
+    "address": "العنوان",
+    "empty": "لم يتم العثور على متاجر وكلاء.",
+    "statuses": {
+      "open": "مفتوح",
+      "closed": "مغلق"
+    }
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "description": "عرض جميع الإشعارات المرسلة",
+    "type": "النوع",
+    "title_col": "العنوان",
+    "description_col": "الوصف",
+    "read": "مقروء",
+    "empty": "لم يتم العثور على إشعارات."
+  },
+  "language": {
+    "title": "اللغة",
+    "english": "الإنجليزية",
+    "arabic": "العربية",
+    "french": "الفرنسية"
+  }
+}

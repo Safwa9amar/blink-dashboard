@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getTranslations } from "next-intl/server";
 import { PageHeader, DataTable, Badge } from "@/components/ui";
 
 const typeVariant: Record<string, "info" | "success" | "primary" | "danger" | "warning" | "default"> = {
@@ -16,6 +17,9 @@ const typeVariant: Record<string, "info" | "success" | "primary" | "danger" | "w
 
 export default async function NotificationsPage() {
   const supabase = await createClient();
+  const t = await getTranslations("notifications");
+  const tc = await getTranslations("common");
+
   const { data: notifications, error } = await supabase
     .from("notifications")
     .select("*")
@@ -25,7 +29,7 @@ export default async function NotificationsPage() {
   const columns = [
     {
       key: "type",
-      label: "Type",
+      label: t("type"),
       render: (row: Record<string, unknown>) => (
         <Badge variant={typeVariant[row.type as string] ?? "default"}>
           {row.type as string}
@@ -34,26 +38,26 @@ export default async function NotificationsPage() {
     },
     {
       key: "title",
-      label: "Title",
+      label: t("title_col"),
       render: (row: Record<string, unknown>) => (
         <span className="font-medium text-text">{row.title as string}</span>
       ),
     },
     {
       key: "description",
-      label: "Description",
+      label: t("description_col"),
       className: "max-w-[300px] truncate",
     },
     {
       key: "is_unread",
-      label: "Read",
+      label: t("read"),
       render: (row: Record<string, unknown>) => (
         <span className={`inline-block w-2.5 h-2.5 rounded-full ${row.is_unread ? "bg-primary" : "bg-border"}`} />
       ),
     },
     {
       key: "created_at",
-      label: "Created",
+      label: tc("created"),
       render: (row: Record<string, unknown>) => (
         <span className="text-subtext">
           {new Date(row.created_at as string).toLocaleDateString()}
@@ -64,8 +68,8 @@ export default async function NotificationsPage() {
 
   return (
     <div>
-      <PageHeader title="Notifications" description="View all sent notifications" />
-      <DataTable columns={columns} data={notifications} error={error?.message} emptyMessage="No notifications found." />
+      <PageHeader title={t("title")} description={t("description")} />
+      <DataTable columns={columns} data={notifications} error={error?.message} emptyMessage={t("empty")} />
     </div>
   );
 }

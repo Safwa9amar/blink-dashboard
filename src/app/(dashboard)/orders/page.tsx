@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getTranslations } from "next-intl/server";
 import { PageHeader, DataTable, Badge } from "@/components/ui";
 
 const statusVariant: Record<string, "success" | "danger" | "info" | "warning" | "primary" | "default"> = {
@@ -15,6 +16,9 @@ const statusVariant: Record<string, "success" | "danger" | "info" | "warning" | 
 
 export default async function OrdersPage() {
   const supabase = await createClient();
+  const t = await getTranslations("orders");
+  const tc = await getTranslations("common");
+
   const { data: orders, error } = await supabase
     .from("orders")
     .select("*")
@@ -24,44 +28,47 @@ export default async function OrdersPage() {
   const columns = [
     {
       key: "store_name",
-      label: "Store",
+      label: t("store"),
       render: (row: Record<string, unknown>) => (
         <span className="font-medium text-text">{row.store_name as string}</span>
       ),
     },
     {
       key: "type",
-      label: "Type",
+      label: t("type"),
       render: (row: Record<string, unknown>) => (
         <span className="capitalize">{row.type as string}</span>
       ),
     },
     {
       key: "status",
-      label: "Status",
-      render: (row: Record<string, unknown>) => (
-        <Badge variant={statusVariant[row.status as string] ?? "default"}>
-          {(row.status as string).replace(/_/g, " ")}
-        </Badge>
-      ),
+      label: t("status"),
+      render: (row: Record<string, unknown>) => {
+        const status = row.status as string;
+        return (
+          <Badge variant={statusVariant[status] ?? "default"}>
+            {t(`statuses.${status}` as Parameters<typeof t>[0])}
+          </Badge>
+        );
+      },
     },
     {
       key: "total",
-      label: "Total",
+      label: t("total"),
       render: (row: Record<string, unknown>) => (
-        <span className="font-mono font-medium">{(row.total as number)?.toFixed(2)} DA</span>
+        <span className="font-mono font-medium">{(row.total as number)?.toFixed(2)} {tc("da")}</span>
       ),
     },
     {
       key: "items",
-      label: "Items",
+      label: t("items"),
       render: (row: Record<string, unknown>) => (
         <span>{(row.items as unknown[])?.length ?? 0}</span>
       ),
     },
     {
       key: "created_at",
-      label: "Created",
+      label: tc("created"),
       render: (row: Record<string, unknown>) => (
         <span className="text-subtext">
           {new Date(row.created_at as string).toLocaleDateString()}
@@ -72,8 +79,8 @@ export default async function OrdersPage() {
 
   return (
     <div>
-      <PageHeader title="Orders" description="Track and manage all orders" />
-      <DataTable columns={columns} data={orders} error={error?.message} emptyMessage="No orders found." />
+      <PageHeader title={t("title")} description={t("description")} />
+      <DataTable columns={columns} data={orders} error={error?.message} emptyMessage={t("empty")} />
     </div>
   );
 }

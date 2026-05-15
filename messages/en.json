@@ -1,0 +1,150 @@
+{
+  "common": {
+    "sign_in": "Sign in",
+    "sign_out": "Sign out",
+    "signing_in": "Signing in...",
+    "email": "Email",
+    "password": "Password",
+    "loading": "Loading...",
+    "no_data": "No data found.",
+    "actions": "Actions",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "created": "Created",
+    "da": "DA"
+  },
+  "auth": {
+    "title": "Blink Dashboard",
+    "subtitle": "Sign in to your admin account",
+    "email_placeholder": "admin@blink.com",
+    "password_placeholder": "••••••••"
+  },
+  "sidebar": {
+    "admin_dashboard": "Admin Dashboard",
+    "overview": "Overview",
+    "users": "Users",
+    "riders": "Riders",
+    "orders": "Orders",
+    "trips": "Trips",
+    "transactions": "Transactions",
+    "agent_shops": "Agent Shops",
+    "notifications": "Notifications"
+  },
+  "overview": {
+    "title": "Overview",
+    "description": "Your Blink platform at a glance",
+    "total_users": "Total Users",
+    "active_riders": "Active Riders",
+    "orders": "Orders",
+    "trips": "Trips",
+    "transactions": "Transactions",
+    "recent_orders": "Recent Orders",
+    "recent_orders_desc": "Latest order activity",
+    "recent_trips": "Recent Trips",
+    "recent_trips_desc": "Latest trip activity",
+    "placeholder_text": "Data will appear here once connected."
+  },
+  "users": {
+    "title": "Users",
+    "description": "Manage all platform users",
+    "name": "Name",
+    "phone": "Phone",
+    "role": "Role",
+    "gender": "Gender",
+    "empty": "No users found."
+  },
+  "riders": {
+    "title": "Riders",
+    "description": "Manage rider profiles and vehicles",
+    "rider_id": "Rider ID",
+    "name": "Name",
+    "phone": "Phone",
+    "wilaya": "Wilaya",
+    "vehicle": "Vehicle",
+    "empty": "No riders found."
+  },
+  "orders": {
+    "title": "Orders",
+    "description": "Track and manage all orders",
+    "store": "Store",
+    "type": "Type",
+    "status": "Status",
+    "total": "Total",
+    "items": "Items",
+    "empty": "No orders found.",
+    "statuses": {
+      "delivered": "delivered",
+      "canceled": "canceled",
+      "merchant_rejected": "merchant rejected",
+      "on_the_way": "on the way",
+      "searching": "searching",
+      "processing": "processing",
+      "preparation": "preparation",
+      "pickup": "pickup",
+      "heading_to_store": "heading to store"
+    }
+  },
+  "trips": {
+    "title": "Trips",
+    "description": "Monitor all rider trips",
+    "id": "ID",
+    "pickup": "Pickup",
+    "dropoff": "Dropoff",
+    "status": "Status",
+    "distance": "Distance",
+    "payout": "Payout",
+    "empty": "No trips found.",
+    "statuses": {
+      "completed": "completed",
+      "canceled": "canceled",
+      "upcoming": "upcoming",
+      "under_review": "under review"
+    }
+  },
+  "transactions": {
+    "title": "Transactions",
+    "description": "Track deposits and withdrawals",
+    "type": "Type",
+    "method": "Method",
+    "amount": "Amount",
+    "fees": "Fees",
+    "total": "Total",
+    "status": "Status",
+    "empty": "No transactions found.",
+    "types": {
+      "deposit": "deposit",
+      "withdrawal": "withdrawal"
+    }
+  },
+  "agent_shops": {
+    "title": "Agent Shops",
+    "description": "Manage agent deposit locations",
+    "shop_name": "Shop Name",
+    "phone": "Phone",
+    "status": "Status",
+    "hours": "Hours",
+    "rating": "Rating",
+    "address": "Address",
+    "empty": "No agent shops found.",
+    "statuses": {
+      "open": "open",
+      "closed": "closed"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "description": "View all sent notifications",
+    "type": "Type",
+    "title_col": "Title",
+    "description_col": "Description",
+    "read": "Read",
+    "empty": "No notifications found."
+  },
+  "language": {
+    "title": "Language",
+    "english": "English",
+    "arabic": "Arabic",
+    "french": "French"
+  }
+}
