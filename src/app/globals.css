@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
-:root {
+/* Dark theme (default) */
+:root,
+[data-theme="dark"] {
   --primary: #EE335F;
   --primary-hover: #D92B53;
   --background: #020617;
@@ -21,6 +23,30 @@
   --info-light: #1E2E4B;
   --warning: #FAAD14;
   --warning-light: rgba(250, 173, 20, 0.1);
+}
+
+/* Light theme */
+[data-theme="light"] {
+  --primary: #EE335F;
+  --primary-hover: #D92B53;
+  --background: #F9FAFB;
+  --card: #FFFFFF;
+  --card-hover: #F3F4F6;
+  --icon-bg: #F3F4F6;
+  --text: #111827;
+  --subtext: #6B7280;
+  --border: #E5E7EB;
+  --muted: #F3F4F6;
+  --soft-pink: #FFF1F2;
+  --soft-border: #FECDD3;
+  --success: #059669;
+  --success-light: #D1FAE5;
+  --danger: #DC2626;
+  --danger-light: #FEE2E2;
+  --info: #2563EB;
+  --info-light: #DBEAFE;
+  --warning: #D97706;
+  --warning-light: #FEF3C7;
 }
 
 @theme inline {
@@ -51,6 +77,7 @@
 body {
   background: var(--background);
   color: var(--text);
+  transition: background-color 0.2s, color 0.2s;
 }
 
 /* Scrollbar styling */

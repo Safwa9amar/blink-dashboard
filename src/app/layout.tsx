@@ -9,6 +9,14 @@ export const metadata: Metadata = {
   description: "Admin dashboard for the Blink platform",
 };
 
+// Inline script to apply theme before paint (prevents flash)
+const themeScript = `
+  (function() {
+    var t = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+`;
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -19,7 +27,10 @@ export default async function RootLayout({
   const dir = rtlLocales.includes(locale) ? "rtl" : "ltr";
 
   return (
-    <html lang={locale} dir={dir} className="h-full antialiased">
+    <html lang={locale} dir={dir} className="h-full antialiased" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="min-h-full flex flex-col">
         <NextIntlClientProvider messages={messages}>
           {children}

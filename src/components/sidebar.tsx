@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { LanguageSwitcher } from "./language-switcher";
+import { ThemeSwitcher } from "./theme-switcher";
 
 const navItems = [
   { key: "overview", href: "/", icon: "grid" },
@@ -114,7 +115,10 @@ export function Sidebar() {
           <span className="text-xs text-subtext font-medium uppercase tracking-wider">
             {useTranslations("language")("title")}
           </span>
-          <LanguageSwitcher />
+          <div className="flex items-center gap-1">
+            <LanguageSwitcher />
+            <ThemeSwitcher />
+          </div>
         </div>
         <button
           onClick={handleSignOut}
