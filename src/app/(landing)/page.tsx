@@ -375,15 +375,35 @@ export default async function LandingPage() {
               </div>
             </div>
             {[
-              { title:ft("product"), links:[nav("rides"), nav("marketplace"), svc("courier_title").split(".")[0], ft("blink_pay")] },
-              { title:ft("drivers_col"), links:[ft("drive_with"), ft("earnings_calc"), ft("driver_app"), ft("driver_hub")] },
-              { title:ft("company"), links:[ft("about"), ft("careers"), nav("for_business"), ft("press")] },
-              { title:ft("help"), links:[ft("support_center"), ft("safety"), ft("terms"), ft("privacy")] },
+              { title:ft("product"), links:[
+                { label:nav("rides"), href:"/rides" },
+                { label:nav("marketplace"), href:"/marketplace" },
+                { label:svc("courier_title").split(".")[0], href:"/courier" },
+                { label:ft("blink_pay"), href:"/blink-pay" },
+              ]},
+              { title:ft("drivers_col"), links:[
+                { label:ft("drive_with"), href:"/drive" },
+                { label:ft("earnings_calc"), href:"/earnings-calculator" },
+                { label:ft("driver_app"), href:"/driver-app" },
+                { label:ft("driver_hub"), href:"/driver-hub" },
+              ]},
+              { title:ft("company"), links:[
+                { label:ft("about"), href:"/about" },
+                { label:ft("careers"), href:"/careers" },
+                { label:nav("for_business"), href:"/for-business" },
+                { label:ft("press"), href:"/press" },
+              ]},
+              { title:ft("help"), links:[
+                { label:ft("support_center"), href:"/support" },
+                { label:ft("safety"), href:"/safety" },
+                { label:ft("terms"), href:"/terms" },
+                { label:ft("privacy"), href:"/privacy" },
+              ]},
             ].map((col,i) => (
               <div key={i}>
                 <h4 className="font-semibold text-[13px] mb-4" style={{ fontFamily:"Poppins", color:"var(--ink)" }}>{col.title}</h4>
                 {col.links.map((l,j) => (
-                  <a key={j} href="#" className="footer-link block py-1.5 text-sm">{l}</a>
+                  <a key={j} href={l.href} className="footer-link block py-1.5 text-sm">{l.label}</a>
                 ))}
               </div>
             ))}
