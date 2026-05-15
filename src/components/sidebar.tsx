@@ -1,9 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
 
 const navItems = [
   { label: "Overview", href: "/", icon: "grid" },
@@ -71,13 +71,18 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="w-64 h-screen bg-gray-900 border-r border-gray-800 flex flex-col fixed left-0 top-0">
-      <div className="p-6 border-b border-gray-800">
-        <h1 className="text-xl font-bold text-white">Blink</h1>
-        <p className="text-xs text-gray-500 mt-0.5">Admin Dashboard</p>
+    <aside className="w-64 h-screen bg-card border-r border-border flex flex-col fixed left-0 top-0">
+      <div className="p-6 border-b border-border">
+        <div className="flex items-center gap-3">
+          <Image src="/images/logo-b.png" alt="Blink" width={32} height={32} />
+          <div>
+            <h1 className="text-lg font-bold text-text">Blink</h1>
+            <p className="text-[10px] text-subtext font-medium uppercase tracking-widest">Admin Dashboard</p>
+          </div>
+        </div>
       </div>
 
-      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
         {navItems.map((item) => {
           const isActive =
             item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
@@ -85,10 +90,10 @@ export function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                 isActive
-                  ? "bg-blue-600/10 text-blue-400"
-                  : "text-gray-400 hover:text-white hover:bg-gray-800"
+                  ? "bg-soft-pink text-primary border border-soft-border"
+                  : "text-subtext hover:text-text hover:bg-background border border-transparent"
               }`}
             >
               {icons[item.icon]}
@@ -98,10 +103,10 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="p-4 border-t border-gray-800">
+      <div className="p-3 border-t border-border">
         <button
           onClick={handleSignOut}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-red-400 hover:bg-gray-800 transition-colors"
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-subtext hover:text-danger hover:bg-danger-light transition-colors cursor-pointer"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />

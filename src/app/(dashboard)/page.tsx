@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { PageHeader, StatCard, Card, CardHeader } from "@/components/ui";
 
 async function getStats() {
   const supabase = await createClient();
@@ -23,47 +24,27 @@ async function getStats() {
 export default async function DashboardPage() {
   const stats = await getStats();
 
-  const cards = [
-    { label: "Total Users", value: stats.users, color: "blue" },
-    { label: "Active Riders", value: stats.riders, color: "green" },
-    { label: "Orders", value: stats.orders, color: "purple" },
-    { label: "Trips", value: stats.trips, color: "orange" },
-    { label: "Transactions", value: stats.transactions, color: "pink" },
-  ];
-
-  const colorMap: Record<string, string> = {
-    blue: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-    green: "bg-green-500/10 text-green-400 border-green-500/20",
-    purple: "bg-purple-500/10 text-purple-400 border-purple-500/20",
-    orange: "bg-orange-500/10 text-orange-400 border-orange-500/20",
-    pink: "bg-pink-500/10 text-pink-400 border-pink-500/20",
-  };
-
   return (
     <div>
-      <h1 className="text-2xl font-bold text-white mb-6">Overview</h1>
+      <PageHeader title="Overview" description="Your Blink platform at a glance" />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-8">
-        {cards.map((card) => (
-          <div
-            key={card.label}
-            className={`rounded-xl border p-5 ${colorMap[card.color]}`}
-          >
-            <p className="text-sm opacity-80">{card.label}</p>
-            <p className="text-3xl font-bold mt-1">{card.value.toLocaleString()}</p>
-          </div>
-        ))}
+        <StatCard label="Total Users" value={stats.users} variant="primary" />
+        <StatCard label="Active Riders" value={stats.riders} variant="success" />
+        <StatCard label="Orders" value={stats.orders} variant="info" />
+        <StatCard label="Trips" value={stats.trips} variant="warning" />
+        <StatCard label="Transactions" value={stats.transactions} variant="danger" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Recent Orders</h2>
-          <p className="text-gray-500 text-sm">Connect your Supabase credentials to see live data.</p>
-        </div>
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Recent Trips</h2>
-          <p className="text-gray-500 text-sm">Connect your Supabase credentials to see live data.</p>
-        </div>
+        <Card>
+          <CardHeader title="Recent Orders" description="Latest order activity" />
+          <p className="text-subtext text-sm">Order data will appear here once connected.</p>
+        </Card>
+        <Card>
+          <CardHeader title="Recent Trips" description="Latest trip activity" />
+          <p className="text-subtext text-sm">Trip data will appear here once connected.</p>
+        </Card>
       </div>
     </div>
   );
