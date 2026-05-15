@@ -24,7 +24,7 @@ export async function updateUser(
     return { error: error.message };
   }
 
-  revalidatePath("/users");
+  revalidatePath("/d/users");
   return { error: null };
 }
 
@@ -50,7 +50,7 @@ export async function createUser(data: {
     return { error: error.message };
   }
 
-  revalidatePath("/users");
+  revalidatePath("/d/users");
   return { error: null };
 }
 
@@ -66,6 +66,6 @@ export async function deleteUser(userId: string) {
     return { error: error.message };
   }
 
-  revalidatePath("/users");
+  revalidatePath("/d/users");
   return { error: null };
 }
