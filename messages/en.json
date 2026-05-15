@@ -29,7 +29,8 @@
     "trips": "Trips",
     "transactions": "Transactions",
     "agent_shops": "Agent Shops",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "settings": "Settings"
   },
   "overview": {
     "title": "Overview",
@@ -52,7 +53,29 @@
     "phone": "Phone",
     "role": "Role",
     "gender": "Gender",
-    "empty": "No users found."
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "actions": "Actions",
+    "empty": "No users found.",
+    "edit_user": "Edit User",
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "email": "Email",
+    "save": "Save Changes",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "delete_user": "Delete User",
+    "delete_confirm": "Are you sure you want to delete this user? This action cannot be undone.",
+    "deleting": "Deleting...",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "add_user": "Add User",
+    "add_user_desc": "Create a new platform user",
+    "phone_number": "Phone Number",
+    "creating": "Creating...",
+    "create": "Create User"
   },
   "riders": {
     "title": "Riders",
@@ -146,5 +169,76 @@
     "english": "English",
     "arabic": "Arabic",
     "french": "French"
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "Manage your platform configuration",
+    "saved": "Settings saved successfully",
+    "save": "Save Changes",
+    "saving": "Saving...",
+    "general": {
+      "title": "General",
+      "description": "Platform name, contact, and basic configuration",
+      "platform_name": "Platform Name",
+      "support_email": "Support Email",
+      "support_phone": "Support Phone",
+      "timezone": "Timezone",
+      "currency": "Currency",
+      "currency_symbol": "Currency Symbol",
+      "default_language": "Default Language"
+    },
+    "fees": {
+      "title": "Fees & Commission",
+      "description": "Configure delivery fees, service charges, and commission rates",
+      "delivery_fee": "Base Delivery Fee",
+      "service_fee_pct": "Service Fee (%)",
+      "commission_pct": "Rider Commission (%)",
+      "min_order": "Minimum Order Amount",
+      "free_delivery_threshold": "Free Delivery Threshold",
+      "agent_commission_pct": "Agent Commission (%)"
+    },
+    "notifications_settings": {
+      "title": "Notifications",
+      "description": "Configure email and push notification preferences",
+      "email_new_order": "Email on new order",
+      "email_new_rider": "Email on new rider signup",
+      "email_dispute": "Email on dispute filed",
+      "push_order_updates": "Push order status updates",
+      "push_trip_updates": "Push trip status updates",
+      "push_promotions": "Push promotional notifications"
+    },
+    "security": {
+      "title": "Security",
+      "description": "Password, sessions, and access control",
+      "change_password": "Change Password",
+      "current_password": "Current Password",
+      "new_password": "New Password",
+      "confirm_password": "Confirm Password",
+      "update_password": "Update Password",
+      "updating": "Updating...",
+      "password_mismatch": "Passwords do not match",
+      "password_updated": "Password updated successfully",
+      "session_timeout": "Session Timeout (minutes)",
+      "require_2fa": "Require Two-Factor Authentication"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Theme, language, and display preferences",
+      "theme": "Theme",
+      "dark": "Dark",
+      "light": "Light",
+      "language": "Language",
+      "date_format": "Date Format",
+      "rows_per_page": "Rows Per Page"
+    },
+    "danger_zone": {
+      "title": "Danger Zone",
+      "description": "Irreversible actions",
+      "reset_data": "Reset Platform Data",
+      "reset_confirm": "Are you sure? This will permanently delete all platform data. This action cannot be undone.",
+      "reset": "Reset All Data",
+      "export_data": "Export All Data",
+      "export": "Export"
+    }
   }
 }

@@ -1,6 +1,13 @@
 import { createClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { PageHeader, DataTable, Badge } from "@/components/ui";
+import {
+  ToggleActiveButton,
+  EditUserButton,
+  DeleteUserButton,
+  UserStatusBadge,
+  AddUserButton,
+} from "./user-actions";
 
 const roleVariant: Record<string, "primary" | "success" | "info" | "warning" | "default"> = {
   super_admin: "primary",
@@ -42,10 +49,13 @@ export default async function UsersPage() {
       ),
     },
     {
-      key: "gender",
-      label: t("gender"),
+      key: "is_active",
+      label: t("status"),
       render: (row: Record<string, unknown>) => (
-        <span className="capitalize">{(row.gender as string) ?? "—"}</span>
+        <div className="flex items-center gap-3">
+          <ToggleActiveButton userId={row.id as string} isActive={row.is_active as boolean} />
+          <UserStatusBadge isActive={row.is_active as boolean} />
+        </div>
       ),
     },
     {
@@ -57,11 +67,32 @@ export default async function UsersPage() {
         </span>
       ),
     },
+    {
+      key: "actions",
+      label: t("actions"),
+      render: (row: Record<string, unknown>) => (
+        <div className="flex items-center gap-1">
+          <EditUserButton
+            user={{
+              id: row.id as string,
+              first_name: row.first_name as string | null,
+              last_name: row.last_name as string | null,
+              email: row.email as string | null,
+              phone_number: row.phone_number as string,
+              role: row.role as string,
+              gender: row.gender as string | null,
+              is_active: row.is_active as boolean,
+            }}
+          />
+          <DeleteUserButton userId={row.id as string} />
+        </div>
+      ),
+    },
   ];
 
   return (
     <div>
-      <PageHeader title={t("title")} description={t("description")} />
+      <PageHeader title={t("title")} description={t("description")} action={<AddUserButton />} />
       <DataTable columns={columns} data={users} error={error?.message} emptyMessage={t("empty")} />
     </div>
   );
