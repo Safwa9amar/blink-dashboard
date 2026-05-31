@@ -1,0 +1,140 @@
+{
+  "marketplace": {
+    "title": "Marketplace",
+    "description": "Gérez les boutiques, produits et catégories sur la marketplace Blink",
+
+    "stores": "Boutiques",
+    "products": "Produits",
+    "categories": "Catégories",
+
+    "new_store": "Nouvelle boutique",
+    "new_product": "Nouveau produit",
+    "new_category": "Nouvelle catégorie",
+
+    "search_stores": "Rechercher des boutiques",
+    "search_products": "Rechercher des produits",
+    "all": "Tous",
+    "free": "Gratuit",
+    "filter_by_store": "Filtrer par boutique",
+    "all_stores": "Toutes les boutiques",
+    "uncategorized": "Sans catégorie",
+
+    "stats": {
+      "total_stores": "Total boutiques",
+      "total_stores_chg": "dans toutes les wilayas",
+      "open_stores": "Ouvertes",
+      "open_stores_chg": "acceptant des commandes",
+      "total_products": "Total produits",
+      "total_products_chg": "dans tout le catalogue",
+      "out_of_stock": "En rupture",
+      "out_of_stock_chg": "à réapprovisionner",
+      "avg_rating": "Note moyenne",
+      "avg_rating_chg": "sur toutes les boutiques"
+    },
+
+    "col": {
+      "store": "Boutique",
+      "product": "Produit",
+      "category": "Catégorie",
+      "wilaya": "Wilaya",
+      "location": "Localisation",
+      "rating": "Note",
+      "products": "Produits",
+      "section": "Section",
+      "price": "Prix",
+      "delivery_fee": "Frais de livraison",
+      "status": "Statut",
+      "slug": "Slug",
+      "order": "Ordre",
+      "actions": "Actions"
+    },
+
+    "store_status": {
+      "open": "Ouverte",
+      "closed": "Fermée",
+      "suspended": "Suspendue"
+    },
+    "product_status": {
+      "in_stock": "En stock",
+      "out_of_stock": "En rupture",
+      "hidden": "Masqué"
+    },
+    "category_status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+
+    "form": {
+      "new_store": "Nouvelle boutique",
+      "edit_store": "Modifier la boutique",
+      "new_product": "Nouveau produit",
+      "edit_product": "Modifier le produit",
+      "new_category": "Nouvelle catégorie",
+      "edit_category": "Modifier la catégorie",
+
+      "name": "Nom",
+      "title": "Titre",
+      "store": "Boutique",
+      "category": "Catégorie",
+      "status": "Statut",
+      "wilaya": "Wilaya",
+      "location": "Localisation",
+      "phone": "Téléphone",
+      "rating": "Note",
+      "review_count": "Avis",
+      "delivery_fee": "Frais de livraison (Da)",
+      "min_order": "Commande min. (Da)",
+      "delivery_time": "Délai de livraison",
+      "opening_hours": "Heures d'ouverture",
+      "image": "URL de l'image",
+      "featured": "Mis en avant",
+      "featured_hint": "Afficher dans le carrousel mis en avant de l'application.",
+      "price": "Prix (Da)",
+      "section": "Section du menu",
+      "unit": "Unité",
+      "description": "Description",
+      "slug": "Slug",
+      "icon": "Icône",
+      "color": "Couleur d'accent",
+      "sort_order": "Ordre de tri",
+
+      "save": "Enregistrer",
+      "create": "Créer",
+      "cancel": "Annuler"
+    },
+
+    "ph": {
+      "store_name": "ex. Blink Burger",
+      "product_title": "ex. Cheeseburger",
+      "category_name": "ex. Alimentation",
+      "location": "ex. Hydra - Alger",
+      "phone": "+213 …",
+      "delivery_time": "ex. 15-25 min",
+      "opening_hours": "ex. 09:00 - 23:00",
+      "section": "ex. burgers",
+      "unit": "ex. 1L, 500g",
+      "image": "https://…",
+      "description": "Courte description…",
+      "slug": "ex. restaurant",
+      "icon": "Nom DashIcon, ex. store"
+    },
+
+    "empty": {
+      "stores": "Aucune boutique pour le moment. Ajoutez votre première boutique.",
+      "stores_filtered": "Aucune boutique ne correspond à vos filtres.",
+      "products": "Aucun produit pour le moment. Ajoutez votre premier produit.",
+      "products_filtered": "Aucun produit ne correspond à vos filtres.",
+      "categories": "Aucune catégorie pour le moment. Ajoutez votre première catégorie."
+    },
+
+    "confirm": {
+      "delete_store": "Supprimer cette boutique ? Ses produits seront également supprimés.",
+      "delete_product": "Supprimer ce produit ?",
+      "delete_category": "Supprimer cette catégorie ?"
+    },
+
+    "required": "Requis",
+    "edit": "Modifier",
+    "delete": "Supprimer"
+  }
+}

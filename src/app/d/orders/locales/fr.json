@@ -1,0 +1,23 @@
+{
+  "orders": {
+    "title": "Commandes",
+    "description": "Suivre et gérer toutes les commandes",
+    "store": "Boutique",
+    "type": "Type",
+    "status": "Statut",
+    "total": "Total",
+    "items": "Articles",
+    "empty": "Aucune commande trouvée.",
+    "statuses": {
+      "delivered": "livrée",
+      "canceled": "annulée",
+      "merchant_rejected": "refusée par le marchand",
+      "on_the_way": "en route",
+      "searching": "recherche",
+      "processing": "en traitement",
+      "preparation": "en préparation",
+      "pickup": "ramassage",
+      "heading_to_store": "en route vers la boutique"
+    }
+  }
+}

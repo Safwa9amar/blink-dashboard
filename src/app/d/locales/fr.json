@@ -1,0 +1,16 @@
+{
+  "overview": {
+    "title": "Aperçu",
+    "description": "Votre plateforme Blink en un coup d'œil",
+    "total_users": "Total Utilisateurs",
+    "active_riders": "Livreurs Actifs",
+    "orders": "Commandes",
+    "trips": "Trajets",
+    "transactions": "Transactions",
+    "recent_orders": "Commandes Récentes",
+    "recent_orders_desc": "Dernière activité des commandes",
+    "recent_trips": "Trajets Récents",
+    "recent_trips_desc": "Dernière activité des trajets",
+    "placeholder_text": "Les données apparaîtront ici une fois connecté."
+  }
+}

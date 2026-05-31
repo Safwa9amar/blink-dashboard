@@ -1,0 +1,22 @@
+{
+  "live_ops": {
+    "title": "Live Ops",
+    "description": "Real-time activity across the network",
+    "live": "Live",
+    "feed_title": "Activity feed",
+    "feed_desc": "Orders, trips, deposits, disputes & signups — as they happen",
+    "counters": "Live counters",
+    "active_deliveries": "Active deliveries",
+    "enroute": "Riders en route",
+    "online": "Riders online",
+    "coverage": "{pct}% demand coverage",
+    "agents_open": "Agents open now",
+    "system_health": "System health",
+    "api": "API",
+    "payments": "Payments",
+    "maps": "Maps & routing",
+    "notifications": "Notifications",
+    "operational": "operational",
+    "degraded": "degraded"
+  }
+}

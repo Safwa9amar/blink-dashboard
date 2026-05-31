@@ -1,0 +1,16 @@
+{
+  "overview": {
+    "title": "Overview",
+    "description": "Your Blink platform at a glance",
+    "total_users": "Total Users",
+    "active_riders": "Active Riders",
+    "orders": "Orders",
+    "trips": "Trips",
+    "transactions": "Transactions",
+    "recent_orders": "Recent Orders",
+    "recent_orders_desc": "Latest order activity",
+    "recent_trips": "Recent Trips",
+    "recent_trips_desc": "Latest trip activity",
+    "placeholder_text": "Data will appear here once connected."
+  }
+}

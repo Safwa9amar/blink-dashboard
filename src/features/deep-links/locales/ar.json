@@ -1,0 +1,47 @@
+{
+  "deep_links": {
+    "title": "الروابط العميقة",
+    "description": "كتالوج وجهات التطبيق للإشعارات والحملات",
+    "import": "استيراد الكتالوج",
+    "all": "الكل",
+    "browse": "تصفّح",
+    "search": "ابحث عن الوجهات",
+    "no_routes": "لا توجد مسارات مطابقة.",
+    "pick_destination": "اختر وجهة",
+    "external_link": "رابط ويب خارجي",
+    "unknown_link": "مسار غير معروف داخل التطبيق",
+    "fill_params": "املأ: {params}",
+    "role_mismatch": "يستهدف {role} — قد لا يطابق هذا الجمهور",
+    "back": "رجوع",
+    "insert": "إدراج",
+    "imported_from": "مستورد من {source}",
+    "reset_seed": "إعادة التعيين",
+    "stats": {
+      "total": "إجمالي المسارات",
+      "roles": "الأدوار",
+      "with_params": "تتطلّب متغيرات",
+      "scheme": "المخطط"
+    },
+    "col": {
+      "destination": "الوجهة",
+      "deep_link": "الرابط العميق",
+      "role": "الدور",
+      "params": "المتغيرات"
+    },
+    "builder": {
+      "title": "منشئ الروابط",
+      "desc": "اختر وجهة، واملأ المتغيرات، وانسخ الرابط الناتج."
+    },
+    "import_title": "استيراد كتالوج الروابط",
+    "import_desc": "ارفع ملف deeplinks.json المُصدّر من التطبيق أو ألصقه أدناه. سيستبدل الكتالوج الحالي.",
+    "choose_file": "اختر ملف JSON",
+    "choose_file_hint": "deeplinks.json المُصدّر من تطبيق بلينك",
+    "or_paste": "أو ألصق JSON",
+    "import_apply": "استيراد",
+    "import_ok": "تم استيراد {count} مسار.",
+    "err_invalid_json": "JSON غير صالح.",
+    "err_no_routes": "لا يوجد مصفوفة «routes».",
+    "err_generic": "تعذّر الاستيراد.",
+    "cancel": "إلغاء"
+  }
+}

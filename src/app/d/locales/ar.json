@@ -1,0 +1,16 @@
+{
+  "overview": {
+    "title": "نظرة عامة",
+    "description": "منصة بلينك الخاصة بك في لمحة",
+    "total_users": "إجمالي المستخدمين",
+    "active_riders": "السائقون النشطون",
+    "orders": "الطلبات",
+    "trips": "الرحلات",
+    "transactions": "المعاملات",
+    "recent_orders": "الطلبات الأخيرة",
+    "recent_orders_desc": "آخر نشاط الطلبات",
+    "recent_trips": "الرحلات الأخيرة",
+    "recent_trips_desc": "آخر نشاط الرحلات",
+    "placeholder_text": "ستظهر البيانات هنا بمجرد الاتصال."
+  }
+}

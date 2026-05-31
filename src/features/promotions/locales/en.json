@@ -1,0 +1,65 @@
+{
+  "promotions": {
+    "title": "Promotions",
+    "description": "Public deals & campaigns in the Promos feed",
+    "campaigns": "Campaigns",
+    "create": "Create",
+    "analytics": "Analytics",
+    "new_campaign": "New campaign",
+    "search": "Search campaigns",
+    "stats": {
+      "active": "Active Campaigns",
+      "active_chg": "3 ending today",
+      "redemptions": "Redemptions Today",
+      "redemptions_chg": "▲ 21% vs yesterday",
+      "spend": "Promo Spend",
+      "spend_chg": "68% of monthly budget",
+      "ctr": "Avg CTR",
+      "ctr_chg": "tap-through on cards"
+    },
+    "form": {
+      "create": "Create campaign",
+      "create_desc": "A public promo card shown in the Promos feed",
+      "cover": "Cover image",
+      "title": "Title",
+      "title_ph": "e.g. 30% off all rides",
+      "subtitle": "Subtitle",
+      "subtitle_ph": "Short supporting line",
+      "category": "Category",
+      "budget": "Monthly budget (DA)",
+      "action_type": "Action type",
+      "action_hint": "How users redeem this promo.",
+      "activate": "Activate (auto-apply)",
+      "copy": "Copy code",
+      "audience": "Audience",
+      "audience_hint": "Who sees this in the Promos feed.",
+      "publish": "Publish",
+      "schedule": "Schedule",
+      "shareable": "Shareable",
+      "shareable_desc": "Let users share this promo",
+      "code_ph": "PROMO CODE"
+    },
+    "an": {
+      "redemptions7": "Redemptions (7d)",
+      "redemptions7_chg": "▲ 12% WoW",
+      "lift": "Promo Revenue Lift",
+      "lift_chg": "vs non-promo orders",
+      "spend_red": "Spend / Redemption",
+      "spend_red_chg": "blended",
+      "best": "Best Performer",
+      "best_chg": "11.2% CTR",
+      "week": "Redemptions this week",
+      "week_desc": "Across all active campaigns",
+      "by_service": "By service",
+      "by_service_desc": "Share of redemptions",
+      "used": "used"
+    },
+    "card": {
+      "copy_code": "Copy code",
+      "activate": "Activate",
+      "reach": "Reach",
+      "used": "Used",
+      "ctr": "CTR"
+    }
+  }
+}

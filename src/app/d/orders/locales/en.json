@@ -1,0 +1,23 @@
+{
+  "orders": {
+    "title": "Orders",
+    "description": "Track and manage all orders",
+    "store": "Store",
+    "type": "Type",
+    "status": "Status",
+    "total": "Total",
+    "items": "Items",
+    "empty": "No orders found.",
+    "statuses": {
+      "delivered": "delivered",
+      "canceled": "canceled",
+      "merchant_rejected": "merchant rejected",
+      "on_the_way": "on the way",
+      "searching": "searching",
+      "processing": "processing",
+      "preparation": "preparation",
+      "pickup": "pickup",
+      "heading_to_store": "heading to store"
+    }
+  }
+}

@@ -8,13 +8,19 @@ function isDashboard(host: string): boolean {
   return DASHBOARD_PREFIXES.some((p) => host.startsWith(p));
 }
 
+// The internal (rewritten) dashboard segment is exactly `/d` or `/d/...` —
+// NOT every path that merely begins with "/d" (e.g. /deep-links, /demand).
+function isInternalDashboardPath(pathname: string): boolean {
+  return pathname === "/d" || pathname.startsWith("/d/");
+}
+
 export async function middleware(request: NextRequest) {
   const hostname = request.headers.get("host") ?? "";
   const { pathname } = request.nextUrl;
 
   if (isDashboard(hostname)) {
     // Already rewritten to /d — let it through with auth
-    if (pathname.startsWith("/d")) {
+    if (isInternalDashboardPath(pathname)) {
       return await updateSession(request);
     }
 
@@ -30,7 +36,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Main domain — block dashboard internal routes
-  if (pathname.startsWith("/d")) {
+  if (isInternalDashboardPath(pathname)) {
     return NextResponse.rewrite(new URL("/not-found", request.url));
   }
 

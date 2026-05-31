@@ -1,0 +1,41 @@
+{
+  "coupons": {
+    "title": "Coupons",
+    "description": "Bons personnels utilisés au paiement",
+    "all_coupons": "Tous les coupons",
+    "create_coupon": "Créer un coupon",
+    "new_coupon": "Nouveau coupon",
+    "search": "Rechercher des coupons",
+    "status": "Statut",
+    "stats": {
+      "active": "Coupons actifs",
+      "active_chg": "6 expirent cette semaine",
+      "redeemed": "Utilisés aujourd'hui",
+      "redeemed_chg": "▲ 14% vs hier",
+      "locked": "Verrouillés par points",
+      "locked_chg": "bons de récompense",
+      "rate": "Taux d'utilisation",
+      "rate_chg": "activé → utilisé"
+    },
+    "form": {
+      "create": "Créer un coupon",
+      "create_desc": "Un bon personnel utilisé au paiement",
+      "title": "Titre",
+      "title_ph": "ex. Remise de bienvenue",
+      "dtype": "Type de remise",
+      "pct": "Pourcentage",
+      "fixed": "Montant fixe",
+      "percent_off": "Pourcentage de remise",
+      "amount": "Montant (DZD)",
+      "code": "Code du coupon",
+      "min": "Commande min (DZD)",
+      "max": "Remise max (DZD)",
+      "max_hint": "coupons % uniquement",
+      "days": "Valide (jours)",
+      "unlock": "Déverrouiller et publier",
+      "points_locked": "Verrouillé par points",
+      "points_locked_desc": "Les utilisateurs dépensent des points",
+      "points": "Points pour déverrouiller"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "verification": {
+    "title": "Verification",
+    "description": "KYC & document review queue",
+    "awaiting": "{n} awaiting review",
+    "applicant": "Applicant",
+    "role": "Role",
+    "status": "Status",
+    "documents": "Documents",
+    "submitted": "Submitted",
+    "review": "Review",
+    "search": "Search applicants",
+    "empty": "Queue is clear.",
+    "stats": {
+      "pending": "Pending Review",
+      "pending_chg": "9 over 24h SLA",
+      "approved": "Approved Today",
+      "approved_chg": "▲ 8% vs yesterday",
+      "rejected": "Rejected",
+      "rejected_chg": "Mostly blurry docs",
+      "avg_time": "Avg Review Time",
+      "avg_time_chg": "Target < 4h"
+    },
+    "st": {
+      "pending": "pending",
+      "in_progress": "in progress",
+      "rejected": "rejected",
+      "missing_info": "missing info",
+      "approved": "approved"
+    }
+  }
+}

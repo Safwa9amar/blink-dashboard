@@ -1,0 +1,32 @@
+{
+  "verification": {
+    "title": "Vérification",
+    "description": "File de vérification KYC et documents",
+    "awaiting": "{n} en attente",
+    "applicant": "Demandeur",
+    "role": "Rôle",
+    "status": "Statut",
+    "documents": "Documents",
+    "submitted": "Soumis",
+    "review": "Examiner",
+    "search": "Rechercher des demandeurs",
+    "empty": "File vide.",
+    "stats": {
+      "pending": "En attente",
+      "pending_chg": "9 au-delà du SLA 24h",
+      "approved": "Approuvés aujourd'hui",
+      "approved_chg": "▲ 8% vs hier",
+      "rejected": "Rejetés",
+      "rejected_chg": "Surtout documents flous",
+      "avg_time": "Temps moyen",
+      "avg_time_chg": "Objectif < 4h"
+    },
+    "st": {
+      "pending": "en attente",
+      "in_progress": "en cours",
+      "rejected": "rejeté",
+      "missing_info": "info manquante",
+      "approved": "approuvé"
+    }
+  }
+}

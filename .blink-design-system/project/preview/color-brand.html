@@ -1,0 +1,30 @@
+<!-- @dsCard group="Colors" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  * { margin: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); background: #fff; padding: 22px 26px; }
+  .row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+  .sw { border-radius: 12px; height: 86px; display: flex; flex-direction: column; justify-content: flex-end; padding: 10px; border: 1px solid rgba(0,0,0,0.06); }
+  .name { font-weight: 700; font-size: 12px; font-family: var(--font-display); }
+  .hex { font-size: 11px; opacity: 0.8; font-variant-numeric: tabular-nums; }
+  .lab-on-dark { color: #fff; }
+  .lab-on-light { color: var(--slate-900); }
+  h4 { font-family: var(--font-display); font-size: 13px; color: var(--slate-500); font-weight: 600; margin-bottom: 12px; letter-spacing: 0.04em; }
+</style>
+</head>
+<body>
+  <h4>BRAND — Raspberry pink</h4>
+  <div class="row">
+    <div class="sw lab-on-dark" style="background:#FF6C90"><span class="name">300</span><span class="hex">#FF6C90</span></div>
+    <div class="sw lab-on-dark" style="background:#FF5E84"><span class="name">400</span><span class="hex">#FF5E84</span></div>
+    <div class="sw lab-on-dark" style="background:#EE335F"><span class="name">500 ·primary</span><span class="hex">#EE335F</span></div>
+    <div class="sw lab-on-dark" style="background:#DE2555"><span class="name">600</span><span class="hex">#DE2555</span></div>
+    <div class="sw lab-on-dark" style="background:#B9003F"><span class="name">700</span><span class="hex">#B9003F</span></div>
+    <div class="sw lab-on-dark" style="background:#FF2D55"><span class="name">iOS red</span><span class="hex">#FF2D55</span></div>
+  </div>
+</body>
+</html>

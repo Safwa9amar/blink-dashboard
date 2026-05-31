@@ -1,0 +1,12 @@
+{
+  "riders": {
+    "title": "Livreurs",
+    "description": "Gérer les profils des livreurs et véhicules",
+    "rider_id": "ID Livreur",
+    "name": "Nom",
+    "phone": "Téléphone",
+    "wilaya": "Wilaya",
+    "vehicle": "Véhicule",
+    "empty": "Aucun livreur trouvé."
+  }
+}

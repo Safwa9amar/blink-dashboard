@@ -1,0 +1,19 @@
+{
+  "trips": {
+    "title": "Trips",
+    "description": "Monitor all rider trips",
+    "id": "ID",
+    "pickup": "Pickup",
+    "dropoff": "Dropoff",
+    "status": "Status",
+    "distance": "Distance",
+    "payout": "Payout",
+    "empty": "No trips found.",
+    "statuses": {
+      "completed": "completed",
+      "canceled": "canceled",
+      "upcoming": "upcoming",
+      "under_review": "under review"
+    }
+  }
+}

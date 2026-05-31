@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blink — Merchant UI Kit</title>
+<link rel="stylesheet" href="../../colors_and_type.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: #1c1d22;
+    font-family: var(--font-body);
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; padding: 24px;
+  }
+  .stage { display: flex; align-items: center; justify-content: center; }
+  .phone {
+    width: 412px; height: 892px;
+    background: #fff; border-radius: 44px;
+    overflow: hidden; position: relative;
+    display: flex; flex-direction: column;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 0 11px #0b0b0e, 0 0 0 13px #2a2b30;
+  }
+  ::-webkit-scrollbar { width: 0; height: 0; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  button { font-family: inherit; }
+</style>
+</head>
+<body>
+  <div class="stage" id="stage">
+    <div id="root"></div>
+  </div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="Icon.jsx"></script>
+  <script type="text/babel" src="Chrome.jsx"></script>
+  <script type="text/babel" src="Home.jsx"></script>
+  <script type="text/babel" src="Earnings.jsx"></script>
+  <script type="text/babel" src="Profile.jsx"></script>
+  <script type="text/babel" src="Cash.jsx"></script>
+  <script type="text/babel" src="Stores.jsx"></script>
+  <script type="text/babel" src="app.jsx"></script>
+
+  <script>
+    // Scale phone to fit viewport
+    function fit() {
+      const stage = document.getElementById('stage');
+      const pad = 48;
+      const sx = (window.innerWidth - pad) / 412;
+      const sy = (window.innerHeight - pad) / 892;
+      const s = Math.min(sx, sy, 1);
+      stage.style.transform = `scale(${s})`;
+    }
+    window.addEventListener('resize', fit);
+    fit();
+    new MutationObserver(fit).observe(document.getElementById('root'), { childList: true });
+  </script>
+</body>
+</html>

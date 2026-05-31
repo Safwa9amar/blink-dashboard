@@ -1,0 +1,32 @@
+{
+  "verification": {
+    "title": "التحقق",
+    "description": "قائمة مراجعة الهوية والوثائق",
+    "awaiting": "{n} بانتظار المراجعة",
+    "applicant": "مقدّم الطلب",
+    "role": "الدور",
+    "status": "الحالة",
+    "documents": "الوثائق",
+    "submitted": "تم الإرسال",
+    "review": "مراجعة",
+    "search": "بحث عن مقدّمي الطلبات",
+    "empty": "القائمة فارغة.",
+    "stats": {
+      "pending": "بانتظار المراجعة",
+      "pending_chg": "9 تجاوزت مهلة 24س",
+      "approved": "تمت الموافقة اليوم",
+      "approved_chg": "▲ 8% مقارنة بالأمس",
+      "rejected": "مرفوضة",
+      "rejected_chg": "غالبًا وثائق غير واضحة",
+      "avg_time": "متوسط وقت المراجعة",
+      "avg_time_chg": "الهدف < 4س"
+    },
+    "st": {
+      "pending": "قيد الانتظار",
+      "in_progress": "قيد المعالجة",
+      "rejected": "مرفوض",
+      "missing_info": "معلومات ناقصة",
+      "approved": "موافق عليه"
+    }
+  }
+}

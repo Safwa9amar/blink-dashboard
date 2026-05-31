@@ -1,0 +1,25 @@
+<!-- @dsCard group="Colors" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  * { margin: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); background: #fff; padding: 22px 26px; }
+  .row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .sw { border-radius: 14px; height: 96px; display: flex; flex-direction: column; justify-content: flex-end; padding: 13px; color:#fff; }
+  .name { font-weight: 700; font-size: 13px; font-family: var(--font-display); letter-spacing: 0.04em; }
+  .hex { font-size: 10px; opacity: 0.92; }
+  h4 { font-family: var(--font-display); font-size: 13px; color: var(--slate-500); font-weight: 600; margin-bottom: 12px; letter-spacing: 0.04em; }
+</style>
+</head>
+<body>
+  <h4>GRADIENTS</h4>
+  <div class="row">
+    <div class="sw" style="background:linear-gradient(180deg,#FF6C90 0%,#EE3160 100%)"><div class="name">Header</div><div class="hex">#FF6C90 → #EE3160 · vertical</div></div>
+    <div class="sw" style="background:linear-gradient(135deg,#DE2555 0%,#B9003F 100%)"><div class="name">Hero</div><div class="hex">#DE2555 → #B9003F · agent/rider</div></div>
+    <div class="sw" style="background:linear-gradient(135deg,#EE335F 0%,#C9103F 100%)"><div class="name">Deal banner</div><div class="hex">#EE335F → #C9103F</div></div>
+  </div>
+</body>
+</html>

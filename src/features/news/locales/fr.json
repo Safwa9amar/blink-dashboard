@@ -1,0 +1,98 @@
+{
+  "news": {
+    "title": "Blink News",
+    "description": "Actus, offres et annonces dans l'app",
+    "all_news": "Toutes les actus",
+    "compose": "Rédiger",
+    "categories": "Catégories",
+    "new_post": "Nouvelle publication",
+    "search": "Rechercher des publications",
+    "reads": "Lectures",
+    "ctr": "CTR",
+    "stats": {
+      "published": "Publiées",
+      "published_chg": "2 épinglées",
+      "scheduled": "Planifiées",
+      "scheduled_chg": "prochaine : 1 juin",
+      "reads": "Lectures totales",
+      "reads_chg": "▲ 9% ce mois",
+      "ctr": "CTR moyen",
+      "ctr_chg": "clics sur les CTA"
+    },
+    "filters": {
+      "all": "Toutes",
+      "published": "Publiées",
+      "scheduled": "Planifiées",
+      "draft": "Brouillon"
+    },
+    "actions": {
+      "preview": "Aperçu",
+      "pin": "Épingler",
+      "duplicate": "Dupliquer",
+      "delete": "Supprimer"
+    },
+    "empty": {
+      "title": "Aucune publication",
+      "desc": "Aucune publication ne correspond à ce filtre. Essayez un autre statut ou rédigez-en une."
+    },
+    "form": {
+      "compose": "Rédiger une actu",
+      "compose_desc": "Publier une carte Blink News à un public cible",
+      "cover": "Image de couverture",
+      "upload": "Importer",
+      "lang": "Langue du contenu",
+      "lang_hint": "Fournir en arabe, français et anglais.",
+      "title": "Titre",
+      "title_ph": "ex. Réseau étendu : 15 nouveaux hubs",
+      "summary": "Résumé",
+      "summary_ph": "Accroche affichée sur la carte",
+      "category": "Catégorie",
+      "audience": "Public",
+      "audience_hint": "Qui voit cette publication.",
+      "body": "Contenu",
+      "body_hint": "Mettez en forme, ajoutez titres, listes et images",
+      "body_ph": "Article complet affiché au clic…",
+      "cta": "Libellé du bouton CTA",
+      "publish": "Publier",
+      "publish_at": "Publier le",
+      "auto_unpublish": "Dépublier auto.",
+      "auto_unpublish_desc": "Masquer la publication après une date",
+      "save_draft": "Enregistrer le brouillon",
+      "upcoming": "À venir",
+      "upcoming_desc": "Publications planifiées, au plus tôt",
+      "pin": "Épingler en haut",
+      "pin_desc": "Garder en haut du fil",
+      "push": "Envoyer une notification",
+      "push_desc": "Notifier le public à la publication",
+      "new_category": "Nouvelle catégorie",
+      "search_categories": "Rechercher des catégories",
+      "posts": "{n} publications",
+      "cta_ph": "En savoir plus"
+    },
+    "analytics": {
+      "tab": "Statistiques",
+      "engagement": "Engagement",
+      "engagement_chg": "lu au-delà du pli",
+      "reads_title": "Lectures dans le temps",
+      "reads_desc": "Lectures mensuelles in-app",
+      "reads_legend": "Lectures (k)",
+      "peak": "Pic",
+      "cats_title": "Par catégorie",
+      "cats_desc": "Part des publications",
+      "posts": "Publications",
+      "top_title": "Top publications",
+      "top_desc": "Les plus lues cette période"
+    },
+    "preview": {
+      "headline": "Votre titre apparaît ici",
+      "summary": "L'accroche s'affiche sur la carte d'actu.",
+      "push_on": "notif activée",
+      "pinned": "épinglé"
+    },
+    "preview_modal": {
+      "title": "Aperçu de la publication",
+      "open": "Aperçu",
+      "empty_body": "Pas encore de contenu — ajoutez-le dans l'éditeur."
+    }
+  }
+}

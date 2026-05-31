@@ -1,0 +1,12 @@
+{
+  "riders": {
+    "title": "Riders",
+    "description": "Manage rider profiles and vehicles",
+    "rider_id": "Rider ID",
+    "name": "Name",
+    "phone": "Phone",
+    "wilaya": "Wilaya",
+    "vehicle": "Vehicle",
+    "empty": "No riders found."
+  }
+}

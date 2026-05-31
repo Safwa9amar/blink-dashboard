@@ -1,0 +1,55 @@
+{
+  "demand": {
+    "title": "Demande",
+    "description": "Demande de commandes en direct sur le réseau",
+    "analytics": "Analyses",
+    "live_ago": "En direct · il y a {sec}s",
+    "stats": {
+      "live_orders": "Commandes en direct",
+      "live_orders_chg": "▲ 18% vs il y a 1h",
+      "demand_index": "Indice de demande",
+      "demand_index_chg": "Élevé — au-dessus de l'offre",
+      "unmet": "Demande non satisfaite",
+      "unmet_chg": "Aucun livreur sous 8 min",
+      "online_riders": "Livreurs en ligne",
+      "online_riders_chg": "63% de la demande couverte",
+      "avg_wait": "Attente moy.",
+      "avg_wait_chg": "▼ 1,1m vs hier"
+    },
+    "charts": {
+      "demand_supply": "Demande vs Offre — aujourd'hui",
+      "demand_supply_desc": "Commandes vs livreurs en ligne, par heure",
+      "demand": "Demande",
+      "riders": "Livreurs",
+      "peak": "Pic",
+      "service_mix": "Répartition des services",
+      "service_mix_desc": "Part de la demande en direct",
+      "orders": "commandes",
+      "heatmap": "Carte de chaleur",
+      "heatmap_desc": "Intensité par zone et tranche horaire",
+      "low": "Faible",
+      "high": "Élevé",
+      "top_zones": "Zones à forte demande",
+      "top_zones_desc": "Charge en direct et tendance 1h"
+    },
+    "map": {
+      "title": "Carte",
+      "demand": "Demande",
+      "light": "Faible",
+      "heavy": "Forte",
+      "online_rider": "Livreur en ligne",
+      "live_orders": "Commandes en direct",
+      "online_riders": "Livreurs en ligne",
+      "demand_load": "Charge de demande",
+      "avg_wait": "Attente moy.",
+      "unmet_demand": "Demande non satisfaite",
+      "inspect_hint": "Cliquez sur une bulle pour inspecter une zone. La taille et la couleur varient selon la demande.",
+      "surge_suggestion": "Suggestion de surtarification",
+      "status": "Statut",
+      "rebalance": "Rééquilibrer les livreurs",
+      "balanced": "Équilibré",
+      "rebalance_hint": "{zone} a {unmet} commandes non satisfaites — envisagez une prime de +{riders} livreurs.",
+      "balanced_hint": "L'offre de {zone} suit la demande."
+    }
+  }
+}

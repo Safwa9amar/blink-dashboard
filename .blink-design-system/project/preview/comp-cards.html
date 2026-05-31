@@ -1,0 +1,38 @@
+<!-- @dsCard group="Components" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  * { margin: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); background: var(--gray-50); padding: 22px 26px; display:flex; gap: 18px; align-items:center; height: 230px; }
+  svg { display:block; }
+  .tile { width: 150px; height: 178px; border-radius: 10px; background: rgba(255,255,255,0.85); border:1px solid var(--gray-300); box-shadow: var(--shadow-sm); display:flex; flex-direction:column; align-items:center; padding-top: 22px; gap: 20px; }
+  .halo { width: 73px; height: 73px; border-radius: 50%; background: var(--blink-tint-200); display:flex; align-items:center; justify-content:center; }
+  .tile .t { font-family: var(--font-display); font-weight: 700; font-size: 14px; letter-spacing: 0.04em; color: var(--gray-900); text-align:center; }
+  .news { width: 200px; border-radius: 16px; background:#fff; border:1px solid var(--gray-300); box-shadow: var(--shadow-md); overflow:hidden; }
+  .news .img { height: 100px; background: url(../assets/news-warehouse.png) center/cover; }
+  .news .body { padding: 12px 14px 16px; }
+  .news h5 { font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--slate-900); line-height: 1.25; }
+  .news p { font-size: 11px; color: var(--slate-500); margin-top: 6px; line-height: 1.4; }
+</style>
+</head>
+<body>
+  <div class="tile">
+    <div class="halo"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--slate-900)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 9.4 7.5 4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>
+    <span class="t">Request a Courier</span>
+  </div>
+  <div class="tile">
+    <div class="halo"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--slate-900)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7l1.5-4h17L22 7"/><path d="M4 7v12a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V7"/><path d="M2 7h20"/><path d="M9 21v-6h6v6"/></svg></div>
+    <span class="t">Shop in Marketplace</span>
+  </div>
+  <div class="news">
+    <div class="img"></div>
+    <div class="body">
+      <h5>Expanding Network: New Routes Added</h5>
+      <p>We've added 15 new delivery hubs across the northern region…</p>
+    </div>
+  </div>
+</body>
+</html>

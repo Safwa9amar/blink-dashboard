@@ -3,78 +3,104 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
+import { canAccessPath, type StaffRole } from "@/lib/auth/access";
+import { DashIcon } from "@/components/ui";
 import { LanguageSwitcher } from "./language-switcher";
 import { ThemeSwitcher } from "./theme-switcher";
 
-const navItems = [
-  { key: "overview", href: "/", icon: "grid" },
-  { key: "users", href: "/users", icon: "users" },
-  { key: "riders", href: "/riders", icon: "bike" },
-  { key: "orders", href: "/orders", icon: "package" },
-  { key: "trips", href: "/trips", icon: "map" },
-  { key: "transactions", href: "/transactions", icon: "credit-card" },
-  { key: "agent_shops", href: "/agent-shops", icon: "store" },
-  { key: "notifications", href: "/notifications", icon: "bell" },
-  { key: "settings", href: "/settings", icon: "settings" },
-] as const;
+interface NavItem {
+  key: string;
+  href: string;
+  icon: string;
+}
 
-const icons: Record<string, React.ReactNode> = {
-  grid: (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-    </svg>
-  ),
-  users: (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
-    </svg>
-  ),
-  bike: (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
-    </svg>
-  ),
-  package: (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-    </svg>
-  ),
-  map: (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" />
-    </svg>
-  ),
-  "credit-card": (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
-    </svg>
-  ),
-  store: (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016A3.001 3.001 0 0021 9.349m-18 0a2.998 2.998 0 00.75-1.975V5.25A2.25 2.25 0 016 3h12a2.25 2.25 0 012.25 2.25v2.124a3 3 0 00.75 1.975" />
-    </svg>
-  ),
-  bell: (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-    </svg>
-  ),
-  settings: (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.004.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-    </svg>
-  ),
-};
+// Role-based navigation — grouped by the app's four user roles (Customers · Riders ·
+// Merchants · Agents) plus a Platform group for cross-cutting/admin sections.
+const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
+  {
+    group: "customers",
+    items: [
+      { key: "orders", href: "/orders", icon: "package" },
+      { key: "promotions", href: "/promotions", icon: "gift" },
+      { key: "coupons", href: "/coupons", icon: "ticket" },
+    ],
+  },
+  {
+    group: "riders",
+    items: [
+      { key: "riders", href: "/riders", icon: "bike" },
+      { key: "vehicles", href: "/vehicles", icon: "truck" },
+      { key: "trips", href: "/trips", icon: "map" },
+    ],
+  },
+  {
+    group: "merchants",
+    items: [
+      { key: "marketplace", href: "/marketplace", icon: "store" },
+    ],
+  },
+  {
+    group: "agents",
+    items: [
+      { key: "agent_shops", href: "/agent-shops", icon: "store" },
+    ],
+  },
+  {
+    group: "platform",
+    items: [
+      { key: "overview", href: "/", icon: "grid" },
+      { key: "demand", href: "/demand", icon: "trending" },
+      { key: "live_ops", href: "/live-ops", icon: "activity" },
+      { key: "users", href: "/users", icon: "users" },
+      { key: "access", href: "/access", icon: "lock" },
+      { key: "verification", href: "/verification", icon: "shield" },
+      { key: "blink_cash", href: "/blink-cash", icon: "wallet" },
+      { key: "news", href: "/news", icon: "newspaper" },
+      { key: "notifications", href: "/notifications", icon: "bell" },
+      { key: "deep_links", href: "/deep-links", icon: "map" },
+      { key: "settings", href: "/settings", icon: "settings2" },
+    ],
+  },
+];
 
-export function Sidebar() {
+// double-chevron toggle (collapse «  /  expand »), flips automatically in RTL.
+function CollapseIcon({ collapsed }: { collapsed: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={`w-4 h-4 transition-transform rtl:-scale-x-100 ${collapsed ? "rotate-180" : ""}`}
+    >
+      <path d="M13 6l-6 6 6 6M19 6l-6 6 6 6" />
+    </svg>
+  );
+}
+
+export function Sidebar({
+  staffRole,
+  collapsed = false,
+  onToggle,
+}: {
+  staffRole: StaffRole;
+  collapsed?: boolean;
+  onToggle?: () => void;
+}) {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
   const t = useTranslations("sidebar");
   const tc = useTranslations("common");
+  const tl = useTranslations("language");
+  const [query, setQuery] = useState("");
+
+  const q = query.trim().toLowerCase();
 
   async function handleSignOut() {
     await supabase.auth.signOut();
@@ -82,60 +108,149 @@ export function Sidebar() {
     router.refresh();
   }
 
+  const groups = NAV_GROUPS.map(({ group, items }) => {
+    const groupLabel = t(group);
+    // Only routes this staff role may reach; then narrow by the search query (expanded).
+    const visible = items.filter((item) => canAccessPath(staffRole, item.href));
+    const shown = collapsed
+      ? visible
+      : visible.filter(
+          (item) => !q || t(item.key).toLowerCase().includes(q) || groupLabel.toLowerCase().includes(q)
+        );
+    return { group, groupLabel, shown };
+  }).filter((g) => g.shown.length > 0);
+
   return (
-    <aside className="w-64 h-screen bg-card border-e border-border flex flex-col fixed start-0 top-0">
-      <div className="p-6 border-b border-border">
-        <div className="flex items-center gap-3">
-          <Image src="/images/logo-b.png" alt="Blink" width={32} height={32} />
-          <div>
-            <h1 className="text-lg font-bold text-text">Blink</h1>
-            <p className="text-[10px] text-subtext font-medium uppercase tracking-widest">
-              {t("admin_dashboard")}
-            </p>
-          </div>
+    <aside
+      className={`${collapsed ? "w-20" : "w-64"} h-screen bg-card border-e border-border flex flex-col fixed start-0 top-0 transition-[width] duration-200 z-30`}
+    >
+      {/* header */}
+      <div className={`border-b border-border ${collapsed ? "p-3" : "p-6"}`}>
+        <div className={`flex items-center ${collapsed ? "flex-col gap-2" : "gap-3"}`}>
+          <Image src="/images/logo-b.png" alt="Blink" width={32} height={32} className="shrink-0" />
+          {!collapsed && (
+            <div className="flex-1 min-w-0">
+              <h1 className="text-lg font-bold text-text leading-tight">Blink</h1>
+              <p className="text-[10px] text-subtext font-medium uppercase tracking-widest truncate">
+                {t("admin_dashboard")}
+              </p>
+            </div>
+          )}
+          {onToggle && (
+            <button
+              onClick={onToggle}
+              aria-label={collapsed ? t("expand_sidebar") : t("collapse_sidebar")}
+              title={collapsed ? t("expand_sidebar") : t("collapse_sidebar")}
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-subtext hover:text-text hover:bg-background border border-transparent hover:border-border transition-colors cursor-pointer shrink-0"
+            >
+              <CollapseIcon collapsed={collapsed} />
+            </button>
+          )}
         </div>
       </div>
 
-      <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
-        {navItems.map((item) => {
-          const isActive =
-            item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                isActive
-                  ? "bg-soft-pink text-primary border border-soft-border"
-                  : "text-subtext hover:text-text hover:bg-background border border-transparent"
-              }`}
-            >
-              {icons[item.icon]}
-              {t(item.key)}
-            </Link>
-          );
-        })}
-      </nav>
-
-      <div className="p-3 border-t border-border space-y-2">
-        <div className="flex items-center justify-between px-3">
-          <span className="text-xs text-subtext font-medium uppercase tracking-wider">
-            {useTranslations("language")("title")}
-          </span>
-          <div className="flex items-center gap-1">
-            <LanguageSwitcher />
-            <ThemeSwitcher />
+      {/* search (expanded) / search shortcut (collapsed) */}
+      {collapsed ? (
+        <div className="px-3 pt-3 flex justify-center">
+          <button
+            onClick={onToggle}
+            aria-label={t("search_menu")}
+            title={t("search_menu")}
+            className="w-11 h-11 rounded-xl flex items-center justify-center text-subtext hover:text-text hover:bg-background border border-border transition-colors cursor-pointer"
+          >
+            <DashIcon name="search" className="w-4 h-4" />
+          </button>
+        </div>
+      ) : (
+        <div className="px-4 pt-3">
+          <div className="flex items-center gap-2 bg-background border border-border rounded-xl px-3 py-2">
+            <DashIcon name="search" className="w-4 h-4 text-subtext shrink-0" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t("search_menu")}
+              className="flex-1 min-w-0 bg-transparent border-none outline-none text-sm text-text placeholder:text-subtext"
+            />
+            {query && (
+              <button onClick={() => setQuery("")} className="text-subtext hover:text-text cursor-pointer">
+                <DashIcon name="x" className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
         </div>
-        <button
-          onClick={handleSignOut}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-subtext hover:text-danger hover:bg-danger-light transition-colors cursor-pointer"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
-          </svg>
-          {tc("sign_out")}
-        </button>
+      )}
+
+      {/* nav */}
+      <nav className="flex-1 p-3 overflow-y-auto overflow-x-hidden">
+        {groups.map(({ group, groupLabel, shown }, gi) => (
+          <div key={group} className={collapsed ? `pt-2 mt-2 ${gi ? "border-t border-border" : ""}` : "mb-3"}>
+            {!collapsed && (
+              <div className="text-[10px] font-bold text-subtext uppercase tracking-wider px-3 pt-1.5 pb-1 opacity-75">
+                {groupLabel}
+              </div>
+            )}
+            <div className="space-y-0.5">
+              {shown.map((item) => {
+                const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    title={collapsed ? t(item.key) : undefined}
+                    className={`flex items-center rounded-xl text-sm font-medium transition-all ${
+                      collapsed ? "justify-center w-11 h-11 mx-auto" : "gap-3 px-3 py-2.5"
+                    } ${
+                      isActive
+                        ? "bg-soft-pink text-primary border border-soft-border"
+                        : "text-subtext hover:text-text hover:bg-background border border-transparent"
+                    }`}
+                  >
+                    <DashIcon name={item.icon} className="w-5 h-5 shrink-0" />
+                    {!collapsed && <span className="truncate">{t(item.key)}</span>}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+        {!collapsed && !groups.length && (
+          <div className="text-xs text-subtext text-center py-8">{t("no_menu_match", { query })}</div>
+        )}
+      </nav>
+
+      {/* footer */}
+      <div className="p-3 border-t border-border space-y-2">
+        {collapsed ? (
+          <div className="flex flex-col items-center gap-2">
+            <ThemeSwitcher />
+            <LanguageSwitcher vertical />
+            <button
+              onClick={handleSignOut}
+              aria-label={tc("sign_out")}
+              title={tc("sign_out")}
+              className="w-11 h-11 rounded-xl flex items-center justify-center text-subtext hover:text-danger hover:bg-danger-light transition-colors cursor-pointer"
+            >
+              <DashIcon name="logout" className="w-5 h-5" />
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center justify-between px-3">
+              <span className="text-xs text-subtext font-medium uppercase tracking-wider">{tl("title")}</span>
+              <div className="flex items-center gap-1">
+                <LanguageSwitcher />
+                <ThemeSwitcher />
+              </div>
+            </div>
+            <button
+              onClick={handleSignOut}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-subtext hover:text-danger hover:bg-danger-light transition-colors cursor-pointer"
+            >
+              <DashIcon name="logout" className="w-5 h-5" />
+              {tc("sign_out")}
+            </button>
+          </>
+        )}
       </div>
     </aside>
   );

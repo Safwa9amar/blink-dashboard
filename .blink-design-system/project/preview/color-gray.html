@@ -1,0 +1,34 @@
+<!-- @dsCard group="Colors" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  * { margin: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); background: #fff; padding: 22px 26px; }
+  .row { display: grid; grid-template-columns: repeat(9, 1fr); gap: 8px; }
+  .sw { border-radius: 9px; height: 92px; display: flex; flex-direction: column; justify-content: flex-end; padding: 8px; border: 1px solid rgba(0,0,0,0.06); }
+  .name { font-weight: 700; font-size: 11px; font-family: var(--font-display); }
+  .hex { font-size: 9px; opacity: 0.85; font-variant-numeric: tabular-nums; }
+  .d { color: #fff; } .l { color: var(--slate-900); }
+  h4 { font-family: var(--font-display); font-size: 13px; color: var(--slate-500); font-weight: 600; margin-bottom: 12px; letter-spacing: 0.04em; }
+  .note { font-size: 11px; color: var(--slate-500); margin-top: 11px; }
+</style>
+</head>
+<body>
+  <h4>NEUTRALS — Gray ramp (app chrome) + warm bg</h4>
+  <div class="row">
+    <div class="sw d" style="background:#111827"><span class="name">900</span><span class="hex">111827</span></div>
+    <div class="sw d" style="background:#374151"><span class="name">700</span><span class="hex">374151</span></div>
+    <div class="sw d" style="background:#4B5563"><span class="name">600</span><span class="hex">4B5563</span></div>
+    <div class="sw d" style="background:#6B7280"><span class="name">500</span><span class="hex">6B7280</span></div>
+    <div class="sw d" style="background:#9CA3AF"><span class="name">400</span><span class="hex">9CA3AF</span></div>
+    <div class="sw l" style="background:#D1D5DB"><span class="name">300</span><span class="hex">D1D5DB</span></div>
+    <div class="sw l" style="background:#E5E7EB"><span class="name">200</span><span class="hex">E5E7EB</span></div>
+    <div class="sw l" style="background:#F9FAFB;border-color:#e5e7eb"><span class="name">50·bg</span><span class="hex">F9FAFB</span></div>
+    <div class="sw l" style="background:#F8F6F6;border-color:#e5e7eb"><span class="name">warm</span><span class="hex">F8F6F6</span></div>
+  </div>
+  <div class="note">Gray-50 = Customer page bg · Warm = Agent page bg · gray-400 = inactive nav</div>
+</body>
+</html>

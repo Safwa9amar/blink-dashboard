@@ -1,0 +1,28 @@
+<!-- @dsCard group="Spacing" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  * { margin: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); background: #fff; padding: 30px 26px; display:flex; gap: 26px; align-items:center; justify-content: space-around; height: 210px; }
+  .col { display:flex; flex-direction:column; align-items:center; gap: 12px; }
+  .box { width: 88px; height: 60px; background: #fff; border-radius: 14px; }
+  .b1 { box-shadow: var(--shadow-xs); border:1px solid var(--gray-200);}
+  .b2 { box-shadow: var(--shadow-sm); }
+  .b3 { box-shadow: var(--shadow-md); }
+  .b4 { box-shadow: var(--shadow-nav); }
+  .b5 { box-shadow: var(--shadow-brand); background: var(--blink-500); }
+  .nm { font-family: var(--font-display); font-weight: 700; font-size: 12px; color: var(--slate-900); }
+  .vl { font-size: 10px; color: var(--slate-500); }
+</style>
+</head>
+<body>
+  <div class="col"><div class="box b1"></div><span class="nm">xs</span><span class="vl">hairline</span></div>
+  <div class="col"><div class="box b2"></div><span class="nm">sm</span><span class="vl">card lift</span></div>
+  <div class="col"><div class="box b3"></div><span class="nm">md</span><span class="vl">raised card</span></div>
+  <div class="col"><div class="box b4"></div><span class="nm">nav</span><span class="vl">floating glass</span></div>
+  <div class="col"><div class="box b5"></div><span class="nm">brand</span><span class="vl">pink glow</span></div>
+</body>
+</html>

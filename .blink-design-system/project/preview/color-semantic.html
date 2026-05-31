@@ -1,0 +1,27 @@
+<!-- @dsCard group="Colors" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  * { margin: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); background: #fff; padding: 22px 26px; }
+  .row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .sw { border-radius: 12px; height: 86px; display: flex; flex-direction: column; justify-content: space-between; padding: 11px; color:#fff; }
+  .name { font-weight: 700; font-size: 13px; font-family: var(--font-display); }
+  .hex { font-size: 11px; opacity: 0.9; font-variant-numeric: tabular-nums; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.85); }
+  h4 { font-family: var(--font-display); font-size: 13px; color: var(--slate-500); font-weight: 600; margin-bottom: 12px; letter-spacing: 0.04em; }
+</style>
+</head>
+<body>
+  <h4>SEMANTIC</h4>
+  <div class="row">
+    <div class="sw" style="background:#16A34A"><span class="dot"></span><div><div class="name">Success</div><div class="hex">#16A34A · Online</div></div></div>
+    <div class="sw" style="background:#F59E0B"><span class="dot"></span><div><div class="name">Warning</div><div class="hex">#F59E0B</div></div></div>
+    <div class="sw" style="background:#EF4444"><span class="dot"></span><div><div class="name">Danger</div><div class="hex">#EF4444</div></div></div>
+    <div class="sw" style="background:#2563EB"><span class="dot"></span><div><div class="name">Info</div><div class="hex">#2563EB</div></div></div>
+  </div>
+</body>
+</html>

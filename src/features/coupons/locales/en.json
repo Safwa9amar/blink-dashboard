@@ -1,0 +1,41 @@
+{
+  "coupons": {
+    "title": "Coupons",
+    "description": "Personal vouchers redeemed at checkout",
+    "all_coupons": "All Coupons",
+    "create_coupon": "Create Coupon",
+    "new_coupon": "New coupon",
+    "search": "Search coupons",
+    "status": "Status",
+    "stats": {
+      "active": "Active Coupons",
+      "active_chg": "6 expiring this week",
+      "redeemed": "Redeemed Today",
+      "redeemed_chg": "▲ 14% vs yesterday",
+      "locked": "Points-Locked",
+      "locked_chg": "reward vouchers",
+      "rate": "Redemption Rate",
+      "rate_chg": "activated → used"
+    },
+    "form": {
+      "create": "Create coupon",
+      "create_desc": "A personal voucher users redeem at checkout",
+      "title": "Title",
+      "title_ph": "e.g. Welcome discount",
+      "dtype": "Discount type",
+      "pct": "Percentage",
+      "fixed": "Fixed amount",
+      "percent_off": "Percent off",
+      "amount": "Amount (DZD)",
+      "code": "Coupon code",
+      "min": "Min order (DZD)",
+      "max": "Max discount (DZD)",
+      "max_hint": "% coupons only",
+      "days": "Valid for (days)",
+      "unlock": "Unlock & publish",
+      "points_locked": "Points-locked",
+      "points_locked_desc": "Users spend points to unlock",
+      "points": "Points to unlock"
+    }
+  }
+}

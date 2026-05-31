@@ -1,0 +1,73 @@
+{
+  "settings": {
+    "title": "الإعدادات",
+    "description": "إدارة إعدادات المنصة",
+    "saved": "تم حفظ الإعدادات بنجاح",
+    "save": "حفظ التغييرات",
+    "saving": "جاري الحفظ...",
+    "general": {
+      "title": "عام",
+      "description": "اسم المنصة والتواصل والإعدادات الأساسية",
+      "platform_name": "اسم المنصة",
+      "support_email": "بريد الدعم",
+      "support_phone": "هاتف الدعم",
+      "timezone": "المنطقة الزمنية",
+      "currency": "العملة",
+      "currency_symbol": "رمز العملة",
+      "default_language": "اللغة الافتراضية"
+    },
+    "fees": {
+      "title": "الرسوم والعمولات",
+      "description": "إعداد رسوم التوصيل ورسوم الخدمة ومعدلات العمولة",
+      "delivery_fee": "رسوم التوصيل الأساسية",
+      "service_fee_pct": "رسوم الخدمة (%)",
+      "commission_pct": "عمولة السائق (%)",
+      "min_order": "الحد الأدنى للطلب",
+      "free_delivery_threshold": "حد التوصيل المجاني",
+      "agent_commission_pct": "عمولة الوكيل (%)"
+    },
+    "notifications_settings": {
+      "title": "الإشعارات",
+      "description": "إعداد تفضيلات البريد الإلكتروني والإشعارات",
+      "email_new_order": "بريد عند طلب جديد",
+      "email_new_rider": "بريد عند تسجيل سائق جديد",
+      "email_dispute": "بريد عند تقديم نزاع",
+      "push_order_updates": "إشعارات تحديث الطلبات",
+      "push_trip_updates": "إشعارات تحديث الرحلات",
+      "push_promotions": "إشعارات ترويجية"
+    },
+    "security": {
+      "title": "الأمان",
+      "description": "كلمة المرور والجلسات والتحكم في الوصول",
+      "change_password": "تغيير كلمة المرور",
+      "current_password": "كلمة المرور الحالية",
+      "new_password": "كلمة المرور الجديدة",
+      "confirm_password": "تأكيد كلمة المرور",
+      "update_password": "تحديث كلمة المرور",
+      "updating": "جاري التحديث...",
+      "password_mismatch": "كلمتا المرور غير متطابقتين",
+      "password_updated": "تم تحديث كلمة المرور بنجاح",
+      "session_timeout": "مهلة الجلسة (بالدقائق)",
+      "require_2fa": "تطلب المصادقة الثنائية"
+    },
+    "appearance": {
+      "title": "المظهر",
+      "description": "السمة واللغة وتفضيلات العرض",
+      "theme": "السمة",
+      "dark": "داكن",
+      "light": "فاتح",
+      "language": "اللغة",
+      "date_format": "تنسيق التاريخ",
+      "rows_per_page": "الصفوف لكل صفحة"
+    },
+    "danger_zone": {
+      "title": "منطقة الخطر",
+      "description": "إجراءات لا يمكن التراجع عنها",
+      "reset_data": "إعادة تعيين بيانات المنصة",
+      "reset_confirm": "هل أنت متأكد؟ سيؤدي هذا إلى حذف جميع بيانات المنصة نهائياً. لا يمكن التراجع عن هذا الإجراء.",
+      "reset": "إعادة تعيين جميع البيانات",
+      "export_data": "تصدير جميع البيانات",
+      "export": "تصدير"
+    }
+  }
+}

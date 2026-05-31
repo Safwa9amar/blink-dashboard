@@ -1,0 +1,117 @@
+{
+  "vehicles": {
+    "title": "Véhicules",
+    "description": "Gérer la flotte des livreurs, les caractéristiques et la conformité des documents",
+
+    "fleet": "Flotte",
+    "documents": "Documents",
+
+    "all": "Tous",
+    "search": "Rechercher par livreur, marque, plaque…",
+    "new_vehicle": "Nouveau véhicule",
+    "view": "Voir",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "required": "Requis",
+
+    "stats": {
+      "total": "Total véhicules",
+      "total_chg": "{motos} motos · {bikes} vélos",
+      "compliant": "Entièrement conformes",
+      "compliant_chg": "tous les documents approuvés",
+      "pending_review": "En attente de revue",
+      "pending_review_chg": "documents à approuver",
+      "needs_attention": "À traiter",
+      "needs_attention_chg": "rejetés ou non téléversés"
+    },
+
+    "col": {
+      "vehicle": "Véhicule",
+      "rider": "Livreur",
+      "wilaya": "Wilaya",
+      "type": "Type",
+      "category": "Catégorie",
+      "compliance": "Conformité",
+      "document": "Document",
+      "status": "Statut",
+      "review": "Revue",
+      "actions": "Actions",
+      "no_plate": "Sans plaque"
+    },
+
+    "type": {
+      "motorcycle": "Moto",
+      "bicycle": "Vélo"
+    },
+    "category": {
+      "standard": "Standard",
+      "electric": "Électrique",
+      "hybrid": "Hybride"
+    },
+
+    "doc": {
+      "grayCard": "Carte grise",
+      "insurance": "Assurance",
+      "drivingLicense": "Permis de conduire"
+    },
+    "doc_status": {
+      "approved": "Approuvé",
+      "pending": "En attente",
+      "needs_update": "À mettre à jour",
+      "not_uploaded": "Non téléversé"
+    },
+
+    "review": {
+      "approve": "Approuver",
+      "needs_update": "À mettre à jour",
+      "pending": "En attente"
+    },
+
+    "detail": {
+      "specs": "Caractéristiques",
+      "documents": "Documents",
+      "no_docs": "Les vélos ne nécessitent aucun document d'immatriculation.",
+      "edit": "Modifier",
+      "done": "Terminé"
+    },
+
+    "form": {
+      "new": "Nouveau véhicule",
+      "edit": "Modifier le véhicule",
+      "rider_name": "Nom du livreur",
+      "rider_code": "ID livreur",
+      "type": "Type",
+      "category": "Catégorie",
+      "wilaya": "Wilaya",
+      "brand": "Marque",
+      "model": "Modèle",
+      "plate": "Plaque d'immatriculation",
+      "year": "Année",
+      "color": "Couleur",
+      "documents": "Documents",
+      "cancel": "Annuler",
+      "save": "Enregistrer"
+    },
+
+    "ph": {
+      "rider_name": "ex. Yacine Haddad",
+      "rider_code": "ex. BK-2041",
+      "brand": "ex. Yamaha",
+      "model": "ex. NMAX 125",
+      "plate": "00123-114-16",
+      "plate_na": "Non applicable",
+      "color": "ex. Noir"
+    },
+
+    "confirm": {
+      "delete": "Supprimer ce véhicule ? Cette action est irréversible."
+    },
+
+    "empty": {
+      "all": "Aucun véhicule pour l'instant. Ajoutez votre premier véhicule.",
+      "filtered": "Aucun véhicule ne correspond à vos filtres.",
+      "docs": "Aucun document à examiner.",
+      "docs_filtered": "Aucun document ne correspond à vos filtres."
+    }
+  }
+}

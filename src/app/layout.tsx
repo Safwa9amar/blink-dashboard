@@ -6,8 +6,13 @@ import "./globals.css";
 import "./landing.css";
 
 export const metadata: Metadata = {
-  title: "Blink",
+  title: { default: "Blink", template: "%s · Blink" },
   description: "Your city, in a blink. Rides, deliveries, and marketplace — built for Algeria.",
+  icons: {
+    icon: "/icon.png",
+    shortcut: "/icon.png",
+    apple: "/apple-icon.png",
+  },
 };
 
 // Inline script to apply theme before paint (prevents flash)

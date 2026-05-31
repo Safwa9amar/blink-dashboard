@@ -12,7 +12,7 @@ const localeLabels: Record<Locale, { flag: string; key: string }> = {
   fr: { flag: "🇫🇷", key: "french" },
 };
 
-export function LanguageSwitcher() {
+export function LanguageSwitcher({ vertical = false }: { vertical?: boolean }) {
   const t = useTranslations("language");
   const locale = useLocale();
   const router = useRouter();
@@ -26,7 +26,7 @@ export function LanguageSwitcher() {
   }
 
   return (
-    <div className="flex items-center gap-1">
+    <div className={`flex items-center gap-1 ${vertical ? "flex-col" : ""}`}>
       {locales.map((l) => (
         <button
           key={l}

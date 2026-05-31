@@ -80,17 +80,152 @@ body {
   transition: background-color 0.2s, color 0.2s;
 }
 
-/* Scrollbar styling */
+/* Scrollbar styling — Blink brand pink, animated, only visible while hovering the scroll area */
+@keyframes scrollbar-flow {
+  0% {
+    background-position: 50% 0%;
+  }
+  100% {
+    background-position: 50% 100%;
+  }
+}
+
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--background);
+  background: transparent;
 }
+/* hidden + thin by default… */
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 3px;
+  background: transparent;
+  border: 2px solid transparent;
+  background-clip: content-box;
+  border-radius: 99px;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
+/* …reveal as a flowing brand-pink gradient when the user hovers the scroll area */
+:hover::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--primary), var(--primary-hover), var(--primary));
+  background-size: 100% 200%;
+  background-clip: content-box;
+  animation: scrollbar-flow 2.4s linear infinite alternate;
+}
+/* brighter + faster when pointing directly at the thumb */
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--subtext);
+  border-color: transparent;
+  background: linear-gradient(180deg, var(--primary), var(--primary-hover), var(--primary));
+  background-size: 100% 200%;
+  background-clip: padding-box;
+  animation-duration: 1s;
+}
+
+/* Firefox (no gradient/animation support — graceful fallback) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+*:hover {
+  scrollbar-color: color-mix(in srgb, var(--primary) 60%, transparent) transparent;
+}
+
+/* Scroll areas driven by the Motion scrollbar hide the native one entirely */
+.no-native-scrollbar {
+  scrollbar-width: none;
+}
+.no-native-scrollbar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :hover::-webkit-scrollbar-thumb,
+  ::-webkit-scrollbar-thumb:hover {
+    animation: none;
+  }
+}
+
+/* ---- Rich-text content (Tiptap editor body + rendered article preview) ---- */
+/* Styled entirely through the design tokens so it tracks dark/light + RTL. */
+.blink-prose {
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.7;
+  outline: none;
+}
+.blink-prose:where(.ProseMirror) {
+  min-height: 13rem;
+  padding: 14px 16px;
+}
+.blink-prose > * + * {
+  margin-top: 0.75em;
+}
+.blink-prose h2 {
+  font-size: 1.3em;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-top: 1.1em;
+}
+.blink-prose h3 {
+  font-size: 1.12em;
+  font-weight: 700;
+  line-height: 1.35;
+  margin-top: 1em;
+}
+.blink-prose p {
+  margin: 0;
+}
+.blink-prose strong {
+  font-weight: 700;
+  color: var(--text);
+}
+.blink-prose a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.blink-prose ul,
+.blink-prose ol {
+  padding-inline-start: 1.4em;
+}
+.blink-prose ul {
+  list-style: disc;
+}
+.blink-prose ol {
+  list-style: decimal;
+}
+.blink-prose li {
+  margin: 0.25em 0;
+}
+.blink-prose li > p {
+  margin: 0;
+}
+.blink-prose blockquote {
+  border-inline-start: 3px solid var(--primary);
+  padding-inline-start: 1em;
+  margin-inline: 0;
+  color: var(--subtext);
+  font-style: italic;
+}
+.blink-prose img,
+.blink-prose .blink-prose-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  margin: 0.5em 0;
+}
+.blink-prose img.ProseMirror-selectednode {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+/* Placeholder for the empty editor (Tiptap Placeholder extension) */
+.blink-prose p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--subtext);
+  opacity: 0.7;
+  float: inline-start;
+  height: 0;
+  pointer-events: none;
 }

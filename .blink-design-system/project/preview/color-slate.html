@@ -1,0 +1,32 @@
+<!-- @dsCard group="Colors" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  * { margin: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); background: #fff; padding: 22px 26px; }
+  .row { display: grid; grid-template-columns: repeat(9, 1fr); gap: 8px; }
+  .sw { border-radius: 9px; height: 92px; display: flex; flex-direction: column; justify-content: flex-end; padding: 8px; border: 1px solid rgba(0,0,0,0.06); }
+  .name { font-weight: 700; font-size: 11px; font-family: var(--font-display); }
+  .hex { font-size: 9px; opacity: 0.85; font-variant-numeric: tabular-nums; }
+  .d { color: #fff; } .l { color: var(--slate-900); }
+  h4 { font-family: var(--font-display); font-size: 13px; color: var(--slate-500); font-weight: 600; margin-bottom: 12px; letter-spacing: 0.04em; }
+</style>
+</head>
+<body>
+  <h4>NEUTRALS — Slate ramp (primary neutral)</h4>
+  <div class="row">
+    <div class="sw d" style="background:#0F172A"><span class="name">900</span><span class="hex">0F172A</span></div>
+    <div class="sw d" style="background:#334155"><span class="name">700</span><span class="hex">334155</span></div>
+    <div class="sw d" style="background:#475569"><span class="name">600</span><span class="hex">475569</span></div>
+    <div class="sw d" style="background:#64748B"><span class="name">500</span><span class="hex">64748B</span></div>
+    <div class="sw d" style="background:#94A3B8"><span class="name">400</span><span class="hex">94A3B8</span></div>
+    <div class="sw l" style="background:#CBD5E1"><span class="name">300</span><span class="hex">CBD5E1</span></div>
+    <div class="sw l" style="background:#E2E8F0"><span class="name">200</span><span class="hex">E2E8F0</span></div>
+    <div class="sw l" style="background:#F1F5F9"><span class="name">100</span><span class="hex">F1F5F9</span></div>
+    <div class="sw l" style="background:#F8FAFC;border-color:#e2e8f0"><span class="name">50</span><span class="hex">F8FAFC</span></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!-- @dsCard group="Components" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  * { margin: 0; box-sizing: border-box; }
+  body { font-family: var(--font-display); background: #fff; padding: 26px; display:flex; flex-direction:column; gap: 16px; justify-content:center; }
+  .row { display:flex; gap: 14px; align-items:center; flex-wrap: wrap; }
+  svg { display:block; }
+  .social { display:flex; align-items:center; justify-content:center; gap: 10px; }
+</style>
+</head>
+<body>
+  <div class="row">
+    <button class="blink-btn blink-btn--primary" style="flex:1">Continue</button>
+    <button class="blink-btn blink-btn--secondary social" style="flex:1"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>Continue with Phone</button>
+  </div>
+  <div class="row">
+    <button class="blink-btn blink-btn--primary social" style="padding:14px 26px"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>Riders Deposit</button>
+    <button class="blink-btn blink-btn--ghost" style="padding:14px 10px">View All</button>
+    <button class="blink-btn blink-btn--primary" style="opacity:0.4;padding:14px 26px">Disabled</button>
+  </div>
+</body>
+</html>

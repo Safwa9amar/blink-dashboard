@@ -1,0 +1,55 @@
+{
+  "demand": {
+    "title": "Demand",
+    "description": "Live order demand across the network",
+    "analytics": "Analytics",
+    "live_ago": "Live · {sec}s ago",
+    "stats": {
+      "live_orders": "Live Orders",
+      "live_orders_chg": "▲ 18% vs 1h ago",
+      "demand_index": "Demand Index",
+      "demand_index_chg": "High — above supply",
+      "unmet": "Unmet Demand",
+      "unmet_chg": "No rider within 8 min",
+      "online_riders": "Online Riders",
+      "online_riders_chg": "63% of demand covered",
+      "avg_wait": "Avg Wait",
+      "avg_wait_chg": "▼ 1.1m vs yesterday"
+    },
+    "charts": {
+      "demand_supply": "Demand vs Supply — today",
+      "demand_supply_desc": "Orders placed against online riders, by hour",
+      "demand": "Demand",
+      "riders": "Riders",
+      "peak": "Peak",
+      "service_mix": "Service mix",
+      "service_mix_desc": "Share of live demand",
+      "orders": "orders",
+      "heatmap": "Demand heatmap",
+      "heatmap_desc": "Intensity by zone & day-part",
+      "low": "Low",
+      "high": "High",
+      "top_zones": "Top demand zones",
+      "top_zones_desc": "Live load & 1-hour trend"
+    },
+    "map": {
+      "title": "Map",
+      "demand": "Demand",
+      "light": "Light",
+      "heavy": "Heavy",
+      "online_rider": "Online rider",
+      "live_orders": "Live orders",
+      "online_riders": "Online riders",
+      "demand_load": "Demand load",
+      "avg_wait": "Avg wait",
+      "unmet_demand": "Unmet demand",
+      "inspect_hint": "Click any bubble to inspect a zone. Bubble size & colour scale with live demand.",
+      "surge_suggestion": "Surge suggestion",
+      "status": "Status",
+      "rebalance": "Rebalance riders",
+      "balanced": "Balanced",
+      "rebalance_hint": "{zone} has {unmet} unmet orders — consider a +{riders} rider incentive.",
+      "balanced_hint": "{zone} supply is keeping up with demand."
+    }
+  }
+}

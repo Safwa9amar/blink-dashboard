@@ -1,0 +1,140 @@
+{
+  "marketplace": {
+    "title": "Marketplace",
+    "description": "Manage stores, products & categories across the Blink marketplace",
+
+    "stores": "Stores",
+    "products": "Products",
+    "categories": "Categories",
+
+    "new_store": "New store",
+    "new_product": "New product",
+    "new_category": "New category",
+
+    "search_stores": "Search stores",
+    "search_products": "Search products",
+    "all": "All",
+    "free": "Free",
+    "filter_by_store": "Filter by store",
+    "all_stores": "All stores",
+    "uncategorized": "Uncategorized",
+
+    "stats": {
+      "total_stores": "Total Stores",
+      "total_stores_chg": "across all wilayas",
+      "open_stores": "Open Now",
+      "open_stores_chg": "accepting orders",
+      "total_products": "Total Products",
+      "total_products_chg": "listed catalog-wide",
+      "out_of_stock": "Out of Stock",
+      "out_of_stock_chg": "needs restocking",
+      "avg_rating": "Avg Store Rating",
+      "avg_rating_chg": "across all stores"
+    },
+
+    "col": {
+      "store": "Store",
+      "product": "Product",
+      "category": "Category",
+      "wilaya": "Wilaya",
+      "location": "Location",
+      "rating": "Rating",
+      "products": "Products",
+      "section": "Section",
+      "price": "Price",
+      "delivery_fee": "Delivery fee",
+      "status": "Status",
+      "slug": "Slug",
+      "order": "Order",
+      "actions": "Actions"
+    },
+
+    "store_status": {
+      "open": "Open",
+      "closed": "Closed",
+      "suspended": "Suspended"
+    },
+    "product_status": {
+      "in_stock": "In stock",
+      "out_of_stock": "Out of stock",
+      "hidden": "Hidden"
+    },
+    "category_status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+
+    "form": {
+      "new_store": "New store",
+      "edit_store": "Edit store",
+      "new_product": "New product",
+      "edit_product": "Edit product",
+      "new_category": "New category",
+      "edit_category": "Edit category",
+
+      "name": "Name",
+      "title": "Title",
+      "store": "Store",
+      "category": "Category",
+      "status": "Status",
+      "wilaya": "Wilaya",
+      "location": "Location",
+      "phone": "Phone",
+      "rating": "Rating",
+      "review_count": "Reviews",
+      "delivery_fee": "Delivery fee (Da)",
+      "min_order": "Min order (Da)",
+      "delivery_time": "Delivery time",
+      "opening_hours": "Opening hours",
+      "image": "Image URL",
+      "featured": "Featured",
+      "featured_hint": "Show in the app's featured rail.",
+      "price": "Price (Da)",
+      "section": "Menu section",
+      "unit": "Unit",
+      "description": "Description",
+      "slug": "Slug",
+      "icon": "Icon",
+      "color": "Accent color",
+      "sort_order": "Sort order",
+
+      "save": "Save",
+      "create": "Create",
+      "cancel": "Cancel"
+    },
+
+    "ph": {
+      "store_name": "e.g. Blink Burger",
+      "product_title": "e.g. Cheeseburger",
+      "category_name": "e.g. Food",
+      "location": "e.g. Hydra - Alger",
+      "phone": "+213 …",
+      "delivery_time": "e.g. 15-25 min",
+      "opening_hours": "e.g. 09:00 - 23:00",
+      "section": "e.g. burgers",
+      "unit": "e.g. 1L, 500g",
+      "image": "https://…",
+      "description": "Short description…",
+      "slug": "e.g. restaurant",
+      "icon": "DashIcon name, e.g. store"
+    },
+
+    "empty": {
+      "stores": "No stores yet. Add your first store.",
+      "stores_filtered": "No stores match your filters.",
+      "products": "No products yet. Add your first product.",
+      "products_filtered": "No products match your filters.",
+      "categories": "No categories yet. Add your first category."
+    },
+
+    "confirm": {
+      "delete_store": "Delete this store? Its products will be removed too.",
+      "delete_product": "Delete this product?",
+      "delete_category": "Delete this category?"
+    },
+
+    "required": "Required",
+    "edit": "Edit",
+    "delete": "Delete"
+  }
+}

@@ -1,0 +1,35 @@
+<!-- @dsCard group="Components" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  * { margin: 0; box-sizing: border-box; }
+  body { font-family: var(--font-display); background: var(--gray-50); padding: 24px 26px; display:flex; gap: 16px; align-items:center; height: 200px; }
+  .deal { position:relative; flex:1; height: 140px; border-radius: 16px; overflow:hidden; display:flex; flex-direction:column; justify-content:center; padding: 0 26px; color:#fff; }
+  .deal--solid { background: linear-gradient(135deg,#EE335F 0%,#C9103F 100%); }
+  .deal--tint { background: var(--blink-tint-100); color: var(--blink-700); }
+  .blob { position:absolute; border-radius:50%; background: rgba(255,255,255,0.16); }
+  .deal--tint .blob { background: rgba(238,51,95,0.16); }
+  .big { font-size: 30px; font-weight: 800; letter-spacing: 0.02em; line-height: 1; }
+  .sub { font-size: 17px; font-weight: 600; margin-top: 4px; }
+</style>
+</head>
+<body>
+  <div class="deal deal--solid">
+    <div class="blob" style="width:120px;height:120px;right:-20px;top:-30px"></div>
+    <div class="blob" style="width:50px;height:50px;right:60px;bottom:-10px"></div>
+    <div class="blob" style="width:26px;height:26px;right:30px;top:40px"></div>
+    <span class="big">10% Off</span>
+    <span class="sub">All Rides</span>
+  </div>
+  <div class="deal deal--tint">
+    <div class="blob" style="width:120px;height:120px;right:-20px;top:-30px"></div>
+    <div class="blob" style="width:50px;height:50px;right:70px;bottom:-6px"></div>
+    <div class="blob" style="width:30px;height:30px;left:30px;bottom:14px"></div>
+    <span class="big">25% Off</span>
+    <span class="sub">For Student</span>
+  </div>
+</body>
+</html>

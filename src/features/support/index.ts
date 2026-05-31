@@ -1,0 +1,10 @@
+export { OverviewTab } from "./components/overview-tab";
+export { TicketsTab } from "./components/tickets-tab";
+export { InboxTab } from "./components/inbox-tab";
+export { KbTab } from "./components/kb-tab";
+export { CreateArticle } from "./components/create-article";
+export { MacrosTab } from "./components/macros-tab";
+export { CsatTab } from "./components/csat-tab";
+export { AgentsTab } from "./components/agents-tab";
+export { SlaTab } from "./components/sla-tab";
+export * from "./data";

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blink — Icon System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap">
+<template id="__bundler_thumbnail" data-bg-color="#EE335F">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg"><rect width="1200" height="800" fill="#EE335F"/><g fill="#fff"><circle cx="380" cy="320" r="60"/><rect x="560" y="260" width="120" height="120" rx="24"/><polygon points="820,260 880,380 760,380"/><circle cx="380" cy="500" r="50" fill="none" stroke="#fff" stroke-width="12"/><rect x="565" y="455" width="110" height="90" rx="14" fill="none" stroke="#fff" stroke-width="12"/><path d="M770 460 h110 M770 500 h110 M770 540 h70" stroke="#fff" stroke-width="14" stroke-linecap="round"/></g></svg>
+</template>
+<style>
+  :root { --pink:#EE335F; --tint:#FFF1F2; --slate900:#0F172A; --slate600:#475569; --slate500:#64748B; --slate400:#94A3B8; --slate200:#E2E8F0; --slate100:#F1F5F9; --slate50:#F8FAFC; --font-d:'Poppins',sans-serif; --font-b:'Inter',sans-serif; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:var(--font-b); color:var(--slate900); background:#fff; }
+  .wrap { max-width:1080px; margin:0 auto; padding:0 32px; }
+  header.top { background:linear-gradient(180deg,#FF6C90 0%,#EE3160 100%); color:#fff; padding:56px 0 46px; }
+  header.top .eyebrow { font-family:var(--font-d); font-weight:600; font-size:12px; letter-spacing:0.16em; text-transform:uppercase; opacity:.85; }
+  header.top h1 { font-family:var(--font-d); font-weight:800; font-size:42px; letter-spacing:-0.01em; margin-top:10px; }
+  header.top p { font-size:16px; line-height:1.6; opacity:.94; margin-top:14px; max-width:620px; }
+  .meta { display:flex; gap:30px; margin-top:26px; }
+  .meta .k { font-family:var(--font-d); font-weight:800; font-size:22px; }
+  .meta .l { font-size:12px; opacity:.85; margin-top:2px; }
+
+  section { padding:44px 0 0; }
+  .sec-label { font-family:var(--font-d); font-weight:700; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--pink); }
+  h2 { font-family:var(--font-d); font-weight:800; font-size:26px; margin:8px 0 4px; }
+  .desc { font-size:14.5px; line-height:1.6; color:var(--slate600); max-width:640px; margin-bottom:8px; }
+  code { font-family:ui-monospace,Menlo,monospace; font-size:0.9em; background:var(--slate100); padding:2px 6px; border-radius:5px; color:var(--pink); }
+
+  h3.grp { font-family:var(--font-d); font-weight:700; font-size:14px; color:var(--slate500); margin:30px 0 14px; letter-spacing:0.02em; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(112px,1fr)); gap:12px; }
+  .cell { border:1px solid var(--slate200); border-radius:14px; padding:16px 8px 12px; display:flex; flex-direction:column; align-items:center; gap:10px; transition:border-color .15s, background .15s; cursor:default; text-align:center; }
+  .cell:hover { border-color:var(--pink); background:var(--tint); }
+  .cell blink-icon { color:var(--slate900); }
+  .cell .nm { font-family:ui-monospace,Menlo,monospace; font-size:10px; color:var(--slate500); word-break:break-all; line-height:1.3; }
+
+  .custom-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:16px; }
+  .ccell { border:1px solid var(--slate200); border-radius:18px; padding:24px; display:flex; flex-direction:column; align-items:center; gap:16px; }
+  .ccell img { width:56px; height:56px; }
+  .ccell .nm { font-family:var(--font-d); font-weight:700; font-size:15px; }
+  .ccell .sub { font-size:12px; color:var(--slate500); margin-top:-10px; }
+
+  .usage { background:var(--slate900); color:#e6edf3; border-radius:16px; padding:22px 24px; margin-top:18px; font-family:ui-monospace,Menlo,monospace; font-size:13px; line-height:1.7; overflow-x:auto; }
+  .usage .c { color:#7d8590; }
+  .usage .t { color:#7ee787; }
+  .usage .a { color:#79c0ff; }
+  footer { padding:48px 0 60px; }
+  footer .line { border-top:1px solid var(--slate200); padding-top:22px; color:var(--slate400); font-size:13px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">Blink Design System</div>
+    <h1>Icon System</h1>
+    <p>Icons are named with Apple <strong>SF Symbol</strong> strings and map to <strong>Material Icons</strong> by default — the exact vocabulary from the app's <code style="background:rgba(255,255,255,0.18);color:#fff">&lt;IconSymbol&gt;</code>. iOS renders native SF Symbols; Android &amp; web fall back to Material Icons, with a few FontAwesome brand glyphs for socials.</p>
+    <div class="meta">
+      <div><div class="k">Material Icons</div><div class="l">primary family</div></div>
+      <div><div class="k">SF Symbol</div><div class="l">naming API</div></div>
+      <div><div class="k">FontAwesome</div><div class="l">socials &amp; globe</div></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <section>
+    <div class="sec-label">Brand</div>
+    <h2>Custom service icons</h2>
+    <p class="desc">Bespoke two-tone glyphs for the core services — drawn in brand pink over near-black <code>#111827</code>. Lifted from the app's <code>CustomIcons.tsx</code>. Use these (not Material) for the headline service tiles.</p>
+    <div class="custom-grid">
+      <div class="ccell"><img src="blink-marketplace.svg" alt="Marketplace"><div class="nm">Marketplace</div></div>
+      <div class="ccell"><img src="blink-courier.svg" alt="Courier"><div class="nm">Courier</div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-label">System</div>
+    <h2>SF Symbol → Material Icons</h2>
+    <p class="desc">Call any icon by its SF-Symbol name with <code>&lt;blink-icon name="house.fill"&gt;</code>. Filled SF names map to the filled Material glyph. Grouped below by use.</p>
+    <div id="groups"></div>
+  </section>
+
+  <section>
+    <div class="sec-label">Usage</div>
+    <h2>How to use</h2>
+    <div class="usage">
+<span class="c">&lt;!-- load once; it injects the Material Icons + FontAwesome fonts --&gt;</span>
+&lt;<span class="t">script</span> <span class="a">src</span>=<span style="color:#a5d6ff">"../icons/blink-icons.js"</span>&gt;&lt;/<span class="t">script</span>&gt;
+
+&lt;<span class="t">blink-icon</span> <span class="a">name</span>=<span style="color:#a5d6ff">"house.fill"</span>&gt;&lt;/<span class="t">blink-icon</span>&gt;
+&lt;<span class="t">blink-icon</span> <span class="a">name</span>=<span style="color:#a5d6ff">"cart.fill"</span> <span class="a">size</span>=<span style="color:#a5d6ff">"20"</span> <span class="a">color</span>=<span style="color:#a5d6ff">"#EE335F"</span>&gt;&lt;/<span class="t">blink-icon</span>&gt;
+&lt;<span class="t">blink-icon</span> <span class="a">name</span>=<span style="color:#a5d6ff">"tiktok"</span>&gt;&lt;/<span class="t">blink-icon</span>&gt;  <span class="c">// FontAwesome brand</span>
+    </div>
+  </section>
+
+  <footer><div class="line">Blink Icon System · ported from <code>Safwa9amar/blink · components/ui/icon-symbol.tsx</code></div></footer>
+</div>
+
+<script src="blink-icons.js"></script>
+<script>
+  const GROUPS = {
+    "Navigation & tabs": ["house.fill","cart.fill","list.bullet.clipboard.fill","gift.fill","person.fill","map.fill","wallet.pass.fill","chart.bar.fill","storefront.fill","square.grid.2x2.fill"],
+    "Services & commerce": ["bag.fill","shippingbox.fill","truck.fill","fork.knife","croissant.fill","tshirt.fill","desktopcomputer","medical.kit.fill","tag.fill","bolt.fill"],
+    "Money & wallet": ["creditcard.fill","banknote.fill","dollarsign.circle.fill","building.columns.fill","wallet.bifold.fill","qrcode","ticket.fill"],
+    "Mobility": ["bicycle","motorcycle","scooter","car.fill","location.north.fill","directions","scope","mappin.and.ellipse"],
+    "Status & feedback": ["checkmark.circle.fill","checkmark.seal.fill","checkmark.shield.fill","exclamationmark.triangle.fill","exclamationmark.circle.fill","xmark.circle.fill","info.circle.fill","star.fill","trophy.fill","hand.thumbsup.fill"],
+    "Actions": ["plus.circle.fill","pencil","trash.fill","magnifyingglass","slider.horizontal.3","line.3.horizontal.decrease","square.and.arrow.up","doc.on.doc.fill","arrow.clockwise","ellipsis"],
+    "Account & comms": ["person.circle","person.badge.plus","bell.fill","envelope.fill","phone.fill","bubble.left.fill","headphones","lifebuoy.fill","gearshape.fill","rectangle.portrait.and.arrow.right"],
+    "Security & misc": ["lock.fill","shield.fill","eye.fill","eye.slash.fill","calendar","clock.fill","heart.fill","camera.fill","newspaper.fill","megaphone.fill"],
+    "Social (FontAwesome)": ["facebook","instagram","twitter","tiktok","globe","link"],
+  };
+  const host = document.getElementById('groups');
+  for (const [title, names] of Object.entries(GROUPS)) {
+    const h = document.createElement('h3'); h.className = 'grp'; h.textContent = title; host.appendChild(h);
+    const g = document.createElement('div'); g.className = 'grid';
+    for (const n of names) {
+      const c = document.createElement('div'); c.className = 'cell';
+      c.innerHTML = `<blink-icon name="${n}" size="28"></blink-icon><span class="nm">${n}</span>`;
+      g.appendChild(c);
+    }
+    host.appendChild(g);
+  }
+</script>
+</body>
+</html>

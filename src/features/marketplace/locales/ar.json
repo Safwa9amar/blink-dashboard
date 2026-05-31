@@ -1,0 +1,140 @@
+{
+  "marketplace": {
+    "title": "السوق",
+    "description": "إدارة المتاجر والمنتجات والفئات عبر سوق Blink",
+
+    "stores": "المتاجر",
+    "products": "المنتجات",
+    "categories": "الفئات",
+
+    "new_store": "متجر جديد",
+    "new_product": "منتج جديد",
+    "new_category": "فئة جديدة",
+
+    "search_stores": "البحث عن المتاجر",
+    "search_products": "البحث عن المنتجات",
+    "all": "الكل",
+    "free": "مجاني",
+    "filter_by_store": "التصفية حسب المتجر",
+    "all_stores": "جميع المتاجر",
+    "uncategorized": "غير مصنّف",
+
+    "stats": {
+      "total_stores": "إجمالي المتاجر",
+      "total_stores_chg": "عبر جميع الولايات",
+      "open_stores": "مفتوح الآن",
+      "open_stores_chg": "يقبل الطلبات",
+      "total_products": "إجمالي المنتجات",
+      "total_products_chg": "مُدرَجة على مستوى الكتالوج",
+      "out_of_stock": "نفد من المخزون",
+      "out_of_stock_chg": "يحتاج إلى إعادة تخزين",
+      "avg_rating": "متوسط تقييم المتجر",
+      "avg_rating_chg": "عبر جميع المتاجر"
+    },
+
+    "col": {
+      "store": "المتجر",
+      "product": "المنتج",
+      "category": "الفئة",
+      "wilaya": "الولاية",
+      "location": "الموقع",
+      "rating": "التقييم",
+      "products": "المنتجات",
+      "section": "القسم",
+      "price": "السعر",
+      "delivery_fee": "رسوم التوصيل",
+      "status": "الحالة",
+      "slug": "المعرّف",
+      "order": "الترتيب",
+      "actions": "الإجراءات"
+    },
+
+    "store_status": {
+      "open": "مفتوح",
+      "closed": "مغلق",
+      "suspended": "موقوف"
+    },
+    "product_status": {
+      "in_stock": "متوفر",
+      "out_of_stock": "نفد من المخزون",
+      "hidden": "مخفي"
+    },
+    "category_status": {
+      "active": "نشط",
+      "inactive": "غير نشط"
+    },
+
+    "form": {
+      "new_store": "متجر جديد",
+      "edit_store": "تعديل المتجر",
+      "new_product": "منتج جديد",
+      "edit_product": "تعديل المنتج",
+      "new_category": "فئة جديدة",
+      "edit_category": "تعديل الفئة",
+
+      "name": "الاسم",
+      "title": "العنوان",
+      "store": "المتجر",
+      "category": "الفئة",
+      "status": "الحالة",
+      "wilaya": "الولاية",
+      "location": "الموقع",
+      "phone": "الهاتف",
+      "rating": "التقييم",
+      "review_count": "المراجعات",
+      "delivery_fee": "رسوم التوصيل (Da)",
+      "min_order": "الحد الأدنى للطلب (Da)",
+      "delivery_time": "مدة التوصيل",
+      "opening_hours": "ساعات العمل",
+      "image": "رابط الصورة",
+      "featured": "مميّز",
+      "featured_hint": "عرضه في شريط المميّزات بالتطبيق.",
+      "price": "السعر (Da)",
+      "section": "قسم القائمة",
+      "unit": "الوحدة",
+      "description": "الوصف",
+      "slug": "المعرّف",
+      "icon": "الأيقونة",
+      "color": "لون التمييز",
+      "sort_order": "ترتيب الفرز",
+
+      "save": "حفظ",
+      "create": "إنشاء",
+      "cancel": "إلغاء"
+    },
+
+    "ph": {
+      "store_name": "مثال: Blink Burger",
+      "product_title": "مثال: Cheeseburger",
+      "category_name": "مثال: طعام",
+      "location": "مثال: حيدرة - الجزائر",
+      "phone": "+213 …",
+      "delivery_time": "مثال: 15-25 دقيقة",
+      "opening_hours": "مثال: 09:00 - 23:00",
+      "section": "مثال: برغر",
+      "unit": "مثال: 1 لتر، 500 غرام",
+      "image": "https://…",
+      "description": "وصف مختصر…",
+      "slug": "مثال: restaurant",
+      "icon": "اسم DashIcon، مثال: store"
+    },
+
+    "empty": {
+      "stores": "لا توجد متاجر بعد. أضف متجرك الأول.",
+      "stores_filtered": "لا توجد متاجر تطابق عوامل التصفية.",
+      "products": "لا توجد منتجات بعد. أضف منتجك الأول.",
+      "products_filtered": "لا توجد منتجات تطابق عوامل التصفية.",
+      "categories": "لا توجد فئات بعد. أضف فئتك الأولى."
+    },
+
+    "confirm": {
+      "delete_store": "هل تريد حذف هذا المتجر؟ سيتم حذف منتجاته أيضاً.",
+      "delete_product": "هل تريد حذف هذا المنتج؟",
+      "delete_category": "هل تريد حذف هذه الفئة؟"
+    },
+
+    "required": "مطلوب",
+    "edit": "تعديل",
+    "delete": "حذف"
+  }
+}

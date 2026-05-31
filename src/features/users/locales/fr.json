@@ -1,0 +1,33 @@
+{
+  "users": {
+    "title": "Utilisateurs",
+    "description": "Gérer tous les utilisateurs de la plateforme",
+    "name": "Nom",
+    "phone": "Téléphone",
+    "role": "Rôle",
+    "gender": "Genre",
+    "status": "Statut",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "actions": "Actions",
+    "empty": "Aucun utilisateur trouvé.",
+    "edit_user": "Modifier l'utilisateur",
+    "first_name": "Prénom",
+    "last_name": "Nom de famille",
+    "email": "Email",
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "delete_user": "Supprimer l'utilisateur",
+    "delete_confirm": "Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.",
+    "deleting": "Suppression...",
+    "activate": "Activer",
+    "deactivate": "Désactiver",
+    "add_user": "Ajouter un utilisateur",
+    "add_user_desc": "Créer un nouvel utilisateur sur la plateforme",
+    "phone_number": "Numéro de téléphone",
+    "creating": "Création...",
+    "create": "Créer l'utilisateur"
+  }
+}

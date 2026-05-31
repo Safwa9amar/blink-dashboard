@@ -1,0 +1,120 @@
+{
+  "access": {
+    "title": "Dashboard Access",
+    "description": "Manage who can sign in to the admin console and what each role can reach",
+    "search_ph": "Search by name or email",
+    "tabs": {
+      "members": "Staff Members",
+      "roles": "Roles & Permissions",
+      "activity": "Activity"
+    },
+    "stats": {
+      "total": "Total Admins",
+      "active": "Active",
+      "invited": "Pending Invites",
+      "suspended": "Suspended"
+    },
+    "status": {
+      "active": "Active",
+      "invited": "Invited",
+      "suspended": "Suspended"
+    },
+    "filter": {
+      "all": "All roles"
+    },
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status",
+      "last_active": "Last active",
+      "actions": "Actions"
+    },
+    "empty": "No staff members match your filters.",
+    "cancel": "Cancel",
+    "can_access": "Can access",
+    "full_access": "Full access — every section",
+    "pending_note": "Role changes apply once the staff_role column ships in blink-server.",
+    "matrix": {
+      "title": "Permission matrix",
+      "desc": "Every section, and which roles can reach it — mirrors what's enforced.",
+      "section": "Section",
+      "allowed": "Allowed",
+      "denied": "No access"
+    },
+    "log": {
+      "when": "When",
+      "actor": "Changed by",
+      "action": "Action",
+      "target": "Member",
+      "empty": "No access changes recorded yet.",
+      "actions": {
+        "granted": "Granted",
+        "changed": "Role changed",
+        "revoked": "Revoked",
+        "suspended": "Suspended",
+        "reinstated": "Reinstated"
+      }
+    },
+    "create": {
+      "button": "Add staff member",
+      "title": "Add staff member",
+      "desc": "Create a console account and assign a dashboard role.",
+      "first_name": "First name",
+      "last_name": "Last name",
+      "email": "Email",
+      "phone": "Phone number",
+      "role": "Role",
+      "status": "Status",
+      "submit": "Create member",
+      "saving": "Creating…",
+      "required": "First name, email and phone are required."
+    },
+    "grant": {
+      "button": "Invite by email",
+      "title": "Invite an existing user",
+      "desc": "Give an existing Blink user an admin role by their account email.",
+      "email": "Account email",
+      "email_ph": "name@blink.dz",
+      "role": "Role",
+      "submit": "Send invite",
+      "saving": "Inviting…"
+    },
+    "edit": {
+      "title": "Change role",
+      "desc": "Update the dashboard role for {name}.",
+      "role": "Role",
+      "save": "Save",
+      "saving": "Saving…"
+    },
+    "revoke": {
+      "button": "Revoke",
+      "title": "Revoke access",
+      "desc": "Remove all dashboard access for {name}? They will no longer be able to sign in to the console.",
+      "confirm": "Revoke access",
+      "working": "Revoking…"
+    },
+    "roles": {
+      "super_admin": {
+        "name": "Super Admin",
+        "desc": "Unrestricted — every section, plus user and access management."
+      },
+      "ops_admin": {
+        "name": "Ops Admin",
+        "desc": "Day-to-day operations: orders, trips, riders and verification."
+      },
+      "finance_admin": {
+        "name": "Finance Admin",
+        "desc": "Blink Cash — ledger, dues and agent float."
+      },
+      "support_admin": {
+        "name": "Support Admin",
+        "desc": "Support queues, notifications and news."
+      },
+      "commerce_admin": {
+        "name": "Commerce Admin",
+        "desc": "Marketplace, agent shops, promotions and coupons."
+      }
+    }
+  }
+}

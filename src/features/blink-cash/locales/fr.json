@@ -1,0 +1,100 @@
+{
+  "blink_cash": {
+    "title": "Blink Cash",
+    "description": "Portefeuille réseau, dépôts, retraits et dus pour tous les rôles",
+    "export_report": "Exporter le rapport",
+    "overview": "Aperçu",
+    "tab_ledger": "Grand livre",
+    "tab_dues": "Dus",
+    "agent_float": "Encaisse agent",
+    "stats": {
+      "circulation": "Liquidités en circulation",
+      "circulation_chg": "sur 41k portefeuilles",
+      "deposits": "Dépôts (aujourd'hui)",
+      "deposits_chg": "▲ 12% · 3 210 trans.",
+      "withdrawals": "Retraits (aujourd'hui)",
+      "withdrawals_chg": "2 040 trans.",
+      "dues": "Dus en attente",
+      "dues_chg": "48 agents + marchands",
+      "float": "Encaisse agent",
+      "float_chg": "détenu par 47 agents"
+    },
+    "chart": {
+      "dvw": "Dépôts vs retraits",
+      "dvw_desc": "Flux réseau · cette semaine (000 DA)",
+      "deposits": "Dépôts",
+      "withdrawals": "Retraits"
+    },
+    "cfg": {
+      "title": "Portefeuille et frais",
+      "desc": "Configuration Blink Cash",
+      "deposit_agent": "Frais dépôt · agent",
+      "deposit_card": "Frais dépôt · carte",
+      "withdrawal": "Frais de retrait",
+      "commission": "Commission agent",
+      "trip_tax": "Taxe trajet (livreur)",
+      "pin": "PIN requis",
+      "free": "Gratuit",
+      "enforced": "Appliqué"
+    },
+    "latest": {
+      "title": "Activité récente",
+      "desc": "Portefeuilles livreur, agent, marchand et client"
+    },
+    "col": {
+      "txn": "Trans.",
+      "account": "Compte",
+      "type": "Type",
+      "method": "Méthode",
+      "amount": "Montant",
+      "fees": "Frais",
+      "when": "Quand",
+      "due": "Échéance",
+      "role": "Rôle",
+      "status": "Statut",
+      "total": "Total",
+      "offer": "Offre"
+    },
+    "tx_type": { "deposit": "Dépôt", "withdrawal": "Retrait" },
+    "method": { "agent": "Agent", "electronic": "Carte / en ligne" },
+    "tx_status": { "completed": "terminé", "pending": "en attente", "cancelled": "annulé" },
+    "export": "Exporter",
+    "role_filter": "Rôle",
+    "ledger": {
+      "search": "Rechercher transactions, comptes…",
+      "empty": "Aucune transaction."
+    },
+    "f": {
+      "all": "Tous",
+      "deposits": "Dépôts",
+      "withdrawals": "Retraits",
+      "dues": "Dus",
+      "trip_tax": "Taxe trajet"
+    },
+    "dues": {
+      "total": "Total dus",
+      "total_chg": "48 comptes doivent à Blink",
+      "overdue": "En retard",
+      "overdue_chg": "12 500 DA · agent",
+      "collected": "Collectés aujourd'hui",
+      "collected_chg": "9 paiements",
+      "ontime": "Taux de ponctualité",
+      "ontime_chg": "30 derniers jours",
+      "search": "Rechercher des comptes",
+      "remind": "Rappeler",
+      "empty": "Aucun dû en attente."
+    },
+    "float": {
+      "held": "Encaisse totale détenue",
+      "held_chg": "47 agents actifs",
+      "dep": "Dépôts via agents",
+      "wd": "Retraits via agents",
+      "today": "aujourd'hui",
+      "near_cap": "Proche capacité",
+      "near_cap_chg": "agents >90% encaisse",
+      "search": "Rechercher des agents",
+      "label": "Encaisse"
+    },
+    "txns": "{n} trans."
+  }
+}

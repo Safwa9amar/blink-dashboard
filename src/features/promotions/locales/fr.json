@@ -1,0 +1,65 @@
+{
+  "promotions": {
+    "title": "Promotions",
+    "description": "Offres et campagnes publiques dans le fil Promos",
+    "campaigns": "Campagnes",
+    "create": "Créer",
+    "analytics": "Analyses",
+    "new_campaign": "Nouvelle campagne",
+    "search": "Rechercher des campagnes",
+    "stats": {
+      "active": "Campagnes actives",
+      "active_chg": "3 se terminent aujourd'hui",
+      "redemptions": "Utilisations aujourd'hui",
+      "redemptions_chg": "▲ 21% vs hier",
+      "spend": "Dépenses promo",
+      "spend_chg": "68% du budget mensuel",
+      "ctr": "CTR moyen",
+      "ctr_chg": "clics sur les cartes"
+    },
+    "form": {
+      "create": "Créer une campagne",
+      "create_desc": "Une carte promo publique dans le fil Promos",
+      "cover": "Image de couverture",
+      "title": "Titre",
+      "title_ph": "ex. -30% sur toutes les courses",
+      "subtitle": "Sous-titre",
+      "subtitle_ph": "Courte ligne d'accompagnement",
+      "category": "Catégorie",
+      "budget": "Budget mensuel (DA)",
+      "action_type": "Type d'action",
+      "action_hint": "Comment les utilisateurs utilisent cette promo.",
+      "activate": "Activer (auto)",
+      "copy": "Copier le code",
+      "audience": "Public",
+      "audience_hint": "Qui voit ceci dans le fil Promos.",
+      "publish": "Publier",
+      "schedule": "Planifier",
+      "shareable": "Partageable",
+      "shareable_desc": "Permettre le partage de cette promo",
+      "code_ph": "CODE PROMO"
+    },
+    "an": {
+      "redemptions7": "Utilisations (7j)",
+      "redemptions7_chg": "▲ 12% s/s",
+      "lift": "Hausse de revenus promo",
+      "lift_chg": "vs commandes hors promo",
+      "spend_red": "Dépense / utilisation",
+      "spend_red_chg": "mixte",
+      "best": "Meilleure performance",
+      "best_chg": "11,2% CTR",
+      "week": "Utilisations cette semaine",
+      "week_desc": "Toutes campagnes actives",
+      "by_service": "Par service",
+      "by_service_desc": "Part des utilisations",
+      "used": "utilisé"
+    },
+    "card": {
+      "copy_code": "Copier le code",
+      "activate": "Activer",
+      "reach": "Portée",
+      "used": "Utilisé",
+      "ctr": "CTR"
+    }
+  }
+}

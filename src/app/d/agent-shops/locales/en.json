@@ -1,0 +1,17 @@
+{
+  "agent_shops": {
+    "title": "Agent Shops",
+    "description": "Manage agent deposit locations",
+    "shop_name": "Shop Name",
+    "phone": "Phone",
+    "status": "Status",
+    "hours": "Hours",
+    "rating": "Rating",
+    "address": "Address",
+    "empty": "No agent shops found.",
+    "statuses": {
+      "open": "open",
+      "closed": "closed"
+    }
+  }
+}

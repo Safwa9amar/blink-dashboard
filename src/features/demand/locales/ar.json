@@ -1,0 +1,55 @@
+{
+  "demand": {
+    "title": "الطلب",
+    "description": "طلب الطلبات المباشر عبر الشبكة",
+    "analytics": "التحليلات",
+    "live_ago": "مباشر · قبل {sec} ثانية",
+    "stats": {
+      "live_orders": "الطلبات المباشرة",
+      "live_orders_chg": "▲ 18% مقارنة بساعة",
+      "demand_index": "مؤشر الطلب",
+      "demand_index_chg": "مرتفع — أعلى من العرض",
+      "unmet": "طلب غير ملبّى",
+      "unmet_chg": "لا سائق خلال 8 دقائق",
+      "online_riders": "السائقون المتصلون",
+      "online_riders_chg": "تغطية 63% من الطلب",
+      "avg_wait": "متوسط الانتظار",
+      "avg_wait_chg": "▼ 1.1 د مقارنة بالأمس"
+    },
+    "charts": {
+      "demand_supply": "الطلب مقابل العرض — اليوم",
+      "demand_supply_desc": "الطلبات مقابل السائقين المتصلين، بالساعة",
+      "demand": "الطلب",
+      "riders": "السائقون",
+      "peak": "الذروة",
+      "service_mix": "مزيج الخدمات",
+      "service_mix_desc": "حصة الطلب المباشر",
+      "orders": "طلبات",
+      "heatmap": "خريطة حرارة الطلب",
+      "heatmap_desc": "الكثافة حسب المنطقة والفترة",
+      "low": "منخفض",
+      "high": "مرتفع",
+      "top_zones": "أعلى مناطق الطلب",
+      "top_zones_desc": "الحمل المباشر واتجاه ساعة"
+    },
+    "map": {
+      "title": "الخريطة",
+      "demand": "الطلب",
+      "light": "خفيف",
+      "heavy": "كثيف",
+      "online_rider": "سائق متصل",
+      "live_orders": "الطلبات المباشرة",
+      "online_riders": "السائقون المتصلون",
+      "demand_load": "حمل الطلب",
+      "avg_wait": "متوسط الانتظار",
+      "unmet_demand": "طلب غير ملبّى",
+      "inspect_hint": "انقر على أي فقاعة لفحص منطقة. يتغير الحجم واللون حسب الطلب المباشر.",
+      "surge_suggestion": "اقتراح التسعير المرتفع",
+      "status": "الحالة",
+      "rebalance": "إعادة توزيع السائقين",
+      "balanced": "متوازن",
+      "rebalance_hint": "{zone} لديها {unmet} طلبات غير ملباة — فكّر في حافز +{riders} سائق.",
+      "balanced_hint": "عرض {zone} يواكب الطلب."
+    }
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "access": {
+    "title": "Accès au tableau de bord",
+    "description": "Gérez qui peut se connecter à la console d'administration et ce que chaque rôle peut consulter",
+    "search_ph": "Rechercher par nom ou e-mail",
+    "tabs": {
+      "members": "Membres du personnel",
+      "roles": "Rôles et permissions",
+      "activity": "Activité"
+    },
+    "stats": {
+      "total": "Total administrateurs",
+      "active": "Actifs",
+      "invited": "Invitations en attente",
+      "suspended": "Suspendus"
+    },
+    "status": {
+      "active": "Actif",
+      "invited": "Invité",
+      "suspended": "Suspendu"
+    },
+    "filter": {
+      "all": "Tous les rôles"
+    },
+    "table": {
+      "name": "Nom",
+      "email": "E-mail",
+      "role": "Rôle",
+      "status": "Statut",
+      "last_active": "Dernière activité",
+      "actions": "Actions"
+    },
+    "empty": "Aucun membre du personnel ne correspond à vos filtres.",
+    "cancel": "Annuler",
+    "can_access": "Peut accéder à",
+    "full_access": "Accès complet — toutes les sections",
+    "pending_note": "Les changements de rôle s'appliqueront une fois la colonne staff_role déployée dans blink-server.",
+    "matrix": {
+      "title": "Matrice des permissions",
+      "desc": "Chaque section et les rôles qui peuvent y accéder — reflète ce qui est appliqué.",
+      "section": "Section",
+      "allowed": "Autorisé",
+      "denied": "Aucun accès"
+    },
+    "log": {
+      "when": "Quand",
+      "actor": "Modifié par",
+      "action": "Action",
+      "target": "Membre",
+      "empty": "Aucun changement d'accès enregistré pour le moment.",
+      "actions": {
+        "granted": "Accordé",
+        "changed": "Rôle modifié",
+        "revoked": "Révoqué",
+        "suspended": "Suspendu",
+        "reinstated": "Rétabli"
+      }
+    },
+    "create": {
+      "button": "Ajouter un membre",
+      "title": "Ajouter un membre du personnel",
+      "desc": "Créez un compte console et attribuez un rôle sur le tableau de bord.",
+      "first_name": "Prénom",
+      "last_name": "Nom",
+      "email": "E-mail",
+      "phone": "Numéro de téléphone",
+      "role": "Rôle",
+      "status": "Statut",
+      "submit": "Créer le membre",
+      "saving": "Création…",
+      "required": "Le prénom, l'e-mail et le téléphone sont obligatoires."
+    },
+    "grant": {
+      "button": "Inviter par e-mail",
+      "title": "Inviter un utilisateur existant",
+      "desc": "Attribuez un rôle d'administrateur à un utilisateur Blink existant via l'e-mail de son compte.",
+      "email": "E-mail du compte",
+      "email_ph": "nom@blink.dz",
+      "role": "Rôle",
+      "submit": "Envoyer l'invitation",
+      "saving": "Invitation…"
+    },
+    "edit": {
+      "title": "Changer le rôle",
+      "desc": "Mettre à jour le rôle de {name} sur le tableau de bord.",
+      "role": "Rôle",
+      "save": "Enregistrer",
+      "saving": "Enregistrement…"
+    },
+    "revoke": {
+      "button": "Révoquer",
+      "title": "Révoquer l'accès",
+      "desc": "Supprimer tous les accès de {name} au tableau de bord ? Cette personne ne pourra plus se connecter à la console.",
+      "confirm": "Révoquer l'accès",
+      "working": "Révocation…"
+    },
+    "roles": {
+      "super_admin": {
+        "name": "Super administrateur",
+        "desc": "Sans restriction — toutes les sections, plus la gestion des utilisateurs et des accès."
+      },
+      "ops_admin": {
+        "name": "Admin opérations",
+        "desc": "Opérations quotidiennes : commandes, trajets, livreurs et vérification."
+      },
+      "finance_admin": {
+        "name": "Admin finance",
+        "desc": "Blink Cash — registre, dûs et flotte des agents."
+      },
+      "support_admin": {
+        "name": "Admin support",
+        "desc": "Files de support, notifications et actualités."
+      },
+      "commerce_admin": {
+        "name": "Admin commerce",
+        "desc": "Marketplace, boutiques agents, promotions et coupons."
+      }
+    }
+  }
+}

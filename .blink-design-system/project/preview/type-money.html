@@ -1,0 +1,32 @@
+<!-- @dsCard group="Type" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  * { margin: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); background: #fff; padding: 24px 28px; display:flex; gap: 40px; align-items:center; height: 200px; }
+  .block { display:flex; flex-direction:column; align-items:flex-start; gap: 6px; }
+  .lbl { font-family: var(--font-display); font-weight: 600; font-size: 11px; letter-spacing: 0.08em; color: var(--slate-500); text-transform: uppercase; }
+  .big { font-family: var(--font-display); font-weight: 800; letter-spacing: 0.01em; line-height: 1; }
+  .pink { color: var(--blink-500); }
+  .dark { color: var(--slate-900); }
+  .cap { font-family: var(--font-body); font-size: 11px; color: var(--slate-400); margin-top: 6px; }
+  .div { width:1px; height: 96px; background: var(--slate-200); }
+</style>
+</head>
+<body>
+  <div class="block">
+    <span class="lbl">Balance</span>
+    <span class="big dark" style="font-size:44px">2450 <span style="font-size:26px">Da</span></span>
+    <span class="cap">Big number + small all-caps label</span>
+  </div>
+  <div class="div"></div>
+  <div class="block">
+    <span class="lbl">Dues to Blink</span>
+    <span class="big pink" style="font-size:40px">12,500 <span style="font-size:22px">DZD</span></span>
+    <span class="cap">Pink emphasises money owed</span>
+  </div>
+</body>
+</html>

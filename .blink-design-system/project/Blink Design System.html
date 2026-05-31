@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blink — Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap">
+<template id="__bundler_thumbnail" data-bg-color="#EE335F">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#EE335F"/>
+    <g transform="translate(513 250) scale(11)">
+      <path fill="#fff" fill-rule="nonzero" d="M 18 10.5 L 18 10.2 C 20 10.2 22 9.3 22 6.2 C 22 2.8 19.3 0 13.6 0 C 8.3 0 5.2 1.7 4.1 5.3 L 0 18.7 L 4.6 18.7 L 4.2 22 L 3.6 26.8 L 6.4 22 L 7.8 19.5 L 8.5 18.3 L 9.6 16.4 L 9.9 15.8 L 10.6 14.6 L 8.5 14.6 L 6.4 14.6 L 8.3 7.2 L 8.4 6.7 C 9 4.8 10.7 4.1 13.4 4.1 C 16.4 4.1 17.7 5.1 17.7 6.5 C 17.7 8.5 15.2 8.7 13.9 8.7 L 11.4 8.7 C 11.2 8.7 11.1 8.8 11 9 L 10.1 12.1 C 10 12.3 10.2 12.6 10.5 12.6 L 15.2 12.6 C 16.6 12.6 19.3 12.7 19.3 15.1 C 19.3 17.4 16.8 18 14.8 18 C 13.5 18 12.3 17.8 11.3 17.4 L 10.6 18.6 C 9.9 19.8 10.5 21.4 11.8 21.8 C 12.7 22.1 13.7 22.2 14.8 22.2 C 21 22.2 23.5 18.9 23.5 15.5 C 23.5 11.1 20.1 10.5 18 10.5 Z"/>
+    </g>
+    <text x="600" y="640" font-family="Poppins, sans-serif" font-size="58" font-weight="800" fill="#fff" text-anchor="middle" letter-spacing="2">DESIGN SYSTEM</text>
+  </svg>
+</template>
+<style>
+  :root {
+    --blink-500:#EE335F; --blink-600:#DE2555; --blink-700:#B9003F; --blink-400:#FF5E84; --blink-300:#FF6C90; --ios-red:#FF2D55;
+    --spring-500:#00E676; --spring-tint:rgba(0,230,118,0.10);
+    --blink-tint-50:#FFF1F2; --blink-tint-100:#FFE1E3; --blink-tint-150:#FFF0F3; --blink-tint-200:#FDE8EE; --blink-tint-300:#FBC9D6;
+    --slate-900:#0F172A; --slate-700:#334155; --slate-600:#475569; --slate-500:#64748B; --slate-400:#94A3B8; --slate-300:#CBD5E1; --slate-200:#E2E8F0; --slate-100:#F1F5F9; --slate-50:#F8FAFC;
+    --gray-900:#111827; --gray-700:#374151; --gray-600:#4B5563; --gray-500:#6B7280; --gray-400:#9CA3AF; --gray-300:#D1D5DB; --gray-200:#E5E7EB; --gray-100:#F3F4F6; --gray-50:#F9FAFB;
+    --warm-bg:#F8F6F6; --credit:#00657B; --credit-bg:#D8EEF2; --success:#16A34A; --success-bg:#D9F7E3; --warning:#F59E0B; --danger:#EF4444; --info:#2563EB;
+    --grad-header:linear-gradient(180deg,#FF6C90 0%,#EE3160 100%);
+    --grad-hero:linear-gradient(135deg,#DE2555 0%,#B9003F 100%);
+    --grad-deal:linear-gradient(135deg,#EE335F 0%,#C9103F 100%);
+    --font-display:'Poppins',system-ui,sans-serif; --font-body:'Inter',system-ui,sans-serif; --tracking:0.04em;
+    --shadow-sm:0 4px 11px rgba(209,213,219,0.9);
+    --shadow-md:0 4px 14px -3px rgba(0,0,0,0.20);
+    --shadow-nav:0 6px 12px rgba(0,0,0,0.35);
+    --shadow-brand:0 8px 20px rgba(238,51,95,0.35);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { font-family:var(--font-body); color:var(--slate-900); background:var(--slate-50); }
+  ::selection { background:var(--blink-tint-100); }
+
+  /* layout */
+  .shell { display:grid; grid-template-columns:248px 1fr; min-height:100vh; }
+  .side { position:sticky; top:0; align-self:start; height:100vh; overflow-y:auto; background:#fff; border-right:1px solid var(--slate-200); padding:30px 22px; }
+  .side .lock { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+  .side .lock svg { width:26px; height:30px; }
+  .side .lock b { font-family:var(--font-display); font-weight:800; font-size:23px; letter-spacing:-0.01em; }
+  .side .sub { font-family:var(--font-body); font-size:12px; color:var(--slate-500); margin-bottom:30px; padding-left:2px; }
+  .nav-group { font-family:var(--font-display); font-weight:700; font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; color:var(--slate-400); margin:22px 0 8px; padding-left:12px; }
+  .nav-link { display:flex; align-items:center; gap:10px; font-family:var(--font-body); font-size:14px; font-weight:500; color:var(--slate-600); text-decoration:none; padding:9px 12px; border-radius:10px; transition:background .15s,color .15s; }
+  .nav-link:hover { background:var(--slate-50); color:var(--slate-900); }
+  .nav-link.active { background:var(--blink-tint-50); color:var(--blink-500); font-weight:600; }
+  .nav-dot { width:7px; height:7px; border-radius:99px; background:currentColor; opacity:.55; flex-shrink:0; }
+
+  main { padding:0 0 100px; }
+  .hero { background:var(--grad-header); color:#fff; padding:74px 64px 58px; position:relative; overflow:hidden; }
+  .hero .blob { position:absolute; border-radius:50%; background:rgba(255,255,255,0.08); }
+  .hero .eyebrow { font-family:var(--font-display); font-weight:600; font-size:13px; letter-spacing:0.18em; text-transform:uppercase; opacity:.85; }
+  .hero h1 { font-family:var(--font-display); font-weight:800; font-size:52px; letter-spacing:0.01em; margin-top:14px; line-height:1.05; }
+  .hero p { font-size:17px; line-height:1.6; opacity:.94; margin-top:18px; max-width:560px; }
+  .hero .meta { display:flex; gap:30px; margin-top:30px; }
+  .hero .meta div span { display:block; }
+  .hero .meta .k { font-family:var(--font-display); font-weight:800; font-size:24px; }
+  .hero .meta .l { font-size:12px; opacity:.85; letter-spacing:.04em; }
+
+  section { padding:56px 64px 0; max-width:1180px; }
+  .sec-label { font-family:var(--font-display); font-weight:700; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--blink-500); }
+  .sec-title { font-family:var(--font-display); font-weight:800; font-size:30px; letter-spacing:0.01em; margin:8px 0 6px; }
+  .sec-desc { font-size:15px; line-height:1.6; color:var(--slate-600); max-width:620px; margin-bottom:30px; }
+  h3.block { font-family:var(--font-display); font-weight:700; font-size:15px; letter-spacing:.02em; color:var(--slate-500); margin:34px 0 16px; }
+
+  /* color swatches */
+  .swatches { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:14px; }
+  .sw { border-radius:14px; overflow:hidden; border:1px solid var(--slate-200); background:#fff; }
+  .sw .chip { height:84px; }
+  .sw .meta { padding:11px 13px; }
+  .sw .nm { font-family:var(--font-display); font-weight:700; font-size:13px; }
+  .sw .hex { font-size:11px; color:var(--slate-500); font-variant-numeric:tabular-nums; margin-top:2px; text-transform:uppercase; }
+  .ramp { display:grid; grid-template-columns:repeat(9,1fr); gap:8px; }
+  .ramp .r { border-radius:10px; height:96px; display:flex; flex-direction:column; justify-content:flex-end; padding:9px; border:1px solid rgba(0,0,0,0.05); }
+  .ramp .r .n { font-family:var(--font-display); font-weight:700; font-size:12px; }
+  .ramp .r .h { font-size:9px; opacity:.85; margin-top:1px; }
+  .grads { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .grad { height:120px; border-radius:16px; color:#fff; padding:16px; display:flex; flex-direction:column; justify-content:flex-end; }
+  .grad .gn { font-family:var(--font-display); font-weight:700; font-size:15px; }
+  .grad .gh { font-size:11px; opacity:.92; margin-top:2px; }
+
+  /* type */
+  .type-row { display:flex; align-items:baseline; gap:24px; padding:18px 0; border-top:1px solid var(--slate-100); }
+  .type-row .spec { width:150px; flex-shrink:0; font-size:12px; color:var(--slate-400); font-variant-numeric:tabular-nums; }
+  .type-row .samp { color:var(--slate-900); }
+  .font-cards { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:8px; }
+  .font-card { border:1px solid var(--slate-200); border-radius:16px; padding:24px; background:#fff; }
+  .font-card .big { font-size:46px; line-height:1; color:var(--slate-900); }
+  .font-card .role { font-family:var(--font-display); font-weight:700; font-size:16px; margin-top:16px; }
+  .font-card .use { font-size:13px; color:var(--slate-500); margin-top:4px; line-height:1.5; }
+
+  /* spacing */
+  .radii { display:flex; gap:20px; flex-wrap:wrap; align-items:flex-end; }
+  .radii .col { text-align:center; }
+  .radii .box { width:88px; height:88px; background:var(--blink-tint-100); border:1.5px solid var(--blink-500); }
+  .radii .nm { font-family:var(--font-display); font-weight:700; font-size:13px; margin-top:10px; }
+  .radii .vl { font-size:11px; color:var(--slate-500); }
+  .shadows { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+  .shadows .col { text-align:center; }
+  .shadows .box { height:80px; border-radius:14px; background:#fff; }
+  .scale-bars { display:flex; align-items:flex-end; gap:14px; }
+  .scale-bars .col { text-align:center; }
+  .scale-bars .bar { width:28px; background:var(--blink-500); border-radius:5px; }
+  .scale-bars .nm { font-family:var(--font-display); font-weight:700; font-size:11px; margin-top:8px; }
+  .scale-bars .vl { font-size:10px; color:var(--slate-500); }
+
+  /* components */
+  .demo { border:1px solid var(--slate-200); border-radius:18px; background:#fff; padding:28px; margin-bottom:8px; }
+  .demo .cap { font-family:var(--font-display); font-weight:700; font-size:13px; color:var(--slate-500); margin-bottom:18px; }
+  .btn { font-family:var(--font-display); font-weight:700; font-size:15px; letter-spacing:var(--tracking); border:none; border-radius:999px; padding:15px 26px; cursor:pointer; transition:transform .12s,background .15s,filter .15s; display:inline-flex; align-items:center; gap:9px; }
+  .btn:active { transform:scale(.97); }
+  .btn--primary { background:var(--blink-500); color:#fff; }
+  .btn--primary:hover { background:var(--blink-600); }
+  .btn--secondary { background:var(--slate-200); color:var(--slate-900); }
+  .btn--secondary:hover { background:var(--slate-300); }
+  .btn--ghost { background:transparent; color:var(--blink-500); }
+  .btn--glow { background:var(--blink-500); color:#fff; box-shadow:var(--shadow-brand); }
+  .row { display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+  .field { font-family:var(--font-body); font-size:14px; color:var(--slate-900); background:#fff; border:1px solid var(--gray-300); border-radius:999px; padding:15px 20px; outline:none; width:280px; transition:border-color .15s,box-shadow .15s; }
+  .field:focus { border-color:var(--blink-500); box-shadow:0 0 0 3px rgba(238,51,95,0.12); }
+  .pill { display:inline-flex; align-items:center; gap:7px; border-radius:999px; font-family:var(--font-display); font-weight:600; font-size:13px; padding:8px 15px; }
+  .dot { width:8px; height:8px; border-radius:50%; background:currentColor; }
+  .chip { border-radius:999px; font-family:var(--font-display); font-size:13px; padding:8px 15px; font-weight:600; cursor:pointer; border:none; }
+  .badge { min-width:20px; height:20px; border-radius:999px; background:var(--blink-500); color:#fff; font-family:var(--font-display); font-size:11px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; padding:0 6px; }
+  .tile { width:160px; border-radius:12px; background:#fff; border:1px solid var(--gray-200); box-shadow:var(--shadow-sm); display:flex; flex-direction:column; align-items:center; padding:22px 12px; gap:16px; }
+  .tile .halo { width:64px; height:64px; border-radius:50%; background:var(--blink-tint-200); display:flex; align-items:center; justify-content:center; }
+  .tile .halo svg { width:30px; height:30px; color:var(--slate-900); }
+  .tile .t { font-family:var(--font-display); font-weight:700; font-size:14px; letter-spacing:var(--tracking); text-align:center; }
+  .news { width:240px; border-radius:16px; background:#fff; border:1px solid var(--gray-200); box-shadow:var(--shadow-md); overflow:hidden; }
+  .news .img { height:120px; background-size:cover; background-position:center; position:relative; }
+  .news .tag { position:absolute; top:10px; left:10px; font-family:var(--font-display); font-size:10px; font-weight:700; background:rgba(255,255,255,0.93); color:var(--blink-500); border-radius:99px; padding:3px 9px; }
+  .news .body { padding:13px 15px 17px; }
+  .news h5 { font-family:var(--font-display); font-weight:700; font-size:15px; line-height:1.25; }
+  .news p { font-size:12px; color:var(--slate-500); margin-top:6px; line-height:1.4; }
+  .deal { position:relative; width:300px; height:130px; border-radius:16px; overflow:hidden; color:#fff; padding:0 26px; display:flex; flex-direction:column; justify-content:center; background:var(--grad-deal); }
+  .deal .b { position:absolute; border-radius:50%; background:rgba(255,255,255,0.16); }
+  .deal .big { font-family:var(--font-display); font-weight:800; font-size:30px; letter-spacing:.02em; }
+  .deal .sub { font-family:var(--font-display); font-weight:600; font-size:17px; margin-top:3px; }
+  .nav-demo { width:380px; height:72px; border-radius:47px; background:rgba(243,244,246,0.96); box-shadow:var(--shadow-nav); display:flex; align-items:center; justify-content:space-between; padding:0 12px; }
+  .nav-demo .it { display:flex; flex-direction:column; align-items:center; gap:4px; flex:1; }
+  .nav-demo .it svg { width:23px; height:23px; }
+  .nav-demo .it .l { font-size:9px; color:var(--gray-400); font-weight:500; }
+  .nav-demo .it.on { background:var(--blink-tint-50); border-radius:999px; padding:8px 16px; flex:0 0 auto; }
+  .nav-demo .it.on .l { color:var(--blink-500); font-weight:600; }
+
+  .kit-cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:18px; }
+  .kit { display:block; text-decoration:none; color:inherit; border:1px solid var(--slate-200); border-radius:18px; overflow:hidden; background:#fff; transition:box-shadow .18s,transform .18s,border-color .18s; }
+  .kit:hover { box-shadow:var(--shadow-md); transform:translateY(-3px); border-color:var(--blink-300); }
+  .kit .top { height:130px; display:flex; align-items:center; justify-content:center; }
+  .kit .top svg { width:46px; height:52px; }
+  .kit .b { padding:18px 20px; }
+  .kit .b h4 { font-family:var(--font-display); font-weight:700; font-size:17px; }
+  .kit .b p { font-size:13px; color:var(--slate-500); margin-top:5px; line-height:1.5; }
+  .kit .b .go { font-family:var(--font-display); font-weight:700; font-size:13px; color:var(--blink-500); margin-top:12px; display:inline-flex; align-items:center; gap:5px; }
+
+  footer { padding:56px 64px 0; max-width:1180px; }
+  footer .line { border-top:1px solid var(--slate-200); padding-top:26px; display:flex; align-items:center; gap:10px; color:var(--slate-400); font-size:13px; }
+
+  @media (max-width:880px) {
+    .shell { grid-template-columns:1fr; }
+    .side { display:none; }
+    .hero, section, footer { padding-left:28px; padding-right:28px; }
+    .ramp { grid-template-columns:repeat(5,1fr); }
+    .font-cards, .grads, .shadows { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <!-- SIDEBAR -->
+  <aside class="side">
+    <div class="lock">
+      <svg viewBox="0 0 23.5 26.8"><path fill="var(--blink-500)" fill-rule="nonzero" d="M 18 10.5 L 18 10.2 C 20 10.2 22 9.3 22 6.2 C 22 2.8 19.3 0 13.6 0 C 8.3 0 5.2 1.7 4.1 5.3 L 0 18.7 L 4.6 18.7 L 4.2 22 L 3.6 26.8 L 6.4 22 L 7.8 19.5 L 8.5 18.3 L 9.6 16.4 L 9.9 15.8 L 10.6 14.6 L 8.5 14.6 L 6.4 14.6 L 8.3 7.2 L 8.4 6.7 C 9 4.8 10.7 4.1 13.4 4.1 C 16.4 4.1 17.7 5.1 17.7 6.5 C 17.7 8.5 15.2 8.7 13.9 8.7 L 11.4 8.7 C 11.2 8.7 11.1 8.8 11 9 L 10.1 12.1 C 10 12.3 10.2 12.6 10.5 12.6 L 15.2 12.6 C 16.6 12.6 19.3 12.7 19.3 15.1 C 19.3 17.4 16.8 18 14.8 18 C 13.5 18 12.3 17.8 11.3 17.4 L 10.6 18.6 C 9.9 19.8 10.5 21.4 11.8 21.8 C 12.7 22.1 13.7 22.2 14.8 22.2 C 21 22.2 23.5 18.9 23.5 15.5 C 23.5 11.1 20.1 10.5 18 10.5 Z"/></svg>
+      <b><span style="color:var(--slate-900)">LINK</span><span style="color:var(--blink-500)">.</span></b>
+    </div>
+    <div class="sub">Design System · v1</div>
+    <nav id="nav">
+      <div class="nav-group">Foundations</div>
+      <a class="nav-link" href="#brand"><span class="nav-dot"></span>Brand</a>
+      <a class="nav-link" href="#color"><span class="nav-dot"></span>Color</a>
+      <a class="nav-link" href="#type"><span class="nav-dot"></span>Typography</a>
+      <a class="nav-link" href="#spacing"><span class="nav-dot"></span>Spacing &amp; Elevation</a>
+      <div class="nav-group">Components</div>
+      <a class="nav-link" href="#buttons"><span class="nav-dot"></span>Buttons &amp; Inputs</a>
+      <a class="nav-link" href="#status"><span class="nav-dot"></span>Status &amp; Chips</a>
+      <a class="nav-link" href="#surfaces"><span class="nav-dot"></span>Surfaces</a>
+      <div class="nav-group">Product</div>
+      <a class="nav-link" href="#kits"><span class="nav-dot"></span>UI Kits</a>
+    </nav>
+  </aside>
+
+  <main>
+    <!-- HERO -->
+    <div class="hero">
+      <div class="blob" style="width:220px;height:220px;right:-60px;top:-80px"></div>
+      <div class="blob" style="width:120px;height:120px;right:120px;bottom:-50px"></div>
+      <div class="eyebrow">Blink · Delivery Super-App</div>
+      <h1>The Blink Design System</h1>
+      <p>One brand across four apps — Customer, Rider, Agent and Merchant. Bright, rounded and confident: a single raspberry pink doing the heavy lifting over cool slate neutrals. Built for the Algerian market, in DZD.</p>
+      <div class="meta">
+        <div><span class="k">#EE335F</span><span class="l">Primary brand</span></div>
+        <div><span class="k">Poppins</span><span class="l">+ Inter</span></div>
+        <div><span class="k">4 apps</span><span class="l">one system</span></div>
+      </div>
+    </div>
+
+    <!-- BRAND -->
+    <section id="brand">
+      <div class="sec-label">Foundations</div>
+      <h2 class="sec-title">Brand</h2>
+      <p class="sec-desc">The wordmark is the pink "B + lightning-bolt" mark beside black geometric "LINK." lettering — the bolt signals speed. The mark uses <code>currentColor</code>, so it recolors freely: pink on white, white on brand.</p>
+      <div class="row" style="gap:20px">
+        <div class="demo" style="flex:1; display:flex; align-items:center; justify-content:center; min-height:150px; margin:0">
+          <div style="display:flex; align-items:center; gap:9px">
+            <svg viewBox="0 0 23.5 26.8" style="width:42px;height:48px"><path fill="var(--blink-500)" fill-rule="nonzero" d="M 18 10.5 L 18 10.2 C 20 10.2 22 9.3 22 6.2 C 22 2.8 19.3 0 13.6 0 C 8.3 0 5.2 1.7 4.1 5.3 L 0 18.7 L 4.6 18.7 L 4.2 22 L 3.6 26.8 L 6.4 22 L 7.8 19.5 L 8.5 18.3 L 9.6 16.4 L 9.9 15.8 L 10.6 14.6 L 8.5 14.6 L 6.4 14.6 L 8.3 7.2 L 8.4 6.7 C 9 4.8 10.7 4.1 13.4 4.1 C 16.4 4.1 17.7 5.1 17.7 6.5 C 17.7 8.5 15.2 8.7 13.9 8.7 L 11.4 8.7 C 11.2 8.7 11.1 8.8 11 9 L 10.1 12.1 C 10 12.3 10.2 12.6 10.5 12.6 L 15.2 12.6 C 16.6 12.6 19.3 12.7 19.3 15.1 C 19.3 17.4 16.8 18 14.8 18 C 13.5 18 12.3 17.8 11.3 17.4 L 10.6 18.6 C 9.9 19.8 10.5 21.4 11.8 21.8 C 12.7 22.1 13.7 22.2 14.8 22.2 C 21 22.2 23.5 18.9 23.5 15.5 C 23.5 11.1 20.1 10.5 18 10.5 Z"/></svg>
+            <span style="font-family:var(--font-display);font-weight:800;font-size:42px"><span style="color:var(--slate-900)">LINK</span><span style="color:var(--blink-500)">.</span></span>
+          </div>
+        </div>
+        <div class="demo" style="flex:1; display:flex; align-items:center; justify-content:center; min-height:150px; margin:0; background:var(--blink-500); border:none">
+          <div style="display:flex; align-items:center; gap:9px">
+            <svg viewBox="0 0 23.5 26.8" style="width:42px;height:48px"><path fill="#fff" fill-rule="nonzero" d="M 18 10.5 L 18 10.2 C 20 10.2 22 9.3 22 6.2 C 22 2.8 19.3 0 13.6 0 C 8.3 0 5.2 1.7 4.1 5.3 L 0 18.7 L 4.6 18.7 L 4.2 22 L 3.6 26.8 L 6.4 22 L 7.8 19.5 L 8.5 18.3 L 9.6 16.4 L 9.9 15.8 L 10.6 14.6 L 8.5 14.6 L 6.4 14.6 L 8.3 7.2 L 8.4 6.7 C 9 4.8 10.7 4.1 13.4 4.1 C 16.4 4.1 17.7 5.1 17.7 6.5 C 17.7 8.5 15.2 8.7 13.9 8.7 L 11.4 8.7 C 11.2 8.7 11.1 8.8 11 9 L 10.1 12.1 C 10 12.3 10.2 12.6 10.5 12.6 L 15.2 12.6 C 16.6 12.6 19.3 12.7 19.3 15.1 C 19.3 17.4 16.8 18 14.8 18 C 13.5 18 12.3 17.8 11.3 17.4 L 10.6 18.6 C 9.9 19.8 10.5 21.4 11.8 21.8 C 12.7 22.1 13.7 22.2 14.8 22.2 C 21 22.2 23.5 18.9 23.5 15.5 C 23.5 11.1 20.1 10.5 18 10.5 Z"/></svg>
+            <span style="font-family:var(--font-display);font-weight:800;font-size:42px;color:#fff">LINK.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COLOR -->
+    <section id="color">
+      <div class="sec-label">Foundations</div>
+      <h2 class="sec-title">Color</h2>
+      <p class="sec-desc">One dominant color — Blink raspberry — over a cool slate neutral ramp. Pale-pink tints wash info surfaces and icon halos. A teal "credit" accent marks positive money; a spring-green secondary appears only on About&nbsp;Us. Used boldly but sparingly: surfaces stay white, pink punches through.</p>
+
+      <h3 class="block">Brand — raspberry</h3>
+      <div class="swatches">
+        <div class="sw"><div class="chip" style="background:#FF6C90"></div><div class="meta"><div class="nm">Pink 300</div><div class="hex">#FF6C90</div></div></div>
+        <div class="sw"><div class="chip" style="background:#FF5E84"></div><div class="meta"><div class="nm">Pink 400</div><div class="hex">#FF5E84</div></div></div>
+        <div class="sw"><div class="chip" style="background:#EE335F"></div><div class="meta"><div class="nm">Pink 500 · primary</div><div class="hex">#EE335F</div></div></div>
+        <div class="sw"><div class="chip" style="background:#DE2555"></div><div class="meta"><div class="nm">Pink 600</div><div class="hex">#DE2555</div></div></div>
+        <div class="sw"><div class="chip" style="background:#B9003F"></div><div class="meta"><div class="nm">Pink 700</div><div class="hex">#B9003F</div></div></div>
+      </div>
+
+      <h3 class="block">Brand tints &amp; accents</h3>
+      <div class="swatches">
+        <div class="sw"><div class="chip" style="background:#FFF1F2"></div><div class="meta"><div class="nm">Tint 50</div><div class="hex">#FFF1F2</div></div></div>
+        <div class="sw"><div class="chip" style="background:#FFE1E3"></div><div class="meta"><div class="nm">Tint 100</div><div class="hex">#FFE1E3</div></div></div>
+        <div class="sw"><div class="chip" style="background:#FDE8EE"></div><div class="meta"><div class="nm">Tint 200 · halo</div><div class="hex">#FDE8EE</div></div></div>
+        <div class="sw"><div class="chip" style="background:#00657B"></div><div class="meta"><div class="nm">Credit · teal</div><div class="hex">#00657B</div></div></div>
+        <div class="sw"><div class="chip" style="background:#00E676"></div><div class="meta"><div class="nm">Spring · green</div><div class="hex">#00E676</div></div></div>
+      </div>
+
+      <h3 class="block">Neutrals — slate ramp</h3>
+      <div class="ramp">
+        <div class="r" style="background:#0F172A;color:#fff"><span class="n">900</span><span class="h">0F172A</span></div>
+        <div class="r" style="background:#334155;color:#fff"><span class="n">700</span><span class="h">334155</span></div>
+        <div class="r" style="background:#475569;color:#fff"><span class="n">600</span><span class="h">475569</span></div>
+        <div class="r" style="background:#64748B;color:#fff"><span class="n">500</span><span class="h">64748B</span></div>
+        <div class="r" style="background:#94A3B8;color:#fff"><span class="n">400</span><span class="h">94A3B8</span></div>
+        <div class="r" style="background:#CBD5E1"><span class="n">300</span><span class="h">CBD5E1</span></div>
+        <div class="r" style="background:#E2E8F0"><span class="n">200</span><span class="h">E2E8F0</span></div>
+        <div class="r" style="background:#F1F5F9"><span class="n">100</span><span class="h">F1F5F9</span></div>
+        <div class="r" style="background:#F8FAFC;border-color:#e2e8f0"><span class="n">50</span><span class="h">F8FAFC</span></div>
+      </div>
+
+      <h3 class="block">Semantic &amp; gradients</h3>
+      <div class="grads">
+        <div class="grad" style="background:linear-gradient(180deg,#FF6C90 0%,#EE3160 100%)"><span class="gn">Header</span><span class="gh">#FF6C90 → #EE3160</span></div>
+        <div class="grad" style="background:linear-gradient(135deg,#DE2555 0%,#B9003F 100%)"><span class="gn">Hero</span><span class="gh">#DE2555 → #B9003F</span></div>
+        <div class="grad" style="background:linear-gradient(135deg,#EE335F 0%,#C9103F 100%)"><span class="gn">Deal banner</span><span class="gh">#EE335F → #C9103F</span></div>
+      </div>
+      <div class="row" style="margin-top:16px">
+        <span class="pill" style="background:var(--success-bg);color:var(--success)"><span class="dot"></span>Success #16A34A</span>
+        <span class="pill" style="background:var(--credit-bg);color:var(--credit)"><span class="dot"></span>Credit #00657B</span>
+        <span class="pill" style="background:#FEF3E2;color:#B45309"><span class="dot"></span>Warning #F59E0B</span>
+        <span class="pill" style="background:#FEECEC;color:var(--danger)"><span class="dot"></span>Danger #EF4444</span>
+      </div>
+    </section>
+
+    <!-- TYPE -->
+    <section id="type">
+      <div class="sec-label">Foundations</div>
+      <h2 class="sec-title">Typography</h2>
+      <p class="sec-desc">Poppins carries everything expressive — headings, buttons, labels and the big money numbers — bold with a signature +0.04em tracking. Inter handles body copy, fields and dense UI.</p>
+      <div class="font-cards">
+        <div class="font-card">
+          <div class="big" style="font-family:var(--font-display);font-weight:800">Aa</div>
+          <div class="role">Poppins</div>
+          <div class="use">Display, headings, buttons, labels, metrics. Weights 400–800, +0.04em tracking on headings.</div>
+        </div>
+        <div class="font-card">
+          <div class="big" style="font-family:var(--font-body);font-weight:600">Aa</div>
+          <div class="role">Inter</div>
+          <div class="use">Body, captions, form fields, dense app chrome. Weights 400–700, default tracking.</div>
+        </div>
+      </div>
+      <div>
+        <div class="type-row"><span class="spec">Display · 800 · 30px</span><span class="samp" style="font-family:var(--font-display);font-weight:800;font-size:30px;letter-spacing:.04em">Get Your First Rider</span></div>
+        <div class="type-row"><span class="spec">H1 · 700 · 24px</span><span class="samp" style="font-family:var(--font-display);font-weight:700;font-size:24px;letter-spacing:.04em">Hello, Karim</span></div>
+        <div class="type-row"><span class="spec">H2 · 700 · 18px</span><span class="samp" style="font-family:var(--font-display);font-weight:700;font-size:18px;letter-spacing:.04em">Blink News · Top deals</span></div>
+        <div class="type-row"><span class="spec">Body · 400 · 14px</span><span class="samp" style="font-family:var(--font-body);font-size:14px;color:var(--slate-700)">Your stores are live today. Track orders, dues and earnings in one place.</span></div>
+        <div class="type-row"><span class="spec">Metric · 800 · 38px</span><span class="samp" style="font-family:var(--font-display);font-weight:800;font-size:38px">12,500 <span style="font-size:20px;color:var(--slate-400)">DZD</span></span></div>
+      </div>
+    </section>
+
+    <!-- SPACING -->
+    <section id="spacing">
+      <div class="sec-label">Foundations</div>
+      <h2 class="sec-title">Spacing &amp; Elevation</h2>
+      <p class="sec-desc">A 4px base grid. Generous, friendly radii everywhere — pills for buttons, inputs and chips; 16px cards; 24px hero panels. Shadows stay soft, neutral and low-contrast.</p>
+
+      <h3 class="block">Corner radii</h3>
+      <div class="radii">
+        <div class="col"><div class="box" style="border-radius:8px"></div><div class="nm">sm</div><div class="vl">8px</div></div>
+        <div class="col"><div class="box" style="border-radius:12px"></div><div class="nm">md</div><div class="vl">12px</div></div>
+        <div class="col"><div class="box" style="border-radius:16px"></div><div class="nm">lg · card</div><div class="vl">16px</div></div>
+        <div class="col"><div class="box" style="border-radius:24px"></div><div class="nm">xl · hero</div><div class="vl">24px</div></div>
+        <div class="col"><div class="box" style="border-radius:32px"></div><div class="nm">2xl</div><div class="vl">32px</div></div>
+        <div class="col"><div class="box" style="border-radius:999px;background:var(--blink-500);border:none"></div><div class="nm">pill</div><div class="vl">999px</div></div>
+      </div>
+
+      <h3 class="block">Spacing scale · 4px grid</h3>
+      <div class="scale-bars">
+        <div class="col"><div class="bar" style="height:4px"></div><div class="nm">1</div><div class="vl">4</div></div>
+        <div class="col"><div class="bar" style="height:8px"></div><div class="nm">2</div><div class="vl">8</div></div>
+        <div class="col"><div class="bar" style="height:12px"></div><div class="nm">3</div><div class="vl">12</div></div>
+        <div class="col"><div class="bar" style="height:16px"></div><div class="nm">4</div><div class="vl">16</div></div>
+        <div class="col"><div class="bar" style="height:20px"></div><div class="nm">5</div><div class="vl">20</div></div>
+        <div class="col"><div class="bar" style="height:24px"></div><div class="nm">6</div><div class="vl">24</div></div>
+        <div class="col"><div class="bar" style="height:32px"></div><div class="nm">8</div><div class="vl">32</div></div>
+        <div class="col"><div class="bar" style="height:40px"></div><div class="nm">10</div><div class="vl">40</div></div>
+      </div>
+
+      <h3 class="block">Elevation</h3>
+      <div class="shadows">
+        <div class="col"><div class="box" style="box-shadow:0 1px 2px rgba(0,0,0,0.05);border:1px solid var(--gray-100)"></div><div class="nm" style="font-family:var(--font-display);font-weight:700;font-size:13px;margin-top:12px">xs · hairline</div></div>
+        <div class="col"><div class="box" style="box-shadow:var(--shadow-sm)"></div><div class="nm" style="font-family:var(--font-display);font-weight:700;font-size:13px;margin-top:12px">sm · card lift</div></div>
+        <div class="col"><div class="box" style="box-shadow:var(--shadow-md)"></div><div class="nm" style="font-family:var(--font-display);font-weight:700;font-size:13px;margin-top:12px">md · raised</div></div>
+        <div class="col"><div class="box" style="box-shadow:var(--shadow-brand);background:var(--blink-500)"></div><div class="nm" style="font-family:var(--font-display);font-weight:700;font-size:13px;margin-top:12px">brand glow</div></div>
+      </div>
+    </section>
+
+    <!-- BUTTONS -->
+    <section id="buttons">
+      <div class="sec-label">Components</div>
+      <h2 class="sec-title">Buttons &amp; Inputs</h2>
+      <p class="sec-desc">Fully-rounded pills throughout. Primary is solid pink with bold white text; secondary a light slate fill. Inputs are pill-shaped with hairline borders and a soft pink focus ring. Try them:</p>
+      <div class="demo">
+        <div class="cap">BUTTONS · hover &amp; press are live</div>
+        <div class="row">
+          <button class="btn btn--primary">Continue</button>
+          <button class="btn btn--secondary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+            Continue with Phone
+          </button>
+          <button class="btn btn--glow">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
+            Pay Dues
+          </button>
+          <button class="btn btn--ghost">View All</button>
+          <button class="btn btn--primary" style="opacity:.4;pointer-events:none">Disabled</button>
+        </div>
+      </div>
+      <div class="demo">
+        <div class="cap">INPUTS · click to focus</div>
+        <div class="row">
+          <input class="field" placeholder="Enter Your Mobile Number">
+          <input class="field" placeholder="Search products">
+        </div>
+      </div>
+    </section>
+
+    <!-- STATUS -->
+    <section id="status">
+      <div class="sec-label">Components</div>
+      <h2 class="sec-title">Status &amp; Chips</h2>
+      <p class="sec-desc">Status reads as a colored dot plus a word — never an emoji. Filter chips toggle pink-on-fill; count badges ride on icons.</p>
+      <div class="demo">
+        <div class="cap">STATUS PILLS &amp; BADGES</div>
+        <div class="row">
+          <span class="pill" style="background:var(--success-bg);color:var(--success)"><span class="dot"></span>Online</span>
+          <span class="pill" style="background:var(--slate-100);color:var(--slate-500)"><span class="dot" style="background:var(--slate-400)"></span>Offline</span>
+          <span class="pill" style="background:var(--credit-bg);color:var(--credit)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Completed</span>
+          <span class="badge">3</span>
+          <span class="badge" style="background:var(--ios-red)">12</span>
+        </div>
+      </div>
+      <div class="demo">
+        <div class="cap">FILTER CHIPS · click to toggle</div>
+        <div class="row" id="chips">
+          <button class="chip" data-on="1" style="background:var(--blink-500);color:#fff">All rides</button>
+          <button class="chip" style="background:var(--slate-100);color:var(--slate-600)">Food</button>
+          <button class="chip" style="background:var(--slate-100);color:var(--slate-600)">Marketplace</button>
+          <button class="chip" style="background:var(--slate-100);color:var(--slate-600)">Courier</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SURFACES -->
+    <section id="surfaces">
+      <div class="sec-label">Components</div>
+      <h2 class="sec-title">Surfaces</h2>
+      <p class="sec-desc">White cards with hairline borders and soft shadows. Quick-action tiles center an icon in a pale-pink halo; news cards bleed photography to a rounded top; deal banners scatter organic blobs over a pink gradient. The bottom nav is a frosted floating pill.</p>
+      <div class="demo">
+        <div class="cap">CARDS, TILES, BANNERS</div>
+        <div class="row" style="gap:18px; align-items:stretch">
+          <div class="tile">
+            <div class="halo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7l1.5-4h17L22 7"/><path d="M4 7v12a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V7"/><path d="M2 7h20"/><path d="M9 21v-6h6v6"/></svg></div>
+            <div class="t">Shop Marketplace</div>
+          </div>
+          <div class="news">
+            <div class="img" style="background-image:url('assets/news-warehouse.png')"><span class="tag">Network</span></div>
+            <div class="body"><h5>New Routes Added</h5><p>15 new delivery hubs across the northern region.</p></div>
+          </div>
+          <div class="deal">
+            <div class="b" style="width:120px;height:120px;right:-20px;top:-30px"></div>
+            <div class="b" style="width:50px;height:50px;right:60px;bottom:-10px"></div>
+            <div class="b" style="width:26px;height:26px;right:30px;top:38px"></div>
+            <div class="big">10% Off</div><div class="sub">All Rides</div>
+          </div>
+        </div>
+      </div>
+      <div class="demo">
+        <div class="cap">FLOATING GLASS NAVBAR</div>
+        <div class="nav-demo">
+          <div class="it on">
+            <svg viewBox="0 0 24 24" fill="var(--blink-500)" stroke="var(--blink-500)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10" fill="#fff"/></svg>
+            <span class="l">Home</span>
+          </div>
+          <div class="it">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--gray-400)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
+            <span class="l">Cash</span>
+          </div>
+          <div class="it">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--gray-400)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 21v-1a6 6 0 0 1 12 0v1"/></svg>
+            <span class="l">Profile</span>
+          </div>
+          <div class="it">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--gray-400)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            <span class="l">Earnings</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- KITS -->
+    <section id="kits">
+      <div class="sec-label">Product</div>
+      <h2 class="sec-title">UI Kits</h2>
+      <p class="sec-desc">High-fidelity, interactive recreations of the Blink apps — built from the system above. Open one to click through real flows.</p>
+      <div class="kit-cards">
+        <a class="kit" href="ui_kits/merchant/index.html">
+          <div class="top" style="background:var(--grad-hero)"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7l1.5-4h17L22 7"/><path d="M4 7v12a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V7"/><path d="M2 7h20"/><path d="M9 21v-6h6v6"/></svg></div>
+          <div class="b"><h4>Merchant App</h4><p>Home, Earnings, Profile, Blink Cash, Dashboard, My Stores — fully interactive.</p><span class="go">Open kit →</span></div>
+        </a>
+        <a class="kit" href="preview/About Us.html">
+          <div class="top" style="background:var(--grad-header)">
+            <svg viewBox="0 0 23.5 26.8"><path fill="#fff" fill-rule="nonzero" d="M 18 10.5 L 18 10.2 C 20 10.2 22 9.3 22 6.2 C 22 2.8 19.3 0 13.6 0 C 8.3 0 5.2 1.7 4.1 5.3 L 0 18.7 L 4.6 18.7 L 4.2 22 L 3.6 26.8 L 6.4 22 L 7.8 19.5 L 8.5 18.3 L 9.6 16.4 L 9.9 15.8 L 10.6 14.6 L 8.5 14.6 L 6.4 14.6 L 8.3 7.2 L 8.4 6.7 C 9 4.8 10.7 4.1 13.4 4.1 C 16.4 4.1 17.7 5.1 17.7 6.5 C 17.7 8.5 15.2 8.7 13.9 8.7 L 11.4 8.7 C 11.2 8.7 11.1 8.8 11 9 L 10.1 12.1 C 10 12.3 10.2 12.6 10.5 12.6 L 15.2 12.6 C 16.6 12.6 19.3 12.7 19.3 15.1 C 19.3 17.4 16.8 18 14.8 18 C 13.5 18 12.3 17.8 11.3 17.4 L 10.6 18.6 C 9.9 19.8 10.5 21.4 11.8 21.8 C 12.7 22.1 13.7 22.2 14.8 22.2 C 21 22.2 23.5 18.9 23.5 15.5 C 23.5 11.1 20.1 10.5 18 10.5 Z"/></svg>
+          </div>
+          <div class="b"><h4>About Us</h4><p>Brand page — hero, Our Story, Our Mission, socials. Uses the spring-green accent.</p><span class="go">Open page →</span></div>
+        </a>
+      </div>
+    </section>
+
+    <footer>
+      <div class="line">
+        <svg viewBox="0 0 23.5 26.8" style="width:16px;height:18px"><path fill="var(--slate-400)" fill-rule="nonzero" d="M 18 10.5 L 18 10.2 C 20 10.2 22 9.3 22 6.2 C 22 2.8 19.3 0 13.6 0 C 8.3 0 5.2 1.7 4.1 5.3 L 0 18.7 L 4.6 18.7 L 4.2 22 L 3.6 26.8 L 6.4 22 L 7.8 19.5 L 8.5 18.3 L 9.6 16.4 L 9.9 15.8 L 10.6 14.6 L 8.5 14.6 L 6.4 14.6 L 8.3 7.2 L 8.4 6.7 C 9 4.8 10.7 4.1 13.4 4.1 C 16.4 4.1 17.7 5.1 17.7 6.5 C 17.7 8.5 15.2 8.7 13.9 8.7 L 11.4 8.7 C 11.2 8.7 11.1 8.8 11 9 L 10.1 12.1 C 10 12.3 10.2 12.6 10.5 12.6 L 15.2 12.6 C 16.6 12.6 19.3 12.7 19.3 15.1 C 19.3 17.4 16.8 18 14.8 18 C 13.5 18 12.3 17.8 11.3 17.4 L 10.6 18.6 C 9.9 19.8 10.5 21.4 11.8 21.8 C 12.7 22.1 13.7 22.2 14.8 22.2 C 21 22.2 23.5 18.9 23.5 15.5 C 23.5 11.1 20.1 10.5 18 10.5 Z"/></svg>
+        Blink Design System · reconstructed from the source Figma · currency DZD
+      </div>
+    </footer>
+  </main>
+</div>
+
+<script>
+  // Filter chip toggle
+  document.getElementById('chips').addEventListener('click', e => {
+    const b = e.target.closest('.chip'); if (!b) return;
+    const on = b.dataset.on === '1';
+    b.dataset.on = on ? '0' : '1';
+    b.style.background = on ? 'var(--slate-100)' : 'var(--blink-500)';
+    b.style.color = on ? 'var(--slate-600)' : '#fff';
+  });
+  // Scroll-spy nav highlight
+  const links = [...document.querySelectorAll('.nav-link')];
+  const map = {};
+  links.forEach(l => map[l.getAttribute('href').slice(1)] = l);
+  const obs = new IntersectionObserver(es => {
+    es.forEach(en => {
+      if (en.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        map[en.target.id]?.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  document.querySelectorAll('section').forEach(s => obs.observe(s));
+</script>
+</body>
+</html>

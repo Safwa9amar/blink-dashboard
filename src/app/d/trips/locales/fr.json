@@ -1,0 +1,19 @@
+{
+  "trips": {
+    "title": "Trajets",
+    "description": "Surveiller tous les trajets des livreurs",
+    "id": "ID",
+    "pickup": "Départ",
+    "dropoff": "Arrivée",
+    "status": "Statut",
+    "distance": "Distance",
+    "payout": "Paiement",
+    "empty": "Aucun trajet trouvé.",
+    "statuses": {
+      "completed": "terminé",
+      "canceled": "annulé",
+      "upcoming": "à venir",
+      "under_review": "en révision"
+    }
+  }
+}

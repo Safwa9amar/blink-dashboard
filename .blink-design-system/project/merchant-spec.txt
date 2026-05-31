@@ -1,0 +1,338 @@
+center5080
+Page Number
+Page
+Page Role
+Sub-page
+Sub-page Role
+Primary CTAs / Key UI elements
+1
+Splash Screen
+First screen shown on app open brand logo and brief animation while essential startup tasks run (auth, remote-config, minimal preload). 
+Shared across all interfaces.
+Logo (SVG/Lottie) with static fallback; 
+Respect prefers-reduced-motion; 
+Optional tap-to-skip; 
+Minimal progress indicator (only if long);
+Deep-link handler; app_open analytics event; 
+Dev-only build/version overlay; 
+Offline error + Retry CTA
+2
+Signup Page (Unified)
+Primary registration entry gather phone, obtain explicit consent, choose verification delivery method (SMS/WhatsApp) or social OAuth (Google/Apple). Shared across all interfaces.
+Main Page
+Phone input; Country code picker; 
+Privacy/Terms checkbox (unticked) with links; Method chooser (WhatsApp); 
+Button: Send code; 
+Button: Sign in (navigate to Login); 
+Button: Sign in with Google; 
+Button: Sign in with Apple; 
+Helper text about WhatsApp vs SMS
+Verification Code Entry
+Enter 4–6 digit code; supports auto-detect/paste; auto-submit on completion; shows resend timer and voice fallback.
+Segmented OTP input (auto-focus &amp; paste); 
+Auto-submit; Resend (timer); 
+Voice call fallback; 
+Change phone link; 
+Error messages ("invalid code", "too many attempts")
+User Info (Post-Verification)
+Collect First name,
+Last name, Password and Email (email optional unless required).
+For OAuth path,
+collect missing fields and phone if not returned by provider.
+Confirm completes signup.
+Inputs: First name; 
+Last name; 
+Email/Phone Number “depend to the signup method” (required); 
+CTA: Confirm / Create account; Back / Edit phone
+4
+Select Client Type Page
+Let newly-registered users choose their client role (Customer / Rider / Merchant/Agent). Persist selection to user profile and route to the corresponding onboarding or main interface. Appears only after Signup; returning users are routed automatically to their saved role. Shared across app.
+Role Selection Screen
+Main chooser showing three selectable role cards (Customer, Rider, Merchant, Agent) with icon, role name and 1-line description; tap selects card.
+Role cards (icon + name + 1-line description); Select / Deselect state (border highlight); 
+Primary CTA: Continue (disabled until a role selected); Back / Cancel
+Role Details Modal (optional)
+Tap a small info (“i”) on a role card to open a modal with 2–3 lines: what the role does, key requirements (e.g., Rider requires vehicle docs).
+Modal title; short body copy; 
+CTA: Select this role; 
+Close (X)
+Verification / Onboarding Redirect
+If chosen role requires verification (Rider, Merchant), route to the appropriate verification onboarding (document upload, business info). For Customer route directly to Customer Home.
+Auto-redirect on Continue; 
+Visual badge: “Verification required”; 
+CTA: Start verification now
+5
+Tutorial Video Page
+Role-specific onboarding media  a short instructional video shown immediately after a user selects Rider or Merchant. Teaches key workflows and safety/operational rules. Appears only once after Signup for Rider &amp; Merchant paths (returning users can access replay from Profile).
+Video Player Screen
+Play instructional video with controls, captions, progress bar, and Skip option. Auto-save progress and auto-mark complete when ≥90% viewed (configurable).
+Video player (HLS/MP4); 
+Poster image; Play / Pause / Seek / Volume; Captions toggle (VTT); 
+Skip button; 
+Progress percent; 
+Resume capability; 
+Low-bandwidth fallback (slides/text)
+Completion Card
+Shown after video completes (or when user taps Mark as watched). Short summary and clear CTA to proceed.
+CTA: Start verification / Begin onboarding (Rider/Merchant) or Go to Dashboard; 
+Replay video; 
+Save transcript; 
+Close
+Skipped State &amp; Reminders
+If user skips: set reminder schedule (in-app + optional push) and show badge on dashboard until completion; persist skip flag in profile.
+Skip record; In-app reminder schedule; 
+CTA in reminder to watch now; 
+Dashboard badge: “Tutorial not watched”
+Replay &amp; Access From Profile
+Users can replay tutorial later from Profile / Help / Onboarding resources.
+Link in Profile: “Watch tutorial”; 
+Support link; 
+Analytics hook for replay events
+Optional Enforcement (configurable)
+Admin-controlled option to require tutorial completion before enabling certain role features (e.g., accept first job).
+Flag: must_watch_tutorial (true/false); 
+Blocking modal if not completed; 
+CTA to play video
+6
+Merchant Home
+Default landing for merchants  manage store(s), review KPIs, improve strategy, pay Blink dues, and access marketplace operations. Accessed from bottom-nav → Home.
+Main Home Page
+Top-left: Notifications button; 
+Top-center: Dues display (amount merchant owes Blink); 
+Top-right: Location button; 
+Bottom-nav: Home, Blink Cash, Profile, Earnings; 
+Top Bar: Notifications
+Opens the merchant Notifications page (alerts, Blink News, offers, operational messages).
+Bell icon; 
+Unread badge; 
+CTA: Open Notifications; 
+Top Bar: Dues Display
+Read-only display showing current dues owed to Blink, typically the commission owed from merchant monthly gross income. Tap can optionally open dues breakdown / settlement details.
+Dues amount (DZD); 
+Small label: “Dues to Blink”;
+Top Bar: Location
+Opens Location sub-page for store address management. Includes current store location, Change Location, and Add Another Address for merchants with multiple stores.
+Button: Location → bottom-sheet; 
+Row: Current Location (reverse geocoded); Button: Change Location → Map picker &amp; confirm; 
+Button: Add Another Address → Map picker → Address form; 
+CTA: Save;
+My Stores (square card)
+Direct access to store management: view products, manage stock, update pricing, and store details.
+Square card with icon + label “My Stores”; 
+CTA: Open store management; 
+Dashboard (square card)
+Opens dashboard with store KPIs, sales metrics, order performance, and customer activity.
+Square card with icon + label “Dashboard”; 
+CTA: Open dashboard; 
+Strategy Improvement (square card)
+Opens analysis and recommendations page based on dashboard data to improve store performance.
+Square card with icon + label “Strategy Improvement”; 
+CTA: Open strategy insights;
+Store-switch / Multi-location note
+(square card) 
+If a merchant owns multiple stores, show a clear primary store indicator and a quick switch action to avoid confusion.
+Store selector (if multiple); 
+Primary store badge; 
+CTA: Switch store; 
+Blink News (carousel)
+Carousel of latest Blink news, platform updates, and merchant-relevant announcements. Swipe horizontally; items deep-link to article details.
+Rectangular carousel; 
+Swipe; 
+Card CTA: Read article; Save / Share;
+7
+Merchant Profile
+Central merchant hub manage Blink Cash dues, profile data, store documents, challenges, merchant benefits, help &amp; support, and settings. Accessed from bottom-nav → Profile.
+Profile Main Page
+Profile photo + completion ring; 
+Merchant full name; 
+Merchant address; 
+Platform rating; 
+CTA: Edit profile photo;
+Blink Cash: PIN Entry
+Secure access to Blink Cash via numeric code previously defined by merchant.
+Numeric keypad; 
+Reset Password; 
+Close (×); 
+Security: retry limit / lockout; 
+Blink Cash: Wallet / Dues Home
+Shows total outstanding dues owed to Blink with Eye toggle, Pay Dues button, and top-right Home / top-left Profile navigation.
+Dues amount container; 
+Eye icon toggle; 
+CTA: Pay Dues; 
+Back to Profile; 
+Home shortcut; 
+CTA: View dues breakdown
+Dues Per Store (collapsible cards)
+List of store cards, one per store owned. Each card expands to show store profit, dues payable, fees, and a Pay Dues button.
+Store name; 
+Dropdown toggle; 
+Expanded rows: total profit, dues payable, fees; CTA: Pay Dues (store-specific); 
+Badge: number of stores
+Pay Dues: Amount Entry
+Agent enters a payment amount. If initiated from a store card, show store name at top. Next button opens payment method selection.
+Amount input; 
+Store name (conditional); 
+CTA: Next; 
+Validation note (min/max or exact dues)
+Pay Dues: Method Picker (bottom sheet)
+Bottom sheet: “Choose a payment method” with electronic payment cards. Selecting a method redirects to provider page.
+Payment method cards; 
+Cancel; 
+CTA: Select provider → redirect;
+Transactions (dues history)
+Table titled “Transactions” with filter for period or all. Cards show dues payment transactions, amount negative, status. Store name shown when payment came from a specific store.
+Filter (period/all); 
+Cards: icon, Dues Payment, date/time, amount (-), status (Completed/Cancelled), store name (if applicable); 
+CTA: Open transaction detail
+Transaction Detail: Dues Payment
+Back page for a dues transaction. Shows date/time, payment amount, fees, total paid, store name (if store-based), help card, and receipt actions.
+Date/time card; Cost breakdown; 
+Store card (conditional); 
+Help CTA; 
+CTA: Contact support
+My Profile: Main
+Merchant personal profile: photo, name, phone, home address, KPI cards, Overview / Documents toggle.
+Profile photo; 
+Name; 
+Phone; 
+Home address; 
+KPI cards: total sales, platform rating, years with Blink; 
+Toggle: Overview / Documents
+My Profile: Overview Form
+Editable merchant info form. Merchant ID is copy-only.
+Merchant ID (copy); 
+Gender; 
+Full name; 
+DOB; 
+Email; 
+Province; 
+Phone; 
+RIB; 
+CTA: Save
+My Stores: Main
+Store-level profile page with store photo, name, phone, address, Switch Store button, KPI cards, and Store Documents section.
+Back; 
+Title; 
+Switch Store; 
+Store photo; 
+Store name; 
+Store phone; 
+Store address
+My Stores: KPI Cards
+Store performance snapshot.
+Total sales; 
+Merchant rating; 
+Years with Blink
+My Stores: Store Documents Form
+Upload commercial register front/back and enter NIF / NIS, then Save. After saving, show status container.
+Upload fields (+); 
+NIF; 
+NIS; 
+CTA: Save; 
+Status container: Under review / Approved / Rejected / Needs Enhancements; 
+If rejected/needs enhancements → CTA: Required Actions
+Switch Store (modal / selector)
+Lets merchant move between stores if they own more than one.
+Store list; 
+Primary store badge; 
+CTA: Select store; 
+CTA: Cancel
+Challenges: Main
+Challenges hub with tabs Available / Ongoing / History.
+Tabs: Available / Ongoing / History; 
+Challenge cards; 
+CTA: Join Challenge (Available)
+Challenges: History Filters
+When History selected, extra filters appear: Completed / Expired / Cancelled.
+Filter chips; 
+Active state; 
+CTA: View card detail
+Challenge Card / Detail
+Card shows image, title, deadline, reward (money or merchant benefit). Detail page adds details, progress or achievement info, disqualification reason if needed, and reward breakdown if completed.
+Image; 
+Title; Deadline; 
+Reward; 
+CTA: Join Challenge; 
+Progress bar (ongoing); 
+Badge: Won / Lost / Disqualified
+Merchant Benefits: Main
+Categorized square cards of partner offers and discounts for merchants.
+Category titles; 
+Benefit cards; 
+CTA: Open benefit detail
+Merchant Benefit: Detail
+Detail page with image, title, validity date, Call Now, Directions, category title and benefit description.
+Back; 
+Benefit title; 
+Image; 
+Validity date; 
+CTA: Call Now; 
+CTA: Directions; 
+Help &amp; Support (shared)
+Help Center and Data &amp; Privacy access.
+CTA: Help Center; 
+CTA: Data &amp; Privacy
+Data &amp; Privacy
+Links to Terms &amp; Conditions, Privacy Policy, and Delete Account. Same structure as Simple User interface.
+Terms &amp; Conditions; 
+Privacy Policy; 
+Delete Account (confirmation flow)
+Settings
+Account settings for language, account switching, required actions, and logout.
+Change Language; 
+Switch Account; 
+Required Actions; 
+Log Out
+Required Actions (merchant)
+Checklist of actions required after Rejected or Needs Enhancements status for store documents.
+Checklist items; 
+CTA: Upload required file; 
+CTA: Fix field; 
+CTA: Contact support
+Log Out
+Logout confirmation flow.
+CTA: Log out; 
+Confirmation modal
+8
+Earnings (Merchant)
+Financial dashboard for merchants view net income, sales volume, and income breakdowns across selected time ranges and store scope (single store or all stores). Accessed from bottom-nav → Earnings.
+Earnings Main Page
+Top-left: Refresh button; 
+Top-right (localized): Page title; 
+Earnings Card (summary)
+Calendar selector with a label such as “This month” / “This year” to choose period type (Day / Week / Month / Year). Also includes a store scope selector (single store or all stores). Displays net income (DZD), Eye icon to hide/show amount, and number of sales transactions for the selected scope and period.
+Calendar button + period label; 
+Store selector (single store / all stores); 
+Net income amount (DZD) with Eye toggle; 
+Sales transactions count; 
+Mini-chart (optional); 
+CTA: Export (optional)
+Period Picker / Calendar Modal
+When Calendar is tapped, show a popup that adapts to the selected period type (Day / Week / Month / Year) so the merchant can define the desired range accurately.
+Granularity toggle: Day / Week / Month / Year; Date grid / range picker; 
+Apply / Cancel; 
+Localized month/year labels; 
+Accessible date input fallback
+Store Scope Selector
+Lets the merchant switch between one of their stores or the combined total of all stores. The card updates based on the selected scope.
+Store dropdown / selector; 
+Option: All stores; 
+Option: Individual store list; 
+Primary store badge (optional);
+Gross Income (dropdown list)
+Expands to show: Gross income from sales transactions, Income from discounts, Income from challenges, and Total. Values shown in DZD with text labels aligned according to language direction.
+Dropdown header: Gross Income; 
+Rows with label + amount; 
+Tap row → filtered detail view (optional); 
+CTA: Export breakdown
+Commissions &amp; Taxes (dropdown list)
+Expands to show: Blink commissions, Tax stamp fees, and Total.
+Dropdown header: Commissions &amp; Taxes; 
+Rows with label + amount; “i” tooltips explaining fees (optional)
+Transaction Drilldown (period detail)
+Tapping a total or specific row can open a filtered transaction list for the selected period and scope, showing sales/commission-related entries with date/time, amount, and status.
+Transaction rows; 
+Date/time; Amount; 
+Status; 
+CTA: Open transaction detail; 
+Search/filter

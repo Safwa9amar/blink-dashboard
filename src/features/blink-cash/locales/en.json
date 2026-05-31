@@ -1,0 +1,100 @@
+{
+  "blink_cash": {
+    "title": "Blink Cash",
+    "description": "Network wallet, deposits, withdrawals & dues across all roles",
+    "export_report": "Export report",
+    "overview": "Overview",
+    "tab_ledger": "Ledger",
+    "tab_dues": "Dues",
+    "agent_float": "Agent Float",
+    "stats": {
+      "circulation": "Cash in Circulation",
+      "circulation_chg": "across 41k wallets",
+      "deposits": "Deposits (today)",
+      "deposits_chg": "▲ 12% · 3,210 txns",
+      "withdrawals": "Withdrawals (today)",
+      "withdrawals_chg": "2,040 txns",
+      "dues": "Dues Outstanding",
+      "dues_chg": "48 agents + merchants",
+      "float": "Agent Float",
+      "float_chg": "held at 47 agents"
+    },
+    "chart": {
+      "dvw": "Deposits vs withdrawals",
+      "dvw_desc": "Network cash flow · this week (000 DA)",
+      "deposits": "Deposits",
+      "withdrawals": "Withdrawals"
+    },
+    "cfg": {
+      "title": "Wallet & fees",
+      "desc": "Blink Cash configuration",
+      "deposit_agent": "Deposit fee · agent",
+      "deposit_card": "Deposit fee · card",
+      "withdrawal": "Withdrawal fee",
+      "commission": "Agent commission",
+      "trip_tax": "Trip tax (rider)",
+      "pin": "PIN required",
+      "free": "Free",
+      "enforced": "Enforced"
+    },
+    "latest": {
+      "title": "Latest activity",
+      "desc": "Across rider, agent, merchant & customer wallets"
+    },
+    "col": {
+      "txn": "Txn",
+      "account": "Account",
+      "type": "Type",
+      "method": "Method",
+      "amount": "Amount",
+      "fees": "Fees",
+      "when": "When",
+      "due": "Due",
+      "role": "Role",
+      "status": "Status",
+      "total": "Total",
+      "offer": "Offer"
+    },
+    "tx_type": { "deposit": "Deposit", "withdrawal": "Withdrawal" },
+    "method": { "agent": "Agent", "electronic": "Card / online" },
+    "tx_status": { "completed": "completed", "pending": "pending", "cancelled": "cancelled" },
+    "export": "Export",
+    "role_filter": "Role",
+    "ledger": {
+      "search": "Search transactions, accounts…",
+      "empty": "No transactions."
+    },
+    "f": {
+      "all": "All",
+      "deposits": "Deposits",
+      "withdrawals": "Withdrawals",
+      "dues": "Dues",
+      "trip_tax": "Trip tax"
+    },
+    "dues": {
+      "total": "Total Dues",
+      "total_chg": "48 accounts owe Blink",
+      "overdue": "Overdue",
+      "overdue_chg": "12,500 DA · agent",
+      "collected": "Collected Today",
+      "collected_chg": "9 payments",
+      "ontime": "On-time Rate",
+      "ontime_chg": "last 30 days",
+      "search": "Search accounts",
+      "remind": "Remind",
+      "empty": "No outstanding dues."
+    },
+    "float": {
+      "held": "Total Float Held",
+      "held_chg": "47 active agents",
+      "dep": "Deposits via Agents",
+      "wd": "Withdrawals via Agents",
+      "today": "today",
+      "near_cap": "Near Capacity",
+      "near_cap_chg": "agents >90% float",
+      "search": "Search agents",
+      "label": "Float"
+    },
+    "txns": "{n} txns"
+  }
+}

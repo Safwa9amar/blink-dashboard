@@ -1,0 +1,117 @@
+{
+  "vehicles": {
+    "title": "Vehicles",
+    "description": "Manage the rider fleet, vehicle specs and document compliance",
+
+    "fleet": "Fleet",
+    "documents": "Documents",
+
+    "all": "All",
+    "search": "Search by rider, brand, plate…",
+    "new_vehicle": "New vehicle",
+    "view": "View",
+    "edit": "Edit",
+    "delete": "Delete",
+    "required": "Required",
+
+    "stats": {
+      "total": "Total Vehicles",
+      "total_chg": "{motos} motorcycles · {bikes} bicycles",
+      "compliant": "Fully Compliant",
+      "compliant_chg": "all documents approved",
+      "pending_review": "Pending Review",
+      "pending_review_chg": "documents awaiting approval",
+      "needs_attention": "Needs Attention",
+      "needs_attention_chg": "rejected or not uploaded"
+    },
+
+    "col": {
+      "vehicle": "Vehicle",
+      "rider": "Rider",
+      "wilaya": "Wilaya",
+      "type": "Type",
+      "category": "Category",
+      "compliance": "Compliance",
+      "document": "Document",
+      "status": "Status",
+      "review": "Review",
+      "actions": "Actions",
+      "no_plate": "No plate"
+    },
+
+    "type": {
+      "motorcycle": "Motorcycle",
+      "bicycle": "Bicycle"
+    },
+    "category": {
+      "standard": "Standard",
+      "electric": "Electric",
+      "hybrid": "Hybrid"
+    },
+
+    "doc": {
+      "grayCard": "Gray Card",
+      "insurance": "Insurance",
+      "drivingLicense": "Driving Licence"
+    },
+    "doc_status": {
+      "approved": "Approved",
+      "pending": "Pending",
+      "needs_update": "Needs update",
+      "not_uploaded": "Not uploaded"
+    },
+
+    "review": {
+      "approve": "Approve",
+      "needs_update": "Needs update",
+      "pending": "Pending"
+    },
+
+    "detail": {
+      "specs": "Specifications",
+      "documents": "Documents",
+      "no_docs": "Bicycles require no registration documents.",
+      "edit": "Edit",
+      "done": "Done"
+    },
+
+    "form": {
+      "new": "New vehicle",
+      "edit": "Edit vehicle",
+      "rider_name": "Rider name",
+      "rider_code": "Rider ID",
+      "type": "Type",
+      "category": "Category",
+      "wilaya": "Wilaya",
+      "brand": "Brand",
+      "model": "Model",
+      "plate": "License plate",
+      "year": "Year",
+      "color": "Color",
+      "documents": "Documents",
+      "cancel": "Cancel",
+      "save": "Save"
+    },
+
+    "ph": {
+      "rider_name": "e.g. Yacine Haddad",
+      "rider_code": "e.g. BK-2041",
+      "brand": "e.g. Yamaha",
+      "model": "e.g. NMAX 125",
+      "plate": "00123-114-16",
+      "plate_na": "Not applicable",
+      "color": "e.g. Black"
+    },
+
+    "confirm": {
+      "delete": "Delete this vehicle? This cannot be undone."
+    },
+
+    "empty": {
+      "all": "No vehicles yet. Add your first vehicle.",
+      "filtered": "No vehicles match your filters.",
+      "docs": "No documents to review.",
+      "docs_filtered": "No documents match your filters."
+    }
+  }
+}

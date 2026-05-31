@@ -1,0 +1,22 @@
+{
+  "live_ops": {
+    "title": "Opérations en direct",
+    "description": "Activité en temps réel sur le réseau",
+    "live": "En direct",
+    "feed_title": "Flux d'activité",
+    "feed_desc": "Commandes, trajets, dépôts, litiges et inscriptions — en temps réel",
+    "counters": "Compteurs en direct",
+    "active_deliveries": "Livraisons actives",
+    "enroute": "Livreurs en route",
+    "online": "Livreurs en ligne",
+    "coverage": "{pct}% de couverture",
+    "agents_open": "Agents ouverts",
+    "system_health": "État du système",
+    "api": "API",
+    "payments": "Paiements",
+    "maps": "Cartes et itinéraires",
+    "notifications": "Notifications",
+    "operational": "opérationnel",
+    "degraded": "dégradé"
+  }
+}

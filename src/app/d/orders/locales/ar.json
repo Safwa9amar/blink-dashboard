@@ -1,0 +1,23 @@
+{
+  "orders": {
+    "title": "الطلبات",
+    "description": "تتبع وإدارة جميع الطلبات",
+    "store": "المتجر",
+    "type": "النوع",
+    "status": "الحالة",
+    "total": "المجموع",
+    "items": "العناصر",
+    "empty": "لم يتم العثور على طلبات.",
+    "statuses": {
+      "delivered": "تم التوصيل",
+      "canceled": "ملغي",
+      "merchant_rejected": "رفض التاجر",
+      "on_the_way": "في الطريق",
+      "searching": "جاري البحث",
+      "processing": "قيد المعالجة",
+      "preparation": "قيد التحضير",
+      "pickup": "جاري الاستلام",
+      "heading_to_store": "متجه للمتجر"
+    }
+  }
+}

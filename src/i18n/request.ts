@@ -1,12 +1,7 @@
 import { getRequestConfig } from "next-intl/server";
 import { cookies } from "next/headers";
 import { defaultLocale, locales, type Locale } from "./config";
-
-const messageImports = {
-  en: () => import("../../messages/en.json"),
-  ar: () => import("../../messages/ar.json"),
-  fr: () => import("../../messages/fr.json"),
-} as const;
+import { getAllMessages } from "./messages";
 
 export default getRequestConfig(async () => {
   const cookieStore = await cookies();
@@ -17,6 +12,7 @@ export default getRequestConfig(async () => {
 
   return {
     locale,
-    messages: (await messageImports[locale]()).default,
+    // Merged from shared strings + every feature's co-located locale bundle.
+    messages: getAllMessages(locale),
   };
 });

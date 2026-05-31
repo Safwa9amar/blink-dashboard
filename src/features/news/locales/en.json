@@ -1,0 +1,98 @@
+{
+  "news": {
+    "title": "Blink News",
+    "description": "In-app news, offers & announcements",
+    "all_news": "All News",
+    "compose": "Compose",
+    "categories": "Categories",
+    "new_post": "New post",
+    "search": "Search posts",
+    "reads": "Reads",
+    "ctr": "CTR",
+    "stats": {
+      "published": "Published",
+      "published_chg": "2 pinned",
+      "scheduled": "Scheduled",
+      "scheduled_chg": "next: Jun 1",
+      "reads": "Total Reads",
+      "reads_chg": "▲ 9% this month",
+      "ctr": "Avg CTR",
+      "ctr_chg": "tap-through on CTAs"
+    },
+    "filters": {
+      "all": "All",
+      "published": "Published",
+      "scheduled": "Scheduled",
+      "draft": "Draft"
+    },
+    "actions": {
+      "preview": "Preview",
+      "pin": "Pin",
+      "duplicate": "Duplicate",
+      "delete": "Delete"
+    },
+    "empty": {
+      "title": "No posts here",
+      "desc": "No posts match this filter yet. Try another status or compose a new one."
+    },
+    "form": {
+      "compose": "Compose news post",
+      "compose_desc": "Publish an in-app Blink News card to a target audience",
+      "cover": "Cover image",
+      "upload": "Upload",
+      "lang": "Content language",
+      "lang_hint": "Provide the post in Arabic, French & English.",
+      "title": "Title",
+      "title_ph": "e.g. Expanding Network: 15 new hubs",
+      "summary": "Summary",
+      "summary_ph": "One-line teaser shown on the card",
+      "category": "Category",
+      "audience": "Audience",
+      "audience_hint": "Who sees this post in their feed.",
+      "body": "Body",
+      "body_hint": "Format text, add headings, lists & images",
+      "body_ph": "Full article shown when the card is tapped…",
+      "cta": "CTA button label",
+      "publish": "Publish",
+      "publish_at": "Publish at",
+      "auto_unpublish": "Auto-unpublish",
+      "auto_unpublish_desc": "Hide the post after a date",
+      "save_draft": "Save draft",
+      "upcoming": "Upcoming",
+      "upcoming_desc": "Scheduled posts, soonest first",
+      "pin": "Pin to top",
+      "pin_desc": "Keep at the top of the feed",
+      "push": "Send push",
+      "push_desc": "Notify the audience on publish",
+      "new_category": "New category",
+      "search_categories": "Search categories",
+      "posts": "{n} posts",
+      "cta_ph": "Learn more"
+    },
+    "analytics": {
+      "tab": "Analytics",
+      "engagement": "Engagement",
+      "engagement_chg": "read past the fold",
+      "reads_title": "Reads over time",
+      "reads_desc": "Monthly in-app news reads",
+      "reads_legend": "Reads (k)",
+      "peak": "Peak",
+      "cats_title": "By category",
+      "cats_desc": "Share of published posts",
+      "posts": "Posts",
+      "top_title": "Top posts",
+      "top_desc": "Most-read posts this period"
+    },
+    "preview": {
+      "headline": "Your headline appears here",
+      "summary": "The summary teaser shows on the news card in the app feed.",
+      "push_on": "push on",
+      "pinned": "pinned"
+    },
+    "preview_modal": {
+      "title": "Post preview",
+      "open": "Preview",
+      "empty_body": "No article body yet — add content in the editor."
+    }
+  }
+}

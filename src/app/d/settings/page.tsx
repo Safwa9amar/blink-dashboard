@@ -1,14 +1,11 @@
-import { getTranslations } from "next-intl/server";
-import { PageHeader } from "@/components/ui";
-import { SettingsTabs } from "./settings-tabs";
+import type { Metadata } from "next";
+import { pageMeta } from "@/lib/dash-metadata";
+import Client from "./client";
 
-export default async function SettingsPage() {
-  const t = await getTranslations("settings");
+export function generateMetadata(): Promise<Metadata> {
+  return pageMeta("settings");
+}
 
-  return (
-    <div>
-      <PageHeader title={t("title")} description={t("description")} />
-      <SettingsTabs />
-    </div>
-  );
+export default function Page() {
+  return <Client />;
 }

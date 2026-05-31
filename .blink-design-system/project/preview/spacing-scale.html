@@ -1,0 +1,31 @@
+<!-- @dsCard group="Spacing" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  * { margin: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); background: #fff; padding: 22px 26px; }
+  .tag { font-family: var(--font-body); font-size: 10px; color: var(--slate-400); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 18px; }
+  .row { display:flex; align-items:flex-end; gap: 14px; }
+  .col { display:flex; flex-direction:column; align-items:center; gap: 8px; }
+  .bar { background: var(--blink-500); border-radius: 4px; width: 26px; }
+  .nm { font-family: var(--font-display); font-weight: 700; font-size: 11px; color: var(--slate-900); }
+  .vl { font-size: 10px; color: var(--slate-500); }
+</style>
+</head>
+<body>
+  <div class="tag">Spacing — 4px base grid</div>
+  <div class="row">
+    <div class="col"><div class="bar" style="height:4px"></div><span class="nm">1</span><span class="vl">4</span></div>
+    <div class="col"><div class="bar" style="height:8px"></div><span class="nm">2</span><span class="vl">8</span></div>
+    <div class="col"><div class="bar" style="height:12px"></div><span class="nm">3</span><span class="vl">12</span></div>
+    <div class="col"><div class="bar" style="height:16px"></div><span class="nm">4</span><span class="vl">16</span></div>
+    <div class="col"><div class="bar" style="height:20px"></div><span class="nm">5</span><span class="vl">20</span></div>
+    <div class="col"><div class="bar" style="height:24px"></div><span class="nm">6</span><span class="vl">24</span></div>
+    <div class="col"><div class="bar" style="height:32px"></div><span class="nm">8</span><span class="vl">32</span></div>
+    <div class="col"><div class="bar" style="height:40px"></div><span class="nm">10</span><span class="vl">40</span></div>
+  </div>
+</body>
+</html>

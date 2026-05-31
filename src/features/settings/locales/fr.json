@@ -1,0 +1,73 @@
+{
+  "settings": {
+    "title": "Paramètres",
+    "description": "Gérer la configuration de votre plateforme",
+    "saved": "Paramètres enregistrés avec succès",
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "general": {
+      "title": "Général",
+      "description": "Nom de la plateforme, contact et configuration de base",
+      "platform_name": "Nom de la Plateforme",
+      "support_email": "Email de Support",
+      "support_phone": "Téléphone de Support",
+      "timezone": "Fuseau Horaire",
+      "currency": "Devise",
+      "currency_symbol": "Symbole de Devise",
+      "default_language": "Langue par Défaut"
+    },
+    "fees": {
+      "title": "Frais & Commission",
+      "description": "Configurer les frais de livraison, frais de service et taux de commission",
+      "delivery_fee": "Frais de Livraison de Base",
+      "service_fee_pct": "Frais de Service (%)",
+      "commission_pct": "Commission Livreur (%)",
+      "min_order": "Montant Minimum de Commande",
+      "free_delivery_threshold": "Seuil de Livraison Gratuite",
+      "agent_commission_pct": "Commission Agent (%)"
+    },
+    "notifications_settings": {
+      "title": "Notifications",
+      "description": "Configurer les préférences d'email et de notifications push",
+      "email_new_order": "Email pour nouvelle commande",
+      "email_new_rider": "Email pour nouveau livreur",
+      "email_dispute": "Email pour litige déposé",
+      "push_order_updates": "Notifications de mise à jour des commandes",
+      "push_trip_updates": "Notifications de mise à jour des trajets",
+      "push_promotions": "Notifications promotionnelles"
+    },
+    "security": {
+      "title": "Sécurité",
+      "description": "Mot de passe, sessions et contrôle d'accès",
+      "change_password": "Changer le Mot de Passe",
+      "current_password": "Mot de Passe Actuel",
+      "new_password": "Nouveau Mot de Passe",
+      "confirm_password": "Confirmer le Mot de Passe",
+      "update_password": "Mettre à Jour",
+      "updating": "Mise à jour...",
+      "password_mismatch": "Les mots de passe ne correspondent pas",
+      "password_updated": "Mot de passe mis à jour avec succès",
+      "session_timeout": "Expiration de Session (minutes)",
+      "require_2fa": "Exiger l'Authentification à Deux Facteurs"
+    },
+    "appearance": {
+      "title": "Apparence",
+      "description": "Thème, langue et préférences d'affichage",
+      "theme": "Thème",
+      "dark": "Sombre",
+      "light": "Clair",
+      "language": "Langue",
+      "date_format": "Format de Date",
+      "rows_per_page": "Lignes par Page"
+    },
+    "danger_zone": {
+      "title": "Zone de Danger",
+      "description": "Actions irréversibles",
+      "reset_data": "Réinitialiser les Données",
+      "reset_confirm": "Êtes-vous sûr ? Cela supprimera définitivement toutes les données de la plateforme. Cette action est irréversible.",
+      "reset": "Réinitialiser Toutes les Données",
+      "export_data": "Exporter Toutes les Données",
+      "export": "Exporter"
+    }
+  }
+}

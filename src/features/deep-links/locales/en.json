@@ -1,0 +1,47 @@
+{
+  "deep_links": {
+    "title": "Deep Links",
+    "description": "Catalog of in-app destinations for notifications & campaigns",
+    "import": "Import catalog",
+    "all": "All",
+    "browse": "Browse",
+    "search": "Search destinations",
+    "no_routes": "No matching routes.",
+    "pick_destination": "Pick a destination",
+    "external_link": "External web link",
+    "unknown_link": "Not a known in-app route",
+    "fill_params": "Fill params: {params}",
+    "role_mismatch": "Targets {role} — may not match this audience",
+    "back": "Back",
+    "insert": "Insert",
+    "imported_from": "Imported from {source}",
+    "reset_seed": "Reset to default",
+    "stats": {
+      "total": "Total routes",
+      "roles": "Roles",
+      "with_params": "With params",
+      "scheme": "Scheme"
+    },
+    "col": {
+      "destination": "Destination",
+      "deep_link": "Deep link",
+      "role": "Role",
+      "params": "Params"
+    },
+    "builder": {
+      "title": "Link builder",
+      "desc": "Pick a destination, fill any params, and copy the resolved deep link."
+    },
+    "import_title": "Import deep-link catalog",
+    "import_desc": "Upload the deeplinks.json exported from the app, or paste it below. This replaces the current catalog.",
+    "choose_file": "Choose a JSON file",
+    "choose_file_hint": "deeplinks.json exported from the Blink app",
+    "or_paste": "Or paste JSON",
+    "import_apply": "Import",
+    "import_ok": "Imported {count} routes.",
+    "err_invalid_json": "That isn’t valid JSON.",
+    "err_no_routes": "No “routes” array found in the file.",
+    "err_generic": "Could not import that file.",
+    "cancel": "Cancel"
+  }
+}

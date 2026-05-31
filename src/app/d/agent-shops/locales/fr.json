@@ -1,0 +1,17 @@
+{
+  "agent_shops": {
+    "title": "Boutiques Agents",
+    "description": "Gérer les points de dépôt des agents",
+    "shop_name": "Nom de la Boutique",
+    "phone": "Téléphone",
+    "status": "Statut",
+    "hours": "Horaires",
+    "rating": "Note",
+    "address": "Adresse",
+    "empty": "Aucune boutique agent trouvée.",
+    "statuses": {
+      "open": "ouvert",
+      "closed": "fermé"
+    }
+  }
+}
