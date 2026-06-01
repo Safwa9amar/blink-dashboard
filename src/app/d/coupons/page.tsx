@@ -7,5 +7,5 @@ export function generateMetadata(): Promise<Metadata> {
 }
 
 export default function Page() {
-  return <Client />;
+  return <Client tab="list" />;
 }

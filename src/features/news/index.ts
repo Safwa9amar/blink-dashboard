@@ -7,4 +7,9 @@ export { NewsCategories } from "./components/news-categories";
 export { NewsAnalytics } from "./components/news-analytics";
 export { PostPreview, type PreviewData } from "./components/post-preview";
 export { useNewsStore } from "./store";
+export {
+  useNewsSettingsStore,
+  DEFAULT_MAX_BODY_IMAGES,
+  DEFAULT_MAX_BODY_LENGTH,
+} from "./settings-store";
 export * from "./data";

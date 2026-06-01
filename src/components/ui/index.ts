@@ -30,6 +30,7 @@ export { RoleChips } from "./role-chips";
 export { FilterPills } from "./filter-pills";
 export { FormRow } from "./form-row";
 export { SubTabs, type SubTab } from "./sub-tabs";
+export { SubNav, type SubNavItem } from "./sub-nav";
 export { LangTabs } from "./lang-tabs";
 export { RichEditor } from "./rich-editor";
 

@@ -29,7 +29,8 @@
       "preview": "Aperçu",
       "pin": "Épingler",
       "duplicate": "Dupliquer",
-      "delete": "Supprimer"
+      "delete": "Supprimer",
+      "edit": "Modifier"
     },
     "empty": {
       "title": "Aucune publication",
@@ -67,7 +68,9 @@
       "new_category": "Nouvelle catégorie",
       "search_categories": "Rechercher des catégories",
       "posts": "{n} publications",
-      "cta_ph": "En savoir plus"
+      "cta_ph": "En savoir plus",
+      "edit": "Modifier l'actu",
+      "edit_desc": "Mettre à jour cette carte Blink News"
     },
     "analytics": {
       "tab": "Statistiques",
@@ -93,6 +96,30 @@
       "title": "Aperçu de la publication",
       "open": "Aperçu",
       "empty_body": "Pas encore de contenu — ajoutez-le dans l'éditeur."
+    },
+    "detail": {
+      "back": "Retour aux actus",
+      "not_found": "Publication introuvable",
+      "edit": "Modifier",
+      "article": "Article",
+      "audience": "Public",
+      "schedule": "Programmé pour",
+      "expires": "Expire",
+      "no_body": "Pas encore de contenu pour cette langue.",
+      "reads": "Lectures",
+      "ctr": "CTR"
+    },
+    "limits": {
+      "error_images": "Trop d'images — {max} max par publication.",
+      "error_length": "Corps trop long pour {lang} — {max} caractères max.",
+      "chars": "caractères"
+    },
+    "required": {
+      "title": "Le titre est requis ({lang})",
+      "summary": "Le résumé est requis ({lang})",
+      "body": "Le contenu est requis ({lang})",
+      "cta": "Le libellé du bouton CTA est requis",
+      "audience": "Sélectionnez au moins un public"
     }
   }
 }

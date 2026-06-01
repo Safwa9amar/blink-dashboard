@@ -1,8 +1,9 @@
 // Mock data for the Blink News CMS — from the Blink Design System handoff (news.jsx).
+import type { Lang } from "@/components/ui";
 import type { Variant } from "@/components/ui";
 
-import type { Post } from "./types";
-export type { Post, PostStatus, PostContent, NewPostInput } from "./types";
+import type { NewPostInput, NewsInsert, NewsRow, Post, PostContent } from "./types";
+export type { Post, PostStatus, PostContent, NewPostInput, NewsRow, NewsInsert } from "./types";
 
 export const N_CATS = [
   { name: "Network", color: "#3B82F6", count: 14 },
@@ -131,3 +132,89 @@ export const POSTS: Post[] = [
     push: false,
   },
 ];
+
+// ─── Helpers (shared by the store + the DB mappers) ──────────────────
+const LANG_ORDER: Lang[] = ["en", "fr", "ar"];
+
+export const slugify = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")
+    .slice(0, 40) || "post";
+
+export const rand = () => Math.random().toString(36).slice(2, 6);
+
+// Primary (admin-list) content: first language that has a title.
+export function primaryOf(content: Partial<Record<Lang, PostContent>>): PostContent {
+  for (const l of LANG_ORDER) {
+    const c = content[l];
+    if (c && c.title.trim()) return c;
+  }
+  return { title: "Untitled post", sum: "", body: "" };
+}
+
+// Short date label (e.g. "Jun 1") from an ISO / datetime-local string.
+export function shortDate(iso?: string | null): string {
+  if (!iso) return "now";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "now";
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+// CTR display string from views/clicks (derived, not stored).
+function ctrOf(views: number, clicks: number): string {
+  if (!views) return "—";
+  return `${((clicks / views) * 100).toFixed(1)}%`;
+}
+
+// ─── DB ⇄ UI mappers ─────────────────────────────────────────────────
+// A `news` row → the admin-list `Post` view model.
+export function rowToPost(row: NewsRow): Post {
+  // Recombine the per-language columns into the UI's content record.
+  const content: Partial<Record<Lang, PostContent>> = {};
+  if (row.content_eng) content.en = row.content_eng;
+  if (row.content_fr) content.fr = row.content_fr;
+  if (row.content_ar) content.ar = row.content_ar;
+  const primary = primaryOf(content);
+  const dateSrc = row.status === "scheduled" ? row.scheduled_at : row.published_at ?? row.created_at;
+  return {
+    id: row.id,
+    title: primary.title,
+    sum: primary.sum,
+    cat: row.category,
+    cover: row.cover_url ?? COVERS[0],
+    roles: row.target_roles ?? ["All"],
+    status: row.status,
+    pin: row.pinned,
+    views: row.views,
+    ctr: ctrOf(row.views, row.clicks),
+    date: shortDate(dateSrc),
+    content,
+    cta: row.cta_label ?? undefined,
+    push: row.push,
+    scheduledAt: row.scheduled_at ?? undefined,
+    expiresAt: row.expires_at ?? undefined,
+  };
+}
+
+// The compose form's input → a `news` insert payload.
+export function postToInsert(input: NewPostInput): NewsInsert {
+  const primary = primaryOf(input.content);
+  return {
+    slug: `${slugify(primary.title)}-${rand()}`,
+    category: input.cat,
+    cover_url: input.cover || null,
+    target_roles: input.roles,
+    status: input.status,
+    pinned: input.pin,
+    push: input.push,
+    cta_label: input.cta || null,
+    content_eng: input.content.en ?? null,
+    content_fr: input.content.fr ?? null,
+    content_ar: input.content.ar ?? null,
+    published_at: input.status === "published" ? new Date().toISOString() : null,
+    scheduled_at: input.scheduledAt || null,
+    expires_at: input.expiresAt || null,
+  };
+}

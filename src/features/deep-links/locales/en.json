@@ -42,6 +42,33 @@
     "err_invalid_json": "That isn’t valid JSON.",
     "err_no_routes": "No “routes” array found in the file.",
     "err_generic": "Could not import that file.",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "manage": {
+      "description": "Build, save and track in-app deep links for campaigns & notifications",
+      "create_title": "Create a deep link",
+      "create_desc": "Pick a destination, fill any params, then save a trackable link.",
+      "destination": "Destination",
+      "title_label": "Title",
+      "title_ph": "e.g. Summer deal banner",
+      "campaign_label": "Campaign",
+      "campaign_ph": "e.g. summer-2026",
+      "optional": "optional",
+      "active": "Active",
+      "save": "Save link",
+      "saving": "Saving…",
+      "need_params": "Fill the remaining params first",
+      "saved_title": "Saved links",
+      "saved_desc": "Persisted, trackable deep links.",
+      "search_saved": "Search saved links",
+      "none_saved": "No saved links yet — create one above.",
+      "confirm_delete": "Delete “{title}”?",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "delete": "Delete",
+      "href_label": "In-app href · router.push() / push data.href",
+      "url_label": "External URL · blink:// (SMS, QR, email)",
+      "stats": { "total": "Total links", "active": "Active", "clicks": "Total clicks", "scheme": "Scheme" },
+      "col": { "link": "Link", "role": "Role", "campaign": "Campaign", "clicks": "Clicks", "status": "Status" }
+    }
   }
 }

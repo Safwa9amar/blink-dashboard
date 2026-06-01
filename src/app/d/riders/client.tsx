@@ -1,11 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { PageHeader, SubTabs, DataTable } from "@/components/ui";
-import { VehicleStats, FleetTable, DocReviewTable } from "@/features/vehicles";
+import { PageHeader, SubNav, DataTable } from "@/components/ui";
+import { buildDocRows } from "@/features/vehicles";
 import { useVehiclesStore, useHydrateVehicles } from "@/features/vehicles/store";
-import { buildDocRows } from "@/features/vehicles/data";
 
 interface RidersClientProps {
   riders: Record<string, unknown>[] | null;
@@ -18,7 +16,6 @@ export default function RidersClient({ riders, error }: RidersClientProps) {
   const tc = useTranslations("common");
   useHydrateVehicles();
 
-  const [tab, setTab] = useState("riders");
   const vehicles = useVehiclesStore((s) => s.vehicles);
   const pendingDocs = buildDocRows(vehicles).filter((d) => d.status === "pending").length;
 
@@ -73,11 +70,13 @@ export default function RidersClient({ riders, error }: RidersClientProps) {
     },
   ];
 
-  const tabs = [
-    { id: "riders", label: t("title"), icon: "users", count: riders ? String(riders.length) : undefined },
-    { id: "fleet", label: tv("fleet"), icon: "bike", count: String(vehicles.length) },
+  // Fleet & Documents are owned by the Vehicles route — these sub-nav entries
+  // link out to it rather than duplicating the fleet views under /riders.
+  const navItems = [
+    { href: "/riders", label: t("title"), icon: "users", count: riders ? String(riders.length) : undefined },
+    { href: "/vehicles", label: tv("fleet"), icon: "bike", count: String(vehicles.length) },
     {
-      id: "documents",
+      href: "/vehicles/documents",
       label: tv("documents"),
       icon: "shield",
       count: pendingDocs ? String(pendingDocs) : undefined,
@@ -87,23 +86,8 @@ export default function RidersClient({ riders, error }: RidersClientProps) {
   return (
     <div>
       <PageHeader title={t("title")} description={t("description")} />
-      <SubTabs tabs={tabs} active={tab} onChange={setTab} />
-
-      {tab === "riders" && (
-        <DataTable columns={columns} data={riders} error={error} emptyMessage={t("empty")} />
-      )}
-      {tab === "fleet" && (
-        <>
-          <VehicleStats t={tv} />
-          <FleetTable t={tv} />
-        </>
-      )}
-      {tab === "documents" && (
-        <>
-          <VehicleStats t={tv} />
-          <DocReviewTable t={tv} />
-        </>
-      )}
+      <SubNav items={navItems} />
+      <DataTable columns={columns} data={riders} error={error} emptyMessage={t("empty")} />
     </div>
   );
 }

@@ -68,6 +68,13 @@
       "reset": "Réinitialiser Toutes les Données",
       "export_data": "Exporter Toutes les Données",
       "export": "Exporter"
+    },
+    "news": {
+      "title": "Actus",
+      "description": "Limites des publications d'actualités in-app.",
+      "max_images": "Images max dans le corps",
+      "max_length": "Longueur max du corps (caractères)",
+      "hint": "Les auteurs ne peuvent pas dépasser ces limites dans le corps d'une publication."
     }
   }
 }

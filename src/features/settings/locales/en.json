@@ -68,6 +68,13 @@
       "reset": "Reset All Data",
       "export_data": "Export All Data",
       "export": "Export"
+    },
+    "news": {
+      "title": "News",
+      "description": "Limits for in-app news posts.",
+      "max_images": "Max body images",
+      "max_length": "Max body length (characters)",
+      "hint": "Authors can't exceed these limits when composing a post body."
     }
   }
 }

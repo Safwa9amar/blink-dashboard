@@ -42,6 +42,33 @@
     "err_invalid_json": "JSON invalide.",
     "err_no_routes": "Aucun tableau « routes » trouvé.",
     "err_generic": "Importation impossible.",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "manage": {
+      "description": "Créez, enregistrez et suivez des liens profonds in-app pour les campagnes et notifications",
+      "create_title": "Créer un lien profond",
+      "create_desc": "Choisissez une destination, renseignez les params, puis enregistrez un lien traçable.",
+      "destination": "Destination",
+      "title_label": "Titre",
+      "title_ph": "ex. Bannière offre d’été",
+      "campaign_label": "Campagne",
+      "campaign_ph": "ex. summer-2026",
+      "optional": "facultatif",
+      "active": "Actif",
+      "save": "Enregistrer",
+      "saving": "Enregistrement…",
+      "need_params": "Renseignez d’abord les params restants",
+      "saved_title": "Liens enregistrés",
+      "saved_desc": "Liens profonds persistés et traçables.",
+      "search_saved": "Rechercher des liens",
+      "none_saved": "Aucun lien enregistré — créez-en un ci-dessus.",
+      "confirm_delete": "Supprimer « {title} » ?",
+      "copy": "Copier",
+      "copied": "Copié !",
+      "delete": "Supprimer",
+      "href_label": "Lien interne · router.push() / push data.href",
+      "url_label": "URL externe · blink:// (SMS, QR, e-mail)",
+      "stats": { "total": "Total des liens", "active": "Actifs", "clicks": "Total des clics", "scheme": "Schéma" },
+      "col": { "link": "Lien", "role": "Rôle", "campaign": "Campagne", "clicks": "Clics", "status": "Statut" }
+    }
   }
 }

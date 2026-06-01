@@ -7,5 +7,5 @@ export function generateMetadata(): Promise<Metadata> {
 }
 
 export default function VehiclesPage() {
-  return <VehiclesClient />;
+  return <VehiclesClient tab="fleet" />;
 }

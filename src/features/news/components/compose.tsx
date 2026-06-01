@@ -18,41 +18,82 @@ import {
   toggleInList,
   type Lang,
 } from "@/components/ui";
-import { N_CATS, N_CAT_NAMES, N_ROLES, N_ROLE_VARIANT, COVERS } from "../data";
-import type { PostStatus, PostContent } from "../types";
+import { N_CATS, N_CAT_NAMES, N_ROLES, N_ROLE_VARIANT, COVERS, primaryOf } from "../data";
+import type { Post, PostStatus, PostContent } from "../types";
 import { useNewsStore } from "../store";
+import { useNewsSettingsStore } from "../settings-store";
+import { createNewsUploadUrl } from "@/app/d/news/action";
+import { createClient } from "@/lib/supabase/client";
 import { CoverPick } from "./cover-pick";
 import { ToggleRow } from "./toggle-row";
 import { PostPreview, type PreviewData } from "./post-preview";
 
-export function Compose({ onCancel }: { onCancel: () => void }) {
+// Uploads a cover / body image straight to Supabase Storage via a staff-gated
+// signed URL (the file bytes bypass the server action — no body-size limit).
+async function uploadImage(file: File): Promise<string> {
+  const ext = file.name.split(".").pop() || "bin";
+  const { path, token, error } = await createNewsUploadUrl(ext);
+  if (error || !path || !token) throw new Error(error ?? "Upload failed");
+
+  const supabase = createClient();
+  const { error: upErr } = await supabase.storage
+    .from("news")
+    .uploadToSignedUrl(path, token, file, { contentType: file.type });
+  if (upErr) throw new Error(upErr.message);
+
+  return supabase.storage.from("news").getPublicUrl(path).data.publicUrl;
+}
+
+// Per-language values for one content field (title/sum/body), seeded from a post.
+function langField(
+  content: Partial<Record<Lang, PostContent>> | undefined,
+  field: keyof PostContent
+): Record<Lang, string> {
+  const out = emptyLang();
+  if (content)
+    (["en", "fr", "ar"] as Lang[]).forEach((l) => {
+      if (content[l]) out[l] = content[l]![field];
+    });
+  return out;
+}
+
+// Used for both composing a new post and editing an existing one (pass `initial`).
+export function Compose({ initial, onCancel }: { initial?: Post; onCancel: () => void }) {
+  const isEdit = !!initial;
   const t = useTranslations("news");
   const td = useTranslations("dash");
   const createPost = useNewsStore((s) => s.createPost);
+  const updatePost = useNewsStore((s) => s.updatePost);
   const posts = useNewsStore((s) => s.posts);
+  const maxBodyImages = useNewsSettingsStore((s) => s.maxBodyImages);
+  const maxBodyLength = useNewsSettingsStore((s) => s.maxBodyLength);
   const scheduled = useMemo(
     () =>
       posts
-        .filter((p) => p.status === "scheduled")
+        .filter((p) => p.status === "scheduled" && p.id !== initial?.id)
         .sort((a, b) => (a.scheduledAt ?? "").localeCompare(b.scheduledAt ?? "")),
-    [posts]
+    [posts, initial?.id]
   );
 
   const [lang, setLang] = useState<Lang>("en");
-  const [title, setTitle] = useState(emptyLang());
-  const [sum, setSum] = useState(emptyLang());
-  const [body, setBody] = useState(emptyLang());
-  const [cat, setCat] = useState("Network");
-  const [cover, setCover] = useState(COVERS[0]);
-  const [roles, setRoles] = useState(["All"]);
-  const [when, setWhen] = useState<"now" | "schedule">("now");
-  const [scheduledAt, setScheduledAt] = useState("2026-06-01T09:00");
-  const [expiresOn, setExpiresOn] = useState(false);
-  const [expiresAt, setExpiresAt] = useState("");
-  const [pin, setPin] = useState(false);
-  const [push, setPush] = useState(true);
-  const [cta, setCta] = useState("Learn more");
+  const [title, setTitle] = useState(() => langField(initial?.content, "title"));
+  const [sum, setSum] = useState(() => langField(initial?.content, "sum"));
+  const [body, setBody] = useState(() => langField(initial?.content, "body"));
+  const [cat, setCat] = useState(initial?.cat ?? "Network");
+  const [cover, setCover] = useState(initial?.cover ?? COVERS[0]);
+  const [roles, setRoles] = useState(initial?.roles ?? ["All"]);
+  const [when, setWhen] = useState<"now" | "schedule">(
+    initial?.status === "scheduled" ? "schedule" : "now"
+  );
+  const [scheduledAt, setScheduledAt] = useState(initial?.scheduledAt ?? "2026-06-01T09:00");
+  const [expiresOn, setExpiresOn] = useState(!!initial?.expiresAt);
+  const [expiresAt, setExpiresAt] = useState(initial?.expiresAt ?? "");
+  const [pin, setPin] = useState(initial?.pin ?? false);
+  const [push, setPush] = useState(initial?.push ?? true);
+  const [cta, setCta] = useState(initial?.cta ?? "Learn more");
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [limitError, setLimitError] = useState<string | null>(null);
+  const [pending, setPending] = useState<PostStatus | null>(null);
   const catColor = N_CATS.find((c) => c.name === cat)?.color;
 
   const draftContent: Partial<Record<Lang, PostContent>> = {
@@ -62,7 +103,56 @@ export function Compose({ onCancel }: { onCancel: () => void }) {
   };
   const previewData: PreviewData = { cover, cat, cta, roles, content: draftContent, title: title.en, sum: sum.en };
 
-  function submit(status: PostStatus) {
+  async function submit(status: PostStatus) {
+    if (pending) return; // guard against double-submit
+
+    // Required fields — every input must be filled to publish/schedule (drafts
+    // may be saved incomplete). Jumps to the offending language tab.
+    if (status !== "draft") {
+      for (const l of ["en", "fr", "ar"] as Lang[]) {
+        const code = l.toUpperCase();
+        if (!title[l].trim()) {
+          setLang(l);
+          setLimitError(t("required.title", { lang: code }));
+          return;
+        }
+        if (!sum[l].trim()) {
+          setLang(l);
+          setLimitError(t("required.summary", { lang: code }));
+          return;
+        }
+        if (!(body[l] || "").replace(/<[^>]*>/g, "").trim()) {
+          setLang(l);
+          setLimitError(t("required.body", { lang: code }));
+          return;
+        }
+      }
+      if (roles.length === 0) {
+        setLimitError(t("required.audience"));
+        return;
+      }
+      if (!cta.trim()) {
+        setLimitError(t("required.cta"));
+        return;
+      }
+    }
+
+    // Enforce the editorial caps from Settings → News (per language body).
+    for (const l of ["en", "fr", "ar"] as Lang[]) {
+      const html = body[l] || "";
+      const images = (html.match(/<img/gi) ?? []).length;
+      if (images > maxBodyImages) {
+        setLimitError(t("limits.error_images", { max: maxBodyImages }));
+        return;
+      }
+      const textLen = html.replace(/<[^>]*>/g, "").trim().length;
+      if (textLen > maxBodyLength) {
+        setLimitError(t("limits.error_length", { max: maxBodyLength, lang: l.toUpperCase() }));
+        return;
+      }
+    }
+    setLimitError(null);
+
     const content: Partial<Record<Lang, PostContent>> = {};
     (["en", "fr", "ar"] as Lang[]).forEach((l) => {
       const hasBody = !!body[l] && body[l] !== "<p></p>";
@@ -70,7 +160,7 @@ export function Compose({ onCancel }: { onCancel: () => void }) {
         content[l] = { title: title[l], sum: sum[l], body: body[l] };
       }
     });
-    createPost({
+    const fields = {
       content,
       cat,
       cover,
@@ -81,15 +171,33 @@ export function Compose({ onCancel }: { onCancel: () => void }) {
       cta,
       scheduledAt: status === "scheduled" ? scheduledAt : undefined,
       expiresAt: expiresOn && expiresAt ? expiresAt : undefined,
-    });
+    };
+    setPending(status);
+    let res: { error: string | null };
+    if (isEdit && initial) {
+      // Carry the derived list-display title/sum so the optimistic UI stays fresh.
+      const primary = primaryOf(content);
+      res = await updatePost(initial.id, { ...fields, title: primary.title, sum: primary.sum });
+    } else {
+      res = await createPost(fields);
+    }
+    setPending(null);
+
+    if (res.error) {
+      setLimitError(res.error); // keep the form open so the author can retry
+      return;
+    }
     onCancel();
   }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-5 items-start">
-      <Card title={t("form.compose")} description={t("form.compose_desc")}>
+      <Card
+        title={isEdit ? t("form.edit") : t("form.compose")}
+        description={isEdit ? t("form.edit_desc") : t("form.compose_desc")}
+      >
         <FormRow label={t("form.cover")}>
-          <CoverPick covers={COVERS} value={cover} onChange={setCover} uploadLabel={t("form.upload")} />
+          <CoverPick covers={COVERS} value={cover} onChange={setCover} uploadLabel={t("form.upload")} onUpload={uploadImage} />
         </FormRow>
         <FormRow label={t("form.lang")} hint={t("form.lang_hint")}>
           <LangTabs active={lang} onChange={setLang} filled={{ en: !!title.en, fr: !!title.fr, ar: !!title.ar }} />
@@ -131,6 +239,9 @@ export function Compose({ onCancel }: { onCancel: () => void }) {
             onChange={(html) => setBody((o) => ({ ...o, [lang]: html }))}
             dir={dirFor(lang)}
             placeholder={t("form.body_ph")}
+            onUploadImage={uploadImage}
+            maxImages={maxBodyImages}
+            maxLength={maxBodyLength}
           />
         </FormRow>
         <FormRow label={t("form.cta")} className="!mb-0">
@@ -178,14 +289,30 @@ export function Compose({ onCancel }: { onCancel: () => void }) {
               aria-label={t("form.auto_unpublish")}
             />
           )}
-          <Button onClick={() => submit(when === "schedule" ? "scheduled" : "published")} className="w-full mt-4">
-            {when === "schedule" ? td("schedule") : td("publish")}
+          {limitError && (
+            <p className="mt-3 rounded-lg border border-danger/30 bg-danger-light px-3 py-2 text-xs text-danger">
+              {limitError}
+            </p>
+          )}
+          <Button
+            onClick={() => submit(when === "schedule" ? "scheduled" : "published")}
+            loading={pending === (when === "schedule" ? "scheduled" : "published")}
+            disabled={pending !== null}
+            className="w-full mt-4"
+          >
+            {isEdit ? td("save") : when === "schedule" ? td("schedule") : td("publish")}
           </Button>
           <div className="flex gap-2.5 mt-2.5">
-            <Button variant="secondary" onClick={onCancel} className="flex-1">
+            <Button variant="secondary" onClick={onCancel} disabled={pending !== null} className="flex-1">
               {td("cancel")}
             </Button>
-            <Button variant="secondary" onClick={() => submit("draft")} className="flex-1">
+            <Button
+              variant="secondary"
+              onClick={() => submit("draft")}
+              loading={pending === "draft"}
+              disabled={pending !== null}
+              className="flex-1"
+            >
               {t("form.save_draft")}
             </Button>
           </div>

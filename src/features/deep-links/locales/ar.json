@@ -42,6 +42,33 @@
     "err_invalid_json": "JSON غير صالح.",
     "err_no_routes": "لا يوجد مصفوفة «routes».",
     "err_generic": "تعذّر الاستيراد.",
-    "cancel": "إلغاء"
+    "cancel": "إلغاء",
+    "manage": {
+      "description": "أنشئ روابط عميقة داخل التطبيق واحفظها وتتبّعها للحملات والإشعارات",
+      "create_title": "إنشاء رابط عميق",
+      "create_desc": "اختر وجهة، واملأ المتغيرات، ثم احفظ رابطًا قابلًا للتتبّع.",
+      "destination": "الوجهة",
+      "title_label": "العنوان",
+      "title_ph": "مثال: لافتة عرض الصيف",
+      "campaign_label": "الحملة",
+      "campaign_ph": "مثال: summer-2026",
+      "optional": "اختياري",
+      "active": "نشط",
+      "save": "حفظ الرابط",
+      "saving": "جارٍ الحفظ…",
+      "need_params": "املأ المتغيرات المتبقية أولًا",
+      "saved_title": "الروابط المحفوظة",
+      "saved_desc": "روابط عميقة محفوظة وقابلة للتتبّع.",
+      "search_saved": "ابحث في الروابط المحفوظة",
+      "none_saved": "لا توجد روابط محفوظة بعد — أنشئ واحدًا أعلاه.",
+      "confirm_delete": "حذف «{title}»؟",
+      "copy": "نسخ",
+      "copied": "تم النسخ!",
+      "delete": "حذف",
+      "href_label": "الهدف داخل التطبيق · ‏router.push() / push data.href",
+      "url_label": "رابط خارجي · ‏//:blink (رسائل، QR، بريد)",
+      "stats": { "total": "إجمالي الروابط", "active": "النشطة", "clicks": "إجمالي النقرات", "scheme": "المخطط" },
+      "col": { "link": "الرابط", "role": "الدور", "campaign": "الحملة", "clicks": "النقرات", "status": "الحالة" }
+    }
   }
 }

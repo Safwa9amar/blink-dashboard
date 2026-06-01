@@ -51,11 +51,21 @@ export function RichEditor({
   onChange,
   dir = "ltr",
   placeholder,
+  onUploadImage,
+  maxImages,
+  maxLength,
 }: {
   value: string;
   onChange: (html: string) => void;
   dir?: Dir;
   placeholder?: string;
+  // When provided, inserted images are uploaded (e.g. to Supabase Storage) and
+  // the returned URL is used; otherwise the image is inlined as a data-URL.
+  onUploadImage?: (file: File) => Promise<string>;
+  // Editorial caps (from Settings → News): block inserting beyond `maxImages`
+  // images, and show a character counter against `maxLength`.
+  maxImages?: number;
+  maxLength?: number;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const lastHtml = useRef(value);
@@ -100,13 +110,31 @@ export function RichEditor({
       quote: e?.isActive("blockquote") ?? false,
       canUndo: e?.can().undo() ?? false,
       canRedo: e?.can().redo() ?? false,
+      chars: e?.getText().length ?? 0,
+      images: e ? (e.getHTML().match(/<img/gi) ?? []).length : 0,
     }),
   });
 
-  function onPickImage(e: React.ChangeEvent<HTMLInputElement>) {
+  const atImageLimit = maxImages != null && (s?.images ?? 0) >= maxImages;
+  const overLength = maxLength != null && (s?.chars ?? 0) > maxLength;
+
+  async function onPickImage(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file || !editor) return;
+    if (atImageLimit) return; // editorial cap reached
+
+    if (onUploadImage) {
+      try {
+        const src = await onUploadImage(file);
+        editor.chain().focus().setImage({ src }).run();
+      } catch (err) {
+        console.error("image upload failed:", err);
+      }
+      return;
+    }
+
+    // Fallback: inline as a data-URL (no uploader wired).
     const reader = new FileReader();
     reader.onload = () => {
       const src = reader.result as string;
@@ -159,7 +187,11 @@ export function RichEditor({
           <DashIcon name="quote" className="w-[15px] h-[15px]" />
         </ToolBtn>
         <Sep />
-        <ToolBtn title="Insert image" onClick={() => fileRef.current?.click()}>
+        <ToolBtn
+          title={atImageLimit ? `Image limit reached (${maxImages})` : "Insert image"}
+          disabled={atImageLimit}
+          onClick={() => fileRef.current?.click()}
+        >
           <DashIcon name="image" className="w-[15px] h-[15px]" />
         </ToolBtn>
         <Sep />
@@ -173,6 +205,20 @@ export function RichEditor({
       <div dir={dir}>
         <EditorContent editor={editor} />
       </div>
+      {(maxLength != null || maxImages != null) && (
+        <div className="flex items-center justify-end gap-3 px-2.5 py-1.5 border-t border-border text-[11px] text-subtext">
+          {maxImages != null && (
+            <span className={atImageLimit ? "text-warning font-semibold" : ""}>
+              {s.images}/{maxImages} images
+            </span>
+          )}
+          {maxLength != null && (
+            <span className={overLength ? "text-danger font-semibold" : ""}>
+              {s.chars}/{maxLength}
+            </span>
+          )}
+        </div>
+      )}
       <input ref={fileRef} type="file" accept="image/*" hidden onChange={onPickImage} />
     </div>
   );

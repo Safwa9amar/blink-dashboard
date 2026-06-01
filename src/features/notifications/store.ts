@@ -12,7 +12,7 @@ import {
   type Segment,
   type InboxItem,
 } from "./data";
-import type { NewCampaignInput } from "./types";
+import type { ComposeDraft, NewCampaignInput } from "./types";
 
 const slugify = (s: string) =>
   s
@@ -44,6 +44,13 @@ interface NotificationsState {
   markRead: (id: string) => void;
   markAllRead: () => void;
   clearInbox: () => void;
+
+  // Transient one-shot handoff from Templates/Campaigns → the /compose route.
+  // Set just before navigating, read-and-cleared once when the composer mounts.
+  // Deliberately excluded from `partialize` so it never persists to localStorage.
+  composeDraft: ComposeDraft | null;
+  setComposeDraft: (d: ComposeDraft | null) => void;
+  consumeComposeDraft: () => ComposeDraft | null;
 
   reset: () => void;
 }
@@ -91,6 +98,14 @@ export const useNotificationsStore = create<NotificationsState>()(
       markRead: (id) => set((s) => ({ inbox: s.inbox.map((i) => (i.id === id ? { ...i, read: true } : i)) })),
       markAllRead: () => set((s) => ({ inbox: s.inbox.map((i) => ({ ...i, read: true })) })),
       clearInbox: () => set({ inbox: [] }),
+
+      composeDraft: null,
+      setComposeDraft: (d) => set({ composeDraft: d }),
+      consumeComposeDraft: () => {
+        const d = get().composeDraft;
+        if (d) set({ composeDraft: null });
+        return d;
+      },
 
       reset: () =>
         set({ campaigns: SEED_CAMPAIGNS, templates: SEED_TEMPLATES, segments: SEED_SEGMENTS, inbox: SEED_INBOX }),

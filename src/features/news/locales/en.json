@@ -29,7 +29,8 @@
       "preview": "Preview",
       "pin": "Pin",
       "duplicate": "Duplicate",
-      "delete": "Delete"
+      "delete": "Delete",
+      "edit": "Edit"
     },
     "empty": {
       "title": "No posts here",
@@ -67,7 +68,9 @@
       "new_category": "New category",
       "search_categories": "Search categories",
       "posts": "{n} posts",
-      "cta_ph": "Learn more"
+      "cta_ph": "Learn more",
+      "edit": "Edit news post",
+      "edit_desc": "Update this Blink News card"
     },
     "analytics": {
       "tab": "Analytics",
@@ -93,6 +96,30 @@
       "title": "Post preview",
       "open": "Preview",
       "empty_body": "No article body yet — add content in the editor."
+    },
+    "detail": {
+      "back": "Back to news",
+      "not_found": "Post not found",
+      "edit": "Edit post",
+      "article": "Article",
+      "audience": "Audience",
+      "schedule": "Scheduled for",
+      "expires": "Expires",
+      "no_body": "No article body for this language yet.",
+      "reads": "Reads",
+      "ctr": "CTR"
+    },
+    "limits": {
+      "error_images": "Too many images — {max} max per post.",
+      "error_length": "Body too long for {lang} — {max} characters max.",
+      "chars": "characters"
+    },
+    "required": {
+      "title": "Title is required ({lang})",
+      "summary": "Summary is required ({lang})",
+      "body": "Body is required ({lang})",
+      "cta": "CTA button label is required",
+      "audience": "Select at least one audience"
     }
   }
 }

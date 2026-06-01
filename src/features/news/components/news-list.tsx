@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { StatGrid, StatCard, Card, Button, SearchBox, Badge, DashIcon, FilterPills, EmptyState, type Lang } from "@/components/ui";
 import { N_ROLE_VARIANT, N_STATUS } from "../data";
@@ -29,6 +31,7 @@ function RowAction({ icon, label, onClick, danger }: { icon: string; label: stri
 
 export function NewsList({ onNew }: { onNew: () => void }) {
   const t = useTranslations("news");
+  const router = useRouter();
   const locale = useLocale() as Lang;
   const posts = useNewsStore((s) => s.posts);
   const togglePin = useNewsStore((s) => s.togglePin);
@@ -95,7 +98,12 @@ export function NewsList({ onNew }: { onNew: () => void }) {
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-[14.5px] font-bold text-text truncate">{p.title}</div>
+                <Link
+                  href={`/news/${p.id}`}
+                  className="text-[14.5px] font-bold text-text truncate hover:text-primary transition-colors block"
+                >
+                  {p.title}
+                </Link>
                 <div className="text-xs text-subtext mt-0.5 truncate">{p.sum}</div>
                 <div className="flex gap-1.5 mt-[7px] flex-wrap">
                   <Badge variant="default">{p.cat}</Badge>
@@ -116,6 +124,7 @@ export function NewsList({ onNew }: { onNew: () => void }) {
               </div>
               <div className="flex items-center gap-0.5 shrink-0">
                 <RowAction icon="eye" label={t("actions.preview")} onClick={() => setPreview(toPreview(p))} />
+                <RowAction icon="pencil" label={t("actions.edit")} onClick={() => router.push(`/news/${p.id}?edit=1`)} />
                 <RowAction icon="pin" label={t("actions.pin")} onClick={() => togglePin(p.id)} />
                 <RowAction icon="copy" label={t("actions.duplicate")} onClick={() => duplicatePost(p.id)} />
                 <RowAction icon="trash" label={t("actions.delete")} onClick={() => deletePost(p.id)} danger />

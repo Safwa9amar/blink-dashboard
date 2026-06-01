@@ -1,26 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
-import { GeneralSettings } from "./general-settings";
-import { FeesSettings } from "./fees-settings";
-import { NotificationsSettings } from "./notifications-settings";
-import { SecuritySettings } from "./security-settings";
-import { AppearanceSettings } from "./appearance-settings";
-import { DangerZone } from "./danger-zone";
+import { SubNav } from "@/components/ui";
 
-const tabs = [
-  "general",
-  "fees",
-  "notifications_settings",
-  "security",
-  "appearance",
-  "danger_zone",
-] as const;
-
-type Tab = (typeof tabs)[number];
-
-const tabIcons: Record<Tab, React.ReactNode> = {
+// Section icons preserved verbatim from the previous left-rail tabs.
+const ICONS: Record<string, ReactNode> = {
   general: (
     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
@@ -29,6 +14,11 @@ const tabIcons: Record<Tab, React.ReactNode> = {
   fees: (
     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  ),
+  news: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z" />
     </svg>
   ),
   notifications_settings: (
@@ -53,39 +43,25 @@ const tabIcons: Record<Tab, React.ReactNode> = {
   ),
 };
 
-export function SettingsTabs() {
-  const [active, setActive] = useState<Tab>("general");
+export function SettingsRail() {
   const t = useTranslations("settings");
-
-  return (
-    <div className="flex gap-8">
-      {/* Sidebar tabs */}
-      <nav className="w-56 shrink-0 space-y-1">
-        {tabs.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActive(tab)}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-start cursor-pointer ${
-              active === tab
-                ? "bg-soft-pink text-primary border border-soft-border"
-                : "text-subtext hover:text-text hover:bg-[var(--muted)] border border-transparent"
-            } ${tab === "danger_zone" && active !== tab ? "text-danger hover:text-danger" : ""}`}
-          >
-            {tabIcons[tab]}
-            {t(`${tab}.title`)}
-          </button>
-        ))}
-      </nav>
-
-      {/* Content */}
-      <div className="flex-1 min-w-0">
-        {active === "general" && <GeneralSettings />}
-        {active === "fees" && <FeesSettings />}
-        {active === "notifications_settings" && <NotificationsSettings />}
-        {active === "security" && <SecuritySettings />}
-        {active === "appearance" && <AppearanceSettings />}
-        {active === "danger_zone" && <DangerZone />}
-      </div>
-    </div>
-  );
+  const items = [
+    { href: "/settings", label: t("general.title"), iconNode: ICONS.general },
+    { href: "/settings/fees", label: t("fees.title"), iconNode: ICONS.fees },
+    { href: "/settings/news", label: t("news.title"), iconNode: ICONS.news },
+    {
+      href: "/settings/notifications",
+      label: t("notifications_settings.title"),
+      iconNode: ICONS.notifications_settings,
+    },
+    { href: "/settings/security", label: t("security.title"), iconNode: ICONS.security },
+    { href: "/settings/appearance", label: t("appearance.title"), iconNode: ICONS.appearance },
+    {
+      href: "/settings/danger-zone",
+      label: t("danger_zone.title"),
+      iconNode: ICONS.danger_zone,
+      danger: true,
+    },
+  ];
+  return <SubNav vertical items={items} />;
 }

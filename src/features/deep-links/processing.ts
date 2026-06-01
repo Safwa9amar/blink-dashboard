@@ -87,6 +87,17 @@ export function missingParams(url: string): string[] {
   return extractParams(url);
 }
 
+/**
+ * Fill `[param]` placeholders in an internal Expo `routePath`, KEEPING the
+ * `(group)` segments — the form passed to `router.push()` and to a push payload's
+ * `data.href`. e.g. `fillRoute("/(customer)/deal/[id]", { id: "42" })` →
+ * `"/(customer)/deal/42"`. (The `blink://…` form is the external/share URL; use
+ * `buildDeepLink` for that.)
+ */
+export function fillRoute(routePath: string, params: Record<string, string> = {}): string {
+  return buildDeepLink(routePath, params);
+}
+
 function templateToRegex(template: string): RegExp {
   const escaped = template
     .replace(/[.*+?^${}()|\\]/g, "\\$&")
