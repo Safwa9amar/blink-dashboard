@@ -1,11 +1,37 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
-// Dashboard subdomain prefixes — add your production domain
+// Dashboard subdomain prefixes — add your production domain.
+// Use `dashboard.` for production custom domains (e.g. `dashboard.blink-dz.com`).
 const DASHBOARD_PREFIXES = ["dashboard."];
 
+/**
+ * Full hostnames to treat as the dashboard surface (no `dashboard.` prefix
+ * required). On Vercel deployments without a custom domain, the bare
+ * `*.vercel.app` URL is the only entry point — without this, the middleware
+ * would only ever serve the landing site there.
+ *
+ * `VERCEL_URL` is the URL for the current deployment (preview or production).
+ * `VERCEL_PROJECT_PRODUCTION_URL` is the canonical production URL.
+ *
+ * Additionally, anything in `DASHBOARD_HOSTS` (comma-separated env var) gets
+ * added — useful for staging domains or custom Vercel aliases without a
+ * `dashboard.` prefix.
+ */
+const DASHBOARD_HOSTS = new Set(
+  [
+    process.env.VERCEL_URL,
+    process.env.VERCEL_PROJECT_PRODUCTION_URL,
+    ...(process.env.DASHBOARD_HOSTS?.split(",") ?? []),
+  ]
+    .map((h) => h?.trim().toLowerCase())
+    .filter((h): h is string => !!h),
+);
+
 function isDashboard(host: string): boolean {
-  return DASHBOARD_PREFIXES.some((p) => host.startsWith(p));
+  const h = host.toLowerCase();
+  if (DASHBOARD_HOSTS.has(h)) return true;
+  return DASHBOARD_PREFIXES.some((p) => h.startsWith(p));
 }
 
 // The internal (rewritten) dashboard segment is exactly `/d` or `/d/...` —
