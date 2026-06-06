@@ -17,6 +17,8 @@ export interface Column<T> {
   key: string;
   label: string;
   render?: (row: T) => ReactNode;
+  /** Custom header content (overrides `label` for rendering) — e.g. a select-all checkbox. */
+  header?: ReactNode;
   /** Extra classes for the cell. `tdClass` is a legacy alias of `className`. */
   className?: string;
   tdClass?: string;
@@ -62,7 +64,8 @@ export function DataTable<T>({
     return {
       id: col.key,
       accessorFn: (row) => get(row, col.key),
-      header: col.label,
+      // TanStack's header accepts string | render-fn; wrap a custom ReactNode in a thunk.
+      header: col.header != null ? () => col.header : col.label,
       enableSorting: enableSorting && (col.sortable ?? backedByField),
       cell: ({ row }) =>
         col.render ? col.render(row.original) : ((get(row.original, col.key) as ReactNode) ?? "—"),

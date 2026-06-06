@@ -1,0 +1,139 @@
+{
+  "library": {
+    "title": "Products Library",
+    "description": "Curate the master catalog merchants pull from when stocking their stores",
+
+    "products": "Products",
+    "categories": "Categories",
+
+    "new_product": "New product",
+    "new_category": "New category",
+    "search_products": "Search by name, brand or barcode",
+    "all": "All",
+    "all_categories": "All categories",
+
+    "stats": {
+      "total_products": "Catalog Items",
+      "total_products_chg": "in the master library",
+      "published": "Published",
+      "published_chg": "live for merchants",
+      "categories": "Categories",
+      "categories_chg": "across the catalog",
+      "stocked_by_stores": "Stocked by Stores",
+      "stocked_by_stores_chg": "merchant listings linked"
+    },
+
+    "col": {
+      "product": "Product",
+      "category": "Category",
+      "unit": "Unit",
+      "barcode": "Barcode",
+      "stores": "Stores",
+      "products": "products",
+      "status": "Status",
+      "actions": "Actions"
+    },
+
+    "status": {
+      "published": "Published",
+      "draft": "Draft",
+      "archived": "Archived"
+    },
+
+    "category_status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+
+    "sec": {
+      "media": "Photos",
+      "media_desc": "The cover photo is shown first across the app.",
+      "content": "Name & description",
+      "content_desc": "Shown to merchants in their language.",
+      "classify": "Classification",
+      "publish": "Publishing",
+      "preview": "Live preview",
+      "cat_name": "Category name",
+      "cat_name_desc": "Shown to merchants in their language.",
+      "settings": "Settings"
+    },
+
+    "pv": {
+      "name": "Product name",
+      "uncategorized": "Uncategorized"
+    },
+
+    "form": {
+      "new_product": "New catalog item",
+      "edit_product": "Edit catalog item",
+      "new_category": "New category",
+      "edit_category": "Edit category",
+      "photo": "Photo",
+      "photos": "Photos",
+      "photos_hint": "Up to {max} — first is the cover",
+      "add_photo": "Add photo",
+      "cover": "Cover",
+      "make_cover": "Set as cover",
+      "paste_url": "Paste an image URL",
+      "add": "Add",
+      "no_photos": "No photos yet — add up to {max}.",
+      "product_subtitle": "Add the item in all three languages, with up to {max} photos.",
+      "category_subtitle": "Name the category in all three languages.",
+      "stocked": "Stocked by {count} stores",
+      "lang": "Language",
+      "lang_hint": "Fill in all three languages",
+      "upload": "Upload",
+      "uploading": "Uploading…",
+      "remove": "Remove",
+      "name": "Name",
+      "brand": "Brand",
+      "category": "Category",
+      "unit": "Unit",
+      "barcode": "Barcode",
+      "status": "Status",
+      "slug": "Slug",
+      "icon": "Icon",
+      "sort_order": "Sort order",
+      "image": "Photo URL",
+      "description": "Description",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+
+    "ph": {
+      "name": "e.g. Coca-Cola 1L",
+      "brand": "e.g. Hamoud Boualem",
+      "unit": "e.g. 1L Bottle, 125g",
+      "barcode": "e.g. 6130001000017",
+      "image": "Paste a URL or upload above",
+      "description": "Short description…",
+      "category_name": "e.g. Drinks",
+      "slug": "e.g. drinks",
+      "icon": "DashIcon name, e.g. package",
+      "icon_search": "Search icons…"
+    },
+
+    "empty": {
+      "products": "The catalog is empty. Add your first product.",
+      "products_filtered": "No catalog items match your filters.",
+      "categories": "No categories yet. Add your first category."
+    },
+
+    "confirm": {
+      "delete_product": "Remove this item from the catalog?",
+      "delete_products": "Delete {count} products? This can't be undone.",
+      "delete_category": "Delete this category? Products keep their current category label."
+    },
+
+    "selected_count": "{count} selected",
+    "clear_selection": "Clear",
+    "delete_selected": "Delete selected",
+    "select_all": "Select all",
+    "select_row": "Select row",
+
+    "required": "Required",
+    "edit": "Edit",
+    "delete": "Delete",
+    "back": "Back to catalog"
+  }
+}

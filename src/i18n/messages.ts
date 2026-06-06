@@ -40,6 +40,9 @@ import features_deep_links_ar from "@/features/deep-links/locales/ar.json";
 import features_marketplace_en from "@/features/marketplace/locales/en.json";
 import features_marketplace_fr from "@/features/marketplace/locales/fr.json";
 import features_marketplace_ar from "@/features/marketplace/locales/ar.json";
+import features_library_en from "@/features/library/locales/en.json";
+import features_library_fr from "@/features/library/locales/fr.json";
+import features_library_ar from "@/features/library/locales/ar.json";
 import features_settings_en from "@/features/settings/locales/en.json";
 import features_settings_fr from "@/features/settings/locales/fr.json";
 import features_settings_ar from "@/features/settings/locales/ar.json";
@@ -69,9 +72,9 @@ import features_access_fr from "@/features/access/locales/fr.json";
 import features_access_ar from "@/features/access/locales/ar.json";
 
 const byLocale: Record<Locale, Record<string, unknown>[]> = {
-  en: [shared_en, features_demand_en, features_live_ops_en, features_verification_en, features_coupons_en, features_promotions_en, features_news_en, features_blink_cash_en, features_support_en, features_notifications_en, features_deep_links_en, features_marketplace_en, features_settings_en, features_users_en, features_overview_en, features_orders_en, features_riders_en, features_trips_en, features_agent_shops_en, features_vehicles_en, features_access_en],
-  fr: [shared_fr, features_demand_fr, features_live_ops_fr, features_verification_fr, features_coupons_fr, features_promotions_fr, features_news_fr, features_blink_cash_fr, features_support_fr, features_notifications_fr, features_deep_links_fr, features_marketplace_fr, features_settings_fr, features_users_fr, features_overview_fr, features_orders_fr, features_riders_fr, features_trips_fr, features_agent_shops_fr, features_vehicles_fr, features_access_fr],
-  ar: [shared_ar, features_demand_ar, features_live_ops_ar, features_verification_ar, features_coupons_ar, features_promotions_ar, features_news_ar, features_blink_cash_ar, features_support_ar, features_notifications_ar, features_deep_links_ar, features_marketplace_ar, features_settings_ar, features_users_ar, features_overview_ar, features_orders_ar, features_riders_ar, features_trips_ar, features_agent_shops_ar, features_vehicles_ar, features_access_ar],
+  en: [shared_en, features_demand_en, features_live_ops_en, features_verification_en, features_coupons_en, features_promotions_en, features_news_en, features_blink_cash_en, features_support_en, features_notifications_en, features_deep_links_en, features_marketplace_en, features_library_en, features_settings_en, features_users_en, features_overview_en, features_orders_en, features_riders_en, features_trips_en, features_agent_shops_en, features_vehicles_en, features_access_en],
+  fr: [shared_fr, features_demand_fr, features_live_ops_fr, features_verification_fr, features_coupons_fr, features_promotions_fr, features_news_fr, features_blink_cash_fr, features_support_fr, features_notifications_fr, features_deep_links_fr, features_marketplace_fr, features_library_fr, features_settings_fr, features_users_fr, features_overview_fr, features_orders_fr, features_riders_fr, features_trips_fr, features_agent_shops_fr, features_vehicles_fr, features_access_fr],
+  ar: [shared_ar, features_demand_ar, features_live_ops_ar, features_verification_ar, features_coupons_ar, features_promotions_ar, features_news_ar, features_blink_cash_ar, features_support_ar, features_notifications_ar, features_deep_links_ar, features_marketplace_ar, features_library_ar, features_settings_ar, features_users_ar, features_overview_ar, features_orders_ar, features_riders_ar, features_trips_ar, features_agent_shops_ar, features_vehicles_ar, features_access_ar],
 };
 
 // Merge every namespace bundle into the flat message object next-intl expects.

@@ -1,6 +1,7 @@
 // Dashboard heroicon paths — lifted verbatim from the Blink Design System handoff
 // (.blink-design-system/project/ui_kits/dashboard/DashIcons.jsx).
 import type { CSSProperties } from "react";
+import { CAT_ICONS } from "./cat-icons";
 
 export const DI: Record<string, string> = {
   grid: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z',
@@ -68,6 +69,24 @@ export const DI: Record<string, string> = {
 };
 
 export function DashIcon({ name, style, className }: { name: string; style?: CSSProperties; className?: string }) {
+  // Multi-element marketplace category icons are keyed by SF-Symbol name and stored
+  // as raw inner SVG (see cat-icons.ts); single-path heroicons live in `DI`.
+  const cat = CAT_ICONS[name];
+  if (cat) {
+    return (
+      <svg
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.6}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        viewBox="0 0 24 24"
+        style={style}
+        className={className}
+        dangerouslySetInnerHTML={{ __html: cat }}
+      />
+    );
+  }
   return (
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style={style} className={className}>
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={DI[name] || ""} />

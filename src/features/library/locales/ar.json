@@ -1,0 +1,139 @@
+{
+  "library": {
+    "title": "مكتبة المنتجات",
+    "description": "نسّق الكتالوج الرئيسي الذي يعتمد عليه التجّار لتزويد متاجرهم",
+
+    "products": "المنتجات",
+    "categories": "الفئات",
+
+    "new_product": "منتج جديد",
+    "new_category": "فئة جديدة",
+    "search_products": "ابحث بالاسم أو العلامة التجارية أو الباركود",
+    "all": "الكل",
+    "all_categories": "كل الفئات",
+
+    "stats": {
+      "total_products": "عناصر الكتالوج",
+      "total_products_chg": "في المكتبة الرئيسية",
+      "published": "منشورة",
+      "published_chg": "ظاهرة للتجّار",
+      "categories": "الفئات",
+      "categories_chg": "عبر الكتالوج",
+      "stocked_by_stores": "متوفّرة في المتاجر",
+      "stocked_by_stores_chg": "قوائم تجّار مرتبطة"
+    },
+
+    "col": {
+      "product": "المنتج",
+      "category": "الفئة",
+      "unit": "الوحدة",
+      "barcode": "الباركود",
+      "stores": "المتاجر",
+      "products": "منتجات",
+      "status": "الحالة",
+      "actions": "إجراءات"
+    },
+
+    "status": {
+      "published": "منشور",
+      "draft": "مسودة",
+      "archived": "مؤرشف"
+    },
+
+    "category_status": {
+      "active": "مفعّلة",
+      "inactive": "غير مفعّلة"
+    },
+
+    "sec": {
+      "media": "الصور",
+      "media_desc": "تظهر صورة الغلاف أولاً في التطبيق.",
+      "content": "الاسم والوصف",
+      "content_desc": "تُعرض للتجّار بلغتهم.",
+      "classify": "التصنيف",
+      "publish": "النشر",
+      "preview": "معاينة مباشرة",
+      "cat_name": "اسم الفئة",
+      "cat_name_desc": "يُعرض للتجّار بلغتهم.",
+      "settings": "الإعدادات"
+    },
+
+    "pv": {
+      "name": "اسم المنتج",
+      "uncategorized": "غير مصنّف"
+    },
+
+    "form": {
+      "new_product": "عنصر جديد في الكتالوج",
+      "edit_product": "تعديل عنصر الكتالوج",
+      "new_category": "فئة جديدة",
+      "edit_category": "تعديل الفئة",
+      "photo": "الصورة",
+      "photos": "الصور",
+      "photos_hint": "حتى {max} — الأولى هي صورة الغلاف",
+      "add_photo": "إضافة صورة",
+      "cover": "الغلاف",
+      "make_cover": "تعيين كغلاف",
+      "paste_url": "الصق رابط صورة",
+      "add": "إضافة",
+      "no_photos": "لا صور بعد — أضف حتى {max}.",
+      "product_subtitle": "أضِف العنصر بجميع اللغات الثلاث، مع حتى {max} صور.",
+      "category_subtitle": "سمِّ الفئة بجميع اللغات الثلاث.",
+      "stocked": "متوفّر في {count} متجرًا",
+      "lang": "اللغة",
+      "lang_hint": "املأ اللغات الثلاث",
+      "upload": "رفع",
+      "uploading": "جارٍ الرفع…",
+      "remove": "إزالة",
+      "name": "الاسم",
+      "brand": "العلامة التجارية",
+      "category": "الفئة",
+      "unit": "الوحدة",
+      "barcode": "الباركود",
+      "status": "الحالة",
+      "slug": "المُعرّف",
+      "icon": "الأيقونة",
+      "sort_order": "ترتيب الفرز",
+      "image": "رابط الصورة",
+      "description": "الوصف",
+      "save": "حفظ",
+      "cancel": "إلغاء"
+    },
+
+    "ph": {
+      "name": "مثال: كوكا كولا 1 لتر",
+      "brand": "مثال: حمود بوعلام",
+      "unit": "مثال: قارورة 1 لتر، 125غ",
+      "barcode": "مثال: 6130001000017",
+      "image": "الصق رابطًا أو ارفع صورة أعلاه",
+      "description": "وصف موجز…",
+      "category_name": "مثال: مشروبات",
+      "slug": "مثال: drinks",
+      "icon": "اسم DashIcon، مثال: package",
+      "icon_search": "ابحث عن أيقونة…"
+    },
+
+    "empty": {
+      "products": "الكتالوج فارغ. أضف منتجك الأول.",
+      "products_filtered": "لا توجد عناصر تطابق عوامل التصفية.",
+      "categories": "لا توجد فئات بعد. أضف الفئة الأولى."
+    },
+
+    "confirm": {
+      "delete_product": "إزالة هذا العنصر من الكتالوج؟",
+      "delete_products": "حذف {count} منتجات؟ لا يمكن التراجع عن ذلك.",
+      "delete_category": "حذف هذه الفئة؟ ستحتفظ المنتجات بتسمية فئتها الحالية."
+    },
+
+    "selected_count": "{count} محدد",
+    "clear_selection": "مسح",
+    "delete_selected": "حذف المحدد",
+    "select_all": "تحديد الكل",
+    "select_row": "تحديد الصف",
+
+    "required": "مطلوب",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "back": "العودة إلى الكتالوج"
+  }
+}

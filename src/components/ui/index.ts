@@ -6,6 +6,7 @@ export * from "./primitives";
 
 // icons
 export { DashIcon, BMark, DI } from "./icons";
+export { CAT_ICONS, CAT_ICON_LABELS } from "./cat-icons";
 
 // core components
 export { Button } from "./button";

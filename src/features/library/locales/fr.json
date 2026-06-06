@@ -1,0 +1,139 @@
+{
+  "library": {
+    "title": "Bibliothèque de Produits",
+    "description": "Gérez le catalogue maître dans lequel les marchands puisent pour approvisionner leurs boutiques",
+
+    "products": "Produits",
+    "categories": "Catégories",
+
+    "new_product": "Nouveau produit",
+    "new_category": "Nouvelle catégorie",
+    "search_products": "Rechercher par nom, marque ou code-barres",
+    "all": "Tous",
+    "all_categories": "Toutes les catégories",
+
+    "stats": {
+      "total_products": "Articles du catalogue",
+      "total_products_chg": "dans la bibliothèque maître",
+      "published": "Publiés",
+      "published_chg": "visibles par les marchands",
+      "categories": "Catégories",
+      "categories_chg": "dans le catalogue",
+      "stocked_by_stores": "En stock en boutique",
+      "stocked_by_stores_chg": "fiches marchands liées"
+    },
+
+    "col": {
+      "product": "Produit",
+      "category": "Catégorie",
+      "unit": "Unité",
+      "barcode": "Code-barres",
+      "stores": "Boutiques",
+      "products": "produits",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+
+    "status": {
+      "published": "Publié",
+      "draft": "Brouillon",
+      "archived": "Archivé"
+    },
+
+    "category_status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+
+    "sec": {
+      "media": "Photos",
+      "media_desc": "La photo de couverture est affichée en premier dans l'application.",
+      "content": "Nom et description",
+      "content_desc": "Affichés aux marchands dans leur langue.",
+      "classify": "Classification",
+      "publish": "Publication",
+      "preview": "Aperçu en direct",
+      "cat_name": "Nom de la catégorie",
+      "cat_name_desc": "Affiché aux marchands dans leur langue.",
+      "settings": "Paramètres"
+    },
+
+    "pv": {
+      "name": "Nom du produit",
+      "uncategorized": "Sans catégorie"
+    },
+
+    "form": {
+      "new_product": "Nouvel article",
+      "edit_product": "Modifier l'article",
+      "new_category": "Nouvelle catégorie",
+      "edit_category": "Modifier la catégorie",
+      "photo": "Photo",
+      "photos": "Photos",
+      "photos_hint": "Jusqu'à {max} — la première est la couverture",
+      "add_photo": "Ajouter une photo",
+      "cover": "Couverture",
+      "make_cover": "Définir comme couverture",
+      "paste_url": "Collez une URL d'image",
+      "add": "Ajouter",
+      "no_photos": "Aucune photo — ajoutez-en jusqu'à {max}.",
+      "product_subtitle": "Ajoutez l'article dans les trois langues, avec jusqu'à {max} photos.",
+      "category_subtitle": "Nommez la catégorie dans les trois langues.",
+      "stocked": "En stock dans {count} boutiques",
+      "lang": "Langue",
+      "lang_hint": "Remplissez les trois langues",
+      "upload": "Téléverser",
+      "uploading": "Téléversement…",
+      "remove": "Retirer",
+      "name": "Nom",
+      "brand": "Marque",
+      "category": "Catégorie",
+      "unit": "Unité",
+      "barcode": "Code-barres",
+      "status": "Statut",
+      "slug": "Slug",
+      "icon": "Icône",
+      "sort_order": "Ordre de tri",
+      "image": "URL de la photo",
+      "description": "Description",
+      "save": "Enregistrer",
+      "cancel": "Annuler"
+    },
+
+    "ph": {
+      "name": "ex. Coca-Cola 1L",
+      "brand": "ex. Hamoud Boualem",
+      "unit": "ex. Bouteille 1L, 125g",
+      "barcode": "ex. 6130001000017",
+      "image": "Collez une URL ou téléversez ci-dessus",
+      "description": "Brève description…",
+      "category_name": "ex. Boissons",
+      "slug": "ex. drinks",
+      "icon": "Nom DashIcon, ex. package",
+      "icon_search": "Rechercher une icône…"
+    },
+
+    "empty": {
+      "products": "Le catalogue est vide. Ajoutez votre premier produit.",
+      "products_filtered": "Aucun article ne correspond à vos filtres.",
+      "categories": "Aucune catégorie pour l'instant. Ajoutez la première."
+    },
+
+    "confirm": {
+      "delete_product": "Retirer cet article du catalogue ?",
+      "delete_products": "Supprimer {count} produits ? Action irréversible.",
+      "delete_category": "Supprimer cette catégorie ? Les produits conservent leur libellé de catégorie actuel."
+    },
+
+    "selected_count": "{count} sélectionné(s)",
+    "clear_selection": "Effacer",
+    "delete_selected": "Supprimer la sélection",
+    "select_all": "Tout sélectionner",
+    "select_row": "Sélectionner la ligne",
+
+    "required": "Requis",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "back": "Retour au catalogue"
+  }
+}
