@@ -98,6 +98,7 @@
     "cancel": "Cancel",
     "save": "Save",
     "required": "Required",
+    "edit_scheduled": "Edit scheduled notification",
     "confirm_delete_campaign": "Delete this campaign?",
     "confirm_cancel_scheduled": "Cancel this scheduled notification?",
     "confirm_delete_template": "Delete this template?",

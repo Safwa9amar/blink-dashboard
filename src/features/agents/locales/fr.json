@@ -1,0 +1,31 @@
+{
+  "agents": {
+    "title": "Agents",
+    "description": "Gérez les comptes agents — boutiques, profils et accès",
+    "total": "Total des agents",
+    "new_30d": "Nouveaux (30 jours)",
+    "male": "Hommes",
+    "female": "Femmes",
+    "agent_id": "ID agent",
+    "name": "Nom",
+    "phone": "Téléphone",
+    "email": "E-mail",
+    "gender": "Genre",
+    "wilaya": "Wilaya",
+    "joined": "Inscrit le",
+    "actions": "Actions",
+    "empty": "Aucun agent trouvé.",
+    "view": "Voir",
+    "close": "Fermer",
+    "edit_agent": "Modifier l'agent",
+    "first_name": "Prénom",
+    "last_name": "Nom",
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "delete_agent": "Supprimer l'agent",
+    "delete_confirm": "Voulez-vous vraiment supprimer cet agent ? Cette action est irréversible.",
+    "deleting": "Suppression..."
+  }
+}

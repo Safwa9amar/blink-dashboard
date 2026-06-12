@@ -98,6 +98,7 @@
     "cancel": "Annuler",
     "save": "Enregistrer",
     "required": "Requis",
+    "edit_scheduled": "Modifier la notification programmée",
     "confirm_delete_campaign": "Supprimer cette campagne ?",
     "confirm_cancel_scheduled": "Annuler cette notification programmée ?",
     "confirm_delete_template": "Supprimer ce modèle ?",

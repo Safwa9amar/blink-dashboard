@@ -13,3 +13,5 @@ export {
   DEFAULT_MAX_BODY_LENGTH,
 } from "./settings-store";
 export * from "./data";
+export { normalizeNewsDraft } from "./ai";
+export type { NewsDraft, NewsDraftRequest } from "./ai";

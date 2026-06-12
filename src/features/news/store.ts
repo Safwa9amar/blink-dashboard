@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { createNews, deleteNews, togglePin as togglePinAction, updateNews } from "@/app/d/news/action";
-import { postToInsert, primaryOf, rand, rowToPost, shortDate } from "./data";
+import { localToIso, postToInsert, primaryOf, rand, rowToPost, shortDate } from "./data";
 import type { NewPostInput, NewsInsert, NewsRow, Post } from "./types";
 
 // Posts are persisted in Supabase (the `news` table). This store holds the
@@ -81,8 +81,8 @@ export const useNewsStore = create<NewsState>((set, get) => ({
     }
     if (patch.push !== undefined) dbPatch.push = patch.push;
     if (patch.cta !== undefined) dbPatch.cta_label = patch.cta;
-    if (patch.scheduledAt !== undefined) dbPatch.scheduled_at = patch.scheduledAt;
-    if (patch.expiresAt !== undefined) dbPatch.expires_at = patch.expiresAt;
+    if (patch.scheduledAt !== undefined) dbPatch.scheduled_at = localToIso(patch.scheduledAt);
+    if (patch.expiresAt !== undefined) dbPatch.expires_at = localToIso(patch.expiresAt);
     if (Object.keys(dbPatch).length === 0) return Promise.resolve({ error: null });
 
     return updateNews(id, dbPatch).then((res) => {

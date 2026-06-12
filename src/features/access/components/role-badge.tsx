@@ -10,6 +10,7 @@ const ROLE_VARIANT: Record<StaffRole, Variant> = {
   finance_admin: "success",
   support_admin: "warning",
   commerce_admin: "default",
+  hr_admin: "danger",
 };
 
 export function RoleBadge({ role }: { role: StaffRole }) {

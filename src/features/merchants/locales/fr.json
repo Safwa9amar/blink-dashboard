@@ -1,0 +1,31 @@
+{
+  "merchants": {
+    "title": "Marchands",
+    "description": "Gérez les comptes marchands — boutiques, profils et accès",
+    "total": "Total des marchands",
+    "new_30d": "Nouveaux (30 jours)",
+    "male": "Hommes",
+    "female": "Femmes",
+    "merchant_id": "ID marchand",
+    "name": "Nom",
+    "phone": "Téléphone",
+    "email": "E-mail",
+    "gender": "Genre",
+    "wilaya": "Wilaya",
+    "joined": "Inscrit le",
+    "actions": "Actions",
+    "empty": "Aucun marchand trouvé.",
+    "view": "Voir",
+    "close": "Fermer",
+    "edit_merchant": "Modifier le marchand",
+    "first_name": "Prénom",
+    "last_name": "Nom",
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "delete_merchant": "Supprimer le marchand",
+    "delete_confirm": "Voulez-vous vraiment supprimer ce marchand ? Cette action est irréversible.",
+    "deleting": "Suppression..."
+  }
+}

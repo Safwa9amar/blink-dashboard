@@ -1,0 +1,31 @@
+{
+  "customers": {
+    "title": "Clients",
+    "description": "Gérez les clients de l'application — comptes, profils et accès",
+    "total": "Total des clients",
+    "new_30d": "Nouveaux (30 jours)",
+    "male": "Hommes",
+    "female": "Femmes",
+    "customer_id": "ID client",
+    "name": "Nom",
+    "phone": "Téléphone",
+    "email": "E-mail",
+    "gender": "Genre",
+    "wilaya": "Wilaya",
+    "joined": "Inscrit le",
+    "actions": "Actions",
+    "empty": "Aucun client trouvé.",
+    "view": "Voir",
+    "close": "Fermer",
+    "edit_customer": "Modifier le client",
+    "first_name": "Prénom",
+    "last_name": "Nom",
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "delete_customer": "Supprimer le client",
+    "delete_confirm": "Voulez-vous vraiment supprimer ce client ? Cette action est irréversible.",
+    "deleting": "Suppression..."
+  }
+}

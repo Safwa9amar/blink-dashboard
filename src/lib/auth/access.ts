@@ -14,6 +14,7 @@ export const STAFF_ROLES = [
   "finance_admin",
   "support_admin",
   "commerce_admin",
+  "hr_admin",
 ] as const;
 
 export type StaffRole = (typeof STAFF_ROLES)[number];
@@ -25,6 +26,8 @@ export const ROLE_ACCESS: Record<StaffRole, "*" | readonly string[]> = {
   super_admin: "*",
   ops_admin: [
     "/",
+    "/customers",
+    "/agents",
     "/orders",
     "/demand",
     "/live-ops",
@@ -36,7 +39,10 @@ export const ROLE_ACCESS: Record<StaffRole, "*" | readonly string[]> = {
   ],
   finance_admin: ["/", "/blink-cash"],
   support_admin: ["/", "/notifications", "/news", "/deep-links"],
-  commerce_admin: ["/", "/marketplace", "/library", "/agent-shops", "/promotions", "/coupons", "/merchant-pricing", "/packs-management"],
+  commerce_admin: ["/", "/merchants", "/marketplace", "/library", "/agent-shops", "/promotions", "/coupons", "/merchant-pricing", "/packs-management"],
+  // HR / RH manager — people-facing sections: the customer & merchant rosters,
+  // platform users and rider onboarding/verification.
+  hr_admin: ["/", "/customers", "/merchants", "/agents", "/users", "/riders", "/verification"],
 };
 
 export function isStaffRole(value: unknown): value is StaffRole {

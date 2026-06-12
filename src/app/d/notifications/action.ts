@@ -170,10 +170,22 @@ export async function cancelScheduled(
   return { error: null };
 }
 
+/** Lowercase enum roles → composer chip labels (["All"] | ["Customer", …]). */
+function rolesToLabels(roles: string[]): string[] {
+  if (!roles || roles.length === 0) return ["All"];
+  if (roles.length >= ALL_ROLES.length) return ["All"];
+  return roles.map((r) => ENUM_TO_LABEL[r] ?? r);
+}
+
 interface ScheduledRow {
   id: string;
   type: string;
   title: string;
+  description: string;
+  href: string | null;
+  content_eng: Copy | null;
+  content_fr: Copy | null;
+  content_ar: Copy | null;
   target_roles: string[] | null;
   channels: string[] | null;
   scheduled_at: string;
@@ -182,12 +194,15 @@ interface ScheduledRow {
 }
 
 // Read the scheduled-broadcast queue for the Campaigns table (server-only).
-// Hides canceled rows; newest schedule first.
+// Hides canceled rows; newest schedule first. Carries the per-language copy +
+// roles/link so the edit-pending modal can prefill.
 export async function listScheduledCampaigns(): Promise<ScheduledNotification[]> {
   const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("scheduled_notifications")
-    .select("id, type, title, target_roles, channels, scheduled_at, status, recipients")
+    .select(
+      "id, type, title, description, href, content_eng, content_fr, content_ar, target_roles, channels, scheduled_at, status, recipients"
+    )
     .neq("status", "canceled")
     .order("scheduled_at", { ascending: false })
     .limit(100);
@@ -201,7 +216,65 @@ export async function listScheduledCampaigns(): Promise<ScheduledNotification[]>
     scheduledAt: r.scheduled_at,
     status: r.status as ScheduledNotification["status"],
     recipients: r.recipients ?? 0,
+    roles: rolesToLabels(r.target_roles ?? []),
+    link: r.href ?? "",
+    titleByLang: {
+      en: r.content_eng?.title ?? r.title ?? "",
+      fr: r.content_fr?.title ?? "",
+      ar: r.content_ar?.title ?? "",
+    },
+    msgByLang: {
+      en: r.content_eng?.description ?? r.description ?? "",
+      fr: r.content_fr?.description ?? "",
+      ar: r.content_ar?.description ?? "",
+    },
   }));
+}
+
+// Edit a still-pending scheduled broadcast (title/message/type/audience/
+// channels/deep link/time). The status filter means a row that already fired
+// (or was canceled) can't be edited — the update simply matches nothing.
+export async function updateScheduled(
+  id: string,
+  input: ScheduleCampaignInput
+): Promise<{ error: string | null }> {
+  if (!(await hasStaffRole("super_admin", "ops_admin"))) {
+    return { error: "Not authorized" };
+  }
+
+  const roles = targetRoles(input.roles);
+  if (roles.length === 0) return { error: "No valid target roles" };
+
+  const when = new Date(input.scheduledAt);
+  if (Number.isNaN(when.getTime())) return { error: "Invalid schedule time" };
+  if (when.getTime() <= Date.now())
+    return { error: "Schedule time must be in the future" };
+
+  const titleEn = input.title.en || input.title.fr || input.title.ar || "";
+  const descEn = input.message.en || input.message.fr || input.message.ar || "";
+  if (!titleEn) return { error: "A title is required." };
+
+  const supabase = await createAdminClient();
+  const { error } = await supabase
+    .from("scheduled_notifications")
+    .update({
+      type: input.type,
+      title: titleEn,
+      description: descEn,
+      href: input.link || null,
+      content_eng: copyFor(input.title.en, input.message.en),
+      content_fr: copyFor(input.title.fr, input.message.fr),
+      content_ar: copyFor(input.title.ar, input.message.ar),
+      target_roles: roles,
+      channels: input.channels,
+      scheduled_at: when.toISOString(),
+    })
+    .eq("id", id)
+    .eq("status", "pending");
+  if (error) return { error: error.message };
+
+  revalidatePath("/d/notifications");
+  return { error: null };
 }
 
 export async function sendCampaign(

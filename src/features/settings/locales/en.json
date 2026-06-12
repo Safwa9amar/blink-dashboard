@@ -75,6 +75,36 @@
       "max_images": "Max body images",
       "max_length": "Max body length (characters)",
       "hint": "Authors can't exceed these limits when composing a post body."
+    },
+    "ai": {
+      "title": "AI",
+      "description": "Local model (LM Studio or Ollama) used for AI drafting.",
+      "connection": "Connection",
+      "connection_desc": "The local inference server that powers AI generation.",
+      "provider": "Provider",
+      "base_url": "Base URL",
+      "base_url_hint": "OpenAI-compatible endpoint — LM Studio :1234, Ollama :11434. Reachable in local dev.",
+      "test": "Test connection",
+      "connected": "Connected",
+      "offline": "Offline",
+      "model": "Model",
+      "model_desc": "Pick which model generates drafts, and manage memory.",
+      "model_label": "Active model",
+      "auto": "Auto-detect available model",
+      "loaded": "loaded",
+      "context_length": "Context length (tokens)",
+      "load": "Load",
+      "unload": "Unload",
+      "model_hint": "Load pins the model in memory; Unload frees it. Leave context at 0 for the model default.",
+      "model_hint_ollama": "Load keeps the model warm (keep-alive); Unload stops it. Ollama pulls models with `ollama pull`.",
+      "pick_model": "Pick a model to load first.",
+      "no_loaded": "No model is loaded to unload.",
+      "generation": "Generation",
+      "generation_desc": "Defaults applied to every AI draft request.",
+      "temperature": "Temperature (0–1)",
+      "max_tokens": "Max tokens (-1 = unlimited)",
+      "ttl": "Idle TTL (seconds, 0 = off)",
+      "generation_hint": "Higher temperature is more creative; TTL auto-unloads the model after idle time."
     }
   }
 }

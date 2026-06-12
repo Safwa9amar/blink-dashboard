@@ -34,6 +34,7 @@ export const ACCESS_LOG: AccessLogEntry[] = [
 // sections using the existing `sidebar` namespace (no duplicated copy).
 const ROUTE_LABEL_KEY: Record<string, string> = {
   "/": "overview",
+  "/customers": "customers",
   "/orders": "orders",
   "/demand": "demand",
   "/live-ops": "live_ops",
@@ -46,7 +47,9 @@ const ROUTE_LABEL_KEY: Record<string, string> = {
   "/notifications": "notifications",
   "/news": "news",
   "/deep-links": "deep_links",
+  "/merchants": "merchants",
   "/marketplace": "marketplace",
+  "/agents": "agents",
   "/agent-shops": "agent_shops",
   "/promotions": "promotions",
   "/coupons": "coupons",

@@ -23,6 +23,7 @@ const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
   {
     group: "customers",
     items: [
+      { key: "customers", href: "/customers", icon: "users" },
       { key: "orders", href: "/orders", icon: "package" },
       { key: "promotions", href: "/promotions", icon: "gift" },
       { key: "coupons", href: "/coupons", icon: "ticket" },
@@ -39,6 +40,7 @@ const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
   {
     group: "merchants",
     items: [
+      { key: "merchants", href: "/merchants", icon: "users" },
       { key: "marketplace", href: "/marketplace", icon: "store" },
       { key: "library", href: "/library", icon: "package" },
       { key: "pricing", href: "/merchant-pricing", icon: "trending" },
@@ -48,6 +50,7 @@ const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
   {
     group: "agents",
     items: [
+      { key: "agents", href: "/agents", icon: "users" },
       { key: "agent_shops", href: "/agent-shops", icon: "store" },
     ],
   },

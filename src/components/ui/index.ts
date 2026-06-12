@@ -34,6 +34,8 @@ export { SubTabs, type SubTab } from "./sub-tabs";
 export { SubNav, type SubNavItem } from "./sub-nav";
 export { LangTabs } from "./lang-tabs";
 export { RichEditor } from "./rich-editor";
+export { AIGenerate, type AIStreamChunk } from "./ai-generate";
+export { AIGenerateModal } from "./ai-generate-modal";
 
 // charts
 export { CHART, CHART_COLORS } from "./chart-theme";

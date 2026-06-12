@@ -98,6 +98,7 @@
     "cancel": "إلغاء",
     "save": "حفظ",
     "required": "مطلوب",
+    "edit_scheduled": "تعديل الإشعار المجدول",
     "confirm_delete_campaign": "حذف هذه الحملة؟",
     "confirm_cancel_scheduled": "إلغاء هذا الإشعار المجدول؟",
     "confirm_delete_template": "حذف هذا القالب؟",

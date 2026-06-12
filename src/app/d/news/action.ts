@@ -3,6 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { hasStaffRole } from "@/lib/auth/staff";
+import { chatJSON, AIError } from "@/lib/ai";
+import { NEWS_DRAFT_SCHEMA, newsDraftMessages } from "@/features/news/ai";
+import type { NewsDraft, NewsDraftRequest } from "@/features/news/ai";
 import type { NewsInsert, NewsRow } from "@/features/news";
 
 // Writes use the service-role admin client (createAdminClient) so they bypass the
@@ -55,6 +58,37 @@ export async function deleteNews(id: string): Promise<{ error: string | null }> 
   if (error) return { error: error.message };
   revalidatePath("/d/news");
   return { error: null };
+}
+
+// Generates a full trilingual news draft from a topic prompt via the local LM
+// Studio server (see src/lib/ai). Staff-gated like the write actions; returns the
+// draft for the compose form to apply (it does NOT persist anything). On any AI
+// failure it returns a user-friendly message rather than throwing.
+export async function generateNewsDraft(
+  req: NewsDraftRequest,
+  opts?: { model?: string; temperature?: number; maxTokens?: number; ttl?: number }
+): Promise<{ draft: NewsDraft | null; error: string | null }> {
+  if (!(await hasStaffRole("super_admin", "ops_admin"))) {
+    return { draft: null, error: "Not authorized" };
+  }
+  if (!req.topic?.trim()) {
+    return { draft: null, error: "Describe what the post should be about." };
+  }
+  try {
+    const draft = await chatJSON<NewsDraft>({
+      messages: newsDraftMessages(req),
+      schema: NEWS_DRAFT_SCHEMA,
+      model: opts?.model || undefined, // "" → auto-detect the loaded model
+      temperature: opts?.temperature ?? 0.7,
+      maxTokens: opts?.maxTokens,
+      ttl: opts?.ttl,
+    });
+    return { draft, error: null };
+  } catch (e) {
+    const message =
+      e instanceof AIError ? e.message : "Generation failed — check the LM Studio server.";
+    return { draft: null, error: message };
+  }
 }
 
 // Mints a one-time signed upload URL for the public `news` Storage bucket. The

@@ -119,7 +119,19 @@
       "summary": "Summary is required ({lang})",
       "body": "Body is required ({lang})",
       "cta": "CTA button label is required",
-      "audience": "Select at least one audience"
+      "audience": "Select at least one audience",
+      "schedule_future": "Pick a future publish date and time."
+    },
+    "ai": {
+      "title": "Generate with AI",
+      "desc": "Describe the post — get a trilingual draft from your local model",
+      "placeholder": "e.g. 15 new delivery hubs open across the north, cutting delivery times by 22%",
+      "button": "Generate draft",
+      "thinking": "Thinking…",
+      "drafting": "Writing draft…",
+      "stop": "Stop generating",
+      "regenerate": "Regenerate",
+      "apply": "Add to draft"
     }
   }
 }

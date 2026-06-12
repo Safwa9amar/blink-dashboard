@@ -1,0 +1,31 @@
+{
+  "customers": {
+    "title": "Customers",
+    "description": "Manage the app's customers — accounts, profiles and access",
+    "total": "Total Customers",
+    "new_30d": "New (30 days)",
+    "male": "Male",
+    "female": "Female",
+    "customer_id": "Customer ID",
+    "name": "Name",
+    "phone": "Phone",
+    "email": "Email",
+    "gender": "Gender",
+    "wilaya": "Wilaya",
+    "joined": "Joined",
+    "actions": "Actions",
+    "empty": "No customers found.",
+    "view": "View",
+    "close": "Close",
+    "edit_customer": "Edit Customer",
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "save": "Save Changes",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "delete_customer": "Delete Customer",
+    "delete_confirm": "Are you sure you want to delete this customer? This action cannot be undone.",
+    "deleting": "Deleting..."
+  }
+}

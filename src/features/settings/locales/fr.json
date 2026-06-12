@@ -75,6 +75,36 @@
       "max_images": "Images max dans le corps",
       "max_length": "Longueur max du corps (caractères)",
       "hint": "Les auteurs ne peuvent pas dépasser ces limites dans le corps d'une publication."
+    },
+    "ai": {
+      "title": "IA",
+      "description": "Modèle local (LM Studio ou Ollama) utilisé pour la rédaction par IA.",
+      "connection": "Connexion",
+      "connection_desc": "Le serveur d'inférence local qui alimente la génération par IA.",
+      "provider": "Fournisseur",
+      "base_url": "URL de base",
+      "base_url_hint": "Endpoint compatible OpenAI — LM Studio :1234, Ollama :11434. Accessible en dev local.",
+      "test": "Tester la connexion",
+      "connected": "Connecté",
+      "offline": "Hors ligne",
+      "model": "Modèle",
+      "model_desc": "Choisissez le modèle qui génère les brouillons et gérez la mémoire.",
+      "model_label": "Modèle actif",
+      "auto": "Détecter automatiquement le modèle",
+      "loaded": "chargé",
+      "context_length": "Longueur de contexte (jetons)",
+      "load": "Charger",
+      "unload": "Décharger",
+      "model_hint": "Charger garde le modèle en mémoire ; Décharger la libère. Laissez le contexte à 0 pour la valeur par défaut.",
+      "model_hint_ollama": "Charger garde le modèle au chaud (keep-alive) ; Décharger l'arrête. Ollama télécharge les modèles avec `ollama pull`.",
+      "pick_model": "Choisissez d'abord un modèle à charger.",
+      "no_loaded": "Aucun modèle chargé à décharger.",
+      "generation": "Génération",
+      "generation_desc": "Valeurs par défaut appliquées à chaque requête de brouillon IA.",
+      "temperature": "Température (0–1)",
+      "max_tokens": "Jetons max (-1 = illimité)",
+      "ttl": "TTL d'inactivité (secondes, 0 = désactivé)",
+      "generation_hint": "Une température plus élevée est plus créative ; le TTL décharge le modèle après inactivité."
     }
   }
 }

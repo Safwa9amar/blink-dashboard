@@ -162,6 +162,27 @@ export function shortDate(iso?: string | null): string {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
+// A <input type="datetime-local"> value ("2026-06-01T09:00", browser-local, no
+// tz) → a UTC ISO string for the timestamptz columns. Without this, PostgREST
+// reads the naive string as UTC, so a scheduled/expiry time fires hours off.
+export function localToIso(local?: string | null): string | null {
+  if (!local) return null;
+  const d = new Date(local);
+  return Number.isNaN(d.getTime()) ? null : d.toISOString();
+}
+
+// The inverse — a stored UTC ISO string → the local "YYYY-MM-DDThh:mm" a
+// datetime-local input expects, so editing a scheduled post prefills correctly.
+export function isoToLocalInput(iso?: string | null): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
+    d.getHours()
+  )}:${pad(d.getMinutes())}`;
+}
+
 // CTR display string from views/clicks (derived, not stored).
 function ctrOf(views: number, clicks: number): string {
   if (!views) return "—";
@@ -193,8 +214,8 @@ export function rowToPost(row: NewsRow): Post {
     content,
     cta: row.cta_label ?? undefined,
     push: row.push,
-    scheduledAt: row.scheduled_at ?? undefined,
-    expiresAt: row.expires_at ?? undefined,
+    scheduledAt: isoToLocalInput(row.scheduled_at) || undefined,
+    expiresAt: isoToLocalInput(row.expires_at) || undefined,
   };
 }
 
@@ -214,7 +235,7 @@ export function postToInsert(input: NewPostInput): NewsInsert {
     content_fr: input.content.fr ?? null,
     content_ar: input.content.ar ?? null,
     published_at: input.status === "published" ? new Date().toISOString() : null,
-    scheduled_at: input.scheduledAt || null,
-    expires_at: input.expiresAt || null,
+    scheduled_at: localToIso(input.scheduledAt),
+    expires_at: localToIso(input.expiresAt),
   };
 }

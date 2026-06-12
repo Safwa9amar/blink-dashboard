@@ -72,7 +72,7 @@ export function SuggestionReviewModal({ t, suggestion, open, onClose, onAction }
 
         {suggestion.status === "pending" && (
           <>
-            <FormRow label={t("review.note")} htmlFor="review-note">
+            <FormRow label={t("review.note")}>
               <textarea
                 id="review-note"
                 value={note}

@@ -114,6 +114,10 @@
       "commerce_admin": {
         "name": "Admin commerce",
         "desc": "Marketplace, boutiques agents, promotions et coupons."
+      },
+      "hr_admin": {
+        "name": "Admin RH",
+        "desc": "Gestion des personnes : clients, utilisateurs, livreurs et vérification."
       }
     }
   }

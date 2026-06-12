@@ -25,12 +25,17 @@ export type ScheduledStatus =
 export interface ScheduledNotification {
   id: string;
   type: string;
-  title: string;
+  title: string; // canonical display title
   audience: string; // display label: "All" | "Customer" | …
   channels: string[];
   scheduledAt: string; // ISO timestamp
   status: ScheduledStatus;
   recipients: number;
+  // Edit payload (only meaningful while status === "pending").
+  roles: string[]; // chip labels: ["All"] | ["Customer", …]
+  link: string;
+  titleByLang: { en: string; fr: string; ar: string };
+  msgByLang: { en: string; fr: string; ar: string };
 }
 
 export interface CampaignMetrics {

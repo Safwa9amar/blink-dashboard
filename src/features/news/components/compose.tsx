@@ -12,21 +12,35 @@ import {
   Badge,
   DashIcon,
   RichEditor,
+  AIGenerateModal,
   fInput,
   emptyLang,
   dirFor,
   toggleInList,
   type Lang,
+  type AIStreamChunk,
 } from "@/components/ui";
+import { parseDraftJSON } from "@/lib/ai/parse";
+import { normalizeNewsDraft, type NewsDraft } from "@/features/news";
 import { N_CATS, N_CAT_NAMES, N_ROLES, N_ROLE_VARIANT, COVERS, primaryOf } from "../data";
 import type { Post, PostStatus, PostContent } from "../types";
 import { useNewsStore } from "../store";
 import { useNewsSettingsStore } from "../settings-store";
 import { createNewsUploadUrl } from "@/app/d/news/action";
+import { useAISettingsStore, activeBaseUrl } from "@/features/settings";
 import { createClient } from "@/lib/supabase/client";
 import { CoverPick } from "./cover-pick";
 import { ToggleRow } from "./toggle-row";
 import { PostPreview, type PreviewData } from "./post-preview";
+
+// The streaming draft route is at /d/news/ai-draft. On the dashboard subdomain the
+// middleware rewrites /news/* → /d/news/*, but on a bare /d/... URL (local dev) the
+// path already includes /d — pick the right prefix from the current location.
+function aiDraftUrl(): string {
+  const p = typeof window !== "undefined" ? window.location.pathname : "";
+  const onD = p === "/d" || p.startsWith("/d/");
+  return onD ? "/d/news/ai-draft" : "/news/ai-draft";
+}
 
 // Uploads a cover / body image straight to Supabase Storage via a staff-gated
 // signed URL (the file bytes bypass the server action — no body-size limit).
@@ -85,16 +99,113 @@ export function Compose({ initial, onCancel }: { initial?: Post; onCancel: () =>
   const [when, setWhen] = useState<"now" | "schedule">(
     initial?.status === "scheduled" ? "schedule" : "now"
   );
-  const [scheduledAt, setScheduledAt] = useState(initial?.scheduledAt ?? "2026-06-01T09:00");
+  const [scheduledAt, setScheduledAt] = useState(initial?.scheduledAt ?? "");
   const [expiresOn, setExpiresOn] = useState(!!initial?.expiresAt);
   const [expiresAt, setExpiresAt] = useState(initial?.expiresAt ?? "");
   const [pin, setPin] = useState(initial?.pin ?? false);
   const [push, setPush] = useState(initial?.push ?? true);
   const [cta, setCta] = useState(initial?.cta ?? "Learn more");
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useState(false);
   const [limitError, setLimitError] = useState<string | null>(null);
   const [pending, setPending] = useState<PostStatus | null>(null);
   const catColor = N_CATS.find((c) => c.name === cat)?.color;
+
+  // Stream a full trilingual draft from the local model and return the parsed
+  // result (the modal previews it; applyDraft commits it). Reports tokens for the
+  // live view; throws on failure so the modal surfaces the message.
+  async function aiGenerate(
+    topic: string,
+    report: (chunk: AIStreamChunk) => void,
+    signal: AbortSignal
+  ): Promise<NewsDraft> {
+    // Forward the operator's saved AI settings (model, temperature, length, TTL).
+    const ai = useAISettingsStore.getState();
+    const res = await fetch(aiDraftUrl(), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      signal,
+      body: JSON.stringify({
+        topic,
+        category: cat,
+        audience: roles,
+        baseUrl: activeBaseUrl(ai),
+        model: ai.model,
+        temperature: ai.temperature,
+        maxTokens: ai.maxTokens,
+        ttl: ai.ttl,
+      }),
+    });
+    if (!res.ok || !res.body) {
+      const detail = await res.json().catch(() => null);
+      throw new Error(detail?.error ?? `Generation failed (${res.status}).`);
+    }
+
+    // Read the NDJSON stream: {type:"reasoning"|"content"|"done"|"error", …}.
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    let content = "";
+    let streamError: string | null = null;
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop() ?? "";
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        const msg = JSON.parse(line) as { type: string; text?: string; message?: string };
+        if (msg.type === "reasoning") report({ reasoning: msg.text });
+        else if (msg.type === "content") {
+          content += msg.text ?? "";
+          report({ content: msg.text });
+        } else if (msg.type === "error") streamError = msg.message ?? "Generation failed";
+      }
+    }
+    if (streamError) throw new Error(streamError);
+
+    // Tolerant of shape drift (array / aliased keys) — see normalizeNewsDraft.
+    return normalizeNewsDraft(parseDraftJSON(content));
+  }
+
+  // Commits a reviewed draft into the compose form (called from the modal's Apply).
+  function applyDraft(draft: NewsDraft) {
+    setTitle({ en: draft.en.title, fr: draft.fr.title, ar: draft.ar.title });
+    setSum({ en: draft.en.sum, fr: draft.fr.sum, ar: draft.ar.sum });
+    setBody({ en: draft.en.body, fr: draft.fr.body, ar: draft.ar.body });
+    if (draft.category && N_CAT_NAMES.includes(draft.category)) setCat(draft.category);
+    if (draft.cta?.trim()) setCta(draft.cta);
+    setLimitError(null);
+  }
+
+  // Review preview shown in the AI modal — the trilingual title/summary + meta.
+  function renderDraftPreview(draft: NewsDraft) {
+    const langs: [Lang, string][] = [
+      ["en", "EN"],
+      ["fr", "FR"],
+      ["ar", "AR"],
+    ];
+    return (
+      <div className="space-y-2.5">
+        <div className="flex flex-wrap gap-1.5">
+          {draft.category && <Badge variant="info">{draft.category}</Badge>}
+          {draft.cta && <Badge variant="primary">{draft.cta}</Badge>}
+        </div>
+        {langs.map(([l, code]) => {
+          const c = draft[l];
+          if (!c?.title && !c?.sum) return null;
+          return (
+            <div key={l} dir={dirFor(l)} className="rounded-lg border border-border bg-card p-2.5">
+              <div className="mb-1 text-[10px] font-bold uppercase tracking-wide text-subtext">{code}</div>
+              <div className="text-[13px] font-bold text-text">{c.title}</div>
+              {c.sum && <div className="mt-0.5 text-xs text-subtext">{c.sum}</div>}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
 
   const draftContent: Partial<Record<Lang, PostContent>> = {
     en: { title: title.en, sum: sum.en, body: body.en },
@@ -134,6 +245,15 @@ export function Compose({ initial, onCancel }: { initial?: Post; onCancel: () =>
       if (!cta.trim()) {
         setLimitError(t("required.cta"));
         return;
+      }
+      // A scheduled post needs a real future time, or the publish cron can never
+      // fire it (a null scheduled_at never matches, a past one fires instantly).
+      if (status === "scheduled") {
+        const at = new Date(scheduledAt);
+        if (!scheduledAt || Number.isNaN(at.getTime()) || at.getTime() <= Date.now()) {
+          setLimitError(t("required.schedule_future"));
+          return;
+        }
       }
     }
 
@@ -195,6 +315,11 @@ export function Compose({ initial, onCancel }: { initial?: Post; onCancel: () =>
       <Card
         title={isEdit ? t("form.edit") : t("form.compose")}
         description={isEdit ? t("form.edit_desc") : t("form.compose_desc")}
+        action={
+          <Button size="sm" variant="secondary" icon="sparkles" onClick={() => setAiOpen(true)}>
+            {t("ai.title")}
+          </Button>
+        }
       >
         <FormRow label={t("form.cover")}>
           <CoverPick covers={COVERS} value={cover} onChange={setCover} uploadLabel={t("form.upload")} onUpload={uploadImage} />
@@ -375,6 +500,23 @@ export function Compose({ initial, onCancel }: { initial?: Post; onCancel: () =>
       </div>
 
       <PostPreview open={previewOpen} onClose={() => setPreviewOpen(false)} data={previewData} lang={lang} />
+
+      <AIGenerateModal<NewsDraft>
+        open={aiOpen}
+        onClose={() => setAiOpen(false)}
+        title={t("ai.title")}
+        description={t("ai.desc")}
+        placeholder={t("ai.placeholder")}
+        buttonLabel={t("ai.button")}
+        applyLabel={t("ai.apply")}
+        regenerateLabel={t("ai.regenerate")}
+        stopLabel={t("ai.stop")}
+        reasoningLabel={t("ai.thinking")}
+        draftingLabel={t("ai.drafting")}
+        onGenerate={aiGenerate}
+        onApply={applyDraft}
+        renderResult={renderDraftPreview}
+      />
     </div>
   );
 }

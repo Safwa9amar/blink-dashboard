@@ -119,7 +119,19 @@
       "summary": "Le résumé est requis ({lang})",
       "body": "Le contenu est requis ({lang})",
       "cta": "Le libellé du bouton CTA est requis",
-      "audience": "Sélectionnez au moins un public"
+      "audience": "Sélectionnez au moins un public",
+      "schedule_future": "Choisissez une date et une heure de publication futures."
+    },
+    "ai": {
+      "title": "Générer avec l'IA",
+      "desc": "Décrivez la publication — obtenez un brouillon trilingue de votre modèle local",
+      "placeholder": "ex. 15 nouveaux hubs de livraison ouvrent dans le nord, réduisant les délais de 22 %",
+      "button": "Générer le brouillon",
+      "thinking": "Réflexion…",
+      "drafting": "Rédaction du brouillon…",
+      "stop": "Arrêter",
+      "regenerate": "Régénérer",
+      "apply": "Ajouter au brouillon"
     }
   }
 }

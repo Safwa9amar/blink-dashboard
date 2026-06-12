@@ -8,11 +8,14 @@ export function Modal({
   onClose,
   title,
   children,
+  widthClassName = "max-w-md",
 }: {
   open: boolean;
   onClose: () => void;
   title: string;
   children: ReactNode;
+  /** Tailwind max-width for the panel (default max-w-md). */
+  widthClassName?: string;
 }) {
   useEffect(() => {
     if (!open) return;
@@ -26,7 +29,7 @@ export function Modal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} aria-hidden />
-      <div className="relative z-10 w-full max-w-md bg-card border border-border rounded-2xl p-5 shadow-2xl">
+      <div className={`relative z-10 w-full ${widthClassName} bg-card border border-border rounded-2xl p-5 shadow-2xl`}>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-base font-bold text-text">{title}</h3>
           <button
