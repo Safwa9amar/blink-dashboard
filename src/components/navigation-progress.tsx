@@ -12,7 +12,7 @@ export function NavigationProgress() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [state, setState] = useState<"idle" | "loading" | "done">("idle");
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const prevPath = useRef(pathname + searchParams.toString());
 
   const start = useCallback(() => {
