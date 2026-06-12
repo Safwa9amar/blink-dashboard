@@ -1,0 +1,57 @@
+{
+  "merchant_pricing": {
+    "title": "Revision des prix",
+    "description": "Examiner et gerer les suggestions de prix des commercants",
+
+    "all": "Tout",
+    "search": "Rechercher par produit, magasin ou code-barres",
+    "review_btn": "Examiner",
+
+    "stats": {
+      "pending": "En attente",
+      "pending_desc": "en attente d'action",
+      "accepted": "Acceptees",
+      "accepted_desc": "suggestions approuvees",
+      "rejected": "Rejetees",
+      "rejected_desc": "suggestions refusees",
+      "avg_deviation": "Ecart moyen",
+      "avg_deviation_desc": "par rapport au prix Blink"
+    },
+
+    "col": {
+      "product": "Produit",
+      "store": "Magasin",
+      "category": "Categorie",
+      "barcode": "Code-barres",
+      "blink_price": "Prix Blink",
+      "suggested": "Suggere",
+      "deviation": "Ecart",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+
+    "status": {
+      "pending": "En attente",
+      "accepted": "Accepte",
+      "rejected": "Rejete"
+    },
+
+    "review": {
+      "title": "Examiner la suggestion de prix",
+      "blink_price": "Prix de reference Blink",
+      "current_price": "Prix de vente actuel",
+      "suggested_price": "Prix suggere",
+      "deviation": "Ecart de prix",
+      "over_tolerance": "Cette suggestion depasse le seuil de tolerance de 20%.",
+      "note": "Note de revision",
+      "note_placeholder": "Raison optionnelle de l'approbation/rejet…",
+      "approve": "Approuver",
+      "reject": "Rejeter"
+    },
+
+    "empty": {
+      "none": "Aucune suggestion de prix pour le moment.",
+      "filtered": "Aucune suggestion ne correspond a vos filtres."
+    }
+  }
+}

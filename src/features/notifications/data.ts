@@ -28,6 +28,10 @@ export const NSTATUS: Record<string, Variant> = {
   scheduled: "info",
   draft: "warning",
   sending: "primary",
+  // Queue (scheduled_notifications) statuses surfaced in the campaigns table.
+  pending: "info",
+  failed: "danger",
+  canceled: "default",
 };
 
 export const NTYPES: Record<string, NType> = {

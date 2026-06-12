@@ -1,0 +1,57 @@
+{
+  "merchant_pricing": {
+    "title": "مراجعة الاسعار",
+    "description": "مراجعة وادارة اقتراحات اسعار التجار عبر المنصة",
+
+    "all": "الكل",
+    "search": "البحث بالمنتج او المتجر او الباركود",
+    "review_btn": "مراجعة",
+
+    "stats": {
+      "pending": "قيد المراجعة",
+      "pending_desc": "في انتظار الاجراء",
+      "accepted": "مقبولة",
+      "accepted_desc": "اقتراحات معتمدة",
+      "rejected": "مرفوضة",
+      "rejected_desc": "اقتراحات مرفوضة",
+      "avg_deviation": "متوسط الانحراف",
+      "avg_deviation_desc": "عن سعر بلينك المرجعي"
+    },
+
+    "col": {
+      "product": "المنتج",
+      "store": "المتجر",
+      "category": "الفئة",
+      "barcode": "الباركود",
+      "blink_price": "سعر بلينك",
+      "suggested": "المقترح",
+      "deviation": "الانحراف",
+      "status": "الحالة",
+      "actions": "الإجراءات"
+    },
+
+    "status": {
+      "pending": "قيد الانتظار",
+      "accepted": "مقبول",
+      "rejected": "مرفوض"
+    },
+
+    "review": {
+      "title": "مراجعة اقتراح السعر",
+      "blink_price": "سعر بلينك المرجعي",
+      "current_price": "سعر البيع الحالي",
+      "suggested_price": "السعر المقترح",
+      "deviation": "انحراف السعر",
+      "over_tolerance": "هذا الاقتراح يتجاوز حد التسامح البالغ 20%.",
+      "note": "ملاحظة المراجعة",
+      "note_placeholder": "سبب اختياري للقبول/الرفض…",
+      "approve": "قبول",
+      "reject": "رفض"
+    },
+
+    "empty": {
+      "none": "لا توجد اقتراحات اسعار بعد.",
+      "filtered": "لا توجد اقتراحات تطابق عوامل التصفية."
+    }
+  }
+}

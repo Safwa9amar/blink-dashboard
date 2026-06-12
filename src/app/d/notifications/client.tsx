@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Campaigns, Compose, Templates, Segments } from "@/features/notifications";
+import type { ScheduledNotification } from "@/features/notifications";
 import { useNotificationsStore, useHydrateNotifications } from "@/features/notifications/store";
 
 type Tab = "campaigns" | "compose" | "templates" | "segments";
@@ -17,7 +18,13 @@ function ComposeView() {
   return <Compose t={t} initialDraft={draft} onCancel={() => router.push("/notifications")} />;
 }
 
-export default function NotificationsClient({ tab }: { tab: Tab }) {
+export default function NotificationsClient({
+  tab,
+  scheduled = [],
+}: {
+  tab: Tab;
+  scheduled?: ScheduledNotification[];
+}) {
   const t = useTranslations("notif");
   const router = useRouter();
   useHydrateNotifications();
@@ -39,6 +46,12 @@ export default function NotificationsClient({ tab }: { tab: Tab }) {
     case "segments":
       return <Segments t={t} />;
     default:
-      return <Campaigns t={t} onNew={() => router.push("/notifications/compose")} />;
+      return (
+        <Campaigns
+          t={t}
+          scheduled={scheduled}
+          onNew={() => router.push("/notifications/compose")}
+        />
+      );
   }
 }

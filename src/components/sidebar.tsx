@@ -41,6 +41,8 @@ const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
     items: [
       { key: "marketplace", href: "/marketplace", icon: "store" },
       { key: "library", href: "/library", icon: "package" },
+      { key: "pricing", href: "/merchant-pricing", icon: "trending" },
+      { key: "packs", href: "/packs-management", icon: "gift" },
     ],
   },
   {

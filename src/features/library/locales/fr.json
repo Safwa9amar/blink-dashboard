@@ -125,6 +125,23 @@
       "delete_category": "Supprimer cette catégorie ? Les produits conservent leur libellé de catégorie actuel."
     },
 
+    "import": {
+      "button": "Importer",
+      "from_file": "Importer depuis un fichier…",
+      "templates": "Modèles",
+      "title_products": "Importer des produits",
+      "title_categories": "Importer des catégories",
+      "desc": "Téléversez un fichier CSV, Excel (.xlsx) ou JSON. Les lignes sans nom anglais sont ignorées.",
+      "columns": "Colonnes",
+      "template": "Télécharger un modèle :",
+      "choose": "Choisir un fichier",
+      "drop": "Glissez-déposez, ou cliquez pour parcourir",
+      "bad_type": "Fichier non pris en charge — utilisez CSV, Excel ou JSON.",
+      "ready": "{count} prêt(s) à importer",
+      "skipped": "{count} ignoré(s) (nom manquant)",
+      "run": "Importer {count}"
+    },
+
     "selected_count": "{count} sélectionné(s)",
     "clear_selection": "Effacer",
     "delete_selected": "Supprimer la sélection",

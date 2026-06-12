@@ -57,6 +57,23 @@ export async function deleteLibraryProducts(ids: string[]): Promise<{ error: str
   return { error: null };
 }
 
+// Bulk import — inserts many catalog items in one round trip (parsed client-side
+// from CSV/Excel/JSON; see features/library/import.ts).
+export async function importLibraryProducts(
+  inputs: NewLibraryProductInput[]
+): Promise<{ error: string | null; count: number }> {
+  if (!inputs.length) return { error: null, count: 0 };
+  if (!(await hasStaffRole("super_admin", "commerce_admin"))) return { error: "Not authorized", count: 0 };
+  const supabase = await createAdminClient();
+  const { data, error } = await supabase
+    .from("library_products")
+    .insert(inputs.map(toProductPayload))
+    .select("id");
+  if (error) return { error: error.message, count: 0 };
+  revalidate();
+  return { error: null, count: data?.length ?? inputs.length };
+}
+
 // ─── Categories ──────────────────────────────────────────────────────────────
 export async function createLibraryCategory(input: NewLibraryCategoryInput): Promise<{ error: string | null }> {
   if (!(await hasStaffRole("super_admin", "commerce_admin"))) return { error: "Not authorized" };
@@ -100,6 +117,22 @@ export async function deleteLibraryCategory(id: string): Promise<{ error: string
   if (error) return { error: error.message };
   revalidate();
   return { error: null };
+}
+
+// Bulk import categories (parsed client-side from CSV/Excel/JSON).
+export async function importLibraryCategories(
+  inputs: NewLibraryCategoryInput[]
+): Promise<{ error: string | null; count: number }> {
+  if (!inputs.length) return { error: null, count: 0 };
+  if (!(await hasStaffRole("super_admin", "commerce_admin"))) return { error: "Not authorized", count: 0 };
+  const supabase = await createAdminClient();
+  const { data, error } = await supabase
+    .from("library_categories")
+    .insert(inputs.map(toCategoryPayload))
+    .select("id");
+  if (error) return { error: error.message, count: 0 };
+  revalidate();
+  return { error: null, count: data?.length ?? inputs.length };
 }
 
 // ─── Photo upload ────────────────────────────────────────────────────────────

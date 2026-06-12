@@ -1,0 +1,65 @@
+{
+  "packs": {
+    "title": "Packs Management",
+    "description": "Review and manage promotional packs across all merchant stores",
+
+    "all": "All",
+    "search": "Search packs or stores",
+    "view": "View details",
+    "free": "Free",
+    "standard": "Standard",
+    "off": "Off",
+    "free_delivery": "Free Delivery",
+    "qty_promo": "Qty Promo",
+    "items_label": "items",
+
+    "stats": {
+      "total": "Total Packs",
+      "total_desc": "across all stores",
+      "active": "Active",
+      "active_desc": "live packs",
+      "reviewing": "Under Review",
+      "reviewing_desc": "awaiting approval",
+      "free_delivery": "Free Delivery",
+      "free_delivery_desc": "packs with free delivery"
+    },
+
+    "col": {
+      "name": "Pack",
+      "items": "Items",
+      "discount": "Discount",
+      "delivery": "Delivery",
+      "price": "Pack Price",
+      "status": "Status",
+      "actions": "Actions"
+    },
+
+    "status": {
+      "active": "Active",
+      "reviewing": "Under Review",
+      "inactive": "Inactive",
+      "archived": "Archived"
+    },
+
+    "detail": {
+      "items": "Included Items",
+      "buy_x_get_y": "Buy {buy} Get {get} Free",
+      "original": "Original Price",
+      "discount": "Discount ({pct}%)",
+      "delivery": "Delivery Fee",
+      "total": "Total"
+    },
+
+    "action": {
+      "approve": "Approve",
+      "reject": "Reject",
+      "archive": "Archive Pack",
+      "reactivate": "Reactivate"
+    },
+
+    "empty": {
+      "none": "No packs yet.",
+      "filtered": "No packs match your filters."
+    }
+  }
+}

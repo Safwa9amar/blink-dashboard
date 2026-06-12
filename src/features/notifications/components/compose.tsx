@@ -19,6 +19,7 @@ import {
 import { CHANNELS, NTYPES, NTYPE_KEYS, N_ROLES, REACH_BASE, type TFn } from "../data";
 import { useNotificationsStore } from "../store";
 import type { ComposeDraft } from "../types";
+import { sendCampaign, scheduleCampaign } from "@/app/d/notifications/action";
 import {
   DeepLinkField,
   useDeepLinksStore,
@@ -28,6 +29,15 @@ import {
   isExternalUrl,
 } from "@/features/deep-links";
 
+
+// datetime-local value ("2026-06-12T14:30", local time) → a future UTC ISO
+// string, or null if empty / unparseable / not in the future.
+function parseSchedAt(v: string): string | null {
+  if (!v) return null;
+  const d = new Date(v);
+  if (Number.isNaN(d.getTime()) || d.getTime() <= Date.now()) return null;
+  return d.toISOString();
+}
 
 interface ComposeForm {
   chans: string[];
@@ -66,7 +76,7 @@ export function Compose({
       seg: segments[0]?.name ?? "Everyone",
       link: "",
       when: "now",
-      schedAt: "2026-06-05 09:00",
+      schedAt: "",
     },
   });
 
@@ -97,7 +107,7 @@ export function Compose({
   const c = NTYPES[ntype];
 
   const submit = (status: "draft" | "scheduled" | "sent") =>
-    handleSubmit((data) => {
+    handleSubmit(async (data) => {
       const finalTitle = data.title.en || data.title.fr || data.title.ar;
       if (status !== "draft" && !finalTitle) {
         setError("title.en", { type: "required", message: t("c.title_required") });
@@ -121,6 +131,55 @@ export function Compose({
           return;
         }
       }
+
+      // "Schedule" enqueues a DB row (scheduled_notifications); the blink-server
+      // cron fires it at the chosen time via the same broadcast path as "Send".
+      // No local store record — the queue is the source of truth and the
+      // campaigns list reads it back server-side.
+      if (status === "scheduled") {
+        const iso = parseSchedAt(data.schedAt);
+        if (!iso) {
+          setError("schedAt", { message: t("c.sched_future") });
+          return;
+        }
+        const res = await scheduleCampaign({
+          type: data.ntype,
+          title: data.title,
+          message: data.msg,
+          roles: data.roles,
+          channels: data.chans,
+          link: data.link?.trim() || undefined,
+          scheduledAt: iso,
+        });
+        if (res.error) {
+          setError("schedAt", { message: res.error });
+          return;
+        }
+        onCancel();
+        return;
+      }
+
+      // "Send" delivers for real: write one notification row per targeted user
+      // (in-app) + an Expo push when the push channel is on. Draft stays a local
+      // record only.
+      let realReach = status === "draft" ? 0 : reach;
+      if (status === "sent") {
+        const res = await sendCampaign({
+          type: data.ntype,
+          title: data.title,
+          message: data.msg,
+          roles: data.roles,
+          channels: data.chans,
+          link: data.link?.trim() || undefined,
+        });
+        if (res.error) {
+          setError("title.en", { message: res.error });
+          setLang("en");
+          return;
+        }
+        realReach = res.recipients;
+      }
+
       createCampaign({
         title: finalTitle || t("c.preview_title"),
         type: data.ntype,
@@ -130,8 +189,8 @@ export function Compose({
         body: data.msg.en || data.msg.fr || data.msg.ar || undefined,
         link: data.link,
         status,
-        reach: status === "draft" ? 0 : reach,
-        date: status === "scheduled" ? data.schedAt : status === "sent" ? td("send_now") : "—",
+        reach: realReach,
+        date: status === "sent" ? td("send_now") : "—",
       });
       onCancel();
     });
@@ -238,7 +297,14 @@ export function Compose({
               value={when}
               onChange={(v) => setValue("when", v, { shouldDirty: true })}
             />
-            {when === "schedule" && <input className={`${fInput} mt-2.5`} {...register("schedAt")} />}
+            {when === "schedule" && (
+              <div className="mt-2.5">
+                <input type="datetime-local" className={fInput} {...register("schedAt")} />
+                {errors.schedAt && (
+                  <p className="text-danger text-xs mt-1.5">{errors.schedAt.message}</p>
+                )}
+              </div>
+            )}
           </FormRow>
           <div className="flex items-center gap-3 bg-background border border-border rounded-xl px-4 py-3.5 mt-3.5">
             <div className="w-[38px] h-[38px] rounded-[11px] bg-soft-pink flex items-center justify-center">

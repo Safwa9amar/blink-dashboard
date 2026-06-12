@@ -125,6 +125,23 @@
       "delete_category": "Delete this category? Products keep their current category label."
     },
 
+    "import": {
+      "button": "Import",
+      "from_file": "Import from file…",
+      "templates": "Templates",
+      "title_products": "Import products",
+      "title_categories": "Import categories",
+      "desc": "Upload a CSV, Excel (.xlsx) or JSON file. Rows without an English name are skipped.",
+      "columns": "Columns",
+      "template": "Download a template:",
+      "choose": "Choose a file",
+      "drop": "Drag & drop, or click to browse",
+      "bad_type": "Unsupported file — use CSV, Excel or JSON.",
+      "ready": "{count} ready to import",
+      "skipped": "{count} skipped (missing name)",
+      "run": "Import {count}"
+    },
+
     "selected_count": "{count} selected",
     "clear_selection": "Clear",
     "delete_selected": "Delete selected",

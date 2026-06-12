@@ -57,7 +57,8 @@
       "title_required": "Un titre est requis pour envoyer.",
       "link_params": "Renseignez les params du lien : {params}",
       "link_unknown": "Ce lien profond n’est pas une route connue.",
-      "link_role": "Ce lien cible un rôle différent de l’audience."
+      "link_role": "Ce lien cible un rôle différent de l’audience.",
+      "sched_future": "Choisissez une date et une heure futures."
     },
     "tpl": {
       "search": "Rechercher des modèles",
@@ -98,6 +99,7 @@
     "save": "Enregistrer",
     "required": "Requis",
     "confirm_delete_campaign": "Supprimer cette campagne ?",
+    "confirm_cancel_scheduled": "Annuler cette notification programmée ?",
     "confirm_delete_template": "Supprimer ce modèle ?",
     "confirm_delete_segment": "Supprimer ce segment ?",
     "inbox": {

@@ -125,6 +125,23 @@
       "delete_category": "حذف هذه الفئة؟ ستحتفظ المنتجات بتسمية فئتها الحالية."
     },
 
+    "import": {
+      "button": "استيراد",
+      "from_file": "استيراد من ملف…",
+      "templates": "النماذج",
+      "title_products": "استيراد المنتجات",
+      "title_categories": "استيراد الفئات",
+      "desc": "ارفع ملف CSV أو Excel (‎.xlsx) أو JSON. تُتجاهَل الصفوف التي بلا اسم إنجليزي.",
+      "columns": "الأعمدة",
+      "template": "تنزيل نموذج:",
+      "choose": "اختر ملفًا",
+      "drop": "اسحب وأفلت، أو انقر للاختيار",
+      "bad_type": "ملف غير مدعوم — استخدم CSV أو Excel أو JSON.",
+      "ready": "{count} جاهز للاستيراد",
+      "skipped": "{count} متجاهَل (اسم مفقود)",
+      "run": "استيراد {count}"
+    },
+
     "selected_count": "{count} محدد",
     "clear_selection": "مسح",
     "delete_selected": "حذف المحدد",

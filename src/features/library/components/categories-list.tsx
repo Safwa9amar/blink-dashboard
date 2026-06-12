@@ -7,6 +7,7 @@ import { productCountFor, type LibraryCategory, type LibraryProduct, type TFn } 
 import { deleteLibraryCategory } from "@/app/d/library/action";
 import { CategoryCard } from "./category-card";
 import { CategoryForm } from "./category-form";
+import { ImportMenu } from "./import-menu";
 
 export function CategoriesList({
   t,
@@ -33,8 +34,9 @@ export function CategoriesList({
 
   return (
     <>
-      <div className="flex justify-end mb-[18px]">
-        <Button icon="plus" className="ms-auto" onClick={newCategory}>
+      <div className="flex items-center gap-3 mb-[18px]">
+        <ImportMenu t={t} kind="categories" className="ms-auto" />
+        <Button icon="plus" onClick={newCategory}>
           {t("new_category")}
         </Button>
       </div>

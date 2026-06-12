@@ -57,7 +57,8 @@
       "title_required": "العنوان مطلوب للإرسال.",
       "link_params": "املأ متغيرات الرابط: {params}",
       "link_unknown": "هذا الرابط ليس مساراً معروفاً.",
-      "link_role": "يستهدف هذا الرابط دوراً مختلفاً عن الجمهور."
+      "link_role": "يستهدف هذا الرابط دوراً مختلفاً عن الجمهور.",
+      "sched_future": "اختر تاريخاً ووقتاً في المستقبل."
     },
     "tpl": {
       "search": "بحث في القوالب",
@@ -98,6 +99,7 @@
     "save": "حفظ",
     "required": "مطلوب",
     "confirm_delete_campaign": "حذف هذه الحملة؟",
+    "confirm_cancel_scheduled": "إلغاء هذا الإشعار المجدول؟",
     "confirm_delete_template": "حذف هذا القالب؟",
     "confirm_delete_segment": "حذف هذه الشريحة؟",
     "inbox": {

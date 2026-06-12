@@ -6,5 +6,10 @@ export { Compose } from "./components/compose";
 export { Templates } from "./components/templates";
 export { Segments } from "./components/segments";
 
-export type { ComposeDraft, NewCampaignInput } from "./types";
+export type {
+  ComposeDraft,
+  NewCampaignInput,
+  ScheduledNotification,
+  ScheduledStatus,
+} from "./types";
 export * from "./data";

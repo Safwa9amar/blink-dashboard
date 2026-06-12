@@ -1,0 +1,57 @@
+{
+  "merchant_pricing": {
+    "title": "Pricing Review",
+    "description": "Review and manage merchant price suggestions across the platform",
+
+    "all": "All",
+    "search": "Search by product, store or barcode",
+    "review_btn": "Review",
+
+    "stats": {
+      "pending": "Pending Review",
+      "pending_desc": "awaiting action",
+      "accepted": "Accepted",
+      "accepted_desc": "approved suggestions",
+      "rejected": "Rejected",
+      "rejected_desc": "declined suggestions",
+      "avg_deviation": "Avg Deviation",
+      "avg_deviation_desc": "from blink reference"
+    },
+
+    "col": {
+      "product": "Product",
+      "store": "Store",
+      "category": "Category",
+      "barcode": "Barcode",
+      "blink_price": "Blink Price",
+      "suggested": "Suggested",
+      "deviation": "Deviation",
+      "status": "Status",
+      "actions": "Actions"
+    },
+
+    "status": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected"
+    },
+
+    "review": {
+      "title": "Review Price Suggestion",
+      "blink_price": "Blink Reference Price",
+      "current_price": "Current Selling Price",
+      "suggested_price": "Suggested Price",
+      "deviation": "Price Deviation",
+      "over_tolerance": "This suggestion exceeds the 20% tolerance threshold.",
+      "note": "Review Note",
+      "note_placeholder": "Optional reason for approval/rejection…",
+      "approve": "Approve",
+      "reject": "Reject"
+    },
+
+    "empty": {
+      "none": "No price suggestions yet.",
+      "filtered": "No suggestions match your filters."
+    }
+  }
+}

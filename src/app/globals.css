@@ -220,6 +220,57 @@ body {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
+.blink-prose h1 {
+  font-size: 1.5em;
+  font-weight: 800;
+  line-height: 1.25;
+  margin-top: 1.1em;
+}
+.blink-prose h4 {
+  font-size: 1em;
+  font-weight: 700;
+  line-height: 1.4;
+  margin-top: 1em;
+}
+.blink-prose hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 1.2em 0;
+}
+.blink-prose code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.88em;
+  background: var(--muted);
+  padding: 0.12em 0.4em;
+  border-radius: 5px;
+}
+.blink-prose pre {
+  background: var(--muted);
+  padding: 12px 14px;
+  border-radius: 10px;
+  overflow-x: auto;
+}
+.blink-prose pre code {
+  background: transparent;
+  padding: 0;
+  font-size: 0.85em;
+}
+.blink-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95em;
+  margin: 0.4em 0;
+}
+.blink-prose th,
+.blink-prose td {
+  border: 1px solid var(--border);
+  padding: 7px 10px;
+  text-align: start;
+}
+.blink-prose th {
+  background: var(--muted);
+  font-weight: 700;
+}
 /* Placeholder for the empty editor (Tiptap Placeholder extension) */
 .blink-prose p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);

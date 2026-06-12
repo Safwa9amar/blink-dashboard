@@ -6,5 +6,7 @@ export { PhotoGallery } from "./components/photo-gallery";
 export { CategoriesList } from "./components/categories-list";
 export { CategoryCard } from "./components/category-card";
 export { CategoryForm } from "./components/category-form";
+export { ImportModal } from "./components/import-modal";
+export { ImportMenu } from "./components/import-menu";
 
 export * from "./data";

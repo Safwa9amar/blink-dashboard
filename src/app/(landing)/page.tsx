@@ -1,6 +1,17 @@
 import { getTranslations } from "next-intl/server";
 import { BlinkLogoSvg } from "./blink-logo";
 import { ThemeToggle, LangToggle, QrGrid, PhoneMock } from "./landing-client";
+import {
+  FadeUp,
+  FadeIn,
+  SlideIn,
+  ScaleIn,
+  StaggerContainer,
+  StaggerItem,
+  HeroEntrance,
+  HeroItem,
+  FloatingWrapper,
+} from "./landing-motion";
 
 export default async function LandingPage() {
   const nav = await getTranslations("landing.nav");
@@ -49,67 +60,84 @@ export default async function LandingPage() {
       {/* ── HERO ── */}
       <header className="relative py-[72px] overflow-hidden">
         <div className="max-w-[1240px] mx-auto px-8 grid grid-cols-1 lg:grid-cols-[1.05fr_.95fr] gap-14 items-center">
-          <div>
-            <span className="inline-flex items-center gap-2.5 h-8 px-3 ps-1.5 rounded-full text-xs font-medium" style={{ background: "var(--bg-mute)", border: "1px solid var(--line)", color: "var(--ink-2)" }}>
-              <span className="bg-[var(--brand)] text-white text-[10px] font-bold px-2 py-0.5 rounded-full tracking-wide">{hero("badge")}</span>
-              {hero("badge_text")}
-            </span>
-            <h1 className="mt-6 leading-[0.98] font-bold" style={{ fontFamily: "Poppins, sans-serif", fontSize: "clamp(44px, 7vw, 88px)" }}>
-              {hero("title_1")}<br/>{hero("title_2")} <span className="accent-text">{hero("title_accent")}</span>.
-            </h1>
-            <p className="mt-5 text-lg max-w-[520px]" style={{ color: "var(--ink-2)" }}>{hero("subtitle")}</p>
-            <div className="mt-8 flex gap-3 flex-wrap">
-              <a href="#download" className="btn-brand inline-flex items-center gap-2 h-11 px-[18px] rounded-xl text-sm font-semibold">
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5M5 12l7 7 7-7"/></svg>
-                {hero("download")}
-              </a>
-              <a href="#rides" className="btn-outline inline-flex items-center gap-2 h-11 px-[18px] rounded-xl text-sm font-semibold">
-                {hero("see_how")}
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
-              </a>
-            </div>
-            <div className="mt-9 flex gap-9 flex-wrap pt-7" style={{ borderTop: "1px solid var(--line)" }}>
-              {[["2.4M+", hero("stat_trips")],["18,000", hero("stat_drivers")],["12 cities", hero("stat_cities")]].map(([n,l],i)=>(
-                <div key={i}>
-                  <div className="text-[26px] font-bold" style={{ fontFamily:"Poppins", letterSpacing:"-0.02em" }}>{n}</div>
-                  <div className="text-xs mt-1" style={{ color:"var(--ink-3)", letterSpacing:".02em" }}>{l}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <PhoneMock />
+          <HeroEntrance>
+            <HeroItem>
+              <span className="inline-flex items-center gap-2.5 h-8 px-3 ps-1.5 rounded-full text-xs font-medium" style={{ background: "var(--bg-mute)", border: "1px solid var(--line)", color: "var(--ink-2)" }}>
+                <span className="bg-[var(--brand)] text-white text-[10px] font-bold px-2 py-0.5 rounded-full tracking-wide">{hero("badge")}</span>
+                {hero("badge_text")}
+              </span>
+            </HeroItem>
+            <HeroItem>
+              <h1 className="mt-6 leading-[0.98] font-bold" style={{ fontFamily: "Poppins, sans-serif", fontSize: "clamp(44px, 7vw, 88px)" }}>
+                {hero("title_1")}<br/>{hero("title_2")} <span className="accent-text">{hero("title_accent")}</span>.
+              </h1>
+            </HeroItem>
+            <HeroItem>
+              <p className="mt-5 text-lg max-w-[520px]" style={{ color: "var(--ink-2)" }}>{hero("subtitle")}</p>
+            </HeroItem>
+            <HeroItem>
+              <div className="mt-8 flex gap-3 flex-wrap">
+                <a href="#download" className="btn-brand inline-flex items-center gap-2 h-11 px-[18px] rounded-xl text-sm font-semibold">
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5M5 12l7 7 7-7"/></svg>
+                  {hero("download")}
+                </a>
+                <a href="#rides" className="btn-outline inline-flex items-center gap-2 h-11 px-[18px] rounded-xl text-sm font-semibold">
+                  {hero("see_how")}
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+                </a>
+              </div>
+            </HeroItem>
+            <HeroItem>
+              <div className="mt-9 flex gap-9 flex-wrap pt-7" style={{ borderTop: "1px solid var(--line)" }}>
+                {[["2.4M+", hero("stat_trips")],["18,000", hero("stat_drivers")],["12 cities", hero("stat_cities")]].map(([n,l],i)=>(
+                  <div key={i}>
+                    <div className="text-[26px] font-bold" style={{ fontFamily:"Poppins", letterSpacing:"-0.02em" }}>{n}</div>
+                    <div className="text-xs mt-1" style={{ color:"var(--ink-3)", letterSpacing:".02em" }}>{l}</div>
+                  </div>
+                ))}
+              </div>
+            </HeroItem>
+          </HeroEntrance>
+          <FloatingWrapper>
+            <PhoneMock />
+          </FloatingWrapper>
         </div>
       </header>
 
       {/* ── STRIP ── */}
-      <div className="strip-bar py-5">
-        <div className="max-w-[1240px] mx-auto px-8 flex items-center gap-9 flex-wrap justify-between text-xs font-semibold uppercase tracking-[.12em]" style={{ color: "var(--ink-3)" }}>
-          <span>{strip("now_serving")}</span>
-          <div className="flex gap-7 flex-wrap" style={{ color: "var(--ink-2)" }}>
-            {["Algiers","Oran","Constantine","Annaba","Setif","Blida"].map((c,i) => (
-              <span key={i} className="inline-flex items-center gap-2">
-                <span className="w-[5px] h-[5px] rounded-full bg-[var(--brand)]" />{c}
+      <FadeIn delay={0.6}>
+        <div className="strip-bar py-5">
+          <div className="max-w-[1240px] mx-auto px-8 flex items-center gap-9 flex-wrap justify-between text-xs font-semibold uppercase tracking-[.12em]" style={{ color: "var(--ink-3)" }}>
+            <span>{strip("now_serving")}</span>
+            <div className="flex gap-7 flex-wrap" style={{ color: "var(--ink-2)" }}>
+              {["Algiers","Oran","Constantine","Annaba","Setif","Blida"].map((c,i) => (
+                <span key={i} className="inline-flex items-center gap-2">
+                  <span className="w-[5px] h-[5px] rounded-full bg-[var(--brand)]" />{c}
+                </span>
+              ))}
+              <span className="inline-flex items-center gap-2">
+                <span className="w-[5px] h-[5px] rounded-full bg-[var(--brand)]" />{strip("more")}
               </span>
-            ))}
-            <span className="inline-flex items-center gap-2">
-              <span className="w-[5px] h-[5px] rounded-full bg-[var(--brand)]" />{strip("more")}
-            </span>
+            </div>
           </div>
         </div>
-      </div>
+      </FadeIn>
 
       {/* ── SERVICES ── */}
       <section id="rides" className="py-24 max-md:py-16">
         <div className="max-w-[1240px] mx-auto px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-end mb-14">
-            <div>
-              <span className="eyebrow">{svc("eyebrow")}</span>
-              <h2 className="mt-3.5 font-bold leading-[1.02]" style={{ fontFamily:"Poppins", fontSize:"clamp(32px, 4.2vw, 56px)" }}>{svc("title")}</h2>
+          <FadeUp>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-end mb-14">
+              <div>
+                <span className="eyebrow">{svc("eyebrow")}</span>
+                <h2 className="mt-3.5 font-bold leading-[1.02]" style={{ fontFamily:"Poppins", fontSize:"clamp(32px, 4.2vw, 56px)" }}>{svc("title")}</h2>
+              </div>
+              <p className="text-[17px]">{svc("subtitle")}</p>
             </div>
-            <p className="text-[17px]">{svc("subtitle")}</p>
-          </div>
-          <div className="grid grid-cols-12 gap-5">
-            <div className="col-span-12 svc-card svc-card-hero min-h-[280px] flex flex-col justify-between">
+          </FadeUp>
+          <StaggerContainer className="grid grid-cols-12 gap-5" staggerDelay={0.12}>
+            <StaggerItem className="col-span-12">
+              <div className="svc-card svc-card-hero min-h-[280px] flex flex-col justify-between">
               <div className="flex items-center justify-between">
                 <span className="font-bold text-xs tracking-[.14em]" style={{ fontFamily:"Poppins", color:"rgba(255,255,255,.5)" }}>01 / RIDES</span>
                 <div className="svc-arrow"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></div>
@@ -119,73 +147,83 @@ export default async function LandingPage() {
                 <h3 className="mt-4 text-[42px] max-w-[560px] font-semibold leading-tight" style={{ fontFamily:"Poppins" }}>{svc("rides_title")}</h3>
                 <p className="mt-2.5 text-[15px] max-w-[420px]" style={{ color:"rgba(255,255,255,.85)" }}>{svc("rides_desc")}</p>
               </div>
-            </div>
+              </div>
+            </StaggerItem>
             {([
               { num:"02 / MARKETPLACE", tKey:"marketplace" as const, icon:<><path d="M3 7h13l3 4v6h-3M3 7v10h3"/><circle cx="9" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></> },
               { num:"03 / COURIER", tKey:"courier" as const, icon:<><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></> },
               { num:"04 / PROMOS", tKey:"promos" as const, icon:<><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.5"/></> },
               { num:"05 / SUPPORT", tKey:"support" as const, icon:<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/> },
             ] as const).map((s, i) => (
-              <div key={i} className="col-span-12 md:col-span-6 svc-card min-h-[320px] flex flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs tracking-[.14em]" style={{ fontFamily:"Poppins", color:"var(--ink-3)" }}>{s.num}</span>
-                  <div className="svc-arrow"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></div>
+              <StaggerItem key={i} className="col-span-12 md:col-span-6">
+                <div className="svc-card min-h-[320px] flex flex-col justify-between h-full">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-xs tracking-[.14em]" style={{ fontFamily:"Poppins", color:"var(--ink-3)" }}>{s.num}</span>
+                    <div className="svc-arrow"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></div>
+                  </div>
+                  <div>
+                    <div className="svc-icon"><svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{s.icon}</svg></div>
+                    <h3 className="mt-4 text-[26px] font-semibold" style={{ fontFamily:"Poppins" }}>{svc(`${s.tKey}_title`)}</h3>
+                    <p className="mt-2.5 text-[15px] max-w-[420px]">{svc(`${s.tKey}_desc`)}</p>
+                  </div>
                 </div>
-                <div>
-                  <div className="svc-icon"><svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{s.icon}</svg></div>
-                  <h3 className="mt-4 text-[26px] font-semibold" style={{ fontFamily:"Poppins" }}>{svc(`${s.tKey}_title`)}</h3>
-                  <p className="mt-2.5 text-[15px] max-w-[420px]">{svc(`${s.tKey}_desc`)}</p>
-                </div>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </div>
       </section>
 
       {/* ── STEPS ── */}
       <section id="how" className="steps-bg py-24 max-md:py-16">
         <div className="max-w-[1240px] mx-auto px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-end mb-14">
-            <div>
-              <span className="eyebrow">{steps("eyebrow")}</span>
-              <h2 className="mt-3.5 font-bold leading-[1.02]" style={{ fontFamily:"Poppins", fontSize:"clamp(32px, 4.2vw, 56px)" }}>{steps("title")}</h2>
+          <FadeUp>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-end mb-14">
+              <div>
+                <span className="eyebrow">{steps("eyebrow")}</span>
+                <h2 className="mt-3.5 font-bold leading-[1.02]" style={{ fontFamily:"Poppins", fontSize:"clamp(32px, 4.2vw, 56px)" }}>{steps("title")}</h2>
+              </div>
+              <p className="text-[17px]">{steps("subtitle")}</p>
             </div>
-            <p className="text-[17px]">{steps("subtitle")}</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          </FadeUp>
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6" staggerDelay={0.15}>
             {([
               { step:"STEP 01", tKey:"step1" as const, illus:<><rect x="18" y="6" width="28" height="52" rx="6"/><path d="M28 52h8"/><path d="M24 18h16M24 24h12M24 30h8"/></> },
               { step:"STEP 02", tKey:"step2" as const, illus:<><rect x="6" y="10" width="22" height="22" rx="4"/><rect x="36" y="10" width="22" height="22" rx="4"/><rect x="6" y="38" width="22" height="22" rx="4"/><rect x="36" y="38" width="22" height="22" rx="4" fill="currentColor" fillOpacity=".2"/></> },
               { step:"STEP 03", tKey:"step3" as const, illus:<><circle cx="32" cy="32" r="24"/><path d="M22 32l8 8 14-16"/></> },
             ] as const).map((s,i) => (
-              <div key={i} className="step-card">
-                <div className="font-bold text-[13px] tracking-[.14em] flex items-center gap-2.5" style={{ fontFamily:"Poppins", color:"var(--brand)" }}>
-                  <span className="w-6 h-px bg-[var(--brand)]" />{s.step}
+              <StaggerItem key={i}>
+                <div className="step-card h-full">
+                  <div className="font-bold text-[13px] tracking-[.14em] flex items-center gap-2.5" style={{ fontFamily:"Poppins", color:"var(--brand)" }}>
+                    <span className="w-6 h-px bg-[var(--brand)]" />{s.step}
+                  </div>
+                  <h3 className="mt-4 text-[22px] font-semibold" style={{ fontFamily:"Poppins" }}>{steps(`${s.tKey}_title`)}</h3>
+                  <p className="mt-2.5 text-[15px]">{steps(`${s.tKey}_desc`)}</p>
+                  <div className="step-illus mt-5">
+                    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">{s.illus}</svg>
+                  </div>
                 </div>
-                <h3 className="mt-4 text-[22px] font-semibold" style={{ fontFamily:"Poppins" }}>{steps(`${s.tKey}_title`)}</h3>
-                <p className="mt-2.5 text-[15px]">{steps(`${s.tKey}_desc`)}</p>
-                <div className="step-illus mt-5">
-                  <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">{s.illus}</svg>
-                </div>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </div>
       </section>
 
       {/* ── FEATURES ── */}
       <section className="py-24 max-md:py-16">
         <div className="max-w-[1240px] mx-auto px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-end mb-14">
-            <div>
-              <span className="eyebrow">{feat("eyebrow")}</span>
-              <h2 className="mt-3.5 font-bold leading-[1.02]" style={{ fontFamily:"Poppins", fontSize:"clamp(32px, 4.2vw, 56px)" }}>{feat("title")}</h2>
+          <FadeUp>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-end mb-14">
+              <div>
+                <span className="eyebrow">{feat("eyebrow")}</span>
+                <h2 className="mt-3.5 font-bold leading-[1.02]" style={{ fontFamily:"Poppins", fontSize:"clamp(32px, 4.2vw, 56px)" }}>{feat("title")}</h2>
+              </div>
+              <p className="text-[17px]">{feat("subtitle")}</p>
             </div>
-            <p className="text-[17px]">{feat("subtitle")}</p>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-5">
+          </FadeUp>
+          <StaggerContainer className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-5" staggerDelay={0.12}>
             {/* Tracking */}
-            <div className="feature-card">
+            <StaggerItem>
+              <div className="feature-card h-full">
               <span className="eyebrow">{feat("tracking_label")}</span>
               <h3 className="mt-3.5 text-[28px] font-semibold leading-tight" style={{ fontFamily:"Poppins" }}>{feat("tracking_title")}</h3>
               <p className="mt-3 text-[15px] max-w-[460px]">{feat("tracking_desc")}</p>
@@ -205,9 +243,11 @@ export default async function LandingPage() {
                   </div>
                 </div>
               </div>
-            </div>
+              </div>
+            </StaggerItem>
             {/* Marketplace */}
-            <div className="feature-card">
+            <StaggerItem>
+              <div className="feature-card h-full">
               <span className="eyebrow">{feat("market_label")}</span>
               <h3 className="mt-3.5 text-[28px] font-semibold leading-tight" style={{ fontFamily:"Poppins" }}>{feat("market_title")}</h3>
               <p className="mt-3 text-[15px] max-w-[460px]">{feat("market_desc")}</p>
@@ -235,9 +275,11 @@ export default async function LandingPage() {
                   );
                 })}
               </div>
-            </div>
+              </div>
+            </StaggerItem>
             {/* Pay */}
-            <div className="feature-card">
+            <StaggerItem>
+              <div className="feature-card h-full">
               <span className="eyebrow">{feat("pay_label")}</span>
               <h3 className="mt-3.5 text-[28px] font-semibold leading-tight" style={{ fontFamily:"Poppins" }}>{feat("pay_title")}</h3>
               <p className="mt-3 text-[15px] max-w-[460px]">{feat("pay_desc")}</p>
@@ -251,9 +293,11 @@ export default async function LandingPage() {
                   <div className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold" style={{ background:"rgba(255,255,255,.14)" }}>{feat("pay_autotop")}</div>
                 </div>
               </div>
-            </div>
+              </div>
+            </StaggerItem>
             {/* Safety */}
-            <div className="feature-card">
+            <StaggerItem>
+              <div className="feature-card h-full">
               <span className="eyebrow">{feat("safety_label")}</span>
               <h3 className="mt-3.5 text-[28px] font-semibold leading-tight" style={{ fontFamily:"Poppins" }}>{feat("safety_title")}</h3>
               <p className="mt-3 text-[15px] max-w-[460px]">{feat("safety_desc")}</p>
@@ -270,16 +314,18 @@ export default async function LandingPage() {
                   </span>
                 ))}
               </div>
-            </div>
-          </div>
+              </div>
+            </StaggerItem>
+          </StaggerContainer>
         </div>
       </section>
 
       {/* ── DRIVERS ── */}
       <section id="drivers" className="py-24 max-md:py-16">
         <div className="max-w-[1240px] mx-auto px-8">
+          <ScaleIn>
           <div className="driver-bg grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-14 items-center p-14 max-md:p-9 rounded-[32px]">
-            <div>
+            <SlideIn from="left">
               <span className="eyebrow">{drv("eyebrow")}</span>
               <h2 className="mt-3.5 font-bold leading-[1.02]" style={{ fontFamily:"Poppins", fontSize:"clamp(28px, 3.6vw, 44px)" }}>{drv("title")}<br/>{drv("title2")}</h2>
               <p className="mt-4 text-[17px]">{drv("desc")}</p>
@@ -299,8 +345,9 @@ export default async function LandingPage() {
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
                 </a>
               </div>
-            </div>
-            <div className="earnings-bg relative h-[360px] rounded-3xl p-7 overflow-hidden">
+            </SlideIn>
+            <SlideIn from="right">
+              <div className="earnings-bg relative h-[360px] rounded-3xl p-7 overflow-hidden">
               <div className="flex justify-between items-center">
                 <span className="eyebrow" style={{ color:"var(--ink-3)" }}>{drv("this_week")}</span>
                 <span className="text-xs" style={{ color:"var(--ink-3)" }}>{drv("mon_sun")}</span>
@@ -316,17 +363,20 @@ export default async function LandingPage() {
                   <span key={i} className="flex-1 text-center text-[10px]" style={{ color:"var(--ink-3)" }}>{d}</span>
                 ))}
               </div>
-            </div>
+              </div>
+            </SlideIn>
           </div>
+          </ScaleIn>
         </div>
       </section>
 
       {/* ── DOWNLOAD ── */}
       <section id="download" className="pb-24">
         <div className="max-w-[1240px] mx-auto px-8">
+          <ScaleIn>
           <div className="download-bg text-white rounded-[32px] max-md:rounded-3xl p-[72px_64px] max-md:p-[48px_28px]">
             <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr] gap-10 items-center relative z-[1]">
-              <div>
+              <FadeUp delay={0.1}>
                 <span className="eyebrow" style={{ color:"rgba(255,255,255,.7)" }}>{dl("eyebrow")}</span>
                 <h2 className="mt-3.5 font-bold leading-[1.02] text-white" style={{ fontFamily:"Poppins", fontSize:"clamp(36px, 4.4vw, 56px)" }}>{dl("title")}</h2>
                 <p className="mt-4 text-lg max-w-[480px]" style={{ color:"rgba(255,255,255,.85)" }}>{dl("desc")}</p>
@@ -340,18 +390,22 @@ export default async function LandingPage() {
                     <div><div className="text-[10px] opacity-70 tracking-wide uppercase leading-none">{dl("play_label")}</div><div className="text-[17px] font-semibold mt-0.5 leading-tight" style={{ fontFamily:"Poppins" }}>{dl("play_store")}</div></div>
                   </a>
                 </div>
-              </div>
-              <div className="bg-white rounded-[22px] p-[22px] text-center shadow-[0_30px_60px_-20px_rgba(0,0,0,.4)]" style={{ color:"#0F172A" }}>
-                <strong className="block text-sm font-bold mb-1" style={{ fontFamily:"Poppins" }}>{dl("scan")}</strong>
-                <QrGrid />
-                <p className="text-xs mt-3.5" style={{ color:"#64748B" }}>{dl("scan_hint")}</p>
-              </div>
+              </FadeUp>
+              <FadeUp delay={0.25}>
+                <div className="bg-white rounded-[22px] p-[22px] text-center shadow-[0_30px_60px_-20px_rgba(0,0,0,.4)]" style={{ color:"#0F172A" }}>
+                  <strong className="block text-sm font-bold mb-1" style={{ fontFamily:"Poppins" }}>{dl("scan")}</strong>
+                  <QrGrid />
+                  <p className="text-xs mt-3.5" style={{ color:"#64748B" }}>{dl("scan_hint")}</p>
+                </div>
+              </FadeUp>
             </div>
           </div>
+          </ScaleIn>
         </div>
       </section>
 
       {/* ── FOOTER ── */}
+      <FadeIn>
       <footer className="py-16 pb-8 footer-border">
         <div className="max-w-[1240px] mx-auto px-8">
           <div className="grid grid-cols-2 lg:grid-cols-[1.4fr_repeat(4,1fr)] gap-8">
@@ -414,6 +468,7 @@ export default async function LandingPage() {
           </div>
         </div>
       </footer>
+      </FadeIn>
     </div>
   );
 }

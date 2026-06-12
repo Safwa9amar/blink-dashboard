@@ -1,0 +1,65 @@
+{
+  "packs": {
+    "title": "Gestion des Packs",
+    "description": "Examiner et gerer les packs promotionnels de tous les magasins",
+
+    "all": "Tout",
+    "search": "Rechercher packs ou magasins",
+    "view": "Voir les details",
+    "free": "Gratuit",
+    "standard": "Standard",
+    "off": "Reduction",
+    "free_delivery": "Livraison gratuite",
+    "qty_promo": "Promo quantite",
+    "items_label": "articles",
+
+    "stats": {
+      "total": "Total des Packs",
+      "total_desc": "dans tous les magasins",
+      "active": "Actifs",
+      "active_desc": "packs en ligne",
+      "reviewing": "En revision",
+      "reviewing_desc": "en attente d'approbation",
+      "free_delivery": "Livraison gratuite",
+      "free_delivery_desc": "packs avec livraison gratuite"
+    },
+
+    "col": {
+      "name": "Pack",
+      "items": "Articles",
+      "discount": "Remise",
+      "delivery": "Livraison",
+      "price": "Prix du Pack",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+
+    "status": {
+      "active": "Actif",
+      "reviewing": "En revision",
+      "inactive": "Inactif",
+      "archived": "Archive"
+    },
+
+    "detail": {
+      "items": "Articles inclus",
+      "buy_x_get_y": "Achetez {buy} Obtenez {get} Gratuit",
+      "original": "Prix original",
+      "discount": "Remise ({pct}%)",
+      "delivery": "Frais de livraison",
+      "total": "Total"
+    },
+
+    "action": {
+      "approve": "Approuver",
+      "reject": "Rejeter",
+      "archive": "Archiver le pack",
+      "reactivate": "Reactiver"
+    },
+
+    "empty": {
+      "none": "Aucun pack pour le moment.",
+      "filtered": "Aucun pack ne correspond a vos filtres."
+    }
+  }
+}

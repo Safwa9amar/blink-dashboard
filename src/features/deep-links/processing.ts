@@ -105,9 +105,18 @@ function templateToRegex(template: string): RegExp {
   return new RegExp(`^${escaped}$`);
 }
 
+/**
+ * Tolerate Expo route-group parens in a pasted link, mirroring how the catalog
+ * derives `deepLink` from `routePath`: `blink://(merchant)/earnings` →
+ * `blink://merchant/earnings`. The group segment is kept, only the parens drop.
+ */
+function stripRouteGroups(url: string): string {
+  return url.replace(/\(([^()/]+)\)/g, "$1");
+}
+
 /** Match a concrete URL against the catalog, extracting its params. */
 export function parseDeepLink(url: string, routes: DeepLinkRoute[]): ParsedDeepLink {
-  const clean = url.trim();
+  const clean = stripRouteGroups(url.trim());
   for (const route of routes) {
     const m = templateToRegex(route.deepLink).exec(clean);
     if (!m) continue;

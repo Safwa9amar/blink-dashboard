@@ -1,0 +1,65 @@
+{
+  "packs": {
+    "title": "ادارة الحزم",
+    "description": "مراجعة وادارة الحزم الترويجية لجميع متاجر التجار",
+
+    "all": "الكل",
+    "search": "البحث عن حزم او متاجر",
+    "view": "عرض التفاصيل",
+    "free": "مجاني",
+    "standard": "عادي",
+    "off": "خصم",
+    "free_delivery": "توصيل مجاني",
+    "qty_promo": "عرض الكمية",
+    "items_label": "عناصر",
+
+    "stats": {
+      "total": "اجمالي الحزم",
+      "total_desc": "في جميع المتاجر",
+      "active": "نشطة",
+      "active_desc": "حزم مباشرة",
+      "reviewing": "قيد المراجعة",
+      "reviewing_desc": "في انتظار الموافقة",
+      "free_delivery": "توصيل مجاني",
+      "free_delivery_desc": "حزم مع توصيل مجاني"
+    },
+
+    "col": {
+      "name": "الحزمة",
+      "items": "العناصر",
+      "discount": "الخصم",
+      "delivery": "التوصيل",
+      "price": "سعر الحزمة",
+      "status": "الحالة",
+      "actions": "الإجراءات"
+    },
+
+    "status": {
+      "active": "نشط",
+      "reviewing": "قيد المراجعة",
+      "inactive": "غير نشط",
+      "archived": "مؤرشف"
+    },
+
+    "detail": {
+      "items": "العناصر المضمنة",
+      "buy_x_get_y": "اشتري {buy} واحصل على {get} مجانا",
+      "original": "السعر الاصلي",
+      "discount": "خصم ({pct}%)",
+      "delivery": "رسوم التوصيل",
+      "total": "المجموع"
+    },
+
+    "action": {
+      "approve": "قبول",
+      "reject": "رفض",
+      "archive": "ارشفة الحزمة",
+      "reactivate": "اعادة التفعيل"
+    },
+
+    "empty": {
+      "none": "لا توجد حزم بعد.",
+      "filtered": "لا توجد حزم تطابق عوامل التصفية."
+    }
+  }
+}

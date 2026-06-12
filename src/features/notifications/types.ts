@@ -10,6 +10,29 @@ export interface NType {
 
 export type CampaignStatus = "draft" | "scheduled" | "sending" | "sent";
 
+// Lifecycle of a queued broadcast (mirrors the server's
+// scheduled_notification_status enum).
+export type ScheduledStatus =
+  | "pending"
+  | "sending"
+  | "sent"
+  | "failed"
+  | "canceled";
+
+// A real scheduled-broadcast row from the DB queue (scheduled_notifications),
+// fetched server-side and rendered in the Campaigns table. Serializable —
+// no Date objects (scheduledAt is an ISO string).
+export interface ScheduledNotification {
+  id: string;
+  type: string;
+  title: string;
+  audience: string; // display label: "All" | "Customer" | …
+  channels: string[];
+  scheduledAt: string; // ISO timestamp
+  status: ScheduledStatus;
+  recipients: number;
+}
+
 export interface CampaignMetrics {
   sent: number;
   delivered: number;

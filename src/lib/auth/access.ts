@@ -36,7 +36,7 @@ export const ROLE_ACCESS: Record<StaffRole, "*" | readonly string[]> = {
   ],
   finance_admin: ["/", "/blink-cash"],
   support_admin: ["/", "/notifications", "/news", "/deep-links"],
-  commerce_admin: ["/", "/marketplace", "/library", "/agent-shops", "/promotions", "/coupons"],
+  commerce_admin: ["/", "/marketplace", "/library", "/agent-shops", "/promotions", "/coupons", "/merchant-pricing", "/packs-management"],
 };
 
 export function isStaffRole(value: unknown): value is StaffRole {

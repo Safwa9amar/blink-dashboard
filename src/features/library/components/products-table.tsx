@@ -25,6 +25,7 @@ import {
 } from "../data";
 import { deleteLibraryProduct, deleteLibraryProducts } from "@/app/d/library/action";
 import { ProductCell } from "./product-cell";
+import { ImportMenu } from "./import-menu";
 
 const checkboxClass = "w-4 h-4 rounded border-border accent-primary cursor-pointer align-middle";
 
@@ -198,7 +199,8 @@ export function ProductsTable({
             </option>
           ))}
         </select>
-        <Link href="/library/products/new" className={`${btnPrimary} ms-auto`}>
+        <ImportMenu t={t} kind="products" className="ms-auto" />
+        <Link href="/library/products/new" className={btnPrimary}>
           <DashIcon name="plus" className="w-4 h-4" />
           {t("new_product")}
         </Link>
