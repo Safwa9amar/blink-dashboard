@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Sidebar } from "./sidebar";
 import { MotionScrollbar } from "./motion-scrollbar";
 import { NotificationBell } from "@/features/notifications";
+import { NavigationProgress } from "./navigation-progress";
 import { canAccessPath, defaultPathFor, type StaffRole } from "@/lib/auth/access";
 
 export function DashboardShell({
@@ -32,6 +33,7 @@ export function DashboardShell({
   return (
     <div className="h-screen overflow-hidden bg-background">
       <Sidebar staffRole={staffRole} collapsed={collapsed} onToggle={() => setCollapsed((c) => !c)} />
+      <NavigationProgress />
       <MotionScrollbar className={`${collapsed ? "ms-20" : "ms-64"} h-screen transition-[margin] duration-200`}>
         <header className="sticky top-0 z-20 flex items-center justify-end gap-2 px-8 h-14 bg-background/80 backdrop-blur border-b border-border">
           <NotificationBell />
