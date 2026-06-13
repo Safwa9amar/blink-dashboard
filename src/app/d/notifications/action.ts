@@ -31,6 +31,7 @@ export interface SendCampaignInput {
   roles: string[]; // dashboard labels: ["All"] | ["Customer","Rider",...]
   channels: string[]; // includes "push" / "inapp" / "email" / "sms"
   link?: string; // deep-link routePath → notifications.href
+  userId?: string; // when set, deliver ONLY to this user (ignores `roles`)
 }
 
 export interface SendCampaignResult {
@@ -50,6 +51,47 @@ const ALL_ROLES = ["customer", "rider", "merchant", "agent"];
 function targetRoles(roles: string[]): string[] {
   if (roles.includes("All")) return ALL_ROLES;
   return [...new Set(roles.map((r) => ROLE_LABEL_TO_ENUM[r]).filter(Boolean))];
+}
+
+// A lightweight user hit for the composer's "Specific user" picker.
+export interface UserHit {
+  id: string;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  role: string;
+}
+
+// Search the users table for the composer's single-user targeting. Matches
+// name / email / phone (case-insensitive); returns at most 10 rows. An empty
+// query returns the most recent users so the picker can open as a browsable
+// dropdown. Staff-gated and service-role (finds any user regardless of RLS).
+export async function searchUsers(query: string): Promise<UserHit[]> {
+  if (!(await hasStaffRole("super_admin", "ops_admin"))) return [];
+  // Strip characters that would break the PostgREST or() filter grammar.
+  const q = query.replace(/[,()%]/g, " ").trim();
+
+  const supabase = await createAdminClient();
+  let sel = supabase
+    .from("users")
+    .select("id, first_name, last_name, email, phone_number, role");
+  if (q.length >= 2) {
+    const like = `%${q}%`;
+    sel = sel.or(
+      `first_name.ilike.${like},last_name.ilike.${like},email.ilike.${like},phone_number.ilike.${like}`
+    );
+  } else {
+    sel = sel.order("created_at", { ascending: false });
+  }
+  const { data, error } = await sel.limit(10);
+  if (error || !data) return [];
+  return data.map((u) => ({
+    id: u.id as string,
+    name: [u.first_name, u.last_name].filter(Boolean).join(" ") || "—",
+    email: (u.email as string | null) ?? null,
+    phone: (u.phone_number as string | null) ?? null,
+    role: (u.role as string | null) ?? "customer",
+  }));
 }
 
 // Detail-page deep link for typed notifications — mirrors the app's
@@ -285,7 +327,9 @@ export async function sendCampaign(
   }
 
   const roles = targetRoles(input.roles);
-  if (roles.length === 0) {
+  // A single-user send carries its own recipient, so role targeting is optional;
+  // a role/segment send still needs at least one valid role.
+  if (!input.userId && roles.length === 0) {
     return { error: "No valid target roles", recipients: 0, pushed: 0 };
   }
 
@@ -298,15 +342,24 @@ export async function sendCampaign(
 
   const supabase = await createAdminClient();
 
-  // Recipients.
-  const { data: users, error: usersErr } = await supabase
-    .from("users")
-    .select("id, role")
-    .in("role", roles);
+  // Recipients: a single specific user, or everyone in the target roles.
+  const { data: users, error: usersErr } = input.userId
+    ? await supabase.from("users").select("id, role").eq("id", input.userId)
+    : await supabase.from("users").select("id, role").in("role", roles);
   if (usersErr) return { error: usersErr.message, recipients: 0, pushed: 0 };
   if (!users || users.length === 0) {
-    return { error: null, recipients: 0, pushed: 0 };
+    return {
+      error: input.userId ? "That user no longer exists." : null,
+      recipients: 0,
+      pushed: 0,
+    };
   }
+
+  // The audience stamped on the shared content row: the picked user's role for a
+  // single-user send, otherwise the requested roles.
+  const storedRoles = input.userId
+    ? [...new Set(users.map((u) => u.role as string))]
+    : roles;
 
   // Canonical (English) fallback strings + per-language copy blocks.
   const titleEn = input.title.en || input.title.fr || input.title.ar || "";
@@ -326,7 +379,7 @@ export async function sendCampaign(
       content_eng: contentEng,
       content_fr: contentFr,
       content_ar: contentAr,
-      target_roles: roles,
+      target_roles: storedRoles,
       created_by: sender?.id ?? null,
     })
     .select("id")
