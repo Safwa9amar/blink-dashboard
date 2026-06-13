@@ -13,3 +13,5 @@ export type {
   ScheduledStatus,
 } from "./types";
 export * from "./data";
+export { normalizeNotifDraft } from "./ai";
+export type { NotifDraft, NotifContent, NotifDraftRequest } from "./ai";
