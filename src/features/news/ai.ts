@@ -95,6 +95,57 @@ export function newsDraftMessages(req: NewsDraftRequest): ChatMessage[] {
   ];
 }
 
+// ─── Single-field enhancement ────────────────────────────────────────
+// Rewrites ONE already-written field (title / summary / body) in place, in the
+// same language, returning plain text (HTML for the body) — the inline "enhance"
+// buttons. No JSON wrapper.
+
+export type NewsField = "title" | "summary" | "body";
+
+const LANG_NAME: Record<Lang, string> = {
+  en: "English",
+  fr: "French",
+  ar: "Arabic (Modern Standard Arabic, right-to-left)",
+};
+
+export interface NewsEnhanceRequest {
+  text: string;
+  field: NewsField;
+  lang: Lang;
+  category?: string;
+  audience?: string[];
+}
+
+export function newsEnhanceMessages(req: NewsEnhanceRequest): ChatMessage[] {
+  const langName = LANG_NAME[req.lang] ?? "English";
+  const constraint =
+    req.field === "title"
+      ? "It is a news headline: punchy, ~8 words max, no trailing period. Return plain text only."
+      : req.field === "summary"
+        ? "It is a one-sentence card teaser. Keep it to a single sentence. Return plain text only."
+        : `It is the article body, written as HTML using ONLY these tags: ${BODY_TAGS}. Keep (and improve) that HTML structure — 2–4 short paragraphs, a heading and a list where they help. Return ONLY the HTML.`;
+
+  const ctx: string[] = [];
+  if (req.category && N_CAT_NAMES.includes(req.category)) ctx.push(`Category: ${req.category}.`);
+  const audience = (req.audience ?? []).filter((r) => N_ROLES.includes(r));
+  if (audience.length) ctx.push(`Audience: ${audience.join(", ")}.`);
+
+  const system = `You are the editorial assistant for Blink, a multi-service delivery super-app for the Algerian market (currency "Da"). Improve the news copy you are given.
+
+Rules:
+- Write the result in ${langName} — the SAME language as the input. Do not translate.
+- Keep the original meaning. Make it clearer, tighter and more engaging. Voice: energetic, casual.
+- ${constraint}
+${ctx.length ? `\nContext: ${ctx.join(" ")}` : ""}
+
+Return ONLY the improved ${req.field === "body" ? "HTML" : "text"} — no quotes, no markdown fences, no explanation, no alternatives, no preamble.`;
+
+  return [
+    { role: "system", content: system },
+    { role: "user", content: req.text },
+  ];
+}
+
 // ─── Tolerant draft normalization ────────────────────────────────────
 // Without a JSON-schema constraint (which breaks reasoning models — see the route
 // handler), the model sometimes returns the trilingual content in a different

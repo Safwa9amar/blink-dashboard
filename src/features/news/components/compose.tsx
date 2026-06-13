@@ -13,6 +13,7 @@ import {
   DashIcon,
   RichEditor,
   AIGenerateModal,
+  EnhanceButton,
   fInput,
   emptyLang,
   dirFor,
@@ -33,13 +34,13 @@ import { CoverPick } from "./cover-pick";
 import { ToggleRow } from "./toggle-row";
 import { PostPreview, type PreviewData } from "./post-preview";
 
-// The streaming draft route is at /d/news/ai-draft. On the dashboard subdomain the
-// middleware rewrites /news/* → /d/news/*, but on a bare /d/... URL (local dev) the
-// path already includes /d — pick the right prefix from the current location.
-function aiDraftUrl(): string {
+// A news AI route, at /d/news/<path>. On the dashboard subdomain the middleware
+// rewrites /news/* → /d/news/*, but on a bare /d/... URL (local dev) the path
+// already includes /d — pick the right prefix from the current location.
+function aiUrl(path: string): string {
   const p = typeof window !== "undefined" ? window.location.pathname : "";
   const onD = p === "/d" || p.startsWith("/d/");
-  return onD ? "/d/news/ai-draft" : "/news/ai-draft";
+  return onD ? `/d/news/${path}` : `/news/${path}`;
 }
 
 // Uploads a cover / body image straight to Supabase Storage via a staff-gated
@@ -121,7 +122,7 @@ export function Compose({ initial, onCancel }: { initial?: Post; onCancel: () =>
   ): Promise<NewsDraft> {
     // Forward the operator's saved AI settings (model, temperature, length, TTL).
     const ai = useAISettingsStore.getState();
-    const res = await fetch(aiDraftUrl(), {
+    const res = await fetch(aiUrl("ai-draft"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       signal,
@@ -205,6 +206,84 @@ export function Compose({ initial, onCancel }: { initial?: Post; onCancel: () =>
         })}
       </div>
     );
+  }
+
+  // Inline "enhance" buttons: rewrite the active language's title / summary /
+  // body in place. `enhancing` tracks which field is busy. Title & summary stream
+  // live into their inputs; the body (rich HTML) is set once at the end to avoid
+  // re-parsing partial HTML in the editor on every token.
+  const [enhancing, setEnhancing] = useState<null | "title" | "sum" | "body">(null);
+
+  function setField(field: "title" | "sum" | "body", value: string) {
+    const upd = (o: Record<Lang, string>) => ({ ...o, [lang]: value });
+    if (field === "title") setTitle(upd);
+    else if (field === "sum") setSum(upd);
+    else setBody(upd);
+  }
+
+  async function enhance(field: "title" | "sum" | "body") {
+    if (enhancing) return;
+    const src = field === "title" ? title : field === "sum" ? sum : body;
+    const current = src[lang]?.trim();
+    if (!current) return;
+    setEnhancing(field);
+    const live = field !== "body";
+    const ai = useAISettingsStore.getState();
+    try {
+      const res = await fetch(aiUrl("ai-enhance"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: current,
+          field: field === "title" ? "title" : field === "sum" ? "summary" : "body",
+          lang,
+          category: cat,
+          audience: roles,
+          baseUrl: activeBaseUrl(ai),
+          model: ai.model,
+          temperature: ai.temperature,
+          maxTokens: ai.maxTokens,
+          ttl: ai.ttl,
+        }),
+      });
+      if (!res.ok || !res.body) {
+        const detail = await res.json().catch(() => null);
+        throw new Error(detail?.error ?? `Enhancement failed (${res.status}).`);
+      }
+      if (live) setField(field, "");
+
+      // Read the NDJSON stream; only "content" deltas form the new copy.
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let out = "";
+      let streamError: string | null = null;
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() ?? "";
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          const msg = JSON.parse(line) as { type: string; text?: string; message?: string };
+          if (msg.type === "content") {
+            out += msg.text ?? "";
+            if (live) setField(field, out);
+          } else if (msg.type === "error") streamError = msg.message ?? "Enhancement failed";
+        }
+      }
+      if (streamError) throw new Error(streamError);
+
+      // Strip stray code fences; for title/summary also trim wrapping quotes.
+      let clean = out.replace(/```(?:html|json)?/gi, "").trim();
+      if (field !== "body") clean = clean.replace(/^["'\s]+|["'\s]+$/g, "");
+      setField(field, clean.trim() ? clean : current);
+    } catch {
+      setField(field, current); // restore the original on failure
+    } finally {
+      setEnhancing(null);
+    }
   }
 
   const draftContent: Partial<Record<Lang, PostContent>> = {
@@ -328,22 +407,40 @@ export function Compose({ initial, onCancel }: { initial?: Post; onCancel: () =>
           <LangTabs active={lang} onChange={setLang} filled={{ en: !!title.en, fr: !!title.fr, ar: !!title.ar }} />
         </FormRow>
         <FormRow label={t("form.title")}>
-          <input
-            className={fInput}
-            dir={dirFor(lang)}
-            value={title[lang]}
-            onChange={(e) => setTitle((o) => ({ ...o, [lang]: e.target.value }))}
-            placeholder={t("form.title_ph")}
-          />
+          <div className="relative" dir={dirFor(lang)}>
+            <input
+              className={`${fInput} pe-10`}
+              dir={dirFor(lang)}
+              value={title[lang]}
+              onChange={(e) => setTitle((o) => ({ ...o, [lang]: e.target.value }))}
+              placeholder={t("form.title_ph")}
+            />
+            <EnhanceButton
+              busy={enhancing === "title"}
+              disabled={!title[lang]?.trim() || enhancing !== null}
+              label={t("form.enhance")}
+              onClick={() => enhance("title")}
+              className="top-1/2 -translate-y-1/2"
+            />
+          </div>
         </FormRow>
         <FormRow label={t("form.summary")}>
-          <input
-            className={fInput}
-            dir={dirFor(lang)}
-            value={sum[lang]}
-            onChange={(e) => setSum((o) => ({ ...o, [lang]: e.target.value }))}
-            placeholder={t("form.summary_ph")}
-          />
+          <div className="relative" dir={dirFor(lang)}>
+            <input
+              className={`${fInput} pe-10`}
+              dir={dirFor(lang)}
+              value={sum[lang]}
+              onChange={(e) => setSum((o) => ({ ...o, [lang]: e.target.value }))}
+              placeholder={t("form.summary_ph")}
+            />
+            <EnhanceButton
+              busy={enhancing === "sum"}
+              disabled={!sum[lang]?.trim() || enhancing !== null}
+              label={t("form.enhance")}
+              onClick={() => enhance("sum")}
+              className="top-1/2 -translate-y-1/2"
+            />
+          </div>
         </FormRow>
         <FormRow label={t("form.category")}>
           <select className={fInput} value={cat} onChange={(e) => setCat(e.target.value)}>
@@ -367,6 +464,10 @@ export function Compose({ initial, onCancel }: { initial?: Post; onCancel: () =>
             onUploadImage={uploadImage}
             maxImages={maxBodyImages}
             maxLength={maxBodyLength}
+            onEnhance={() => enhance("body")}
+            enhancing={enhancing === "body"}
+            enhanceDisabled={enhancing !== null}
+            enhanceLabel={t("form.enhance")}
           />
         </FormRow>
         <FormRow label={t("form.cta")} className="!mb-0">
