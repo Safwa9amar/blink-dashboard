@@ -36,6 +36,7 @@ export { LangTabs } from "./lang-tabs";
 export { RichEditor } from "./rich-editor";
 export { AIGenerate, type AIStreamChunk } from "./ai-generate";
 export { AIGenerateModal } from "./ai-generate-modal";
+export { EnhanceButton, Spinner } from "./enhance-button";
 
 // charts
 export { CHART, CHART_COLORS } from "./chart-theme";

@@ -10,6 +10,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 import { DashIcon } from "./icons";
+import { Spinner } from "./enhance-button";
 
 type Dir = "ltr" | "rtl";
 
@@ -54,6 +55,10 @@ export function RichEditor({
   onUploadImage,
   maxImages,
   maxLength,
+  onEnhance,
+  enhancing = false,
+  enhanceDisabled = false,
+  enhanceLabel = "Enhance with AI",
 }: {
   value: string;
   onChange: (html: string) => void;
@@ -66,6 +71,13 @@ export function RichEditor({
   // images, and show a character counter against `maxLength`.
   maxImages?: number;
   maxLength?: number;
+  // When provided, an "enhance with AI" button is added to the toolbar. The
+  // parent owns the rewrite; `enhancing` drives the spinner and `enhanceDisabled`
+  // lets it block while another field is busy.
+  onEnhance?: () => void;
+  enhancing?: boolean;
+  enhanceDisabled?: boolean;
+  enhanceLabel?: string;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const lastHtml = useRef(value);
@@ -201,6 +213,22 @@ export function RichEditor({
         <ToolBtn title="Redo" disabled={!s.canRedo} onClick={() => editor.chain().focus().redo().run()}>
           <DashIcon name="redo" className="w-[15px] h-[15px]" />
         </ToolBtn>
+        {onEnhance && (
+          <>
+            <Sep />
+            <ToolBtn
+              title={enhanceLabel}
+              disabled={enhanceDisabled || enhancing || (s.chars ?? 0) === 0}
+              onClick={onEnhance}
+            >
+              {enhancing ? (
+                <Spinner className="w-[15px] h-[15px] text-primary" />
+              ) : (
+                <DashIcon name="sparkles" className="w-[15px] h-[15px] text-primary" />
+              )}
+            </ToolBtn>
+          </>
+        )}
       </div>
       <div dir={dir}>
         <EditorContent editor={editor} />
