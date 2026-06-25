@@ -236,6 +236,23 @@
       "when": "Quand",
       "if": "Si",
       "runs": "exéc."
+    },
+    "ai": {
+      "tab": "Bot IA",
+      "title": "Bot IA",
+      "enabled": "Bot activé",
+      "provider": "Fournisseur",
+      "model": "Modèle",
+      "model_ph": "Modèle par défaut du fournisseur (ou saisissez un id, ex. anthropic/claude-sonnet-4)",
+      "temperature": "Température",
+      "max_tokens": "Jetons max",
+      "reasoning": "Raisonnement",
+      "prompt_extra": "Complément d'invite système",
+      "prompt_extra_ph": "Instructions supplémentaires ajoutées à l'invite système du bot…",
+      "save": "Enregistrer",
+      "saved": "Paramètres enregistrés",
+      "keys_note": "Les clés API sont configurées dans l'environnement du serveur, pas ici.",
+      "loading_models": "Chargement des modèles…"
     }
   }
 }

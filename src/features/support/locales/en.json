@@ -236,6 +236,23 @@
       "when": "When",
       "if": "If",
       "runs": "runs"
+    },
+    "ai": {
+      "tab": "AI Bot",
+      "title": "AI Bot",
+      "enabled": "Bot enabled",
+      "provider": "Provider",
+      "model": "Model",
+      "model_ph": "Provider default (or enter a model id, e.g. anthropic/claude-sonnet-4)",
+      "temperature": "Temperature",
+      "max_tokens": "Max tokens",
+      "reasoning": "Reasoning",
+      "prompt_extra": "System prompt addendum",
+      "prompt_extra_ph": "Extra instructions appended to the bot's system prompt…",
+      "save": "Save",
+      "saved": "Settings saved",
+      "keys_note": "API keys are configured in the server environment, not here.",
+      "loading_models": "Loading models…"
     }
   }
 }

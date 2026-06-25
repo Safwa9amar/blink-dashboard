@@ -22,6 +22,7 @@ export default async function SupportLayout({ children }: { children: ReactNode 
     { href: "/support/csat", label: t("tab_csat"), icon: "star" },
     { href: "/support/agents", label: t("tab_agents"), icon: "users", count: "5" },
     { href: "/support/sla", label: t("tab_sla"), icon: "shield" },
+    { href: "/support/ai", label: t("ai.tab"), icon: "sparkles" },
   ];
   const kbErr = kbError ?? catError;
   return (

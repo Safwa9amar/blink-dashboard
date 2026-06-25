@@ -13,6 +13,7 @@ import {
   CsatTab,
   AgentsTab,
   SlaTab,
+  AiBotTab,
   useKbStore,
   type SupportArticleType,
 } from "@/features/support";
@@ -27,7 +28,8 @@ type Tab =
   | "macros"
   | "csat"
   | "agents"
-  | "sla";
+  | "sla"
+  | "ai";
 
 export default function SupportClient({ tab }: { tab: Tab }) {
   const t = useTranslations("support");
@@ -79,6 +81,8 @@ export default function SupportClient({ tab }: { tab: Tab }) {
       return <AgentsTab t={t} />;
     case "sla":
       return <SlaTab t={t} />;
+    case "ai":
+      return <AiBotTab t={t} />;
     default:
       return <OverviewTab t={t} />;
   }
