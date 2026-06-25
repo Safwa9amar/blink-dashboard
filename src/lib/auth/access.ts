@@ -38,7 +38,7 @@ export const ROLE_ACCESS: Record<StaffRole, "*" | readonly string[]> = {
     "/verification",
   ],
   finance_admin: ["/", "/blink-cash"],
-  support_admin: ["/", "/notifications", "/news", "/deep-links"],
+  support_admin: ["/", "/notifications", "/news", "/deep-links", "/support"],
   commerce_admin: ["/", "/merchants", "/marketplace", "/library", "/agent-shops", "/promotions", "/coupons", "/merchant-pricing", "/packs-management"],
   // HR / RH manager — people-facing sections: the customer & merchant rosters,
   // platform users and rider onboarding/verification.
