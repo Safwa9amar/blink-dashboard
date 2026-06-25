@@ -154,7 +154,7 @@ export function InboxTab({ t }: { t: TFn }) {
         </Card>
 
         {/* Active thread */}
-        <Card bodyClassName="flex flex-col min-h-[460px]">
+        <Card bodyClassName="flex flex-col h-[calc(100vh-220px)] min-h-[460px]">
           {active && (
             <div className="flex items-center gap-3 pb-4 border-b border-border mb-4">
               <Avatar name={active.who} />
@@ -178,7 +178,7 @@ export function InboxTab({ t }: { t: TFn }) {
             </div>
           )}
 
-          <div className="flex-1 space-y-4">
+          <div className="flex-1 space-y-4 overflow-y-auto pe-1">
             {thread.map((m, i) => {
               const agent = m.from === "agent";
               return (
