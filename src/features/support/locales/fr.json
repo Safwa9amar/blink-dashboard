@@ -100,7 +100,11 @@
       "via": "via {channel}",
       "typing": "{name} écrit…",
       "message_ph": "Tapez un message…",
-      "send": "Envoyer"
+      "send": "Envoyer",
+      "assign_to_me": "M'assigner",
+      "resolve": "Résoudre",
+      "resolved": "Résolu",
+      "no_chats": "Aucune conversation active"
     },
     "kb": {
       "published": "Publiés",
