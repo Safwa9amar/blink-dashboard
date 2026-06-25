@@ -154,7 +154,7 @@ export function InboxTab({ t }: { t: TFn }) {
         </Card>
 
         {/* Active thread */}
-        <Card bodyClassName="flex flex-col h-[calc(100vh-220px)] min-h-[460px]">
+        <Card className="flex flex-col h-[calc(100vh-220px)] min-h-[460px]">
           {active && (
             <div className="flex items-center gap-3 pb-4 border-b border-border mb-4">
               <Avatar name={active.who} />
