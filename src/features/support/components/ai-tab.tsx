@@ -26,7 +26,8 @@ export function AiTab({
 }) {
   const t = useTranslations("support.bot");
   const [enabled, setEnabled] = useState(initial.bot_enabled);
-  const [prompt, setPrompt] = useState(initial.system_prompt_extra ?? "");
+  const [systemPrompt, setSystemPrompt] = useState(initial.system_prompt ?? "");
+  const [extra, setExtra] = useState(initial.system_prompt_extra ?? "");
   const [saving, setSaving] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; msg: string } | null>(null);
 
@@ -35,7 +36,8 @@ export function AiTab({
     setResult(null);
     const { error } = await saveSupportBot({
       bot_enabled: enabled,
-      system_prompt_extra: prompt.trim() ? prompt : null,
+      system_prompt: systemPrompt.trim() ? systemPrompt : null,
+      system_prompt_extra: extra.trim() ? extra : null,
     });
     setSaving(false);
     setResult(error ? { ok: false, msg: error } : { ok: true, msg: t("saved") });
@@ -65,12 +67,24 @@ export function AiTab({
 
         <p className="mb-5 text-[12.5px] text-subtext">{t("enabled_hint")}</p>
 
-        {/* Bot instructions — appended to the support system prompt. */}
+        {/* Full base system prompt — the bot's entire instruction set. The
+            {{role}} / {{lang}} / {{kb}} placeholders are filled in by the server;
+            blank falls back to the built-in default. */}
+        <FormRow label={t("system_prompt")} hint={t("system_prompt_hint")}>
+          <textarea
+            className={`${fInput} min-h-[300px] resize-y font-mono text-[12px] leading-relaxed`}
+            value={systemPrompt}
+            onChange={(e) => setSystemPrompt(e.target.value)}
+            placeholder={t("system_prompt_ph")}
+          />
+        </FormRow>
+
+        {/* Additional instructions — appended AFTER the base prompt above. */}
         <FormRow label={t("prompt")} hint={t("prompt_hint")}>
           <textarea
-            className={`${fInput} min-h-[160px] resize-y`}
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
+            className={`${fInput} min-h-[120px] resize-y`}
+            value={extra}
+            onChange={(e) => setExtra(e.target.value)}
             placeholder={t("prompt_ph")}
           />
         </FormRow>

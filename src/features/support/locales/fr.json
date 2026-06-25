@@ -5,6 +5,7 @@
     "tickets": "Tickets",
     "tab_overview": "Vue d'ensemble",
     "tab_inbox": "Chat en direct",
+    "tab_history": "Historique",
     "tab_kb": "Base de connaissances",
     "tab_csat": "CSAT",
     "tab_agents": "Agents",
@@ -106,7 +107,9 @@
       "assign_to_me": "M'assigner",
       "resolve": "Résoudre",
       "resolved": "Résolu",
-      "no_chats": "Aucune conversation active"
+      "no_chats": "Aucune conversation active",
+      "history_count": "{n} conversations résolues",
+      "no_history": "Aucune conversation résolue pour l'instant"
     },
     "kb": {
       "published": "Publiés",
@@ -243,14 +246,17 @@
       "desc": "L'assistant IA répond d'abord aux clients dans le Chat en direct, puis passe la main à un agent humain si nécessaire.",
       "enabled": "Bot activé",
       "enabled_hint": "Lorsqu'il est désactivé, les nouvelles conversations du Chat en direct vont directement à un agent humain — le bot ne répond pas.",
-      "prompt": "Instructions du bot",
-      "prompt_hint": "Directives supplémentaires ajoutées aux instructions du bot (ton, règles, quand escalader). La base de connaissances est toujours incluse automatiquement.",
+      "prompt": "Instructions supplémentaires",
+      "prompt_hint": "Ajoutées après le prompt système ci-dessus — pratique pour de petits ajustements sans modifier tout le prompt.",
       "prompt_ph": "ex. Saluez chaleureusement les clients algériens. Ne promettez jamais de délais de remboursement — transférez les questions de remboursement à un humain.",
       "engine": "Moteur IA",
       "engine_hint": "Le fournisseur, le modèle et les clés API qui alimentent le bot sont gérés dans Paramètres → Serveur IA.",
       "configure": "Configurer",
       "save": "Enregistrer",
-      "saved": "Enregistré"
+      "saved": "Enregistré",
+      "system_prompt": "Prompt système",
+      "system_prompt_hint": "Les instructions complètes du bot. Conservez les marqueurs {{role}}, {{lang}} et {{kb}} — le serveur les remplace par le rôle, la langue de l'utilisateur et la base de connaissances. Laissez vide pour utiliser le prompt par défaut.",
+      "system_prompt_ph": "Laissez vide pour utiliser le prompt par défaut…"
     }
   }
 }

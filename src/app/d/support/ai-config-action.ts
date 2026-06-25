@@ -15,6 +15,7 @@ import { hasStaffRole } from "@/lib/auth/staff";
 
 export interface SupportBotConfig {
   bot_enabled: boolean;
+  system_prompt: string | null; // full base prompt (blank → server's built-in default)
   system_prompt_extra: string | null;
   active_provider: string; // read-only context (configured in AI Server Settings)
   active_model: string | null; // read-only context
@@ -22,6 +23,7 @@ export interface SupportBotConfig {
 
 export async function saveSupportBot(input: {
   bot_enabled: boolean;
+  system_prompt: string | null;
   system_prompt_extra: string | null;
 }): Promise<{ error: string | null }> {
   if (!(await hasStaffRole("super_admin", "support_admin"))) {
@@ -48,6 +50,9 @@ export async function saveSupportBot(input: {
 
   const payload = {
     bot_enabled: input.bot_enabled,
+    // Blank → null, so the server falls back to its built-in DEFAULT_SUPPORT_PROMPT.
+    system_prompt:
+      input.system_prompt && input.system_prompt.trim() ? input.system_prompt : null,
     system_prompt_extra:
       input.system_prompt_extra && input.system_prompt_extra.trim()
         ? input.system_prompt_extra

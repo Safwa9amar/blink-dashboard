@@ -15,6 +15,7 @@ export const PROVIDERS: Provider[] = ["openrouter", "ollama", "lmstudio"];
 export interface AiActiveSettings {
   provider: Provider; // the ACTIVE provider the bot uses
   bot_enabled: boolean;
+  system_prompt: string | null; // full base prompt (null → server's built-in default)
   system_prompt_extra: string | null;
 }
 
@@ -42,6 +43,7 @@ export interface AiServerSettings {
 export const AI_ACTIVE_DEFAULTS: AiActiveSettings = {
   provider: "openrouter",
   bot_enabled: true,
+  system_prompt: null,
   system_prompt_extra: null,
 };
 

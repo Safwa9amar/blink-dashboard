@@ -40,7 +40,7 @@ export const getAiServerSettings = cache(
     const [activeRes, configsRes] = await Promise.all([
       supabase
         .from("ai_settings")
-        .select("provider, bot_enabled, system_prompt_extra")
+        .select("provider, bot_enabled, system_prompt, system_prompt_extra")
         .order("updated_at", { ascending: false })
         .limit(1)
         .maybeSingle(),
@@ -66,6 +66,7 @@ export const getAiServerSettings = cache(
       ? {
           provider: (activeRow.provider as Provider) ?? AI_ACTIVE_DEFAULTS.provider,
           bot_enabled: activeRow.bot_enabled ?? AI_ACTIVE_DEFAULTS.bot_enabled,
+          system_prompt: activeRow.system_prompt ?? null,
           system_prompt_extra: activeRow.system_prompt_extra ?? null,
         }
       : AI_ACTIVE_DEFAULTS;

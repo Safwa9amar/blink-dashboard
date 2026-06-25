@@ -5,6 +5,7 @@
     "tickets": "Tickets",
     "tab_overview": "Overview",
     "tab_inbox": "Live Chat",
+    "tab_history": "History",
     "tab_kb": "Knowledge Base",
     "tab_csat": "CSAT",
     "tab_agents": "Agents",
@@ -106,7 +107,9 @@
       "assign_to_me": "Assign to me",
       "resolve": "Resolve",
       "resolved": "Resolved",
-      "no_chats": "No active conversations"
+      "no_chats": "No active conversations",
+      "history_count": "{n} resolved conversations",
+      "no_history": "No resolved conversations yet"
     },
     "kb": {
       "published": "Published",
@@ -243,14 +246,17 @@
       "desc": "The AI assistant answers customers first in Live Chat, then hands off to a human agent when needed.",
       "enabled": "Bot enabled",
       "enabled_hint": "When off, new Live Chat conversations go straight to a human agent — the bot won't reply.",
-      "prompt": "Bot instructions",
-      "prompt_hint": "Extra guidance appended to the bot's instructions (tone, policies, when to escalate). The knowledge base is always included automatically.",
+      "prompt": "Additional instructions",
+      "prompt_hint": "Appended after the system prompt above — handy for quick policy tweaks without editing the full prompt.",
       "prompt_ph": "e.g. Greet Algerian customers warmly. Never promise refund timelines — escalate refund questions to a human.",
       "engine": "AI engine",
       "engine_hint": "The provider, model and API keys that power the bot are managed in Settings → AI Server.",
       "configure": "Configure",
       "save": "Save",
-      "saved": "Saved"
+      "saved": "Saved",
+      "system_prompt": "System prompt",
+      "system_prompt_hint": "The bot's full instructions. Keep the {{role}}, {{lang}} and {{kb}} placeholders — the server replaces them with the user's role, language and the knowledge base. Leave blank to use the built-in default.",
+      "system_prompt_ph": "Leave blank to use the built-in default prompt…"
     }
   }
 }

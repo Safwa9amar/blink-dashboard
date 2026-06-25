@@ -18,6 +18,7 @@ export default async function Page() {
     <AiTab
       initial={{
         bot_enabled: settings.active.bot_enabled,
+        system_prompt: settings.active.system_prompt,
         system_prompt_extra: settings.active.system_prompt_extra,
         active_provider: settings.active.provider,
         active_model: activeModel,
