@@ -26,6 +26,7 @@ export interface Message {
   who: string;
   text: string;
   time: string;
+  attachmentUrl?: string | null;
 }
 
 // A live-chat / omnichannel inbox conversation.
@@ -144,5 +145,6 @@ export function rowToMessage(row: SupportMessageRow): Message {
     who: row.sender === "bot" ? "Blink Assistant" : row.sender === "agent" ? "You" : "",
     text: row.body,
     time: "",
+    attachmentUrl: (row.meta as { attachmentUrl?: string } | null)?.attachmentUrl ?? null,
   };
 }

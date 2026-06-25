@@ -161,7 +161,11 @@ export function InboxTab({ t }: { t: TFn }) {
                   <Avatar name={agent ? "You" : active?.who ?? ""} />
                   <div className={`max-w-[78%] flex flex-col ${agent ? "items-end" : "items-start"}`}>
                     <div className={`rounded-2xl px-4 py-2.5 text-[13px] leading-relaxed ${agent ? "bg-soft-pink text-text rounded-tr-sm" : "bg-background border border-border text-text rounded-tl-sm"}`}>
-                      {m.text}
+                      {m.attachmentUrl && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={m.attachmentUrl} alt="attachment" className="rounded-lg max-w-[220px] max-h-[220px] object-cover mb-1" />
+                      )}
+                      {m.text && m.text !== "📷 Photo" && <span>{m.text}</span>}
                     </div>
                     <span className="text-[11px] text-subtext mt-1 px-1">{m.time}</span>
                   </div>
