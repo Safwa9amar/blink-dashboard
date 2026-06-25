@@ -7,7 +7,6 @@ export { MacrosTab } from "./components/macros-tab";
 export { CsatTab } from "./components/csat-tab";
 export { AgentsTab } from "./components/agents-tab";
 export { SlaTab } from "./components/sla-tab";
-export { AiBotTab } from "./components/ai-bot-tab";
 export * from "./data";
 export * from "./types";
 export * from "./store";

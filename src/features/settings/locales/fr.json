@@ -78,12 +78,12 @@
     },
     "ai": {
       "title": "IA",
-      "description": "Modèle local (LM Studio ou Ollama) utilisé pour la rédaction par IA.",
+      "description": "Fournisseur d'inférence (local : LM Studio/Ollama, ou distant : OpenRouter) utilisé pour la rédaction par IA.",
       "connection": "Connexion",
-      "connection_desc": "Le serveur d'inférence local qui alimente la génération par IA.",
+      "connection_desc": "Le serveur d'inférence ou l'API qui alimente la génération par IA.",
       "provider": "Fournisseur",
       "base_url": "URL de base",
-      "base_url_hint": "Endpoint compatible OpenAI — LM Studio :1234, Ollama :11434. Accessible en dev local.",
+      "base_url_hint": "Endpoint compatible OpenAI — LM Studio :1234, Ollama :11434, OpenRouter: https://openrouter.io/api/v1.",
       "test": "Tester la connexion",
       "connected": "Connecté",
       "offline": "Hors ligne",
@@ -97,6 +97,7 @@
       "unload": "Décharger",
       "model_hint": "Charger garde le modèle en mémoire ; Décharger la libère. Laissez le contexte à 0 pour la valeur par défaut.",
       "model_hint_ollama": "Charger garde le modèle au chaud (keep-alive) ; Décharger l'arrête. Ollama télécharge les modèles avec `ollama pull`.",
+      "model_hint_remote": "Tous les modèles sont disponibles sur l'API distante — aucun chargement nécessaire. Définissez la clé API dans votre environnement.",
       "pick_model": "Choisissez d'abord un modèle à charger.",
       "no_loaded": "Aucun modèle chargé à décharger.",
       "generation": "Génération",
@@ -105,6 +106,29 @@
       "max_tokens": "Jetons max (-1 = illimité)",
       "ttl": "TTL d'inactivité (secondes, 0 = désactivé)",
       "generation_hint": "Une température plus élevée est plus créative ; le TTL décharge le modèle après inactivité."
+    },
+    "ai_server": {
+      "title": "Paramètres IA du serveur",
+      "enabled": "Bot activé",
+      "provider": "Fournisseur",
+      "model": "Modèle",
+      "model_ph": "Modèle par défaut du fournisseur (ou saisissez un id, ex. anthropic/claude-sonnet-4)",
+      "temperature": "Température",
+      "max_tokens": "Jetons max",
+      "reasoning": "Raisonnement",
+      "prompt_extra": "Complément d'invite système",
+      "prompt_extra_ph": "Instructions supplémentaires ajoutées à l'invite système du bot…",
+      "save": "Enregistrer",
+      "saved": "Paramètres enregistrés",
+      "loading_models": "Chargement des modèles…",
+      "creds": "Identifiants du fournisseur",
+      "openrouter_key": "Clé API OpenRouter",
+      "key_set": "Définie",
+      "key_not_set": "Non définie",
+      "key_keep_ph": "Laisser vide pour conserver l'actuelle",
+      "ollama_url": "URL Ollama",
+      "lmstudio_url": "URL LM Studio",
+      "creds_note": "Les clés sont stockées chiffrées au repos dans la base de données et utilisées par le bot du serveur ; elles ne sont jamais affichées en entier ici."
     }
   }
 }

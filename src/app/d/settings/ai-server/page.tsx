@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/dash-metadata";
-import Client from "../client";
+import { AiServerSettings } from "@/features/settings";
 
 export function generateMetadata(): Promise<Metadata> {
-  return pageMeta("support");
+  return pageMeta("settings", undefined, "ai_server.title");
 }
 
 export default function Page() {
-  return <Client tab="ai" />;
+  return <AiServerSettings />;
 }
