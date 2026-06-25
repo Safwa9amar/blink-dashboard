@@ -1,0 +1,45 @@
+{
+  "blink_server": {
+    "title": "Serveur Blink",
+    "description": "Moteur IA backend et journaux serveur en direct",
+    "tab_ai": "Serveur IA",
+    "tab_logs": "Journaux en direct",
+    "ai_server": {
+      "title": "Paramètres IA du serveur",
+      "active_provider": "Fournisseur actif",
+      "active_provider_note": "Le fournisseur utilisé par le bot pour répondre.",
+      "providers_section": "Configurations des fournisseurs",
+      "providers_note": "Chaque fournisseur a son propre modèle, échantillonnage et identifiant. Ils s'appliquent lorsque ce fournisseur est actif.",
+      "active_badge": "Actif",
+      "model": "Modèle",
+      "model_ph": "Modèle par défaut du fournisseur (ou saisissez un id, ex. anthropic/claude-sonnet-4)",
+      "temperature": "Température",
+      "max_tokens": "Jetons max",
+      "reasoning": "Raisonnement",
+      "save": "Enregistrer",
+      "saved": "Paramètres enregistrés",
+      "loading_models": "Chargement des modèles…",
+      "openrouter_key": "Clé API OpenRouter",
+      "key_set": "Définie",
+      "key_not_set": "Non définie",
+      "key_keep_ph": "Laisser vide pour conserver l'actuelle",
+      "base_url": "URL de base",
+      "creds_note": "Les clés sont stockées chiffrées au repos dans la base de données et utilisées par le bot du serveur ; elles ne sont jamais affichées en entier ici."
+    },
+    "logs": {
+      "title": "Journaux serveur en direct",
+      "desc": "Un flux en direct de l'activité récente du serveur backend (500 dernières entrées).",
+      "live": "En direct",
+      "paused": "En pause",
+      "pause": "Pause",
+      "resume": "Reprendre",
+      "clear": "Effacer",
+      "all": "Tous",
+      "info": "Info",
+      "warn": "Avert.",
+      "error": "Erreur",
+      "count": "{n} lignes",
+      "empty": "Aucun journal pour l'instant — en attente d'activité serveur…"
+    }
+  }
+}

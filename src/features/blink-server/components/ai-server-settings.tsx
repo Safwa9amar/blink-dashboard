@@ -17,7 +17,7 @@ import {
   saveAiServer,
   fetchAiModels,
   type ProviderConfigPatch,
-} from "@/app/d/settings/ai-server-action";
+} from "@/app/d/blink-server/ai-server-action";
 import {
   PROVIDERS,
   defaultProviderConfig,
@@ -26,7 +26,7 @@ import {
   type AiActiveSettings,
   type AiProviderConfig,
   type AiServerSettings,
-} from "@/app/d/settings/ai-server-shared";
+} from "@/app/d/blink-server/ai-server-shared";
 
 // Settings → AI Server Settings. Bot-level config + the ACTIVE provider live in the
 // `ai_settings` singleton; each provider's model / sampling / reasoning / credential
@@ -56,7 +56,7 @@ const DEFAULTS: AiServerSettings = {
 };
 
 export function AiServerSettings() {
-  const t = useTranslations("settings.ai_server");
+  const t = useTranslations("blink_server.ai_server");
 
   // Local editable copy, hydrated from the server on mount.
   const [active, setActive] = useState<AiActiveSettings>(DEFAULTS.active);
@@ -246,7 +246,7 @@ function ProviderBlock({
   onNewKey: (v: string) => void;
   onChange: <K extends keyof AiProviderConfig>(key: K, value: AiProviderConfig[K]) => void;
 }) {
-  const t = useTranslations("settings.ai_server");
+  const t = useTranslations("blink_server.ai_server");
   const [models, setModels] = useState<string[]>([]);
   const [modelsLoading, setModelsLoading] = useState(false);
 

@@ -68,6 +68,7 @@ const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
       { key: "notifications", href: "/notifications", icon: "bell" },
       { key: "support", href: "/support", icon: "chat" },
       { key: "deep_links", href: "/deep-links", icon: "map" },
+      { key: "blink_server", href: "/blink-server", icon: "server" },
       { key: "settings", href: "/settings", icon: "settings2" },
     ],
   },

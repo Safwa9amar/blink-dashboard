@@ -179,11 +179,10 @@
     "coupons": "Coupons",
     "news": "Blink News",
     "blink_cash": "Blink Cash",
-    "support": "Support",
+    "support": "Assistance",
     "collapse_sidebar": "Réduire le menu",
     "expand_sidebar": "Agrandir le menu",
     "deep_links": "Liens profonds",
-    "support": "Assistance",
     "marketplace": "Marketplace",
     "library": "Bibliothèque de Produits",
     "pricing": "Revision des Prix",
@@ -192,7 +191,8 @@
     "merchants": "Commerçants",
     "agents": "Agents",
     "platform": "Plateforme",
-    "access": "Accès"
+    "access": "Accès",
+    "blink_server": "Serveur Blink"
   },
   "dash": {
     "search": "Rechercher",

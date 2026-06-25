@@ -70,6 +70,6 @@ export async function saveSupportBot(input: {
   if (error) return { error: error.message };
 
   revalidatePath("/d/support/ai");
-  revalidatePath("/d/settings/ai-server");
+  revalidatePath("/d/blink-server");
   return { error: null };
 }

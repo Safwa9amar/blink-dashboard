@@ -183,7 +183,6 @@
     "collapse_sidebar": "Collapse sidebar",
     "expand_sidebar": "Expand sidebar",
     "deep_links": "Deep Links",
-    "support": "Support",
     "marketplace": "Marketplace",
     "library": "Products Library",
     "pricing": "Pricing Review",
@@ -192,7 +191,8 @@
     "merchants": "Merchants",
     "agents": "Agents",
     "platform": "Platform",
-    "access": "Access"
+    "access": "Access",
+    "blink_server": "Blink Server"
   },
   "dash": {
     "search": "Search",

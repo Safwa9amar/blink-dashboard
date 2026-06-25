@@ -5,7 +5,6 @@ export { NotificationsSettings } from "./components/notifications-settings";
 export { SecuritySettings } from "./components/security-settings";
 export { AppearanceSettings } from "./components/appearance-settings";
 export { AISettings } from "./components/ai-settings";
-export { AiServerSettings } from "./components/ai-server-settings";
 export { DangerZone } from "./components/danger-zone";
 export { useAISettingsStore, DEFAULT_AI_SETTINGS, activeBaseUrl } from "./ai-store";
 export type { InputFieldProps, SelectFieldProps, ToggleFieldProps, SectionCardProps } from "./types";

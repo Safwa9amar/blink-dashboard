@@ -113,7 +113,7 @@ export async function saveAiServer(
     if (cfgError) return { error: cfgError.message };
   }
 
-  revalidatePath("/d/settings");
+  revalidatePath("/d/blink-server");
   return { error: null };
 }
 

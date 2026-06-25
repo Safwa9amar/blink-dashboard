@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/dash-metadata";
-import { AiServerSettings } from "@/features/settings";
+import { LiveLogs } from "@/features/blink-server";
 
 export function generateMetadata(): Promise<Metadata> {
-  return pageMeta("settings", undefined, "ai_server.title");
+  return pageMeta("blink_server", undefined, "tab_logs");
 }
 
 export default function Page() {
-  return <AiServerSettings />;
+  return <LiveLogs />;
 }

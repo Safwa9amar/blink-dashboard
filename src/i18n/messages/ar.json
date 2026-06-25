@@ -183,7 +183,6 @@
     "collapse_sidebar": "طيّ الشريط الجانبي",
     "expand_sidebar": "توسيع الشريط الجانبي",
     "deep_links": "الروابط العميقة",
-    "support": "الدعم",
     "marketplace": "السوق",
     "library": "مكتبة المنتجات",
     "pricing": "مراجعة الاسعار",
@@ -192,7 +191,8 @@
     "merchants": "التجار",
     "agents": "الوكلاء",
     "platform": "المنصة",
-    "access": "الوصول"
+    "access": "الوصول",
+    "blink_server": "خادم Blink"
   },
   "dash": {
     "search": "بحث",

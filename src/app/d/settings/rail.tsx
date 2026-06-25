@@ -60,7 +60,6 @@ export function SettingsRail() {
     { href: "/settings/fees", label: t("fees.title"), iconNode: ICONS.fees },
     { href: "/settings/news", label: t("news.title"), iconNode: ICONS.news },
     { href: "/settings/ai", label: t("ai.title"), iconNode: ICONS.ai },
-    { href: "/settings/ai-server", label: t("ai_server.title"), iconNode: ICONS.ai_server },
     {
       href: "/settings/notifications",
       label: t("notifications_settings.title"),

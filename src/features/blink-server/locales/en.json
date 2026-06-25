@@ -1,0 +1,45 @@
+{
+  "blink_server": {
+    "title": "Blink Server",
+    "description": "Backend AI engine & live server logs",
+    "tab_ai": "AI Server",
+    "tab_logs": "Live Logs",
+    "ai_server": {
+      "title": "AI Server Settings",
+      "active_provider": "Active provider",
+      "active_provider_note": "The provider the bot uses for replies.",
+      "providers_section": "Provider configs",
+      "providers_note": "Each provider has its own model, sampling, and credential. These apply when that provider is active.",
+      "active_badge": "Active",
+      "model": "Model",
+      "model_ph": "Provider default (or enter a model id, e.g. anthropic/claude-sonnet-4)",
+      "temperature": "Temperature",
+      "max_tokens": "Max tokens",
+      "reasoning": "Reasoning",
+      "save": "Save",
+      "saved": "Settings saved",
+      "loading_models": "Loading models…",
+      "openrouter_key": "OpenRouter API key",
+      "key_set": "Set",
+      "key_not_set": "Not set",
+      "key_keep_ph": "Leave blank to keep current",
+      "base_url": "Base URL",
+      "creds_note": "Keys are stored encrypted-at-rest in the database and used by the server bot; they are never shown in full here."
+    },
+    "logs": {
+      "title": "Live Server Logs",
+      "desc": "A live tail of the backend server's recent activity (last 500 entries).",
+      "live": "Live",
+      "paused": "Paused",
+      "pause": "Pause",
+      "resume": "Resume",
+      "clear": "Clear",
+      "all": "All",
+      "info": "Info",
+      "warn": "Warn",
+      "error": "Error",
+      "count": "{n} lines",
+      "empty": "No logs yet — waiting for server activity…"
+    }
+  }
+}

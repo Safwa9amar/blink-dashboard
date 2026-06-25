@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/dash-metadata";
-import { getAiServerSettings } from "@/app/d/settings/ai-server-data";
+import { getAiServerSettings } from "@/app/d/blink-server/ai-server-data";
 import { AiTab } from "@/features/support";
 
 export function generateMetadata(): Promise<Metadata> {

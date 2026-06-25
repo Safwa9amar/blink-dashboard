@@ -96,7 +96,7 @@ export function AiTab({
               {engineLabel}
             </span>
             <Link
-              href="/settings/ai-server"
+              href="/blink-server"
               className="whitespace-nowrap text-[12.5px] font-semibold text-primary hover:underline"
             >
               {t("configure")}
