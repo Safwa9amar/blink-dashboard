@@ -1,7 +1,17 @@
 import { cache } from "react";
 import { createAdminClient } from "@/lib/supabase/admin";
+import {
+  PROVIDERS,
+  AI_ACTIVE_DEFAULTS,
+  defaultProviderConfig,
+  type Provider,
+  type AiActiveSettings,
+  type AiProviderConfig,
+  type AiServerSettings,
+} from "./ai-server-shared";
 
-// Settings → AI Server. The support bot (blink-server) now reads TWO tables:
+// Settings → AI Server (server-only data layer). The support bot (blink-server)
+// reads TWO tables:
 //
 //   • `ai_settings` (singleton)        — which provider is ACTIVE + bot-level config
 //                                        (bot_enabled, system_prompt_extra).
@@ -10,61 +20,14 @@ import { createAdminClient } from "@/lib/supabase/admin";
 //                                        (openrouter → api_key, ollama/lmstudio → base_url).
 //
 // The raw provider API keys are NEVER returned to the client — each is masked into
-// `api_key_set` + `api_key_last4`. Base URLs are safe to return as-is. Kept in sync
-// with the server Drizzle schema by hand.
-
-export type Provider = "openrouter" | "ollama" | "lmstudio";
-
-export const PROVIDERS: Provider[] = ["openrouter", "ollama", "lmstudio"];
-
-// Bot-level / "which provider is active" config (the `ai_settings` singleton).
-export interface AiActiveSettings {
-  provider: Provider; // the ACTIVE provider the bot uses
-  bot_enabled: boolean;
-  system_prompt_extra: string | null;
-}
-
-// One provider's config (a row in `ai_provider_configs`), client-facing. The raw
-// `api_key` is masked away into the two derived flags below.
-export interface AiProviderConfig {
-  provider: Provider;
-  model: string | null;
-  temperature: number;
-  max_tokens: number;
-  reasoning: boolean;
-  base_url: string | null; // ollama / lmstudio endpoint (null = server env default)
-  // Credential, masked / non-secret.
-  api_key_set: boolean;
-  api_key_last4: string | null;
-}
-
-// The full client-facing settings bundle.
-export interface AiServerSettings {
-  active: AiActiveSettings;
-  providers: Record<Provider, AiProviderConfig>;
-}
-
-// Bot-level defaults when the singleton row is missing (seed-safe).
-export const AI_ACTIVE_DEFAULTS: AiActiveSettings = {
-  provider: "openrouter",
-  bot_enabled: true,
-  system_prompt_extra: null,
-};
-
-// Per-provider defaults when a provider's row is missing. Matches the column
-// defaults in the server Drizzle schema.
-export function defaultProviderConfig(provider: Provider): AiProviderConfig {
-  return {
-    provider,
-    model: null,
-    temperature: 0.3,
-    max_tokens: 600,
-    reasoning: false,
-    base_url: null,
-    api_key_set: false,
-    api_key_last4: null,
-  };
-}
+// `api_key_set` + `api_key_last4`. Base URLs are safe to return as-is. The shared
+// types/constants/defaults live in `ai-server-shared.ts` (client-safe); this file
+// adds the service-role read and must NOT be imported from a client component.
+//
+// Re-export the shared types so existing server-side importers (the action) can keep
+// pulling them from here.
+export type { Provider, AiActiveSettings, AiProviderConfig, AiServerSettings };
+export { PROVIDERS, AI_ACTIVE_DEFAULTS, defaultProviderConfig };
 
 // Reads the latest `ai_settings` row + all `ai_provider_configs` rows via the
 // service-role admin client (global config, not per-user → bypasses RLS, mirrors

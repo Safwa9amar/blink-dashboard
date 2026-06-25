@@ -26,7 +26,7 @@ import {
   type AiActiveSettings,
   type AiProviderConfig,
   type AiServerSettings,
-} from "@/app/d/settings/ai-server-data";
+} from "@/app/d/settings/ai-server-shared";
 
 // Settings → AI Server Settings. Bot-level config + the ACTIVE provider live in the
 // `ai_settings` singleton; each provider's model / sampling / reasoning / credential
