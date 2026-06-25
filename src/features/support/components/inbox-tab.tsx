@@ -26,7 +26,9 @@ export function InboxTab({ t }: { t: TFn }) {
   // Default the active selection to the first chat until the user picks one.
   const activeId = selectedId ?? chats[0]?.id ?? null;
 
-  // Load the active thread's messages (RLS-scoped browser read).
+  // Load the active thread's messages (RLS-scoped browser read), then keep it
+  // live: subscribe to inserts for this conversation and append them so the
+  // thread (incl. incoming photos) updates without a page reload.
   useEffect(() => {
     if (!activeId) return;
     const supabase = createClient();
@@ -38,6 +40,29 @@ export function InboxTab({ t }: { t: TFn }) {
       .then(({ data }) => {
         if (data) useSupportStore.getState().setMessages(activeId, data as never);
       });
+
+    const channel = supabase
+      .channel(`support-thread-${activeId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "support_messages",
+          filter: `conversation_id=eq.${activeId}`,
+        },
+        (payload) => {
+          const row = payload.new as { id: string };
+          const cur = useSupportStore.getState().messagesByConversation[activeId] ?? [];
+          if (cur.some((m) => m.id === row.id)) return;
+          useSupportStore.getState().setMessages(activeId, [...cur, row] as never);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
   }, [activeId]);
 
   // Join the shared typing broadcast channel; react only to the customer side.
