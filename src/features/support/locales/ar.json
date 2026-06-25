@@ -99,6 +99,7 @@
       "all_channels": "كل القنوات",
       "via": "عبر {channel}",
       "typing": "{name} يكتب…",
+      "customer_typing": "العميل يكتب…",
       "message_ph": "اكتب رسالة…",
       "send": "إرسال",
       "assign_to_me": "أسندها إليّ",
