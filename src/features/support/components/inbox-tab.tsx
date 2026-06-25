@@ -62,12 +62,6 @@ export function InboxTab({ t }: { t: TFn }) {
     };
   }, [activeId]);
 
-  // Scroll to the bottom of the thread when new messages arrive or customer starts typing.
-  const threadEndRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    threadEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [thread.length, customerTyping, activeId]);
-
   // Broadcast that the agent is typing, throttled to ≤ once / ~1500ms.
   function notifyTyping() {
     const ch = typingChannelRef.current;
@@ -82,6 +76,12 @@ export function InboxTab({ t }: { t: TFn }) {
   const active = chats.find((c) => c.id === activeId) ?? null;
   const thread = (activeId ? messagesByConversation[activeId] ?? [] : []).map(rowToMessage);
   const waiting = chats.filter((c) => c.status === "waiting").length;
+
+  // Scroll to the bottom of the thread when new messages arrive or the customer types.
+  const threadEndRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    threadEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [thread.length, customerTyping, activeId]);
 
   return (
     <>
