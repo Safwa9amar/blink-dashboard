@@ -10,3 +10,4 @@ export { SlaTab } from "./components/sla-tab";
 export * from "./data";
 export * from "./types";
 export * from "./store";
+export { useKbStore } from "./kb-store";
