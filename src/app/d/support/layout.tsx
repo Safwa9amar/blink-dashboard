@@ -1,9 +1,12 @@
 import type { ReactNode } from "react";
 import { getTranslations } from "next-intl/server";
 import { PageHeader, SubNav } from "@/components/ui";
+import { getSupportChats } from "./data";
+import { SupportStoreSeeder } from "./store-seeder";
 
 export default async function SupportLayout({ children }: { children: ReactNode }) {
   const t = await getTranslations("support");
+  const { chats, error } = await getSupportChats();
   const items = [
     { href: "/support", label: t("tab_overview"), icon: "grid" },
     { href: "/support/tickets", label: t("tickets"), icon: "support", count: "42" },
@@ -19,6 +22,12 @@ export default async function SupportLayout({ children }: { children: ReactNode 
     <div>
       <PageHeader title={t("title")} description={t("description")} />
       <SubNav items={items} />
+      <SupportStoreSeeder chats={chats} />
+      {error && (
+        <div className="mb-4 rounded-xl border border-danger/30 bg-danger-light px-4 py-3 text-sm text-danger">
+          {error}
+        </div>
+      )}
       {children}
     </div>
   );

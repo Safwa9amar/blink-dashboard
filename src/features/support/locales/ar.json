@@ -99,8 +99,13 @@
       "all_channels": "كل القنوات",
       "via": "عبر {channel}",
       "typing": "{name} يكتب…",
+      "customer_typing": "العميل يكتب…",
       "message_ph": "اكتب رسالة…",
-      "send": "إرسال"
+      "send": "إرسال",
+      "assign_to_me": "أسندها إليّ",
+      "resolve": "حلّ",
+      "resolved": "تم الحل",
+      "no_chats": "لا توجد محادثات نشطة"
     },
     "kb": {
       "published": "منشورة",

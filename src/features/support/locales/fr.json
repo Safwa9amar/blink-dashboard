@@ -99,8 +99,13 @@
       "all_channels": "Tous les canaux",
       "via": "via {channel}",
       "typing": "{name} écrit…",
+      "customer_typing": "Le client est en train d'écrire…",
       "message_ph": "Tapez un message…",
-      "send": "Envoyer"
+      "send": "Envoyer",
+      "assign_to_me": "M'assigner",
+      "resolve": "Résoudre",
+      "resolved": "Résolu",
+      "no_chats": "Aucune conversation active"
     },
     "kb": {
       "published": "Publiés",

@@ -26,6 +26,7 @@ export interface Message {
   who: string;
   text: string;
   time: string;
+  attachmentUrl?: string | null;
 }
 
 // A live-chat / omnichannel inbox conversation.
@@ -83,3 +84,67 @@ export interface Rule {
 }
 
 export type TFn = (k: string, v?: Record<string, string | number>) => string;
+
+// ─── Live-chat DB rows (mirror blink-server src/db/schema/support-*.ts) ──────
+export type ConversationStatus = "bot" | "waiting" | "assigned" | "resolved";
+export type MessageSender = "user" | "bot" | "agent" | "system";
+
+export interface SupportConversationRow {
+  id: string;
+  user_id: string;
+  user_role: string;
+  status: ConversationStatus;
+  assigned_agent_id: string | null;
+  subject: string | null;
+  locale: string;
+  last_message_at: string;
+  last_message_preview: string | null;
+  unread_for_staff: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SupportMessageRow {
+  id: string;
+  conversation_id: string;
+  sender: MessageSender;
+  sender_id: string | null;
+  body: string;
+  meta: Record<string, unknown> | null;
+  created_at: string;
+}
+
+// Map a DB conversation row → the inbox `Chat` display shape.
+export function rowToChat(row: SupportConversationRow): Chat {
+  const status: Chat["status"] =
+    row.status === "waiting" ? "waiting" : row.status === "assigned" ? "active" : "idle";
+  return {
+    id: row.id,
+    who: row.subject ?? row.user_role,
+    role: row.user_role,
+    channel: "In-app",
+    preview: row.last_message_preview ?? "",
+    unread: row.unread_for_staff,
+    wait: "",
+    status,
+  };
+}
+
+// Map a DB message row → the thread `Message` display shape.
+export function rowToMessage(row: SupportMessageRow): Message {
+  const from: Message["from"] =
+    row.sender === "user"
+      ? "customer"
+      : row.sender === "agent"
+      ? "agent"
+      : row.sender === "system"
+      ? "note"
+      : "agent";
+  return {
+    from,
+    who: row.sender === "bot" ? "Blink Assistant" : row.sender === "agent" ? "You" : "",
+    text: row.body,
+    time: "",
+    attachmentUrl: (row.meta as { attachmentUrl?: string } | null)?.attachmentUrl ?? null,
+  };
+}
