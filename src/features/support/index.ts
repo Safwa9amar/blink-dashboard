@@ -8,3 +8,5 @@ export { CsatTab } from "./components/csat-tab";
 export { AgentsTab } from "./components/agents-tab";
 export { SlaTab } from "./components/sla-tab";
 export * from "./data";
+export * from "./types";
+export * from "./store";
