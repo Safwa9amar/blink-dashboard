@@ -2,119 +2,150 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Card, Button, Toggle, FormRow, Spinner, fInput } from "@/components/ui";
 import {
-  getAiSettingsAction,
-  saveAiSettings,
+  Card,
+  Button,
+  Badge,
+  Toggle,
+  Segmented,
+  FormRow,
+  Spinner,
+  fInput,
+} from "@/components/ui";
+import {
+  getAiServerSettingsAction,
+  saveAiServer,
   fetchAiModels,
+  type ProviderConfigPatch,
 } from "@/app/d/settings/ai-server-action";
-import type { AiSettings } from "@/app/d/settings/ai-server-data";
+import {
+  PROVIDERS,
+  defaultProviderConfig,
+  AI_ACTIVE_DEFAULTS,
+  type Provider,
+  type AiActiveSettings,
+  type AiProviderConfig,
+  type AiServerSettings,
+} from "@/app/d/settings/ai-server-data";
 
-// Settings → AI Server Settings. Controls the global `ai_settings` row read by the
-// support bot (blink-server): provider, model, sampling, reasoning, system-prompt
-// addendum, plus per-provider credentials (OpenRouter API key + local URLs). The
-// API key is stored encrypted-at-rest in the DB and used by the server bot; it is
-// never shown in full here — only its set/last-4 state is surfaced.
+// Settings → AI Server Settings. Bot-level config + the ACTIVE provider live in the
+// `ai_settings` singleton; each provider's model / sampling / reasoning / credential
+// lives in its own `ai_provider_configs` row. The panel edits all of them and saves
+// in one shot via `saveAiServer`. Provider API keys are write-only here — blank
+// keeps the existing key; only the masked set/last-4 state is ever shown.
 
-const PROVIDERS: AiSettings["provider"][] = ["openrouter", "ollama", "lmstudio"];
+const PROVIDER_LABELS: Record<Provider, string> = {
+  openrouter: "OpenRouter",
+  ollama: "Ollama",
+  lmstudio: "LM Studio",
+};
 
-const DEFAULTS: AiSettings = {
-  provider: "openrouter",
-  model: null,
-  temperature: 0.3,
-  max_tokens: 600,
-  reasoning: false,
-  bot_enabled: true,
-  system_prompt_extra: null,
-  openrouter_key_set: false,
-  openrouter_key_last4: null,
-  ollama_url: null,
-  lmstudio_url: null,
+const URL_PLACEHOLDER: Record<Provider, string> = {
+  openrouter: "",
+  ollama: "http://localhost:11434",
+  lmstudio: "http://localhost:1234",
+};
+
+const DEFAULTS: AiServerSettings = {
+  active: AI_ACTIVE_DEFAULTS,
+  providers: {
+    openrouter: defaultProviderConfig("openrouter"),
+    ollama: defaultProviderConfig("ollama"),
+    lmstudio: defaultProviderConfig("lmstudio"),
+  },
 };
 
 export function AiServerSettings() {
   const t = useTranslations("settings.ai_server");
 
-  // Local editable copy of the settings, hydrated from the server on mount.
-  const [form, setForm] = useState<AiSettings>(DEFAULTS);
+  // Local editable copy, hydrated from the server on mount.
+  const [active, setActive] = useState<AiActiveSettings>(DEFAULTS.active);
+  const [providers, setProviders] = useState<Record<Provider, AiProviderConfig>>(
+    DEFAULTS.providers
+  );
   const [loaded, setLoaded] = useState(false);
 
-  // The new OpenRouter key is held separately — it is write-only (blank = keep the
-  // existing key). The masked set/last4 state lives in `form`.
-  const [newKey, setNewKey] = useState("");
+  // New API keys are held separately — write-only (blank = keep the existing key).
+  // The masked set/last4 state lives in `providers[*]`.
+  const [newKeys, setNewKeys] = useState<Record<Provider, string>>({
+    openrouter: "",
+    ollama: "",
+    lmstudio: "",
+  });
 
-  // Model dropdown: server-provided list for the chosen provider + a free-text
-  // field so any model id can be entered (OpenRouter ids, local model names, …).
-  const [models, setModels] = useState<string[]>([]);
-  const [modelsLoading, setModelsLoading] = useState(false);
+  // Which provider's config block is visible (defaults to the active one).
+  const [tab, setTab] = useState<Provider>("openrouter");
 
   const [saving, setSaving] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; msg: string } | null>(null);
 
-  const set = <K extends keyof AiSettings>(key: K, value: AiSettings[K]) =>
-    setForm((f) => ({ ...f, [key]: value }));
+  const setProvider = <K extends keyof AiProviderConfig>(
+    provider: Provider,
+    key: K,
+    value: AiProviderConfig[K]
+  ) =>
+    setProviders((p) => ({ ...p, [provider]: { ...p[provider], [key]: value } }));
 
   // Hydrate current settings.
   useEffect(() => {
     let alive = true;
-    getAiSettingsAction().then(({ settings }) => {
-      if (alive) {
-        setForm(settings);
-        setLoaded(true);
-      }
+    getAiServerSettingsAction().then(({ settings }) => {
+      if (!alive) return;
+      setActive(settings.active);
+      setProviders(settings.providers);
+      setTab(settings.active.provider);
+      setLoaded(true);
     });
     return () => {
       alive = false;
     };
   }, []);
 
-  // Load the model list on mount and whenever the provider changes. State is set
-  // only after awaits (never synchronously in the effect body) so the effect just
-  // synchronizes with the server, not with prior React state.
-  useEffect(() => {
-    let alive = true;
-    (async () => {
-      if (alive) setModelsLoading(true);
-      const { models: list } = await fetchAiModels(form.provider);
-      if (alive) {
-        setModels(list);
-        setModelsLoading(false);
-      }
-    })();
-    return () => {
-      alive = false;
-    };
-  }, [form.provider]);
-
   async function onSave() {
     setSaving(true);
     setResult(null);
-    const trimmedKey = newKey.trim();
-    const { error } = await saveAiSettings({
-      provider: form.provider,
-      model: form.model && form.model.trim() ? form.model.trim() : null,
-      temperature: form.temperature,
-      max_tokens: form.max_tokens,
-      reasoning: form.reasoning,
-      bot_enabled: form.bot_enabled,
-      system_prompt_extra:
-        form.system_prompt_extra && form.system_prompt_extra.trim()
-          ? form.system_prompt_extra
-          : null,
-      ollama_url: form.ollama_url && form.ollama_url.trim() ? form.ollama_url.trim() : null,
-      lmstudio_url:
-        form.lmstudio_url && form.lmstudio_url.trim() ? form.lmstudio_url.trim() : null,
-      // Only include the key in the patch when the admin typed one — otherwise omit
-      // it so the existing key is preserved.
-      ...(trimmedKey ? { openrouter_api_key: trimmedKey } : {}),
+
+    const providerPatches: ProviderConfigPatch[] = PROVIDERS.map((provider) => {
+      const cfg = providers[provider];
+      const trimmedKey = newKeys[provider].trim();
+      const patch: ProviderConfigPatch = {
+        provider,
+        model: cfg.model && cfg.model.trim() ? cfg.model.trim() : null,
+        temperature: cfg.temperature,
+        max_tokens: cfg.max_tokens,
+        reasoning: cfg.reasoning,
+        base_url:
+          provider === "openrouter"
+            ? null
+            : cfg.base_url && cfg.base_url.trim()
+              ? cfg.base_url.trim()
+              : null,
+      };
+      // Only OpenRouter carries an API key, and only when a new one was typed.
+      if (provider === "openrouter" && trimmedKey) patch.api_key = trimmedKey;
+      return patch;
     });
+
+    const { error } = await saveAiServer({
+      active: {
+        provider: active.provider,
+        bot_enabled: active.bot_enabled,
+        system_prompt_extra:
+          active.system_prompt_extra && active.system_prompt_extra.trim()
+            ? active.system_prompt_extra
+            : null,
+      },
+      providers: providerPatches,
+    });
+
     setSaving(false);
     if (!error) {
-      // A new key was just saved — reflect it locally and clear the input.
-      if (trimmedKey) {
-        set("openrouter_key_set", true);
-        set("openrouter_key_last4", trimmedKey.slice(-4));
-        setNewKey("");
+      // Reflect any newly-saved key locally (masked) and clear the input.
+      const orKey = newKeys.openrouter.trim();
+      if (orKey) {
+        setProvider("openrouter", "api_key_set", true);
+        setProvider("openrouter", "api_key_last4", orKey.slice(-4));
+        setNewKeys((k) => ({ ...k, openrouter: "" }));
       }
       setResult({ ok: true, msg: t("saved") });
     } else {
@@ -130,7 +161,10 @@ export function AiServerSettings() {
         action={
           <div className="flex items-center gap-3">
             <span className="text-[12.5px] font-bold text-text">{t("enabled")}</span>
-            <Toggle on={form.bot_enabled} onClick={() => set("bot_enabled", !form.bot_enabled)} />
+            <Toggle
+              on={active.bot_enabled}
+              onClick={() => setActive((a) => ({ ...a, bot_enabled: !a.bot_enabled }))}
+            />
           </div>
         }
       >
@@ -140,139 +174,72 @@ export function AiServerSettings() {
           </div>
         ) : (
           <>
-            {/* Provider */}
-            <FormRow label={t("provider")}>
+            {/* ── Bot-level section ─────────────────────────────────────────── */}
+            <div className="mb-2">
+              <h4 className="text-[13px] font-bold text-text">{t("bot_section")}</h4>
+            </div>
+
+            {/* Active provider — the one the bot actually uses. */}
+            <FormRow label={t("active_provider")} hint={t("active_provider_note")}>
               <select
                 className={fInput}
-                value={form.provider}
-                onChange={(e) => {
-                  set("provider", e.target.value as AiSettings["provider"]);
-                }}
+                value={active.provider}
+                onChange={(e) =>
+                  setActive((a) => ({ ...a, provider: e.target.value as Provider }))
+                }
               >
                 {PROVIDERS.map((p) => (
                   <option key={p} value={p}>
-                    {p}
+                    {PROVIDER_LABELS[p]}
                   </option>
                 ))}
               </select>
-            </FormRow>
-
-            {/* Model — dropdown (server list) + free-text override */}
-            <FormRow
-              label={t("model")}
-              hint={modelsLoading ? t("loading_models") : undefined}
-            >
-              {models.length > 0 && (
-                <select
-                  className={`${fInput} mb-2`}
-                  value={models.includes(form.model ?? "") ? (form.model ?? "") : ""}
-                  onChange={(e) => set("model", e.target.value || null)}
-                  disabled={modelsLoading}
-                >
-                  <option value="">{t("model_ph")}</option>
-                  {models.map((m) => (
-                    <option key={m} value={m}>
-                      {m}
-                    </option>
-                  ))}
-                </select>
-              )}
-              <input
-                className={fInput}
-                style={{ direction: "ltr" }}
-                value={form.model ?? ""}
-                onChange={(e) => set("model", e.target.value)}
-                placeholder={t("model_ph")}
-              />
-            </FormRow>
-
-            {/* Temperature */}
-            <FormRow label={t("temperature")} hint={form.temperature.toFixed(1)}>
-              <input
-                type="range"
-                min={0}
-                max={1}
-                step={0.1}
-                value={form.temperature}
-                onChange={(e) => set("temperature", Number(e.target.value))}
-                className="w-full accent-primary cursor-pointer"
-              />
-            </FormRow>
-
-            {/* Max tokens */}
-            <FormRow label={t("max_tokens")}>
-              <input
-                type="number"
-                min={1}
-                step={1}
-                className={fInput}
-                value={form.max_tokens}
-                onChange={(e) => set("max_tokens", Math.max(1, Math.round(Number(e.target.value) || 0)))}
-              />
-            </FormRow>
-
-            {/* Reasoning */}
-            <FormRow label={t("reasoning")}>
-              <Toggle on={form.reasoning} onClick={() => set("reasoning", !form.reasoning)} />
             </FormRow>
 
             {/* System prompt addendum */}
             <FormRow label={t("prompt_extra")}>
               <textarea
                 className={`${fInput} min-h-[120px] resize-y`}
-                value={form.system_prompt_extra ?? ""}
-                onChange={(e) => set("system_prompt_extra", e.target.value)}
+                value={active.system_prompt_extra ?? ""}
+                onChange={(e) =>
+                  setActive((a) => ({ ...a, system_prompt_extra: e.target.value }))
+                }
                 placeholder={t("prompt_extra_ph")}
               />
             </FormRow>
 
-            {/* ── Provider credentials ──────────────────────────────────────── */}
+            {/* ── Per-provider section ──────────────────────────────────────── */}
             <div className="mt-6 mb-3 border-t border-border pt-5">
-              <h4 className="text-[13px] font-bold text-text">{t("creds")}</h4>
-              <p className="mt-1 text-[12px] text-subtext">{t("creds_note")}</p>
+              <h4 className="text-[13px] font-bold text-text">{t("providers_section")}</h4>
+              <p className="mt-1 text-[12px] text-subtext">{t("providers_note")}</p>
             </div>
 
-            {/* OpenRouter API key — write-only; shows masked current state */}
-            <FormRow
-              label={t("openrouter_key")}
-              hint={
-                form.openrouter_key_set
-                  ? `${t("key_set")} (…${form.openrouter_key_last4})`
-                  : t("key_not_set")
-              }
-            >
-              <input
-                type="password"
-                className={fInput}
-                style={{ direction: "ltr" }}
-                value={newKey}
-                onChange={(e) => setNewKey(e.target.value)}
-                placeholder={t("key_keep_ph")}
-                autoComplete="new-password"
-              />
-            </FormRow>
+            {/* Provider tabs — switch which provider's config block is visible. */}
+            <Segmented
+              className="mb-5"
+              options={PROVIDERS.map((p) => [
+                p,
+                p === active.provider
+                  ? `${PROVIDER_LABELS[p]} · ${t("active_badge")}`
+                  : PROVIDER_LABELS[p],
+              ])}
+              value={tab}
+              onChange={setTab}
+            />
 
-            {/* Ollama URL */}
-            <FormRow label={t("ollama_url")}>
-              <input
-                className={fInput}
-                style={{ direction: "ltr" }}
-                value={form.ollama_url ?? ""}
-                onChange={(e) => set("ollama_url", e.target.value)}
-                placeholder="http://localhost:11434"
-              />
-            </FormRow>
-
-            {/* LM Studio URL */}
-            <FormRow label={t("lmstudio_url")}>
-              <input
-                className={fInput}
-                style={{ direction: "ltr" }}
-                value={form.lmstudio_url ?? ""}
-                onChange={(e) => set("lmstudio_url", e.target.value)}
-                placeholder="http://localhost:1234"
-              />
-            </FormRow>
+            {PROVIDERS.map((provider) =>
+              provider === tab ? (
+                <ProviderBlock
+                  key={provider}
+                  provider={provider}
+                  config={providers[provider]}
+                  isActive={provider === active.provider}
+                  newKey={newKeys[provider]}
+                  onNewKey={(v) => setNewKeys((k) => ({ ...k, [provider]: v }))}
+                  onChange={(key, value) => setProvider(provider, key, value)}
+                />
+              ) : null
+            )}
 
             <div className="flex items-center gap-3 pt-1">
               <Button loading={saving} onClick={onSave}>
@@ -289,6 +256,146 @@ export function AiServerSettings() {
           </>
         )}
       </Card>
+    </div>
+  );
+}
+
+// A single provider's config: model (server-list dropdown + free-text override),
+// temperature, max tokens, reasoning, and the credential (OpenRouter → masked API
+// key; Ollama/LM Studio → base URL). Loads its own model list on mount.
+function ProviderBlock({
+  provider,
+  config,
+  isActive,
+  newKey,
+  onNewKey,
+  onChange,
+}: {
+  provider: Provider;
+  config: AiProviderConfig;
+  isActive: boolean;
+  newKey: string;
+  onNewKey: (v: string) => void;
+  onChange: <K extends keyof AiProviderConfig>(key: K, value: AiProviderConfig[K]) => void;
+}) {
+  const t = useTranslations("settings.ai_server");
+  const [models, setModels] = useState<string[]>([]);
+  const [modelsLoading, setModelsLoading] = useState(false);
+
+  // Load the model list for this provider on mount. State is set only after the
+  // await, so the effect just synchronizes with the server.
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      if (alive) setModelsLoading(true);
+      const { models: list } = await fetchAiModels(provider);
+      if (alive) {
+        setModels(list);
+        setModelsLoading(false);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [provider]);
+
+  return (
+    <div className="rounded-xl border border-border p-4">
+      <div className="mb-4 flex items-center gap-2">
+        <span className="text-[13px] font-bold text-text">{PROVIDER_LABELS[provider]}</span>
+        {isActive && <Badge variant="primary">{t("active_badge")}</Badge>}
+      </div>
+
+      {/* Model — dropdown (server list) + free-text override */}
+      <FormRow label={t("model")} hint={modelsLoading ? t("loading_models") : undefined}>
+        {models.length > 0 && (
+          <select
+            className={`${fInput} mb-2`}
+            value={models.includes(config.model ?? "") ? (config.model ?? "") : ""}
+            onChange={(e) => onChange("model", e.target.value || null)}
+            disabled={modelsLoading}
+          >
+            <option value="">{t("model_ph")}</option>
+            {models.map((m) => (
+              <option key={m} value={m}>
+                {m}
+              </option>
+            ))}
+          </select>
+        )}
+        <input
+          className={fInput}
+          style={{ direction: "ltr" }}
+          value={config.model ?? ""}
+          onChange={(e) => onChange("model", e.target.value)}
+          placeholder={t("model_ph")}
+        />
+      </FormRow>
+
+      {/* Temperature */}
+      <FormRow label={t("temperature")} hint={config.temperature.toFixed(1)}>
+        <input
+          type="range"
+          min={0}
+          max={1}
+          step={0.1}
+          value={config.temperature}
+          onChange={(e) => onChange("temperature", Number(e.target.value))}
+          className="w-full accent-primary cursor-pointer"
+        />
+      </FormRow>
+
+      {/* Max tokens */}
+      <FormRow label={t("max_tokens")}>
+        <input
+          type="number"
+          min={1}
+          step={1}
+          className={fInput}
+          value={config.max_tokens}
+          onChange={(e) =>
+            onChange("max_tokens", Math.max(1, Math.round(Number(e.target.value) || 0)))
+          }
+        />
+      </FormRow>
+
+      {/* Reasoning */}
+      <FormRow label={t("reasoning")}>
+        <Toggle on={config.reasoning} onClick={() => onChange("reasoning", !config.reasoning)} />
+      </FormRow>
+
+      {/* Credential — OpenRouter → masked API key; others → base URL. */}
+      {provider === "openrouter" ? (
+        <FormRow
+          label={t("openrouter_key")}
+          hint={
+            config.api_key_set
+              ? `${t("key_set")} (…${config.api_key_last4})`
+              : t("key_not_set")
+          }
+          className="mb-0"
+        >
+          <input
+            type="password"
+            className={fInput}
+            style={{ direction: "ltr" }}
+            value={newKey}
+            onChange={(e) => onNewKey(e.target.value)}
+            placeholder={t("key_keep_ph")}
+            autoComplete="new-password"
+          />
+        </FormRow>
+      ) : (
+        <FormRow label={t("base_url")} className="mb-0">
+          <input
+            className={fInput}
+            style={{ direction: "ltr" }}
+            value={config.base_url ?? ""}
+            onChange={(e) => onChange("base_url", e.target.value)}
+            placeholder={URL_PLACEHOLDER[provider]}
+          />
+        </FormRow>
+      )}
     </div>
   );
 }

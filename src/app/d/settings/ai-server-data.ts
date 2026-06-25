@@ -1,79 +1,144 @@
 import { cache } from "react";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-// Shape of the `ai_settings` singleton row exposed to the client (mirrors the
-// blink-server Drizzle schema src/db/schema/ai-settings.ts). The raw OpenRouter
-// API key is NEVER returned to the client — it is masked into `openrouter_key_set`
-// + `openrouter_key_last4`. The provider URLs are safe to return as-is. Kept in
-// sync with the server schema by hand.
-export interface AiSettings {
-  provider: "openrouter" | "ollama" | "lmstudio";
+// Settings → AI Server. The support bot (blink-server) now reads TWO tables:
+//
+//   • `ai_settings` (singleton)        — which provider is ACTIVE + bot-level config
+//                                        (bot_enabled, system_prompt_extra).
+//   • `ai_provider_configs` (1 row/provider) — per-provider model / sampling /
+//                                        reasoning + that provider's credential
+//                                        (openrouter → api_key, ollama/lmstudio → base_url).
+//
+// The raw provider API keys are NEVER returned to the client — each is masked into
+// `api_key_set` + `api_key_last4`. Base URLs are safe to return as-is. Kept in sync
+// with the server Drizzle schema by hand.
+
+export type Provider = "openrouter" | "ollama" | "lmstudio";
+
+export const PROVIDERS: Provider[] = ["openrouter", "ollama", "lmstudio"];
+
+// Bot-level / "which provider is active" config (the `ai_settings` singleton).
+export interface AiActiveSettings {
+  provider: Provider; // the ACTIVE provider the bot uses
+  bot_enabled: boolean;
+  system_prompt_extra: string | null;
+}
+
+// One provider's config (a row in `ai_provider_configs`), client-facing. The raw
+// `api_key` is masked away into the two derived flags below.
+export interface AiProviderConfig {
+  provider: Provider;
   model: string | null;
   temperature: number;
   max_tokens: number;
   reasoning: boolean;
-  bot_enabled: boolean;
-  system_prompt_extra: string | null;
-  // Provider credentials (masked / non-secret).
-  openrouter_key_set: boolean;
-  openrouter_key_last4: string | null;
-  ollama_url: string | null;
-  lmstudio_url: string | null;
+  base_url: string | null; // ollama / lmstudio endpoint (null = server env default)
+  // Credential, masked / non-secret.
+  api_key_set: boolean;
+  api_key_last4: string | null;
 }
 
-// Defaults used when no row exists yet (seed-safe — the table may be empty on a
-// fresh DB). Matches the column defaults in the Drizzle schema.
-export const AI_SETTINGS_DEFAULTS: AiSettings = {
+// The full client-facing settings bundle.
+export interface AiServerSettings {
+  active: AiActiveSettings;
+  providers: Record<Provider, AiProviderConfig>;
+}
+
+// Bot-level defaults when the singleton row is missing (seed-safe).
+export const AI_ACTIVE_DEFAULTS: AiActiveSettings = {
   provider: "openrouter",
-  model: null,
-  temperature: 0.3,
-  max_tokens: 600,
-  reasoning: false,
   bot_enabled: true,
   system_prompt_extra: null,
-  openrouter_key_set: false,
-  openrouter_key_last4: null,
-  ollama_url: null,
-  lmstudio_url: null,
 };
 
-// Reads the latest `ai_settings` row via the service-role admin client (this
-// config is global, not per-user, so it bypasses RLS — mirrors data.ts / kb-data.ts).
-// Returns the defaults if the table is empty. The raw `openrouter_api_key` is read
-// from the DB here ONLY to derive the masked state — it is never surfaced.
-export const getAiSettings = cache(
-  async (): Promise<{ settings: AiSettings; error: string | null }> => {
+// Per-provider defaults when a provider's row is missing. Matches the column
+// defaults in the server Drizzle schema.
+export function defaultProviderConfig(provider: Provider): AiProviderConfig {
+  return {
+    provider,
+    model: null,
+    temperature: 0.3,
+    max_tokens: 600,
+    reasoning: false,
+    base_url: null,
+    api_key_set: false,
+    api_key_last4: null,
+  };
+}
+
+// Reads the latest `ai_settings` row + all `ai_provider_configs` rows via the
+// service-role admin client (global config, not per-user → bypasses RLS, mirrors
+// data.ts / kb-data.ts). Missing rows fall back to defaults. The raw `api_key`s
+// are read here ONLY to derive the masked state — they are never surfaced.
+export const getAiServerSettings = cache(
+  async (): Promise<{ settings: AiServerSettings; error: string | null }> => {
     const supabase = await createAdminClient();
-    const { data, error } = await supabase
-      .from("ai_settings")
-      .select(
-        "provider, model, temperature, max_tokens, reasoning, bot_enabled, system_prompt_extra, openrouter_api_key, ollama_url, lmstudio_url"
-      )
-      .order("updated_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
 
-    if (error) return { settings: AI_SETTINGS_DEFAULTS, error: error.message };
-    if (!data) return { settings: AI_SETTINGS_DEFAULTS, error: null };
+    const [activeRes, configsRes] = await Promise.all([
+      supabase
+        .from("ai_settings")
+        .select("provider, bot_enabled, system_prompt_extra")
+        .order("updated_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+      supabase
+        .from("ai_provider_configs")
+        .select("provider, model, temperature, max_tokens, reasoning, api_key, base_url"),
+    ]);
 
-    const row = data as Partial<AiSettings> & { openrouter_api_key?: string | null };
-    const key = row.openrouter_api_key ?? null;
-    return {
-      settings: {
-        provider: (row.provider as AiSettings["provider"]) ?? AI_SETTINGS_DEFAULTS.provider,
-        model: row.model ?? null,
-        temperature: row.temperature ?? AI_SETTINGS_DEFAULTS.temperature,
-        max_tokens: row.max_tokens ?? AI_SETTINGS_DEFAULTS.max_tokens,
-        reasoning: row.reasoning ?? AI_SETTINGS_DEFAULTS.reasoning,
-        bot_enabled: row.bot_enabled ?? AI_SETTINGS_DEFAULTS.bot_enabled,
-        system_prompt_extra: row.system_prompt_extra ?? null,
-        // Mask the secret — never return the raw key to the client.
-        openrouter_key_set: !!key,
-        openrouter_key_last4: key ? key.slice(-4) : null,
-        ollama_url: row.ollama_url ?? null,
-        lmstudio_url: row.lmstudio_url ?? null,
+    const fallback: AiServerSettings = {
+      active: AI_ACTIVE_DEFAULTS,
+      providers: {
+        openrouter: defaultProviderConfig("openrouter"),
+        ollama: defaultProviderConfig("ollama"),
+        lmstudio: defaultProviderConfig("lmstudio"),
       },
-      error: null,
     };
+
+    if (activeRes.error) return { settings: fallback, error: activeRes.error.message };
+    if (configsRes.error) return { settings: fallback, error: configsRes.error.message };
+
+    const activeRow = activeRes.data as Partial<AiActiveSettings> | null;
+    const active: AiActiveSettings = activeRow
+      ? {
+          provider: (activeRow.provider as Provider) ?? AI_ACTIVE_DEFAULTS.provider,
+          bot_enabled: activeRow.bot_enabled ?? AI_ACTIVE_DEFAULTS.bot_enabled,
+          system_prompt_extra: activeRow.system_prompt_extra ?? null,
+        }
+      : AI_ACTIVE_DEFAULTS;
+
+    type ProviderRow = Partial<AiProviderConfig> & {
+      provider?: Provider;
+      api_key?: string | null;
+    };
+    const rows = (configsRes.data ?? []) as ProviderRow[];
+    const byProvider = new Map<Provider, ProviderRow>();
+    for (const r of rows) {
+      if (r.provider) byProvider.set(r.provider, r);
+    }
+
+    const providers = {} as Record<Provider, AiProviderConfig>;
+    for (const provider of PROVIDERS) {
+      const row = byProvider.get(provider);
+      if (!row) {
+        providers[provider] = defaultProviderConfig(provider);
+        continue;
+      }
+      const key = row.api_key ?? null;
+      const d = defaultProviderConfig(provider);
+      providers[provider] = {
+        provider,
+        model: row.model ?? null,
+        temperature: row.temperature ?? d.temperature,
+        max_tokens: row.max_tokens ?? d.max_tokens,
+        reasoning: row.reasoning ?? d.reasoning,
+        base_url: row.base_url ?? null,
+        // Mask the secret — never return the raw key to the client.
+        api_key_set: !!key,
+        api_key_last4: key ? key.slice(-4) : null,
+      };
+    }
+
+    return { settings: { active, providers }, error: null };
   }
 );

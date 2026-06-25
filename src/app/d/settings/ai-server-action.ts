@@ -4,44 +4,70 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { hasStaffRole } from "@/lib/auth/staff";
-import { getAiSettings, type AiSettings } from "./ai-server-data";
+import {
+  getAiServerSettings,
+  PROVIDERS,
+  type AiServerSettings,
+  type Provider,
+} from "./ai-server-data";
 
-// AI Server settings actions. The support bot (blink-server) reads the latest
-// `ai_settings` row. This is global config (not per-user) so writes go through the
-// service-role admin client, gated here by staff role. The OpenRouter API key is
-// stored encrypted-at-rest in the DB and used by the server bot; it is never read
-// back to the client (the data layer masks it).
+// AI Server settings actions. The support bot (blink-server) reads the active
+// provider from the `ai_settings` singleton and that provider's config from
+// `ai_provider_configs`. This is global config (not per-user) so writes go through
+// the service-role admin client, gated here by staff role. Provider API keys are
+// stored encrypted-at-rest in the DB and used by the server bot; they are never
+// read back to the client (the data layer masks them).
 
 const API_BASE = process.env.BLINK_API_BASE_URL ?? "https://blink.greenpedal.net";
 
-// Fields the admin may write. Extends the client-facing AiSettings (minus the
-// masked-only fields) with the raw `openrouter_api_key`, which is set ONLY when
-// the admin typed a new key. Provider URLs are written as-is (null = server env
-// default).
-export type AiSettingsPatch = Partial<
-  Omit<AiSettings, "openrouter_key_set" | "openrouter_key_last4">
-> & {
-  openrouter_api_key?: string;
-};
+// One provider's writable config. `api_key` (openrouter) is set ONLY when the admin
+// typed a new key — an absent/blank key preserves the existing one. `base_url`
+// (ollama/lmstudio) is written as-is (null = server env default).
+export interface ProviderConfigPatch {
+  provider: Provider;
+  model: string | null;
+  temperature: number;
+  max_tokens: number;
+  reasoning: boolean;
+  base_url?: string | null;
+  api_key?: string; // openrouter only; omit/blank to keep current
+}
+
+// The full save payload: bot-level (active provider + bot settings) + every
+// provider's config.
+export interface AiServerPayload {
+  active: {
+    provider: Provider;
+    bot_enabled: boolean;
+    system_prompt_extra: string | null;
+  };
+  providers: ProviderConfigPatch[];
+}
 
 // Client-readable fetch of the current settings (used to hydrate the panel on
 // mount). Delegates to the cache()-wrapped admin read in ai-server-data.ts.
-export async function getAiSettingsAction(): Promise<{
-  settings: AiSettings;
+export async function getAiServerSettingsAction(): Promise<{
+  settings: AiServerSettings;
   error: string | null;
 }> {
-  return getAiSettings();
+  return getAiServerSettings();
 }
 
-export async function saveAiSettings(
-  patch: AiSettingsPatch
+export async function saveAiServer(
+  payload: AiServerPayload
 ): Promise<{ error: string | null }> {
   if (!(await hasStaffRole("super_admin", "support_admin"))) {
     return { error: "Not authorized" };
   }
   const supabase = await createAdminClient();
 
-  // Singleton: locate the latest row id, then update it; insert if none exists.
+  const {
+    data: { user },
+  } = await (await createClient()).auth.getUser();
+  const now = new Date().toISOString();
+  const updatedBy = user?.id ?? null;
+
+  // ── 1. Bot-level singleton: update the latest row, or insert if none exists. ──
   const { data: existing, error: readError } = await supabase
     .from("ai_settings")
     .select("id")
@@ -50,19 +76,46 @@ export async function saveAiSettings(
     .maybeSingle();
   if (readError) return { error: readError.message };
 
-  const {
-    data: { user },
-  } = await (await createClient()).auth.getUser();
+  const activePayload = {
+    provider: payload.active.provider,
+    bot_enabled: payload.active.bot_enabled,
+    system_prompt_extra: payload.active.system_prompt_extra,
+    updated_by: updatedBy,
+    updated_at: now,
+  };
 
-  // Only persist `openrouter_api_key` when the admin actually typed a new key —
-  // an absent key in the patch preserves the existing one.
-  const payload = { ...patch, updated_by: user?.id ?? null, updated_at: new Date().toISOString() };
+  const { error: activeError } = existing?.id
+    ? await supabase
+        .from("ai_settings")
+        .update(activePayload)
+        .eq("id", (existing as { id: string }).id)
+    : await supabase.from("ai_settings").insert(activePayload);
+  if (activeError) return { error: activeError.message };
 
-  const { error } = existing?.id
-    ? await supabase.from("ai_settings").update(payload).eq("id", (existing as { id: string }).id)
-    : await supabase.from("ai_settings").insert(payload);
+  // ── 2. Per-provider configs (one row per provider, keyed by `provider`). ──
+  // The `api_key` is included ONLY when a new non-empty value was provided —
+  // otherwise it is omitted from the upsert so the existing key is preserved.
+  for (const cfg of payload.providers) {
+    if (!PROVIDERS.includes(cfg.provider)) continue;
+    const newKey = cfg.api_key?.trim();
+    const row: Record<string, unknown> = {
+      provider: cfg.provider,
+      model: cfg.model,
+      temperature: cfg.temperature,
+      max_tokens: cfg.max_tokens,
+      reasoning: cfg.reasoning,
+      base_url: cfg.base_url ?? null,
+      updated_by: updatedBy,
+      updated_at: now,
+    };
+    if (newKey) row.api_key = newKey;
 
-  if (error) return { error: error.message };
+    const { error: cfgError } = await supabase
+      .from("ai_provider_configs")
+      .upsert(row, { onConflict: "provider" });
+    if (cfgError) return { error: cfgError.message };
+  }
+
   revalidatePath("/d/settings");
   return { error: null };
 }
@@ -73,7 +126,7 @@ export async function saveAiSettings(
 // list + error if the endpoint isn't reachable — the panel falls back to its
 // free-text model input.
 export async function fetchAiModels(
-  provider: AiSettings["provider"]
+  provider: Provider
 ): Promise<{ models: string[]; error: string | null }> {
   if (!(await hasStaffRole("super_admin", "support_admin"))) {
     return { models: [], error: "Not authorized" };

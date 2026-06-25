@@ -110,7 +110,12 @@
     "ai_server": {
       "title": "AI Server Settings",
       "enabled": "Bot enabled",
-      "provider": "Provider",
+      "bot_section": "Bot settings",
+      "active_provider": "Active provider",
+      "active_provider_note": "The provider the bot uses for replies.",
+      "providers_section": "Provider configs",
+      "providers_note": "Each provider has its own model, sampling, and credential. These apply when that provider is active.",
+      "active_badge": "Active",
       "model": "Model",
       "model_ph": "Provider default (or enter a model id, e.g. anthropic/claude-sonnet-4)",
       "temperature": "Temperature",
@@ -121,13 +126,11 @@
       "save": "Save",
       "saved": "Settings saved",
       "loading_models": "Loading models…",
-      "creds": "Provider credentials",
       "openrouter_key": "OpenRouter API key",
       "key_set": "Set",
       "key_not_set": "Not set",
       "key_keep_ph": "Leave blank to keep current",
-      "ollama_url": "Ollama URL",
-      "lmstudio_url": "LM Studio URL",
+      "base_url": "Base URL",
       "creds_note": "Keys are stored encrypted-at-rest in the database and used by the server bot; they are never shown in full here."
     }
   }
