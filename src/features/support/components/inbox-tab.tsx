@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, Button, Avatar, Badge, LivePill, fInput } from "@/components/ui";
 import { CHANNEL_COLOR, ROLE_VARIANT } from "../data";
 import { useSupportStore, rowToChat, rowToMessage } from "@/features/support";
@@ -16,6 +16,12 @@ export function InboxTab({ t }: { t: TFn }) {
   const chats = conversations.map(rowToChat);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
+  const [customerTyping, setCustomerTyping] = useState(false);
+
+  // Realtime "typing" broadcast channel for the active conversation.
+  const typingChannelRef = useRef<ReturnType<ReturnType<typeof createClient>["channel"]> | null>(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastSentRef = useRef(0);
 
   // Default the active selection to the first chat until the user picks one.
   const activeId = selectedId ?? chats[0]?.id ?? null;
@@ -33,6 +39,38 @@ export function InboxTab({ t }: { t: TFn }) {
         if (data) useSupportStore.getState().setMessages(activeId, data as never);
       });
   }, [activeId]);
+
+  // Join the shared typing broadcast channel; react only to the customer side.
+  useEffect(() => {
+    if (!activeId) return;
+    const supabase = createClient();
+    const ch = supabase
+      .channel(`support-typing-${activeId}`)
+      .on("broadcast", { event: "typing" }, ({ payload }) => {
+        if ((payload as { from?: string })?.from !== "user") return;
+        setCustomerTyping(true);
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = setTimeout(() => setCustomerTyping(false), 3000);
+      })
+      .subscribe();
+    typingChannelRef.current = ch;
+    return () => {
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+      void supabase.removeChannel(ch);
+      typingChannelRef.current = null;
+      setCustomerTyping(false);
+    };
+  }, [activeId]);
+
+  // Broadcast that the agent is typing, throttled to ≤ once / ~1500ms.
+  function notifyTyping() {
+    const ch = typingChannelRef.current;
+    if (!ch) return;
+    const now = Date.now();
+    if (now - lastSentRef.current < 1500) return;
+    lastSentRef.current = now;
+    void ch.send({ type: "broadcast", event: "typing", payload: { from: "agent", name: "Support" } });
+  }
 
   const activeConv = conversations.find((c) => c.id === activeId);
   const active = chats.find((c) => c.id === activeId) ?? null;
@@ -124,13 +162,34 @@ export function InboxTab({ t }: { t: TFn }) {
                 </div>
               );
             })}
+
+            {customerTyping && (
+              <div className="flex gap-2.5">
+                <Avatar name={active?.who ?? ""} />
+                <div className="max-w-[78%] flex flex-col items-start">
+                  <div className="rounded-2xl rounded-tl-sm bg-background border border-border px-4 py-3 flex items-center gap-1">
+                    {[0, 150, 300].map((delay) => (
+                      <span
+                        key={delay}
+                        className="w-1.5 h-1.5 rounded-full bg-subtext animate-bounce"
+                        style={{ animationDelay: `${delay}ms` }}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-[11px] text-subtext mt-1 px-1">{t("inb.customer_typing")}</span>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-2.5 mt-4 pt-4 border-t border-border">
             <input
               className={fInput}
               value={draft}
-              onChange={(e) => setDraft(e.target.value)}
+              onChange={(e) => {
+                setDraft(e.target.value);
+                notifyTyping();
+              }}
               placeholder={t("inb.message_ph")}
             />
             <Button
