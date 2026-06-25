@@ -126,15 +126,11 @@ export function AiServerSettings() {
       return patch;
     });
 
+    // This panel owns only the ENGINE columns: the active provider + each
+    // provider's config. The bot's on/off + instructions are edited in
+    // Support → AI (saveSupportBot), so they're not sent here.
     const { error } = await saveAiServer({
-      active: {
-        provider: active.provider,
-        bot_enabled: active.bot_enabled,
-        system_prompt_extra:
-          active.system_prompt_extra && active.system_prompt_extra.trim()
-            ? active.system_prompt_extra
-            : null,
-      },
+      active: { provider: active.provider },
       providers: providerPatches,
     });
 
@@ -155,31 +151,15 @@ export function AiServerSettings() {
 
   return (
     <div className="max-w-[680px]">
-      <Card
-        title={t("title")}
-        description={t("creds_note")}
-        action={
-          <div className="flex items-center gap-3">
-            <span className="text-[12.5px] font-bold text-text">{t("enabled")}</span>
-            <Toggle
-              on={active.bot_enabled}
-              onClick={() => setActive((a) => ({ ...a, bot_enabled: !a.bot_enabled }))}
-            />
-          </div>
-        }
-      >
+      <Card title={t("title")} description={t("creds_note")}>
         {!loaded ? (
           <div className="flex items-center gap-2 py-8 text-subtext text-sm">
             <Spinner /> {t("loading_models")}
           </div>
         ) : (
           <>
-            {/* ── Bot-level section ─────────────────────────────────────────── */}
-            <div className="mb-2">
-              <h4 className="text-[13px] font-bold text-text">{t("bot_section")}</h4>
-            </div>
-
-            {/* Active provider — the one the bot actually uses. */}
+            {/* Active provider — the one the bot actually uses. The bot on/off
+                toggle + instructions live in Support → AI. */}
             <FormRow label={t("active_provider")} hint={t("active_provider_note")}>
               <select
                 className={fInput}
@@ -194,18 +174,6 @@ export function AiServerSettings() {
                   </option>
                 ))}
               </select>
-            </FormRow>
-
-            {/* System prompt addendum */}
-            <FormRow label={t("prompt_extra")}>
-              <textarea
-                className={`${fInput} min-h-[120px] resize-y`}
-                value={active.system_prompt_extra ?? ""}
-                onChange={(e) =>
-                  setActive((a) => ({ ...a, system_prompt_extra: e.target.value }))
-                }
-                placeholder={t("prompt_extra_ph")}
-              />
             </FormRow>
 
             {/* ── Per-provider section ──────────────────────────────────────── */}

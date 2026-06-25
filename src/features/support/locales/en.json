@@ -236,6 +236,21 @@
       "when": "When",
       "if": "If",
       "runs": "runs"
+    },
+    "tab_ai": "AI Bot",
+    "bot": {
+      "title": "Support Bot",
+      "desc": "The AI assistant answers customers first in Live Chat, then hands off to a human agent when needed.",
+      "enabled": "Bot enabled",
+      "enabled_hint": "When off, new Live Chat conversations go straight to a human agent — the bot won't reply.",
+      "prompt": "Bot instructions",
+      "prompt_hint": "Extra guidance appended to the bot's instructions (tone, policies, when to escalate). The knowledge base is always included automatically.",
+      "prompt_ph": "e.g. Greet Algerian customers warmly. Never promise refund timelines — escalate refund questions to a human.",
+      "engine": "AI engine",
+      "engine_hint": "The provider, model and API keys that power the bot are managed in Settings → AI Server.",
+      "configure": "Configure",
+      "save": "Save",
+      "saved": "Saved"
     }
   }
 }

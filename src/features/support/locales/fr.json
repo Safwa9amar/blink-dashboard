@@ -236,6 +236,21 @@
       "when": "Quand",
       "if": "Si",
       "runs": "exéc."
+    },
+    "tab_ai": "Bot IA",
+    "bot": {
+      "title": "Bot d'assistance",
+      "desc": "L'assistant IA répond d'abord aux clients dans le Chat en direct, puis passe la main à un agent humain si nécessaire.",
+      "enabled": "Bot activé",
+      "enabled_hint": "Lorsqu'il est désactivé, les nouvelles conversations du Chat en direct vont directement à un agent humain — le bot ne répond pas.",
+      "prompt": "Instructions du bot",
+      "prompt_hint": "Directives supplémentaires ajoutées aux instructions du bot (ton, règles, quand escalader). La base de connaissances est toujours incluse automatiquement.",
+      "prompt_ph": "ex. Saluez chaleureusement les clients algériens. Ne promettez jamais de délais de remboursement — transférez les questions de remboursement à un humain.",
+      "engine": "Moteur IA",
+      "engine_hint": "Le fournisseur, le modèle et les clés API qui alimentent le bot sont gérés dans Paramètres → Serveur IA.",
+      "configure": "Configurer",
+      "save": "Enregistrer",
+      "saved": "Enregistré"
     }
   }
 }

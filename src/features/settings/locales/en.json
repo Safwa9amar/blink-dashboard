@@ -109,8 +109,6 @@
     },
     "ai_server": {
       "title": "AI Server Settings",
-      "enabled": "Bot enabled",
-      "bot_section": "Bot settings",
       "active_provider": "Active provider",
       "active_provider_note": "The provider the bot uses for replies.",
       "providers_section": "Provider configs",
@@ -121,8 +119,6 @@
       "temperature": "Temperature",
       "max_tokens": "Max tokens",
       "reasoning": "Reasoning",
-      "prompt_extra": "System prompt addendum",
-      "prompt_extra_ph": "Extra instructions appended to the bot's system prompt…",
       "save": "Save",
       "saved": "Settings saved",
       "loading_models": "Loading models…",

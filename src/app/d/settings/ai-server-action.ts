@@ -33,13 +33,12 @@ export interface ProviderConfigPatch {
   api_key?: string; // openrouter only; omit/blank to keep current
 }
 
-// The full save payload: bot-level (active provider + bot settings) + every
-// provider's config.
+// The full save payload: the ACTIVE provider (engine selection) + every
+// provider's config. The bot's on/off + instructions are owned by Support → AI
+// (saveSupportBot), not this panel, so they're intentionally absent here.
 export interface AiServerPayload {
   active: {
     provider: Provider;
-    bot_enabled: boolean;
-    system_prompt_extra: string | null;
   };
   providers: ProviderConfigPatch[];
 }
@@ -78,8 +77,6 @@ export async function saveAiServer(
 
   const activePayload = {
     provider: payload.active.provider,
-    bot_enabled: payload.active.bot_enabled,
-    system_prompt_extra: payload.active.system_prompt_extra,
     updated_by: updatedBy,
     updated_at: now,
   };
