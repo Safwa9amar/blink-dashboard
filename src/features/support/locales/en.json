@@ -5,7 +5,6 @@
     "tickets": "Tickets",
     "tab_overview": "Overview",
     "tab_inbox": "Live Chat",
-    "tab_history": "History",
     "tab_kb": "Knowledge Base",
     "tab_csat": "CSAT",
     "tab_agents": "Agents",
@@ -109,7 +108,9 @@
       "resolved": "Resolved",
       "no_chats": "No active conversations",
       "history_count": "{n} resolved conversations",
-      "no_history": "No resolved conversations yet"
+      "no_history": "No resolved conversations yet",
+      "view_history": "History",
+      "view_live": "Live chats"
     },
     "kb": {
       "published": "Published",
@@ -250,7 +251,7 @@
       "prompt_hint": "Appended after the system prompt above — handy for quick policy tweaks without editing the full prompt.",
       "prompt_ph": "e.g. Greet Algerian customers warmly. Never promise refund timelines — escalate refund questions to a human.",
       "engine": "AI engine",
-      "engine_hint": "The provider, model and API keys that power the bot are managed in Settings → AI Server.",
+      "engine_hint": "The provider, model and API keys that power the bot are managed in Blink Server → AI Server.",
       "configure": "Configure",
       "save": "Save",
       "saved": "Saved",
