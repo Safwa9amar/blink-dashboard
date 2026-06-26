@@ -5,11 +5,12 @@ import { PROVIDERS, type Provider } from "@/lib/ai/providers";
 // Operator-tunable AI generation settings, set from Settings → AI and persisted to
 // localStorage. The compose form reads these and forwards them (provider + base URL
 // + model + sampling) to the generation route on each run, so the admin can switch
-// between LM Studio and Ollama and pick a model without a redeploy.
+// between LM Studio, Ollama, and OpenRouter and pick a model without a redeploy.
 export interface AISettingsState {
-  provider: Provider; // "lmstudio" | "ollama"
+  provider: Provider; // "lmstudio" | "ollama" | "openrouter"
   lmstudioUrl: string;
   ollamaUrl: string;
+  openrouterUrl: string;
   model: string; // "" = auto-detect the first available model
   temperature: number; // 0–1
   maxTokens: number; // -1 = unlimited
@@ -28,6 +29,7 @@ export const DEFAULT_AI_SETTINGS = {
   provider: "lmstudio" as Provider,
   lmstudioUrl: PROVIDERS.lmstudio.defaultBaseUrl,
   ollamaUrl: PROVIDERS.ollama.defaultBaseUrl,
+  openrouterUrl: PROVIDERS.openrouter.defaultBaseUrl,
   model: "",
   temperature: 0.7,
   maxTokens: -1,
@@ -36,7 +38,8 @@ export const DEFAULT_AI_SETTINGS = {
 };
 
 // The base URL of whichever provider is active.
-export function activeBaseUrl(s: Pick<AISettingsState, "provider" | "lmstudioUrl" | "ollamaUrl">) {
+export function activeBaseUrl(s: Pick<AISettingsState, "provider" | "lmstudioUrl" | "ollamaUrl" | "openrouterUrl">) {
+  if (s.provider === "openrouter") return s.openrouterUrl;
   return s.provider === "ollama" ? s.ollamaUrl : s.lmstudioUrl;
 }
 
@@ -50,13 +53,16 @@ export const useAISettingsStore = create<AISettingsState>()(
       // Switching provider clears the model — ids don't carry across providers.
       setProvider: (v) => set({ provider: v, model: "" }),
       setBaseUrl: (v) =>
-        set((s) => (s.provider === "ollama" ? { ollamaUrl: v } : { lmstudioUrl: v })),
+        set((s) => {
+          if (s.provider === "openrouter") return { openrouterUrl: v };
+          return s.provider === "ollama" ? { ollamaUrl: v } : { lmstudioUrl: v };
+        }),
       setModel: (v) => set({ model: v }),
       setTemperature: (v) => set({ temperature: clampTemp(v) }),
       setMaxTokens: (v) => set({ maxTokens: Math.max(-1, intOr(v, -1)) }),
       setContextLength: (v) => set({ contextLength: Math.max(0, intOr(v, 0)) }),
       setTtl: (v) => set({ ttl: Math.max(0, intOr(v, 0)) }),
     }),
-    { name: "blink-ai-settings", version: 2 }
+    { name: "blink-ai-settings", version: 3 }
   )
 );

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Badge, Button, Modal, SearchBox, DashIcon, fInput, type Variant } from "@/components/ui";
+import { Badge, Button, Modal, SearchBox, fInput, type Variant } from "@/components/ui";
 import { useDeepLinksStore, useHydrateDeepLinks } from "../store";
 import {
   buildDeepLink,
@@ -11,6 +11,7 @@ import {
   matchesAudience,
   isExternalUrl,
   groupByRole,
+  webUrlToDeepLink,
 } from "../processing";
 import type { DeepLinkRole, DeepLinkRoute } from "../types";
 
@@ -46,6 +47,11 @@ export function DeepLinkField({
   const parsed = useMemo(() => parseDeepLink(value, routes), [value, routes]);
   const missing = value ? missingParams(value) : [];
   const roleOk = matchesAudience(parsed.route, audienceRoles);
+  // A pasted blink.dz web URL that maps to a real in-app route → offer to fix it.
+  const webConv = useMemo(
+    () => (value && !parsed.valid ? webUrlToDeepLink(value, routes) : null),
+    [value, parsed.valid, routes]
+  );
 
   const filtered = useMemo(() => {
     const needle = q.toLowerCase();
@@ -97,6 +103,18 @@ export function DeepLinkField({
             <div className="flex items-center gap-2">
               <Badge variant={ROLE_VARIANT[parsed.route.role]}>{parsed.route.role}</Badge>
               <span className="text-subtext">{parsed.route.label}</span>
+            </div>
+          ) : webConv ? (
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant={ROLE_VARIANT[webConv.route.role]}>{webConv.route.role}</Badge>
+              <span className="text-subtext">{webConv.route.label}</span>
+              <button
+                type="button"
+                onClick={() => onChange(webConv.deepLink)}
+                className="text-primary font-semibold hover:underline"
+              >
+                {t("convert_web_link")}
+              </button>
             </div>
           ) : isExternalUrl(value) ? (
             <span className="text-subtext">{t("external_link")}</span>

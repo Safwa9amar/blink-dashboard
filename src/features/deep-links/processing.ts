@@ -44,22 +44,39 @@ export function labelFromRoutePath(routePath: string, role: DeepLinkRole): strin
   return parts.length ? parts.join(" › ") : cap(role);
 }
 
+// CANONICAL deep link = the exact URL the app navigates with: the scheme + the
+// Expo `routePath`, with the route-group parens KEPT — e.g.
+// "blink://(rider)/blink-cash", "blink://(customer)/deal/[id]", "blink://news".
+// The app resolves these via Expo Router's group-aware linking; the paren-LESS
+// form ("blink://rider/…") does NOT navigate (the bare role isn't a route and the
+// app's resolveDeepLink bridge is unused), so we DERIVE deepLink from routePath
+// rather than trusting the catalog's (paren-less) `deepLink`. Matching stays
+// paren-tolerant (see parseDeepLink) so a pasted paren-less link still resolves.
+export function routePathToDeepLink(routePath: string, scheme = "blink"): string {
+  return `${scheme}://${routePath.replace(/^\//, "")}`;
+}
+
 /** Normalize a raw imported file into a deduped, labelled, sorted route list. */
 export function normalize(raw: RawDeepLinkFile): DeepLinkRoute[] {
+  const scheme = raw?.scheme ?? "blink";
   const rawRoutes: RawDeepLinkRoute[] = Array.isArray(raw?.routes) ? raw.routes : [];
   const seen = new Set<string>();
   const out: DeepLinkRoute[] = [];
 
   for (const r of rawRoutes) {
-    if (!r?.deepLink || seen.has(r.deepLink)) continue;
-    seen.add(r.deepLink);
+    const routePath = r?.routePath ?? r?.deepLink;
+    if (!routePath) continue;
     const role = roleOf(r.role);
+    // Derive the canonical group-kept deep link from the routePath (the app form).
+    const deepLink = routePath.startsWith("/") ? routePathToDeepLink(routePath, scheme) : routePath;
+    if (seen.has(deepLink)) continue;
+    seen.add(deepLink);
     out.push({
-      deepLink: r.deepLink,
+      deepLink,
       role,
-      requiresParams: Array.isArray(r.requiresParams) ? r.requiresParams : extractParams(r.deepLink),
-      routePath: r.routePath ?? r.deepLink,
-      label: labelFromRoutePath(r.routePath ?? r.deepLink, role),
+      requiresParams: Array.isArray(r.requiresParams) ? r.requiresParams : extractParams(routePath),
+      routePath,
+      label: labelFromRoutePath(routePath, role),
     });
   }
 
@@ -106,9 +123,10 @@ function templateToRegex(template: string): RegExp {
 }
 
 /**
- * Tolerate Expo route-group parens in a pasted link, mirroring how the catalog
- * derives `deepLink` from `routePath`: `blink://(merchant)/earnings` →
- * `blink://merchant/earnings`. The group segment is kept, only the parens drop.
+ * Drop Expo route-group parens from a link so matching is paren-AGNOSTIC:
+ * `blink://(merchant)/earnings` → `blink://merchant/earnings`. The canonical
+ * deepLink keeps the parens, but we strip them on BOTH the input and the template
+ * before matching, so an operator who pastes either form still resolves.
  */
 function stripRouteGroups(url: string): string {
   return url.replace(/\(([^()/]+)\)/g, "$1");
@@ -118,7 +136,7 @@ function stripRouteGroups(url: string): string {
 export function parseDeepLink(url: string, routes: DeepLinkRoute[]): ParsedDeepLink {
   const clean = stripRouteGroups(url.trim());
   for (const route of routes) {
-    const m = templateToRegex(route.deepLink).exec(clean);
+    const m = templateToRegex(stripRouteGroups(route.deepLink)).exec(clean);
     if (!m) continue;
     const params: Record<string, string> = {};
     route.requiresParams.forEach((p, i) => {
@@ -135,6 +153,64 @@ export function isExternalUrl(url: string): boolean {
 
 export function isCatalogLink(url: string, scheme: string): boolean {
   return url.trim().toLowerCase().startsWith(`${scheme}://`);
+}
+
+// Blink's marketing/web hosts. A path on one of these can be mapped to an in-app
+// deep link. (No OS universal links are configured — this is an authoring
+// convenience: paste a web URL, get the proper blink:// link.)
+export const BLINK_WEB_HOSTS = ["blink.dz", "www.blink.dz"];
+
+export interface WebUrlConversion {
+  /** External blink:// URL, with any concrete path params filled in. */
+  deepLink: string;
+  /** Internal /(role)/… router.push form, params filled. */
+  routePath: string;
+  /** The matched catalog route. */
+  route: DeepLinkRoute;
+  /** The original web URL (kept as the web_url fallback). */
+  webUrl: string;
+}
+
+/**
+ * Convert a Blink web URL into the matching in-app deep link, e.g.
+ *   https://blink.dz/news            → blink://news            (route /news)
+ *   https://blink.dz/customer/deal/42 → blink://customer/deal/42 (/(customer)/deal/[id])
+ *
+ * Returns null — leaving the link untouched — for a non-Blink host (real external
+ * link), the bare marketing root, or a path that matches no catalog route. The
+ * role stays a plain first segment (never parenthesized); the parens live only on
+ * the returned `routePath`.
+ */
+export function webUrlToDeepLink(
+  url: string,
+  routes: DeepLinkRoute[],
+  scheme = "blink"
+): WebUrlConversion | null {
+  const trimmed = url.trim();
+  if (!isExternalUrl(trimmed)) return null; // not an http(s) URL
+
+  let parsedUrl: URL;
+  try {
+    parsedUrl = new URL(trimmed);
+  } catch {
+    return null;
+  }
+  if (!BLINK_WEB_HOSTS.includes(parsedUrl.hostname.toLowerCase())) return null; // real external link
+
+  const segments = parsedUrl.pathname.split("/").filter(Boolean);
+  if (segments.length && segments[segments.length - 1].toLowerCase() === "index") segments.pop();
+  if (segments.length === 0) return null; // bare marketing root — nothing to link
+
+  const candidate = `${scheme}://${segments.join("/")}`;
+  const parsed = parseDeepLink(candidate, routes);
+  if (!parsed.valid || !parsed.route) return null; // not a known in-app route
+
+  return {
+    deepLink: buildDeepLink(parsed.route.deepLink, parsed.params),
+    routePath: fillRoute(parsed.route.routePath, parsed.params),
+    route: parsed.route,
+    webUrl: trimmed,
+  };
 }
 
 /**

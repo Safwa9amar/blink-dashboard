@@ -15,7 +15,6 @@ import {
 import {
   getAiServerSettingsAction,
   saveAiServer,
-  fetchAiModels,
   type ProviderConfigPatch,
 } from "@/app/d/blink-server/ai-server-action";
 import {
@@ -27,6 +26,15 @@ import {
   type AiProviderConfig,
   type AiServerSettings,
 } from "@/app/d/blink-server/ai-server-shared";
+// Reuse the dashboard's own AI providers (the same ones Settings → AI uses): the
+// model list is fetched straight from the configured base URL by the Next server,
+// so it reaches a local LM Studio / Ollama host directly — no blink-server hop.
+// Import PROVIDERS from the client-safe deep path (the @/lib/ai barrel re-exports
+// the server-only client) and LMModel as a type-only import (erased) — same as
+// the Settings → AI panel.
+import { aiStatus } from "@/app/d/settings/ai/action";
+import { PROVIDERS as AI_PROVIDERS } from "@/lib/ai/providers";
+import type { LMModel } from "@/lib/ai";
 
 // Settings → AI Server Settings. Bot-level config + the ACTIVE provider live in the
 // `ai_settings` singleton; each provider's model / sampling / reasoning / credential
@@ -247,25 +255,34 @@ function ProviderBlock({
   onChange: <K extends keyof AiProviderConfig>(key: K, value: AiProviderConfig[K]) => void;
 }) {
   const t = useTranslations("blink_server.ai_server");
-  const [models, setModels] = useState<string[]>([]);
+  const [models, setModels] = useState<LMModel[]>([]);
   const [modelsLoading, setModelsLoading] = useState(false);
+  const [modelsError, setModelsError] = useState<string | null>(null);
+  // List models straight from THIS form's base URL via the dashboard's AI providers
+  // (same path as Settings → AI): the Next server reaches the local LM Studio /
+  // Ollama host directly, so the picker reads from the settings section live — no
+  // blink-server hop, no instance dependency. Blank URL → the provider's default.
+  const baseUrl = config.base_url?.trim() || AI_PROVIDERS[provider].defaultBaseUrl;
 
-  // Load the model list for this provider on mount. State is set only after the
+  // Re-runs when the provider or base URL changes; the base-URL change is debounced
+  // so typing doesn't fire a request per keystroke. State is set only after the
   // await, so the effect just synchronizes with the server.
   useEffect(() => {
     let alive = true;
-    (async () => {
+    const handle = setTimeout(async () => {
       if (alive) setModelsLoading(true);
-      const { models: list } = await fetchAiModels(provider);
+      const res = await aiStatus({ provider, baseUrl });
       if (alive) {
-        setModels(list);
+        setModels(res.models);
+        setModelsError(res.error);
         setModelsLoading(false);
       }
-    })();
+    }, 500);
     return () => {
       alive = false;
+      clearTimeout(handle);
     };
-  }, [provider]);
+  }, [provider, baseUrl]);
 
   return (
     <div className="rounded-xl border border-border p-4">
@@ -274,19 +291,22 @@ function ProviderBlock({
         {isActive && <Badge variant="primary">{t("active_badge")}</Badge>}
       </div>
 
-      {/* Model — dropdown (server list) + free-text override */}
-      <FormRow label={t("model")} hint={modelsLoading ? t("loading_models") : undefined}>
+      {/* Model — dropdown (live server list w/ load state) + free-text override */}
+      <FormRow
+        label={t("model")}
+        hint={modelsLoading ? t("loading_models") : (modelsError ?? undefined)}
+      >
         {models.length > 0 && (
           <select
             className={`${fInput} mb-2`}
-            value={models.includes(config.model ?? "") ? (config.model ?? "") : ""}
+            value={models.some((m) => m.id === (config.model ?? "")) ? (config.model ?? "") : ""}
             onChange={(e) => onChange("model", e.target.value || null)}
             disabled={modelsLoading}
           >
             <option value="">{t("model_ph")}</option>
             {models.map((m) => (
-              <option key={m} value={m}>
-                {m}
+              <option key={m.id} value={m.id}>
+                {m.state === "loaded" ? `${m.id} · ${t("loaded")}` : m.id}
               </option>
             ))}
           </select>

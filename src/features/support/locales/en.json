@@ -110,7 +110,11 @@
       "history_count": "{n} resolved conversations",
       "no_history": "No resolved conversations yet",
       "view_history": "History",
-      "view_live": "Live chats"
+      "view_live": "Live chats",
+      "assistant": "Blink Assistant",
+      "note_escalated": "Escalated to a human agent.",
+      "note_joined": "{name} joined the conversation.",
+      "note_resolved": "Conversation marked resolved."
     },
     "kb": {
       "published": "Published",
@@ -175,7 +179,23 @@
       "err_body": "Add body content for {lang}.",
       "previewing": "Previewing",
       "preview_title": "Article title",
-      "preview_body": "Your content will preview here as you type. This is how it appears in the help center for the selected audience."
+      "preview_body": "Your content will preview here as you type. This is how it appears in the help center for the selected audience.",
+      "enhance": "Enhance with AI",
+      "enhance_empty": "The model returned only its reasoning — pick an instruct (non-thinking) model in Settings → AI.",
+      "enhance_timeout": "The model took too long. Try again or pick a faster model.",
+      "enhance_failed": "Couldn’t enhance the text. Check the AI server and try again.",
+      "ai": {
+        "title": "Generate with AI",
+        "desc": "Describe the topic — get a trilingual draft (EN / FR / AR) from your local model.",
+        "placeholder": "e.g. How a merchant adds a new store and what documents are required for verification",
+        "placeholder_faq": "e.g. What common questions do merchants ask about adding a store?",
+        "button": "Generate draft",
+        "thinking": "Thinking…",
+        "drafting": "Writing draft…",
+        "stop": "Stop generating",
+        "regenerate": "Regenerate",
+        "apply": "Add to article"
+      }
     },
     "mac": {
       "search": "Search macros",

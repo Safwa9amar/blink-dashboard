@@ -18,6 +18,7 @@ export { DataTable, type Column } from "./data-table";
 export { EmptyState } from "./empty-state";
 export { PageHeader } from "./page-header";
 export { Modal } from "./modal";
+export { Skeleton } from "./skeleton";
 
 // layout / chrome
 export { Toolbar } from "./toolbar";
@@ -33,7 +34,7 @@ export { FormRow } from "./form-row";
 export { SubTabs, type SubTab } from "./sub-tabs";
 export { SubNav, type SubNavItem } from "./sub-nav";
 export { LangTabs } from "./lang-tabs";
-export { RichEditor } from "./rich-editor";
+export { RichEditor, type LinkChoice } from "./rich-editor";
 export { AIGenerate, type AIStreamChunk } from "./ai-generate";
 export { AIGenerateModal } from "./ai-generate-modal";
 export { EnhanceButton, Spinner } from "./enhance-button";

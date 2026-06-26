@@ -1,4 +1,5 @@
 export { DeepLinkField, ROLE_VARIANT } from "./components/deep-link-field";
+export { DeepLinkPickerModal } from "./components/deep-link-picker-modal";
 export { DeepLinkTable } from "./components/deep-link-table";
 export { ImportDialog } from "./components/import-dialog";
 

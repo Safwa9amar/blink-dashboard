@@ -14,6 +14,13 @@ import { Spinner } from "./enhance-button";
 
 type Dir = "ltr" | "rtl";
 
+// Result of resolving a link from the toolbar. `href` "" removes the link;
+// `text` is used as the link label when there's no current selection.
+export interface LinkChoice {
+  href: string;
+  text?: string;
+}
+
 function ToolBtn({
   active,
   disabled,
@@ -59,6 +66,8 @@ export function RichEditor({
   enhancing = false,
   enhanceDisabled = false,
   enhanceLabel = "Enhance with AI",
+  onPickLink,
+  linkLabel = "Link",
 }: {
   value: string;
   onChange: (html: string) => void;
@@ -78,6 +87,11 @@ export function RichEditor({
   enhancing?: boolean;
   enhanceDisabled?: boolean;
   enhanceLabel?: string;
+  // When provided, the toolbar shows a Link button; clicking it calls this to
+  // resolve an href (e.g. via a deep-link picker). Return {href} to set ("" to
+  // remove the link), or null to cancel. Without it, the button is hidden.
+  onPickLink?: (currentHref: string | null) => Promise<LinkChoice | null>;
+  linkLabel?: string;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const lastHtml = useRef(value);
@@ -86,7 +100,16 @@ export function RichEditor({
     immediatelyRender: false, // required for Next.js SSR — avoids hydration mismatch
     shouldRerenderOnTransaction: false, // toolbar reactivity comes from useEditorState below
     extensions: [
-      StarterKit,
+      // StarterKit bundles Link; allow the app's `blink://` deep-link scheme
+      // (alongside http/https/mailto) so in-app destinations survive sanitizing.
+      StarterKit.configure({
+        link: {
+          openOnClick: false,
+          autolink: false,
+          protocols: ["http", "https", "mailto", { scheme: "blink", optionalSlashes: true }],
+          HTMLAttributes: { class: "blink-link" },
+        },
+      }),
       Image.configure({ inline: false, HTMLAttributes: { class: "blink-prose-img" } }),
       Placeholder.configure({ placeholder: placeholder ?? "" }),
     ],
@@ -120,6 +143,7 @@ export function RichEditor({
       bullet: e?.isActive("bulletList") ?? false,
       ordered: e?.isActive("orderedList") ?? false,
       quote: e?.isActive("blockquote") ?? false,
+      link: e?.isActive("link") ?? false,
       canUndo: e?.can().undo() ?? false,
       canRedo: e?.can().redo() ?? false,
       chars: e?.getText().length ?? 0,
@@ -153,6 +177,35 @@ export function RichEditor({
       editor.chain().focus().setImage({ src }).run();
     };
     reader.readAsDataURL(file);
+  }
+
+  // Resolve an href via the parent's picker, then apply it: wrap the selection,
+  // or insert a new linked label when nothing is selected. An empty href removes
+  // the link.
+  async function handleLink() {
+    if (!editor || !onPickLink) return;
+    const prev = (editor.getAttributes("link").href as string | undefined) ?? null;
+    const choice = await onPickLink(prev);
+    if (choice === null) return; // cancelled
+    if (!choice.href) {
+      editor.chain().focus().extendMarkRange("link").unsetLink().run();
+      return;
+    }
+    const { from, to } = editor.state.selection;
+    const selected = editor.state.doc.textBetween(from, to, " ");
+    if (selected) {
+      editor.chain().focus().extendMarkRange("link").setLink({ href: choice.href }).run();
+    } else {
+      editor
+        .chain()
+        .focus()
+        .insertContent({
+          type: "text",
+          text: choice.text || choice.href,
+          marks: [{ type: "link", attrs: { href: choice.href } }],
+        })
+        .run();
+    }
   }
 
   if (!editor || !s) {
@@ -198,6 +251,11 @@ export function RichEditor({
         <ToolBtn title="Quote" active={s.quote} onClick={() => editor.chain().focus().toggleBlockquote().run()}>
           <DashIcon name="quote" className="w-[15px] h-[15px]" />
         </ToolBtn>
+        {onPickLink && (
+          <ToolBtn title={linkLabel} active={s.link} onClick={handleLink}>
+            <DashIcon name="link" className="w-[15px] h-[15px]" />
+          </ToolBtn>
+        )}
         <Sep />
         <ToolBtn
           title={atImageLimit ? `Image limit reached (${maxImages})` : "Insert image"}

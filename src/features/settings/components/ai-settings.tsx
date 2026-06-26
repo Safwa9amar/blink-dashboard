@@ -160,16 +160,18 @@ export function AISettings() {
             />
           </div>
         )}
-        <div className="mt-4 flex flex-wrap gap-2.5">
-          <Button variant="secondary" size="sm" icon="download" onClick={handleLoad} loading={busy === "load"} disabled={!model}>
-            {ta("load")}
-          </Button>
-          <Button variant="secondary" size="sm" icon="x" onClick={handleUnload} loading={busy === "unload"}>
-            {ta("unload")}
-          </Button>
-        </div>
+        {store.provider !== "openrouter" && (
+          <div className="mt-4 flex flex-wrap gap-2.5">
+            <Button variant="secondary" size="sm" icon="download" onClick={handleLoad} loading={busy === "load"} disabled={!model}>
+              {ta("load")}
+            </Button>
+            <Button variant="secondary" size="sm" icon="x" onClick={handleUnload} loading={busy === "unload"}>
+              {ta("unload")}
+            </Button>
+          </div>
+        )}
         <p className="mt-3 text-xs text-[var(--subtext)]">
-          {store.provider === "ollama" ? ta("model_hint_ollama") : ta("model_hint")}
+          {store.provider === "openrouter" ? ta("model_hint_remote") : store.provider === "ollama" ? ta("model_hint_ollama") : ta("model_hint")}
         </p>
       </SectionCard>
 

@@ -19,14 +19,17 @@ export interface Article {
   updated: string;
 }
 
-// A single message in a ticket thread or live chat — agent reply, customer
-// message, or a private internal note.
+// A single message in a ticket thread or live chat — human-agent reply, AI-bot
+// reply, customer message, or a system event line (escalated / joined / resolved).
 export interface Message {
-  from: "customer" | "agent" | "note";
+  from: "customer" | "agent" | "bot" | "note";
   who: string;
   text: string;
   time: string;
   attachmentUrl?: string | null;
+  // For `from: "note"` system events — drives the friendly localized label.
+  noteType?: "escalated" | "assigned" | "resolved";
+  agentName?: string | null;
 }
 
 // A live-chat / omnichannel inbox conversation.
@@ -205,21 +208,28 @@ export function rowToChat(row: SupportConversationRow): Chat {
   };
 }
 
-// Map a DB message row → the thread `Message` display shape.
+// Map a DB message row → the thread `Message` display shape. Every sender maps to
+// a distinct `from` so the bot (AI) is never mistaken for the human agent ("You")
+// and system events render as notes rather than raw enum text.
 export function rowToMessage(row: SupportMessageRow): Message {
   const from: Message["from"] =
     row.sender === "user"
       ? "customer"
       : row.sender === "agent"
       ? "agent"
-      : row.sender === "system"
-      ? "note"
-      : "agent";
+      : row.sender === "bot"
+      ? "bot"
+      : "note"; // system
+  const meta = row.meta as
+    | { attachmentUrl?: string; type?: Message["noteType"]; agentName?: string }
+    | null;
   return {
     from,
     who: row.sender === "bot" ? "Blink Assistant" : row.sender === "agent" ? "You" : "",
     text: row.body,
     time: "",
-    attachmentUrl: (row.meta as { attachmentUrl?: string } | null)?.attachmentUrl ?? null,
+    attachmentUrl: meta?.attachmentUrl ?? null,
+    noteType: from === "note" ? meta?.type : undefined,
+    agentName: meta?.agentName ?? null,
   };
 }

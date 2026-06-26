@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import {
   Card,
@@ -20,8 +20,11 @@ import {
   toggleInList,
   type Lang,
   type AIStreamChunk,
+  type LinkChoice,
 } from "@/components/ui";
+import { DeepLinkPickerModal } from "@/features/deep-links";
 import { parseDraftJSON } from "@/lib/ai/parse";
+import { streamEnhance } from "@/lib/ai/enhance-client";
 import { normalizeNewsDraft, type NewsDraft } from "@/features/news";
 import { N_CATS, N_CAT_NAMES, N_ROLES, N_ROLE_VARIANT, COVERS, primaryOf } from "../data";
 import type { Post, PostStatus, PostContent } from "../types";
@@ -108,6 +111,30 @@ export function Compose({ initial, onCancel }: { initial?: Post; onCancel: () =>
   const [cta, setCta] = useState(initial?.cta ?? "Learn more");
   const [previewOpen, setPreviewOpen] = useState(false);
   const [aiOpen, setAiOpen] = useState(false);
+
+  // Deep-link picker for the body editor's Link button. `pickLink` opens the
+  // modal and returns a promise the editor awaits; the modal handlers resolve it.
+  const [linkOpen, setLinkOpen] = useState(false);
+  const [linkHref, setLinkHref] = useState("");
+  const linkResolve = useRef<((c: LinkChoice | null) => void) | null>(null);
+
+  function pickLink(current: string | null): Promise<LinkChoice | null> {
+    setLinkHref(current ?? "");
+    setLinkOpen(true);
+    return new Promise((resolve) => {
+      linkResolve.current = resolve;
+    });
+  }
+  function onLinkPick(href: string, label?: string) {
+    linkResolve.current?.({ href, text: label });
+    linkResolve.current = null;
+    setLinkOpen(false);
+  }
+  function cancelLink() {
+    linkResolve.current?.(null);
+    linkResolve.current = null;
+    setLinkOpen(false);
+  }
   const [limitError, setLimitError] = useState<string | null>(null);
   const [pending, setPending] = useState<PostStatus | null>(null);
   const catColor = N_CATS.find((c) => c.name === cat)?.color;
@@ -125,6 +152,7 @@ export function Compose({ initial, onCancel }: { initial?: Post; onCancel: () =>
     const res = await fetch(aiUrl("ai-draft"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       signal,
       body: JSON.stringify({
         topic,
@@ -221,19 +249,37 @@ export function Compose({ initial, onCancel }: { initial?: Post; onCancel: () =>
     else setBody(upd);
   }
 
+  // `enhanceErr` surfaces a per-field problem (e.g. a reasoning model that only
+  // "thinks" and returns no answer). A total-timeout + abort guarantees the
+  // spinner can never hang forever; title/summary also cancel on a second click.
+  const [enhanceErr, setEnhanceErr] = useState<{ field: "title" | "sum" | "body"; msg: string } | null>(null);
+  const enhanceCtrl = useRef<AbortController | null>(null);
+
   async function enhance(field: "title" | "sum" | "body") {
+    if (enhancing === field) {
+      enhanceCtrl.current?.abort("user"); // clicking the spinning button cancels
+      return;
+    }
     if (enhancing) return;
     const src = field === "title" ? title : field === "sum" ? sum : body;
     const current = src[lang]?.trim();
     if (!current) return;
+
+    setEnhanceErr(null);
     setEnhancing(field);
-    const live = field !== "body";
+    const isHtml = field === "body"; // body streams as HTML; set once at the end
+    // Title & summary are single-line — if the model returns several variants,
+    // keep the first non-empty line so they don't mash together in the input.
+    const shape = (s: string) =>
+      isHtml ? s : s.split(/\r?\n/).map((l) => l.trim()).find(Boolean) ?? s.trim();
+    const ctrl = new AbortController();
+    enhanceCtrl.current = ctrl;
+    const timer = setTimeout(() => ctrl.abort("timeout"), 120_000);
     const ai = useAISettingsStore.getState();
     try {
-      const res = await fetch(aiUrl("ai-enhance"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      const result = await streamEnhance({
+        url: aiUrl("ai-enhance"),
+        body: {
           text: current,
           field: field === "title" ? "title" : field === "sum" ? "summary" : "body",
           lang,
@@ -244,44 +290,34 @@ export function Compose({ initial, onCancel }: { initial?: Post; onCancel: () =>
           temperature: ai.temperature,
           maxTokens: ai.maxTokens,
           ttl: ai.ttl,
-        }),
+        },
+        isHtml,
+        credentials: "include",
+        // Stream live into plain inputs; for the rich body, set once at the end
+        // to avoid re-parsing partial HTML in the editor on every token.
+        onLive: isHtml ? () => {} : (text) => setField(field, shape(text)),
+        signal: ctrl.signal,
       });
-      if (!res.ok || !res.body) {
-        const detail = await res.json().catch(() => null);
-        throw new Error(detail?.error ?? `Enhancement failed (${res.status}).`);
+      if (result) {
+        setField(field, shape(result));
+      } else {
+        setField(field, current);
+        setEnhanceErr({ field, msg: t("form.enhance_empty") });
       }
-      if (live) setField(field, "");
-
-      // Read the NDJSON stream; only "content" deltas form the new copy.
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
-      let out = "";
-      let streamError: string | null = null;
-      for (;;) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop() ?? "";
-        for (const line of lines) {
-          if (!line.trim()) continue;
-          const msg = JSON.parse(line) as { type: string; text?: string; message?: string };
-          if (msg.type === "content") {
-            out += msg.text ?? "";
-            if (live) setField(field, out);
-          } else if (msg.type === "error") streamError = msg.message ?? "Enhancement failed";
-        }
-      }
-      if (streamError) throw new Error(streamError);
-
-      // Strip stray code fences; for title/summary also trim wrapping quotes.
-      let clean = out.replace(/```(?:html|json)?/gi, "").trim();
-      if (field !== "body") clean = clean.replace(/^["'\s]+|["'\s]+$/g, "");
-      setField(field, clean.trim() ? clean : current);
-    } catch {
+    } catch (e) {
       setField(field, current); // restore the original on failure
+      if (ctrl.signal.reason !== "user") {
+        const msg =
+          ctrl.signal.reason === "timeout"
+            ? t("form.enhance_timeout")
+            : e instanceof Error
+              ? e.message
+              : t("form.enhance_failed");
+        setEnhanceErr({ field, msg });
+      }
     } finally {
+      clearTimeout(timer);
+      enhanceCtrl.current = null;
       setEnhancing(null);
     }
   }
@@ -389,218 +425,296 @@ export function Compose({ initial, onCancel }: { initial?: Post; onCancel: () =>
     onCancel();
   }
 
+  const langFilled = { en: !!title.en, fr: !!title.fr, ar: !!title.ar };
+  const primaryAction = when === "schedule" ? "scheduled" : "published";
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-5 items-start">
-      <Card
-        title={isEdit ? t("form.edit") : t("form.compose")}
-        description={isEdit ? t("form.edit_desc") : t("form.compose_desc")}
-        action={
-          <Button size="sm" variant="secondary" icon="sparkles" onClick={() => setAiOpen(true)}>
+    <div className="space-y-5">
+      {/* Studio header — identity + the creative AI action, always in reach. */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-soft-pink text-primary">
+            <DashIcon name="newspaper" className="h-[22px] w-[22px]" />
+          </span>
+          <div>
+            <h2 className="text-xl font-bold text-text">{isEdit ? t("form.edit") : t("form.compose")}</h2>
+            <p className="text-[13px] text-subtext">{isEdit ? t("form.edit_desc") : t("form.compose_desc")}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="secondary" icon="eye" onClick={() => setPreviewOpen(true)}>
+            {t("preview_modal.open")}
+          </Button>
+          <Button icon="sparkles" onClick={() => setAiOpen(true)}>
             {t("ai.title")}
           </Button>
-        }
-      >
-        <FormRow label={t("form.cover")}>
-          <CoverPick covers={COVERS} value={cover} onChange={setCover} uploadLabel={t("form.upload")} onUpload={uploadImage} />
-        </FormRow>
-        <FormRow label={t("form.lang")} hint={t("form.lang_hint")}>
-          <LangTabs active={lang} onChange={setLang} filled={{ en: !!title.en, fr: !!title.fr, ar: !!title.ar }} />
-        </FormRow>
-        <FormRow label={t("form.title")}>
-          <div className="relative" dir={dirFor(lang)}>
-            <input
-              className={`${fInput} pe-10`}
-              dir={dirFor(lang)}
-              value={title[lang]}
-              onChange={(e) => setTitle((o) => ({ ...o, [lang]: e.target.value }))}
-              placeholder={t("form.title_ph")}
-            />
-            <EnhanceButton
-              busy={enhancing === "title"}
-              disabled={!title[lang]?.trim() || enhancing !== null}
-              label={t("form.enhance")}
-              onClick={() => enhance("title")}
-              className="top-1/2 -translate-y-1/2"
-            />
-          </div>
-        </FormRow>
-        <FormRow label={t("form.summary")}>
-          <div className="relative" dir={dirFor(lang)}>
-            <input
-              className={`${fInput} pe-10`}
-              dir={dirFor(lang)}
-              value={sum[lang]}
-              onChange={(e) => setSum((o) => ({ ...o, [lang]: e.target.value }))}
-              placeholder={t("form.summary_ph")}
-            />
-            <EnhanceButton
-              busy={enhancing === "sum"}
-              disabled={!sum[lang]?.trim() || enhancing !== null}
-              label={t("form.enhance")}
-              onClick={() => enhance("sum")}
-              className="top-1/2 -translate-y-1/2"
-            />
-          </div>
-        </FormRow>
-        <FormRow label={t("form.category")}>
-          <select className={fInput} value={cat} onChange={(e) => setCat(e.target.value)}>
-            {N_CAT_NAMES.map((c) => (
-              <option key={c}>{c}</option>
-            ))}
-          </select>
-        </FormRow>
-        <FormRow label={t("form.audience")} hint={t("form.audience_hint")}>
-          <RoleChips roles={N_ROLES} selected={roles} onToggle={(r) => setRoles((rs) => toggleInList(rs, r))} />
-        </FormRow>
-        <FormRow label={t("form.body")} hint={t("form.body_hint")}>
-          {/* key={lang} gives each language its own editor instance + undo history,
-              so an undo in one language can never pull another language's content in. */}
-          <RichEditor
-            key={lang}
-            value={body[lang]}
-            onChange={(html) => setBody((o) => ({ ...o, [lang]: html }))}
-            dir={dirFor(lang)}
-            placeholder={t("form.body_ph")}
-            onUploadImage={uploadImage}
-            maxImages={maxBodyImages}
-            maxLength={maxBodyLength}
-            onEnhance={() => enhance("body")}
-            enhancing={enhancing === "body"}
-            enhanceDisabled={enhancing !== null}
-            enhanceLabel={t("form.enhance")}
-          />
-        </FormRow>
-        <FormRow label={t("form.cta")} className="!mb-0">
-          <input className={fInput} value={cta} onChange={(e) => setCta(e.target.value)} placeholder={t("form.cta_ph")} />
-        </FormRow>
-      </Card>
+        </div>
+      </div>
 
-      <div className="space-y-4">
-        <Card title={t("form.publish")}>
-          <FormRow label={td("schedule")}>
-            <Segmented
-              options={[
-                ["now", td("publish_now")],
-                ["schedule", td("schedule")],
-              ]}
-              value={when}
-              onChange={setWhen}
-            />
-            {when === "schedule" && (
-              <input
-                type="datetime-local"
-                className={`${fInput} mt-2.5`}
-                value={scheduledAt}
-                onChange={(e) => setScheduledAt(e.target.value)}
-                aria-label={t("form.publish_at")}
-              />
-            )}
-          </FormRow>
-          <ToggleRow icon="pin" title={t("form.pin")} desc={t("form.pin_desc")} on={pin} onClick={() => setPin((p) => !p)} />
-          <ToggleRow icon="bell" title={t("form.push")} desc={t("form.push_desc")} on={push} onClick={() => setPush((p) => !p)} />
-          <ToggleRow
-            icon="clock"
-            title={t("form.auto_unpublish")}
-            desc={t("form.auto_unpublish_desc")}
-            on={expiresOn}
-            onClick={() => setExpiresOn((p) => !p)}
-            last
-          />
-          {expiresOn && (
-            <input
-              type="datetime-local"
-              className={`${fInput} mt-3`}
-              value={expiresAt}
-              onChange={(e) => setExpiresAt(e.target.value)}
-              aria-label={t("form.auto_unpublish")}
-            />
-          )}
-          {limitError && (
-            <p className="mt-3 rounded-lg border border-danger/30 bg-danger-light px-3 py-2 text-xs text-danger">
-              {limitError}
-            </p>
-          )}
-          <Button
-            onClick={() => submit(when === "schedule" ? "scheduled" : "published")}
-            loading={pending === (when === "schedule" ? "scheduled" : "published")}
-            disabled={pending !== null}
-            className="w-full mt-4"
-          >
-            {isEdit ? td("save") : when === "schedule" ? td("schedule") : td("publish")}
-          </Button>
-          <div className="flex gap-2.5 mt-2.5">
-            <Button variant="secondary" onClick={onCancel} disabled={pending !== null} className="flex-1">
-              {td("cancel")}
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => submit("draft")}
-              loading={pending === "draft"}
-              disabled={pending !== null}
-              className="flex-1"
-            >
-              {t("form.save_draft")}
-            </Button>
-          </div>
-        </Card>
-
-        <Card
-          title={td("live_preview")}
-          action={
-            <Button size="sm" variant="secondary" icon="eye" onClick={() => setPreviewOpen(true)}>
-              {t("preview_modal.open")}
-            </Button>
-          }
-        >
-          <div className="w-[248px] mx-auto rounded-[26px] bg-background border border-border overflow-hidden shadow-2xl">
-            <div className="relative h-[120px] bg-cover bg-center bg-muted" style={{ backgroundImage: `url(${cover})` }}>
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-5 items-start">
+        {/* ── Left: cover hero → writing canvas → targeting ── */}
+        <div className="space-y-5">
+          {/* Cover hero: the card's headline image, with the live title overlaid. */}
+          <div className="overflow-hidden rounded-2xl border border-border bg-card">
+            <div className="relative h-44 bg-muted bg-cover bg-center" style={{ backgroundImage: `url(${cover})` }}>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
               <span
-                className="absolute top-2.5 start-2.5 bg-white/90 text-[9px] font-extrabold px-2.5 py-[3px] rounded-full uppercase tracking-wide"
+                className="absolute start-3 top-3 rounded-full bg-white/95 px-3 py-1 text-[10px] font-extrabold uppercase tracking-wide shadow-sm"
                 style={{ color: catColor }}
               >
                 {cat}
               </span>
-            </div>
-            <div className="px-[15px] pt-3.5 pb-[18px]" dir={dirFor(lang)}>
-              <h4 className="text-[15px] font-bold text-text leading-tight">{title[lang] || t("preview.headline")}</h4>
-              <p className="text-xs text-subtext mt-[7px] leading-normal">{sum[lang] || t("preview.summary")}</p>
-              <span className="mt-3 inline-flex items-center gap-1.5 bg-primary text-white text-xs font-bold px-4 py-2.5 rounded-full">
-                {cta || t("form.cta_ph")}
-              </span>
-            </div>
-          </div>
-          <div className="flex gap-1.5 justify-center mt-3 flex-wrap">
-            {roles.map((r) => (
-              <Badge key={r} variant={N_ROLE_VARIANT[r]}>
-                {r}
-              </Badge>
-            ))}
-            {push && <Badge variant="primary">{t("preview.push_on")}</Badge>}
-            {pin && <Badge variant="warning">{t("preview.pinned")}</Badge>}
-          </div>
-        </Card>
-
-        {scheduled.length > 0 && (
-          <Card title={t("form.upcoming")} description={t("form.upcoming_desc")}>
-            <div className="space-y-2.5">
-              {scheduled.map((p) => (
-                <div key={p.id} className="flex items-center gap-3 p-3 bg-background border border-border rounded-xl">
-                  <span className="w-9 h-9 rounded-lg bg-info-light text-info flex items-center justify-center shrink-0">
-                    <DashIcon name="calendar2" className="w-[18px] h-[18px]" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-[13px] font-bold text-text truncate">{p.title}</div>
-                    <div className="text-[11px] text-subtext">{p.cat}</div>
-                  </div>
-                  <Badge variant="info">{p.date}</Badge>
+              <div className="absolute inset-x-4 bottom-3 text-white" dir={dirFor(lang)}>
+                <div className="line-clamp-2 text-lg font-bold leading-tight drop-shadow-md">
+                  {title[lang] || t("preview.headline")}
                 </div>
-              ))}
+              </div>
+            </div>
+            <div className="p-4">
+              <span className="text-[12.5px] font-bold text-text">{t("form.cover")}</span>
+              <CoverPick covers={COVERS} value={cover} onChange={setCover} uploadLabel={t("form.upload")} onUpload={uploadImage} />
+            </div>
+          </div>
+
+          {/* Writing canvas: language switch + big headline + subtitle + body. */}
+          <Card>
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <h3 className="text-base font-bold text-text">{t("form.write")}</h3>
+              <LangTabs active={lang} onChange={setLang} filled={langFilled} />
+            </div>
+
+            <FormRow label={t("form.title")}>
+              <div className="relative" dir={dirFor(lang)}>
+                <input
+                  className="w-full rounded-xl border border-border bg-background px-4 py-2.5 pe-11 text-[15px] font-semibold text-text outline-none transition-colors focus:border-primary placeholder:font-normal placeholder:text-subtext/60"
+                  dir={dirFor(lang)}
+                  value={title[lang]}
+                  onChange={(e) => setTitle((o) => ({ ...o, [lang]: e.target.value }))}
+                  placeholder={t("form.title_ph")}
+                />
+                <EnhanceButton
+                  busy={enhancing === "title"}
+                  disabled={enhancing ? enhancing !== "title" : !title[lang]?.trim()}
+                  label={enhancing === "title" ? td("cancel") : t("form.enhance")}
+                  onClick={() => enhance("title")}
+                  className="top-1/2 -translate-y-1/2"
+                />
+              </div>
+              {enhanceErr?.field === "title" && (
+                <p className="text-danger text-xs mt-1.5">{enhanceErr.msg}</p>
+              )}
+            </FormRow>
+            <FormRow label={t("form.summary")}>
+              <div className="relative" dir={dirFor(lang)}>
+                <input
+                  className={`${fInput} pe-10`}
+                  dir={dirFor(lang)}
+                  value={sum[lang]}
+                  onChange={(e) => setSum((o) => ({ ...o, [lang]: e.target.value }))}
+                  placeholder={t("form.summary_ph")}
+                />
+                <EnhanceButton
+                  busy={enhancing === "sum"}
+                  disabled={enhancing ? enhancing !== "sum" : !sum[lang]?.trim()}
+                  label={enhancing === "sum" ? td("cancel") : t("form.enhance")}
+                  onClick={() => enhance("sum")}
+                  className="top-1/2 -translate-y-1/2"
+                />
+              </div>
+              {enhanceErr?.field === "sum" && (
+                <p className="text-danger text-xs mt-1.5">{enhanceErr.msg}</p>
+              )}
+            </FormRow>
+
+            <div className="mb-4 h-px bg-border" />
+
+            {/* key={lang} gives each language its own editor instance + undo history,
+                so an undo in one language can never pull another language's content in. */}
+            <RichEditor
+              key={lang}
+              value={body[lang]}
+              onChange={(html) => setBody((o) => ({ ...o, [lang]: html }))}
+              dir={dirFor(lang)}
+              placeholder={t("form.body_ph")}
+              onUploadImage={uploadImage}
+              maxImages={maxBodyImages}
+              maxLength={maxBodyLength}
+              onEnhance={() => enhance("body")}
+              enhancing={enhancing === "body"}
+              enhanceDisabled={enhancing !== null && enhancing !== "body"}
+              enhanceLabel={t("form.enhance")}
+              onPickLink={pickLink}
+              linkLabel={t("form.link")}
+            />
+            {enhanceErr?.field === "body" && (
+              <p className="text-danger text-xs mt-1.5">{enhanceErr.msg}</p>
+            )}
+
+            <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center">
+              <label className="text-[12.5px] font-bold text-text sm:w-28 sm:shrink-0">{t("form.cta")}</label>
+              <input className={fInput} value={cta} onChange={(e) => setCta(e.target.value)} placeholder={t("form.cta_ph")} />
             </div>
           </Card>
-        )}
+
+          {/* Targeting: category as colour-dot pills + audience chips. */}
+          <Card title={t("form.targeting")}>
+            <FormRow label={t("form.category")}>
+              <div className="flex flex-wrap gap-2">
+                {N_CATS.map((c) => {
+                  const on = cat === c.name;
+                  return (
+                    <button
+                      key={c.name}
+                      type="button"
+                      onClick={() => setCat(c.name)}
+                      className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-[13px] font-bold transition-colors ${
+                        on ? "border-primary bg-soft-pink text-primary" : "border-border bg-background text-subtext hover:border-subtext"
+                      }`}
+                    >
+                      <span className="h-2.5 w-2.5 rounded-full" style={{ background: c.color }} />
+                      {c.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </FormRow>
+            <FormRow label={t("form.audience")} hint={t("form.audience_hint")} className="!mb-0">
+              <RoleChips roles={N_ROLES} selected={roles} onToggle={(r) => setRoles((rs) => toggleInList(rs, r))} />
+            </FormRow>
+          </Card>
+        </div>
+
+        {/* ── Right: sticky preview + publish + upcoming ── */}
+        <div className="space-y-5 lg:sticky lg:top-4 self-start">
+          <Card title={td("live_preview")}>
+            <div className="mx-auto w-[248px] overflow-hidden rounded-[26px] border-[6px] border-[#15131f] bg-background shadow-2xl">
+              <div className="relative h-[120px] bg-muted bg-cover bg-center" style={{ backgroundImage: `url(${cover})` }}>
+                <span
+                  className="absolute start-2.5 top-2.5 rounded-full bg-white/90 px-2.5 py-[3px] text-[9px] font-extrabold uppercase tracking-wide"
+                  style={{ color: catColor }}
+                >
+                  {cat}
+                </span>
+              </div>
+              <div className="px-[15px] pb-[18px] pt-3.5" dir={dirFor(lang)}>
+                <h4 className="text-[15px] font-bold leading-tight text-text">{title[lang] || t("preview.headline")}</h4>
+                <p className="mt-[7px] text-xs leading-normal text-subtext">{sum[lang] || t("preview.summary")}</p>
+                <span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2.5 text-xs font-bold text-white">
+                  {cta || t("form.cta_ph")}
+                </span>
+              </div>
+            </div>
+            <div className="mt-3 flex flex-wrap justify-center gap-1.5">
+              {roles.map((r) => (
+                <Badge key={r} variant={N_ROLE_VARIANT[r]}>
+                  {r}
+                </Badge>
+              ))}
+              {push && <Badge variant="primary">{t("preview.push_on")}</Badge>}
+              {pin && <Badge variant="warning">{t("preview.pinned")}</Badge>}
+            </div>
+          </Card>
+
+          <Card title={t("form.publish")}>
+            <FormRow label={td("schedule")}>
+              <Segmented
+                options={[
+                  ["now", td("publish_now")],
+                  ["schedule", td("schedule")],
+                ]}
+                value={when}
+                onChange={setWhen}
+              />
+              {when === "schedule" && (
+                <input
+                  type="datetime-local"
+                  className={`${fInput} mt-2.5`}
+                  value={scheduledAt}
+                  onChange={(e) => setScheduledAt(e.target.value)}
+                  aria-label={t("form.publish_at")}
+                />
+              )}
+            </FormRow>
+            <ToggleRow icon="pin" title={t("form.pin")} desc={t("form.pin_desc")} on={pin} onClick={() => setPin((p) => !p)} />
+            <ToggleRow icon="bell" title={t("form.push")} desc={t("form.push_desc")} on={push} onClick={() => setPush((p) => !p)} />
+            <ToggleRow
+              icon="clock"
+              title={t("form.auto_unpublish")}
+              desc={t("form.auto_unpublish_desc")}
+              on={expiresOn}
+              onClick={() => setExpiresOn((p) => !p)}
+              last
+            />
+            {expiresOn && (
+              <input
+                type="datetime-local"
+                className={`${fInput} mt-3`}
+                value={expiresAt}
+                onChange={(e) => setExpiresAt(e.target.value)}
+                aria-label={t("form.auto_unpublish")}
+              />
+            )}
+            {limitError && (
+              <p className="mt-3 rounded-lg border border-danger/30 bg-danger-light px-3 py-2 text-xs text-danger">
+                {limitError}
+              </p>
+            )}
+            <Button
+              onClick={() => submit(primaryAction)}
+              loading={pending === primaryAction}
+              disabled={pending !== null}
+              className="mt-4 w-full"
+            >
+              {isEdit ? td("save") : when === "schedule" ? td("schedule") : td("publish")}
+            </Button>
+            <div className="mt-2.5 flex gap-2.5">
+              <Button variant="secondary" onClick={onCancel} disabled={pending !== null} className="flex-1">
+                {td("cancel")}
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() => submit("draft")}
+                loading={pending === "draft"}
+                disabled={pending !== null}
+                className="flex-1"
+              >
+                {t("form.save_draft")}
+              </Button>
+            </div>
+          </Card>
+
+          {scheduled.length > 0 && (
+            <Card title={t("form.upcoming")} description={t("form.upcoming_desc")}>
+              <div className="space-y-2.5">
+                {scheduled.map((p) => (
+                  <div key={p.id} className="flex items-center gap-3 rounded-xl border border-border bg-background p-3">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-info-light text-info">
+                      <DashIcon name="calendar2" className="h-[18px] w-[18px]" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-[13px] font-bold text-text">{p.title}</div>
+                      <div className="text-[11px] text-subtext">{p.cat}</div>
+                    </div>
+                    <Badge variant="info">{p.date}</Badge>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
+        </div>
       </div>
 
       <PostPreview open={previewOpen} onClose={() => setPreviewOpen(false)} data={previewData} lang={lang} />
+
+      {linkOpen && (
+        <DeepLinkPickerModal
+          open
+          onClose={cancelLink}
+          onPick={onLinkPick}
+          audienceRoles={roles}
+          initialHref={linkHref}
+        />
+      )}
 
       <AIGenerateModal<NewsDraft>
         open={aiOpen}

@@ -1,12 +1,13 @@
-// Minimal OpenAI-compatible client for local inference servers (LM Studio & Ollama).
+// Minimal OpenAI-compatible client for inference servers: local (LM Studio, Ollama)
+// and remote (OpenRouter).
 //
 // Server-only — import this from Server Actions / route handlers, never from a
-// client component. Chat + streaming use the OpenAI-compatible `/v1` API, which
-// both providers share, so they only differ by `baseUrl`. Model listing and
-// load/unload use each provider's native endpoints (selected by `provider`).
-// All failures surface as `AIError` with a message safe to show an operator.
+// client component. Chat + streaming use the OpenAI-compatible `/v1` API. Model
+// listing and load/unload use provider-specific endpoints (or are no-ops for
+// remote providers). All failures surface as `AIError` with a message safe to
+// show an operator.
 
-import { AI_BASE_URL, AI_MODEL, AI_TIMEOUT_MS } from "./config";
+import { AI_BASE_URL, AI_MODEL, AI_TIMEOUT_MS, OPENROUTER_BASE_URL, OPENROUTER_API_KEY, OPENROUTER_MODEL } from "./config";
 import { AIError, type ChatOptions, type LMModel } from "./types";
 import type { Provider } from "./providers";
 import { parseDraftJSON } from "./parse";
@@ -34,6 +35,20 @@ function extractText(content: string | ContentPart[] | null | undefined): string
   return "";
 }
 
+// Determine if a base URL is for OpenRouter (remote API requiring authentication).
+function isOpenRouter(base: string): boolean {
+  return /openrouter\.io/i.test(base);
+}
+
+// Build headers for a request, including API key for OpenRouter.
+function buildHeaders(base: string): HeadersInit {
+  const headers: HeadersInit = { "Content-Type": "application/json" };
+  if (isOpenRouter(base) && OPENROUTER_API_KEY) {
+    headers["Authorization"] = `Bearer ${OPENROUTER_API_KEY}`;
+  }
+  return headers;
+}
+
 // Normalize an OpenAI-compatible base URL: strip trailing slashes, ensure one
 // `/v1`. Falls back to the env default (LM Studio). Tolerates a host given without
 // `/v1` (a common footgun that makes the server reject /chat/completions).
@@ -48,12 +63,13 @@ function nativeBaseOf(base: string): string {
 }
 
 // Resolves which model id to send when the caller didn't pin one: the env-pinned
-// model (LM Studio default host only), else the first model the server lists.
+// model (LM Studio/OpenRouter default host only), else the first model the server lists.
 async function resolveModel(base: string, signal?: AbortSignal): Promise<string> {
   if (AI_MODEL && base === AI_BASE_URL) return AI_MODEL;
+  if (OPENROUTER_MODEL && base === OPENROUTER_BASE_URL) return OPENROUTER_MODEL;
   let res: Response;
   try {
-    res = await fetch(`${base}/models`, { signal });
+    res = await fetch(`${base}/models`, { signal, headers: buildHeaders(base) });
   } catch (cause) {
     throw connectionError(cause, base);
   }
@@ -71,11 +87,13 @@ interface ModelConnection {
 }
 
 // Lists available models with load state. LM Studio uses its rich native endpoint;
-// Ollama uses /api/tags (+ /api/ps for which are currently loaded).
+// Ollama uses /api/tags (+ /api/ps for which are currently loaded); OpenRouter
+// uses the standard OpenAI-compatible /models endpoint.
 export async function listModels(conn: ModelConnection = {}): Promise<LMModel[]> {
   const base = normBase(conn.baseUrl);
   const root = nativeBaseOf(base);
   if (conn.provider === "ollama") return listOllamaModels(root, conn.signal);
+  if (conn.provider === "openrouter" || isOpenRouter(base)) return listOpenRouterModels(base, conn.signal);
 
   // LM Studio — rich list, falling back to the OpenAI list if the native API is off.
   try {
@@ -87,7 +105,7 @@ export async function listModels(conn: ModelConnection = {}): Promise<LMModel[]>
   } catch (cause) {
     throw connectionError(cause, base);
   }
-  const res = await fetch(`${base}/models`, { signal: conn.signal }).catch((c) => {
+  const res = await fetch(`${base}/models`, { signal: conn.signal, headers: buildHeaders(base) }).catch((c) => {
     throw connectionError(c, base);
   });
   const json = (await res.json()) as ModelsResponse;
@@ -122,12 +140,28 @@ async function listOllamaModels(root: string, signal?: AbortSignal): Promise<LMM
     .map((id) => ({ id, type: "llm", state: loaded.has(id) ? "loaded" : "not-loaded" }));
 }
 
+// OpenRouter models via the standard OpenAI-compatible endpoint.
+// All models are always "available" (no load/unload needed).
+async function listOpenRouterModels(base: string, signal?: AbortSignal): Promise<LMModel[]> {
+  let res: Response;
+  try {
+    res = await fetch(`${base}/models`, { signal, headers: buildHeaders(base) });
+  } catch (cause) {
+    throw connectionError(cause, base);
+  }
+  if (!res.ok) throw new AIError(`OpenRouter returned ${res.status} listing models.`);
+  const json = (await res.json()) as ModelsResponse;
+  return (json.data ?? []).map((m) => ({ id: m.id ?? "", type: "llm" })).filter((m) => m.id);
+}
+
 // Loads/preloads a model into memory. LM Studio loads with an optional context
-// length; Ollama "loads" by warming it with an infinite keep-alive.
+// length; Ollama "loads" by warming it with an infinite keep-alive. OpenRouter
+// doesn't need explicit loading (all models are available).
 export async function loadModel(
   opts: { model: string; contextLength?: number } & ModelConnection
 ): Promise<void> {
   const base = normBase(opts.baseUrl);
+  if (opts.provider === "openrouter" || isOpenRouter(base)) return; // No-op for remote API
   const root = nativeBaseOf(base);
   if (opts.provider === "ollama") {
     await nativePost(root, "/api/generate", { model: opts.model, keep_alive: -1 }, opts.signal);
@@ -139,10 +173,12 @@ export async function loadModel(
 }
 
 // Unloads (stops) a model, freeing its memory. Ollama unloads via keep_alive: 0.
+// OpenRouter doesn't need explicit unloading.
 export async function unloadModel(
   opts: { model: string } & ModelConnection
 ): Promise<void> {
   const base = normBase(opts.baseUrl);
+  if (opts.provider === "openrouter" || isOpenRouter(base)) return; // No-op for remote API
   const root = nativeBaseOf(base);
   if (opts.provider === "ollama") {
     await nativePost(root, "/api/generate", { model: opts.model, keep_alive: 0 }, opts.signal);
@@ -198,7 +234,7 @@ export async function chat(opts: ChatOptions): Promise<string> {
     try {
       res = await fetch(`${base}/chat/completions`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: buildHeaders(base),
         body: JSON.stringify(body),
         signal,
       });
@@ -262,7 +298,7 @@ export async function* chatStream(
     try {
       res = await fetch(`${base}/chat/completions`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: buildHeaders(base),
         body: JSON.stringify(body),
         signal,
       });

@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { hasStaffRole } from "@/lib/auth/staff";
+import type { ServerInstance } from "@/features/blink-server";
+import { resolveInstanceBase } from "./instance-base";
 import {
   getAiServerSettings,
   PROVIDERS,
@@ -17,8 +19,6 @@ import {
 // the service-role admin client, gated here by staff role. Provider API keys are
 // stored encrypted-at-rest in the DB and used by the server bot; they are never
 // read back to the client (the data layer masks them).
-
-const API_BASE = process.env.BLINK_API_BASE_URL ?? "https://blink.greenpedal.net";
 
 // One provider's writable config. `api_key` (openrouter) is set ONLY when the admin
 // typed a new key — an absent/blank key preserves the existing one. `base_url`
@@ -123,7 +123,9 @@ export async function saveAiServer(
 // list + error if the endpoint isn't reachable — the panel falls back to its
 // free-text model input.
 export async function fetchAiModels(
-  provider: Provider
+  provider: Provider,
+  instance: ServerInstance = "online",
+  baseUrl?: string
 ): Promise<{ models: string[]; error: string | null }> {
   if (!(await hasStaffRole("super_admin", "support_admin"))) {
     return { models: [], error: "Not authorized" };
@@ -135,9 +137,16 @@ export async function fetchAiModels(
   if (!session?.access_token) return { models: [], error: "No session" };
 
   try {
-    const res = await fetch(`${API_BASE}/ai/models?provider=${encodeURIComponent(provider)}`, {
+    // Pass the settings form's base URL (local providers) so the picker lists
+    // against a typed-but-unsaved URL — "read them from the dashboard settings".
+    const params = new URLSearchParams({ provider });
+    if (baseUrl?.trim()) params.set("baseUrl", baseUrl.trim());
+    // Time out rather than hang forever — a local provider (Ollama / LM Studio)
+    // on an unreachable host would otherwise leave the picker on "Loading models…".
+    const res = await fetch(`${resolveInstanceBase(instance)}/ai/models?${params}`, {
       headers: { Authorization: `Bearer ${session.access_token}` },
       cache: "no-store",
+      signal: AbortSignal.timeout(15000),
     });
     if (!res.ok) {
       const j = (await res.json().catch(() => null)) as { error?: string } | null;

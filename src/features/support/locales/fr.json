@@ -110,7 +110,11 @@
       "history_count": "{n} conversations résolues",
       "no_history": "Aucune conversation résolue pour l'instant",
       "view_history": "Historique",
-      "view_live": "Chats en direct"
+      "view_live": "Chats en direct",
+      "assistant": "Blink Assistant",
+      "note_escalated": "Transmis à un agent humain.",
+      "note_joined": "{name} a rejoint la conversation.",
+      "note_resolved": "Conversation marquée comme résolue."
     },
     "kb": {
       "published": "Publiés",
@@ -175,7 +179,23 @@
       "err_body": "Ajoutez du contenu pour {lang}.",
       "previewing": "Aperçu",
       "preview_title": "Titre de l'article",
-      "preview_body": "Votre contenu s'affiche ici. Voilà comment il apparaît dans le centre d'aide."
+      "preview_body": "Votre contenu s'affiche ici. Voilà comment il apparaît dans le centre d'aide.",
+      "enhance": "Améliorer avec l'IA",
+      "enhance_empty": "Le modèle n'a renvoyé que son raisonnement — choisissez un modèle « instruct » (sans réflexion) dans Réglages → IA.",
+      "enhance_timeout": "Le modèle a mis trop de temps. Réessayez ou choisissez un modèle plus rapide.",
+      "enhance_failed": "Impossible d'améliorer le texte. Vérifiez le serveur IA et réessayez.",
+      "ai": {
+        "title": "Générer avec l'IA",
+        "desc": "Décrivez le sujet — obtenez un brouillon trilingue (EN / FR / AR) depuis votre modèle local.",
+        "placeholder": "ex. Comment un marchand ajoute une nouvelle boutique et quels documents sont requis pour la vérification",
+        "placeholder_faq": "ex. Quelles questions les marchands posent-ils souvent sur l'ajout d'une boutique ?",
+        "button": "Générer le brouillon",
+        "thinking": "Réflexion…",
+        "drafting": "Rédaction du brouillon…",
+        "stop": "Arrêter la génération",
+        "regenerate": "Régénérer",
+        "apply": "Ajouter à l'article"
+      }
     },
     "mac": {
       "search": "Rechercher des macros",

@@ -8,6 +8,9 @@ import {
   clearServerLogs,
   type ServerLogEntry,
 } from "@/app/d/blink-server/logs-action";
+import { InstanceSwitcher } from "./instance-switcher";
+import { useServerInstanceStore } from "../instance-store";
+import type { ServerInstance } from "../instances";
 
 const LEVEL_COLOR: Record<ServerLogEntry["level"], string> = {
   info: "text-subtext",
@@ -22,6 +25,17 @@ const MAX_KEEP = 1000; // cap the client-side buffer
 // (incrementally, via the last-seen id) and renders a live, auto-scrolling tail.
 // Super-admin only — the route + the server endpoint both enforce it.
 export function LiveLogs() {
+  const instance = useServerInstanceStore((s) => s.instance);
+  return (
+    <>
+      <InstanceSwitcher />
+      {/* key={instance} remounts the panel on switch → its tail/cursor reset cleanly */}
+      <LiveLogsPanel key={instance} instance={instance} />
+    </>
+  );
+}
+
+function LiveLogsPanel({ instance }: { instance: ServerInstance }) {
   const t = useTranslations("blink_server.logs");
   const [logs, setLogs] = useState<ServerLogEntry[]>([]);
   const [live, setLive] = useState(true);
@@ -31,15 +45,21 @@ export function LiveLogs() {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const poll = useCallback(async () => {
-    const { logs: fresh, lastId, error: err } = await fetchServerLogs(lastIdRef.current);
+    const { logs: fresh, lastId, error: err } = await fetchServerLogs(lastIdRef.current, instance);
     setError(err);
     if (err || !fresh.length) return;
-    lastIdRef.current = lastId;
+    // Advance monotonically so a stale concurrent response can't rewind `since`.
+    lastIdRef.current = Math.max(lastIdRef.current, lastId);
     setLogs((prev) => {
-      const merged = prev.concat(fresh);
+      // Dedupe by id — concurrent initial polls (StrictMode / remounts) can both
+      // fetch the same entries; appending blindly would duplicate React keys.
+      const seen = new Set(prev.map((l) => l.id));
+      const add = fresh.filter((l) => !seen.has(l.id));
+      if (!add.length) return prev;
+      const merged = prev.concat(add);
       return merged.length > MAX_KEEP ? merged.slice(-MAX_KEEP) : merged;
     });
-  }, []);
+  }, [instance]);
 
   useEffect(() => {
     if (!live) return;
@@ -56,7 +76,7 @@ export function LiveLogs() {
   }, [shown.length]);
 
   async function onClear() {
-    await clearServerLogs();
+    await clearServerLogs(instance);
     setLogs([]);
     lastIdRef.current = 0;
   }

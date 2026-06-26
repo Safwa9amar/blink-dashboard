@@ -45,6 +45,16 @@ export const useDeepLinksStore = create<DeepLinksState>()(
     }),
     {
       name: "blink-deeplinks",
+      // v2: deep links switched to the group-kept form (blink://(role)/…) and the
+      // catalog was regenerated from the app. Discard any older persisted
+      // (paren-less) catalog and reseed from the bundled one.
+      version: 2,
+      migrate: () => ({
+        scheme: SEED_CATALOG.scheme,
+        routes: SEED_CATALOG.routes,
+        importedAt: null,
+        source: null,
+      }),
       storage: createJSONStorage(() => localStorage),
       skipHydration: true,
       partialize: (s) => ({ scheme: s.scheme, routes: s.routes, importedAt: s.importedAt, source: s.source }),

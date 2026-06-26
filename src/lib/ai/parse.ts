@@ -3,6 +3,17 @@
 
 import { AIError } from "./types";
 
+// Strip a reasoning model's chain-of-thought + code fences from (possibly
+// mid-stream) text, including an unterminated `<think>` that hasn't closed yet.
+// Leaves only the visible answer. Safe to call on partial streamed content.
+export function stripReasoning(text: string): string {
+  return text
+    .replace(/<think>[\s\S]*?<\/think>/gi, "") // closed thinking blocks
+    .replace(/<think>[\s\S]*$/i, "") // an unterminated block still streaming
+    .replace(/```(?:json|html)?/gi, "") // stray code fences
+    .trim();
+}
+
 // Parses a JSON object out of a model's raw text: strips reasoning `<think>…</think>`
 // blocks and code fences, then takes the outermost { … }.
 export function parseDraftJSON<T>(text: string): T {
