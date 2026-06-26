@@ -37,7 +37,7 @@ function extractText(content: string | ContentPart[] | null | undefined): string
 
 // Determine if a base URL is for OpenRouter (remote API requiring authentication).
 function isOpenRouter(base: string): boolean {
-  return /openrouter\.io/i.test(base);
+  return /openrouter\.ai/i.test(base);
 }
 
 // Build headers for a request, including API key for OpenRouter.

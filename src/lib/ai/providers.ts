@@ -7,7 +7,7 @@ export type Provider = "lmstudio" | "ollama" | "openrouter";
 export const PROVIDERS: Record<Provider, { label: string; defaultBaseUrl: string }> = {
   lmstudio: { label: "LM Studio", defaultBaseUrl: "http://localhost:1234/v1" },
   ollama: { label: "Ollama", defaultBaseUrl: "http://localhost:11434/v1" },
-  openrouter: { label: "OpenRouter", defaultBaseUrl: "https://openrouter.io/api/v1" },
+  openrouter: { label: "OpenRouter", defaultBaseUrl: "https://openrouter.ai/api/v1" },
 };
 
 export const PROVIDER_LIST: Provider[] = ["lmstudio", "ollama", "openrouter"];

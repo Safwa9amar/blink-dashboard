@@ -83,7 +83,7 @@
       "connection_desc": "Le serveur d'inférence ou l'API qui alimente la génération par IA.",
       "provider": "Fournisseur",
       "base_url": "URL de base",
-      "base_url_hint": "Endpoint compatible OpenAI — LM Studio :1234, Ollama :11434, OpenRouter: https://openrouter.io/api/v1.",
+      "base_url_hint": "Endpoint compatible OpenAI — LM Studio :1234, Ollama :11434, OpenRouter: https://openrouter.ai/api/v1.",
       "test": "Tester la connexion",
       "connected": "Connecté",
       "offline": "Hors ligne",

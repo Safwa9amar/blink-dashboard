@@ -7,7 +7,7 @@
 //   LMSTUDIO_MODEL      pin a model id; otherwise the first loaded model is used
 //
 // **OpenRouter (remote)**
-//   OPENROUTER_BASE_URL override the host (default https://openrouter.io/api/v1)
+//   OPENROUTER_BASE_URL override the host (default https://openrouter.ai/api/v1)
 //   OPENROUTER_API_KEY  required for authentication
 //   OPENROUTER_MODEL    pin a model id (e.g., anthropic/claude-3.5-sonnet)
 //
@@ -32,7 +32,7 @@ export const AI_MODEL = process.env.LMSTUDIO_MODEL?.trim() || "";
 
 // OpenRouter configuration
 export const OPENROUTER_BASE_URL = normalizeBaseUrl(
-  process.env.OPENROUTER_BASE_URL?.trim() || "https://openrouter.io/api/v1"
+  process.env.OPENROUTER_BASE_URL?.trim() || "https://openrouter.ai/api/v1"
 );
 
 export const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY?.trim() || "";

@@ -83,7 +83,7 @@
       "connection_desc": "خادم الاستدلال أو واجهة برمجية التطبيقات التي تشغّل التوليد بالذكاء الاصطناعي.",
       "provider": "المزوّد",
       "base_url": "الرابط الأساسي",
-      "base_url_hint": "نقطة وصول متوافقة مع OpenAI — LM Studio منفذ 1234، Ollama منفذ 11434، OpenRouter: https://openrouter.io/api/v1.",
+      "base_url_hint": "نقطة وصول متوافقة مع OpenAI — LM Studio منفذ 1234، Ollama منفذ 11434، OpenRouter: https://openrouter.ai/api/v1.",
       "test": "اختبار الاتصال",
       "connected": "متصل",
       "offline": "غير متصل",

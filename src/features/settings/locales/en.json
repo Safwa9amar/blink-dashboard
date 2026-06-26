@@ -83,7 +83,7 @@
       "connection_desc": "The inference server or API that powers AI generation.",
       "provider": "Provider",
       "base_url": "Base URL",
-      "base_url_hint": "OpenAI-compatible endpoint — LM Studio :1234, Ollama :11434, OpenRouter: https://openrouter.io/api/v1.",
+      "base_url_hint": "OpenAI-compatible endpoint — LM Studio :1234, Ollama :11434, OpenRouter: https://openrouter.ai/api/v1.",
       "test": "Test connection",
       "connected": "Connected",
       "offline": "Offline",
