@@ -276,7 +276,7 @@
       "save": "Save",
       "saved": "Saved",
       "system_prompt": "System prompt",
-      "system_prompt_hint": "The bot's full instructions. Keep the {{role}}, {{lang}} and {{kb}} placeholders — the server replaces them with the user's role, language and the knowledge base. Leave blank to use the built-in default.",
+      "system_prompt_hint": "The bot's full instructions. Keep the '{{role}}', '{{lang}}' and '{{kb}}' placeholders — the server replaces them with the user's role, language and the knowledge base. Leave blank to use the built-in default.",
       "system_prompt_ph": "Leave blank to use the built-in default prompt…"
     }
   }

@@ -58,7 +58,9 @@ export async function fetchAiLogs(
   const token = await staffToken();
   if (!token) return { logs: [], lastId: since, error: "Not authorized" };
   try {
-    const res = await fetch(`${resolveInstanceBase(instance)}/ai-logs?since=${since}`, {
+    // `_` cache-busts: prod nginx caches GETs without Cache-Control, and /ai-logs?since=0
+    // is a fixed URL that would otherwise stay stuck on a cached empty response.
+    const res = await fetch(`${resolveInstanceBase(instance)}/ai-logs?since=${since}&_=${Date.now()}`, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
     });

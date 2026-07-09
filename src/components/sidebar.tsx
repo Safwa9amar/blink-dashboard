@@ -135,7 +135,14 @@ export function Sidebar({
       {/* header */}
       <div className={`border-b border-border ${collapsed ? "p-3" : "p-6"}`}>
         <div className={`flex items-center ${collapsed ? "flex-col gap-2" : "gap-3"}`}>
-          <Image src="/images/logo-b.png" alt="Blink" width={32} height={32} className="shrink-0" />
+          <Image
+            src="/images/logo-b.png"
+            alt="Blink"
+            width={32}
+            height={32}
+            className="shrink-0"
+            style={{ height: "auto" }}
+          />
           {!collapsed && (
             <div className="flex-1 min-w-0">
               <h1 className="text-lg font-bold text-text leading-tight">Blink</h1>

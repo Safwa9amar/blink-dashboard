@@ -14,7 +14,7 @@ export async function fetchInstanceHealth(
     return { version: null, ok: false, error: "Not authorized" };
   const base = resolveInstanceBase(instance);
   try {
-    const res = await fetch(`${base}/health`, {
+    const res = await fetch(`${base}/health?_=${Date.now()}`, {
       cache: "no-store",
       signal: AbortSignal.timeout(8000),
     });

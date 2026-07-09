@@ -35,7 +35,9 @@ export async function fetchServerLogs(
   const token = await staffToken();
   if (!token) return { logs: [], lastId: since, error: "Not authorized" };
   try {
-    const res = await fetch(`${resolveInstanceBase(instance)}/logs?since=${since}`, {
+    // `_` cache-busts: prod sits behind nginx, which caches GETs lacking Cache-Control;
+    // a stale /logs?since= response would otherwise freeze the live tail.
+    const res = await fetch(`${resolveInstanceBase(instance)}/logs?since=${since}&_=${Date.now()}`, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
     });

@@ -276,7 +276,7 @@
       "save": "Enregistrer",
       "saved": "Enregistré",
       "system_prompt": "Prompt système",
-      "system_prompt_hint": "Les instructions complètes du bot. Conservez les marqueurs {{role}}, {{lang}} et {{kb}} — le serveur les remplace par le rôle, la langue de l'utilisateur et la base de connaissances. Laissez vide pour utiliser le prompt par défaut.",
+      "system_prompt_hint": "Les instructions complètes du bot. Conservez les marqueurs '{{role}}', '{{lang}}' et '{{kb}}' — le serveur les remplace par le rôle, la langue de l'utilisateur et la base de connaissances. Laissez vide pour utiliser le prompt par défaut.",
       "system_prompt_ph": "Laissez vide pour utiliser le prompt par défaut…"
     }
   }

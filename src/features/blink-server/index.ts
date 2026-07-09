@@ -9,3 +9,12 @@ export { AiInsights } from "./components/ai-insights";
 export { Alerts } from "./components/alerts";
 export { SERVER_INSTANCES, type ServerInstance } from "./instances";
 export { useServerInstanceStore, useHydrateServerInstance } from "./instance-store";
+export type {
+  AlertRuleRow,
+  AlertRuleInsert,
+  AlertEventRow,
+  AlertMetric,
+  AlertComparator,
+  AlertSeverity,
+  AlertEventStatus,
+} from "./types";

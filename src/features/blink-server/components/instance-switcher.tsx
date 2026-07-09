@@ -9,11 +9,22 @@ import { useServerInstanceStore, useHydrateServerInstance } from "../instance-st
 
 type Health = { version: string | null; ok: boolean; error: string | null };
 
+// The Online/Local switcher only applies in development — production has no local
+// backend (it's localhost:3001), so the tabs always poll the online instance (the
+// store default is "online"). Hide the control outside dev rather than render a toggle
+// that can only point at an unreachable server there.
+const SHOW_SWITCHER = process.env.NODE_ENV !== "production";
+
+export function InstanceSwitcher() {
+  if (!SHOW_SWITCHER) return null;
+  return <InstanceSwitcherControl />;
+}
+
 // Shared selector for the AI Log + Live Logs tabs: pick which backend instance
 // (online / local) those views poll. A live /health readout shows the target's
 // version so it's obvious which server is being monitored. The choice persists
 // (localStorage) and is shared across both tabs via the Zustand store.
-export function InstanceSwitcher() {
+function InstanceSwitcherControl() {
   const t = useTranslations("blink_server.instance");
   useHydrateServerInstance();
   const instance = useServerInstanceStore((s) => s.instance);
