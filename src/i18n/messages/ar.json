@@ -192,7 +192,8 @@
     "agents": "الوكلاء",
     "platform": "المنصة",
     "access": "الوصول",
-    "blink_server": "خادم Blink"
+    "blink_server": "خادم Blink",
+    "email": "البريد"
   },
   "dash": {
     "search": "بحث",

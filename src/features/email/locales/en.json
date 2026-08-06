@@ -1,0 +1,21 @@
+{
+  "email": {
+    "title": "Email Inbox",
+    "description": "Customer emails — read and reply straight from the console.",
+    "list_empty": "No emails yet.",
+    "no_selection": "Select an email to read it.",
+    "no_messages": "No messages in this thread yet.",
+    "no_subject": "(no subject)",
+    "status_open": "Open",
+    "status_assigned": "Assigned",
+    "status_closed": "Closed",
+    "assign_to_me": "Assign to me",
+    "close": "Close",
+    "reply_ph": "Write a reply…",
+    "reply_hint": "Sends as an email to {email}",
+    "send": "Send",
+    "you": "You",
+    "attachment_unnamed": "attachment",
+    "send_failed": "Couldn’t send: {error}"
+  }
+}

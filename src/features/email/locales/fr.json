@@ -1,0 +1,21 @@
+{
+  "email": {
+    "title": "Boîte e-mail",
+    "description": "E-mails clients — consultez et répondez directement depuis la console.",
+    "list_empty": "Aucun e-mail pour le moment.",
+    "no_selection": "Sélectionnez un e-mail pour le lire.",
+    "no_messages": "Aucun message dans cette conversation pour le moment.",
+    "no_subject": "(sans objet)",
+    "status_open": "Ouvert",
+    "status_assigned": "Assigné",
+    "status_closed": "Fermé",
+    "assign_to_me": "M’assigner",
+    "close": "Fermer",
+    "reply_ph": "Rédiger une réponse…",
+    "reply_hint": "Envoyé comme e-mail à {email}",
+    "send": "Envoyer",
+    "you": "Vous",
+    "attachment_unnamed": "pièce jointe",
+    "send_failed": "Échec de l’envoi : {error}"
+  }
+}

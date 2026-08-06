@@ -192,7 +192,8 @@
     "agents": "Agents",
     "platform": "Plateforme",
     "access": "Accès",
-    "blink_server": "Serveur Blink"
+    "blink_server": "Serveur Blink",
+    "email": "E-mail"
   },
   "dash": {
     "search": "Rechercher",

@@ -1,0 +1,21 @@
+{
+  "email": {
+    "title": "صندوق البريد",
+    "description": "رسائل العملاء عبر البريد الإلكتروني — اقرأ وردّ مباشرة من لوحة التحكم.",
+    "list_empty": "لا توجد رسائل بعد.",
+    "no_selection": "اختر رسالة لقراءتها.",
+    "no_messages": "لا توجد رسائل في هذه المحادثة بعد.",
+    "no_subject": "(بدون موضوع)",
+    "status_open": "مفتوح",
+    "status_assigned": "مُسند",
+    "status_closed": "مغلق",
+    "assign_to_me": "أسنِد إليّ",
+    "close": "إغلاق",
+    "reply_ph": "اكتب ردًّا…",
+    "reply_hint": "يُرسل كبريد إلكتروني إلى {email}",
+    "send": "إرسال",
+    "you": "أنت",
+    "attachment_unnamed": "مرفق",
+    "send_failed": "تعذّر الإرسال: {error}"
+  }
+}
