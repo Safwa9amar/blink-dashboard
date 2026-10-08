@@ -1,9 +1,13 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { hasStaffRole } from "@/lib/auth/staff";
 import { isStaffRole, type StaffRole } from "@/lib/auth/access";
 import { revalidatePath } from "next/cache";
+
+// Writes use the service-role client: authenticated users can no longer
+// UPDATE privileged `users` columns (staff_role, role, …) through RLS — every
+// action here is gated on super_admin first.
 
 // Friendly message shown until the blink-server migration adds `users.staff_role`.
 // 42703 = Postgres undefined_column.
@@ -30,7 +34,7 @@ export async function createStaffMember(data: {
     return { error: "Invalid role" };
   }
 
-  const supabase = await createClient();
+  const supabase = await createAdminClient();
   const { error } = await supabase.from("users").insert({
     first_name: data.first_name,
     last_name: data.last_name ?? null,
@@ -58,7 +62,7 @@ export async function setStaffRole(userId: string, staffRole: StaffRole | null) 
     return { error: "Invalid role" };
   }
 
-  const supabase = await createClient();
+  const supabase = await createAdminClient();
   const { error } = await supabase.from("users").update({ staff_role: staffRole }).eq("id", userId);
 
   if (error) {
@@ -81,7 +85,7 @@ export async function grantStaffRole(email: string, staffRole: StaffRole) {
     return { error: "Invalid role" };
   }
 
-  const supabase = await createClient();
+  const supabase = await createAdminClient();
   const { data: user, error: findError } = await supabase
     .from("users")
     .select("id")
