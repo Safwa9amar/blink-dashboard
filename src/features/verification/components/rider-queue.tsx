@@ -121,6 +121,16 @@ function RiderCard({
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {r.docs.map((d) => {
           const label = riderDocLabel(t, d.key);
+          if (!d.required && d.status === "missing") {
+            return (
+              <div key={d.key} className="min-w-0 flex flex-col gap-1">
+                <p className="text-[11px] font-bold uppercase text-subtext">{label}</p>
+                <div className="rounded-lg border border-dashed border-border p-3 text-[12px] text-subtext">
+                  {t("partners.not_required_bicycle")}
+                </div>
+              </div>
+            );
+          }
           return (
             <div key={d.key} className="min-w-0 flex flex-col gap-1">
               <DocumentTile

@@ -40,6 +40,8 @@ export interface RiderDocSlot {
   status: ReviewDocState;
   note: string | null;
   uploadedAt: string | null;
+  /** false for a bicycle rider's driving licence (they only need the national ID). */
+  required: boolean;
 }
 
 export interface RiderQueueItem {
@@ -236,11 +238,13 @@ export function buildRiderQueue(rows: readonly unknown[], signed: ReadonlyMap<st
   for (const row of rows) {
     if (!isRecord(row) || typeof row.user_id !== "string") continue;
     const stored = isRecord(row.documents) ? row.documents : {};
+    const vehicle = text(row.vehicle_type);
     const docs: RiderDocSlot[] = RIDER_DOC_KEYS.map((key) => {
+      const required = !(vehicle === "bicycle" && key.startsWith("license_"));
       const entry = stored[key];
       const path = isRecord(entry) ? text(entry.path) : null;
       if (!isRecord(entry) || !path) {
-        return { key, path: null, url: null, trusted: false, isPdf: false, status: "missing", note: null, uploadedAt: null };
+        return { key, path: null, url: null, trusted: false, isPdf: false, status: "missing", note: null, uploadedAt: null, required };
       }
       const legacy = isFullUrl(path);
       const url = legacy ? path : (signed.get(path) ?? null);
@@ -254,6 +258,7 @@ export function buildRiderQueue(rows: readonly unknown[], signed: ReadonlyMap<st
         status,
         note: status === "rejected" ? text(entry.note) : null,
         uploadedAt: text(entry.uploaded_at),
+        required,
       };
     });
     const status = (row.verification_status as RiderVerificationStatus) ?? "not_submitted";
@@ -264,7 +269,7 @@ export function buildRiderQueue(rows: readonly unknown[], signed: ReadonlyMap<st
       riderId: text(row.rider_id) ?? "",
       name: userName(row.users),
       phone: userPhone(row.users),
-      vehicle: text(row.vehicle_type),
+      vehicle,
       view,
       status,
       docs,

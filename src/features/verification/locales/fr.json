@@ -36,6 +36,7 @@
       "filter_count": "{label} ({n})",
       "showing": "{shown} affichés sur {total}",
       "uploaded_at": "Envoyé le {date}",
+      "not_required_bicycle": "Non requis (vélo)",
       "fields": {
         "phone": "Téléphone",
         "vehicle": "Véhicule"

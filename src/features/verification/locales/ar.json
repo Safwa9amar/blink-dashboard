@@ -36,6 +36,7 @@
       "filter_count": "{label} ({n})",
       "showing": "عرض {shown} من {total}",
       "uploaded_at": "تم الرفع {date}",
+      "not_required_bicycle": "غير مطلوب (دراجة هوائية)",
       "fields": {
         "phone": "الهاتف",
         "vehicle": "المركبة"
