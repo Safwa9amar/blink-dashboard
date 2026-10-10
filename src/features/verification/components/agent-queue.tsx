@@ -1,0 +1,256 @@
+"use client";
+
+import { useState, useTransition } from "react";
+import { Badge, Button, DashIcon, EmptyState, FilterPills } from "@/components/ui";
+import { reviewAgentDocument, reviewAgentShop } from "@/app/d/verification/partner-action";
+import { reviewErrorText } from "../queue";
+import {
+  AGENT_REASON_MAX,
+  AGENT_VIEWS,
+  agentDocLabel,
+  agentsInView,
+  type AgentQueueItem,
+  type AgentQueueLoad,
+  type AgentShopItem,
+  type AgentView,
+  type PartnerVerdict,
+  type ShopDecision,
+} from "../partners";
+import type { ReviewOutcome, TFn } from "../types";
+import { ApplicantCard } from "./applicant-card";
+import { ApproveDialog } from "./approve-dialog";
+import { DetailField } from "./detail-field";
+import { DocumentTile } from "./document-tile";
+import { PartnerDocActions } from "./partner-doc-actions";
+import { PartnerNotice, type PartnerNoticeValue } from "./partner-notice";
+
+const VIEW_VARIANT = { pending: "warning", rejected: "danger" } as const;
+const sectionTitle = "text-[11px] font-bold uppercase text-subtext mb-2.5";
+
+// Agents: the commercial register scans (verified / rejected one by one, with a
+// reason the agent sees) and the agent's shops (approved or rejected as a whole
+// — blink-server takes no note for a shop). Pending = something waits on staff;
+// rejected = only rejected items remain, waiting on the agent. Files are public
+// objects of the `agent` bucket; only those are previewed.
+export function AgentQueue({ t, locale, load }: { t: TFn; locale: string; load: AgentQueueLoad }) {
+  const [view, setView] = useState<AgentView>("pending");
+  const [notice, setNotice] = useState<PartnerNoticeValue | null>(null);
+  const shown = agentsInView(load.items, view);
+  const options: [AgentView, string][] = AGENT_VIEWS.map((v) => [
+    v,
+    t("partners.filter_count", { label: t(`partners.agent.filter.${v}`), n: load.counts[v] }),
+  ]);
+
+  return (
+    <>
+      <FilterPills
+        options={options}
+        value={view}
+        onChange={(v) => {
+          setView(v);
+          setNotice(null);
+        }}
+      />
+      <p className="text-xs text-subtext -mt-2.5 mb-4">{t(`partners.agent.hint.${view}`)}</p>
+      <PartnerNotice t={t} notice={notice} onDismiss={() => setNotice(null)} />
+      {shown.length === 0 ? (
+        <EmptyState
+          icon={<DashIcon name="shield" className="w-10 h-10" />}
+          title={t(`partners.agent.empty.${view}`)}
+          description={t(`partners.agent.empty.${view}_desc`)}
+        />
+      ) : (
+        <div className="space-y-4">
+          {shown.map((a) => (
+            <AgentCard key={a.id} t={t} locale={locale} agent={a} onNotice={setNotice} />
+          ))}
+        </div>
+      )}
+    </>
+  );
+}
+
+function AgentCard({
+  t,
+  locale,
+  agent: a,
+  onNotice,
+}: {
+  t: TFn;
+  locale: string;
+  agent: AgentQueueItem;
+  onNotice: (n: PartnerNoticeValue) => void;
+}) {
+  const name = a.name || t("unnamed");
+  const hasDocs = a.docs.some((d) => d.status !== "missing");
+
+  function handleDoc(label: string, verdict: PartnerVerdict, outcome: ReviewOutcome) {
+    if (outcome.ok) onNotice({ tone: "success", text: t(`partners.done.agent_${verdict}`, { doc: label, name }) });
+    else onNotice({ tone: "danger", text: outcome.message });
+  }
+
+  return (
+    <ApplicantCard
+      t={t}
+      locale={locale}
+      name={name}
+      meta={a.agentId ?? undefined}
+      badge={<Badge variant={VIEW_VARIANT[a.view]}>{t(`partners.agent.filter.${a.view}`)}</Badge>}
+      submittedAt={a.submittedAt}
+      updatedAt={a.updatedAt}
+    >
+      <dl className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-3 mb-4">
+        <DetailField label={t("partners.fields.phone")}>
+          {a.phone ? <span dir="ltr">{a.phone}</span> : "—"}
+        </DetailField>
+        <DetailField label={t("fields.nif")}>{a.nif ? <span dir="ltr">{a.nif}</span> : "—"}</DetailField>
+        <DetailField label={t("fields.nis")}>{a.nis ? <span dir="ltr">{a.nis}</span> : "—"}</DetailField>
+      </dl>
+
+      {hasDocs && (
+        <>
+          <p className={sectionTitle}>{t("partners.agent.documents")}</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+            {a.docs.map((d) => {
+              const label = agentDocLabel(t, d.key);
+              return (
+                <DocumentTile
+                  key={d.key}
+                  t={t}
+                  label={label}
+                  url={d.url}
+                  trusted={d.trusted}
+                  isPdf={d.isPdf}
+                  status={d.status}
+                  note={d.reason}
+                  actions={
+                    <PartnerDocActions
+                      t={t}
+                      label={label}
+                      status={d.status}
+                      untrusted={!!d.url && !d.trusted}
+                      noteVariant="reject_agent_doc"
+                      noteMax={AGENT_REASON_MAX}
+                      submit={(verdict, reason) =>
+                        reviewAgentDocument({ agentId: a.id, document: d.key }, verdict, reason)
+                      }
+                      onOutcome={(verdict, outcome) => handleDoc(label, verdict, outcome)}
+                    />
+                  }
+                />
+              );
+            })}
+          </div>
+        </>
+      )}
+
+      {a.shops.length > 0 && (
+        <>
+          <p className={sectionTitle}>{t("partners.agent.shops")}</p>
+          <div className="space-y-3">
+            {a.shops.map((s) => (
+              <ShopRow key={s.id} t={t} shop={s} onNotice={onNotice} />
+            ))}
+          </div>
+        </>
+      )}
+    </ApplicantCard>
+  );
+}
+
+// One agent shop: its details and files, with Approve / Reject. Reject asks
+// first (it can't carry a note, so the agent is only told it wasn't verified).
+function ShopRow({
+  t,
+  shop: s,
+  onNotice,
+}: {
+  t: TFn;
+  shop: AgentShopItem;
+  onNotice: (n: PartnerNoticeValue) => void;
+}) {
+  const [pending, startTransition] = useTransition();
+  const [dialog, setDialog] = useState<ShopDecision | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const name = s.name || t("unnamed");
+
+  function run(decision: ShopDecision) {
+    setError(null);
+    startTransition(async () => {
+      const outcome = await reviewAgentShop(s.id, decision);
+      if (outcome.ok) {
+        setDialog(null);
+        onNotice({ tone: "success", text: t(`partners.done.shop_${decision}`, { name }) });
+        return;
+      }
+      const text = reviewErrorText(t, outcome);
+      setError(text);
+      onNotice({ tone: "danger", text });
+    });
+  }
+
+  function close() {
+    if (pending) return;
+    setDialog(null);
+    setError(null);
+  }
+
+  return (
+    <div className="rounded-xl border border-border bg-background p-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="font-semibold text-text truncate">{name}</p>
+          <p className="text-xs text-subtext mt-0.5">{[s.address, s.phone].filter(Boolean).join(" · ")}</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-1.5">
+          <Badge variant={s.status === "rejected" ? "danger" : "warning"}>{t(`partners.shop.status.${s.status}`)}</Badge>
+          <Button size="xs" icon="check" disabled={pending} loading={pending && !dialog} onClick={() => run("approve")}>
+            {t("actions.approve")}
+          </Button>
+          {s.status !== "rejected" && (
+            <Button size="xs" variant="secondary" icon="x" disabled={pending} onClick={() => setDialog("reject")}>
+              {t("actions.reject")}
+            </Button>
+          )}
+        </div>
+      </div>
+      {error && !dialog && (
+        <p role="alert" className="text-[11px] text-danger mt-1.5">
+          {error}
+        </p>
+      )}
+      {s.description && <p className="text-sm text-text mt-2">{s.description}</p>}
+      {(s.nif || s.nis) && (
+        <p className="text-xs text-subtext mt-2" dir="ltr">
+          {[s.nif && `${t("fields.nif")} ${s.nif}`, s.nis && `${t("fields.nis")} ${s.nis}`].filter(Boolean).join(" · ")}
+        </p>
+      )}
+      {s.files.length > 0 && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+          {s.files.map((f) => (
+            <DocumentTile
+              key={f.key}
+              t={t}
+              label={t(`partners.shop_file.${f.key}`)}
+              url={f.url}
+              trusted={f.trusted}
+              isPdf={f.isPdf}
+            />
+          ))}
+        </div>
+      )}
+      {dialog === "reject" && (
+        <ApproveDialog
+          t={t}
+          title={t("partners.shop.reject_title", { name })}
+          message={t("partners.shop.reject_message")}
+          confirmLabel={t("partners.shop.reject_confirm")}
+          pending={pending}
+          error={error}
+          onClose={close}
+          onConfirm={() => run("reject")}
+        />
+      )}
+    </div>
+  );
+}

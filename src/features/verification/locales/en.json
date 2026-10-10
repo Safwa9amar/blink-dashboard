@@ -27,6 +27,112 @@
       "rejected": "rejected",
       "missing_info": "missing info",
       "approved": "approved"
+    },
+    "partners": {
+      "tab": {
+        "riders": "Riders",
+        "agents": "Agents"
+      },
+      "filter_count": "{label} ({n})",
+      "showing": "Showing {shown} of {total}",
+      "uploaded_at": "Uploaded {date}",
+      "fields": {
+        "phone": "Phone",
+        "vehicle": "Vehicle"
+      },
+      "vehicle": {
+        "bicycle": "Bicycle",
+        "motorcycle": "Motorcycle"
+      },
+      "doc": {
+        "license_front": "Driving licence (front)",
+        "license_back": "Driving licence (back)",
+        "id_front": "National ID (front)",
+        "id_back": "National ID (back)"
+      },
+      "rider": {
+        "documents": "Verification documents",
+        "filter": {
+          "pending": "Pending review",
+          "replacements": "Replacement documents",
+          "rejected": "Rejected"
+        },
+        "hint": {
+          "pending": "Riders who sent all four documents and are waiting for a decision, oldest first. Verify or reject each document.",
+          "replacements": "Approved riders who uploaded a new document. They stay approved while it waits for review, oldest first.",
+          "rejected": "Riders with a rejected document. They have to upload a new one, or you can verify it after all."
+        },
+        "empty": {
+          "pending": "No riders waiting",
+          "pending_desc": "Riders show up here once they have uploaded their licence and national ID.",
+          "replacements": "No replacement documents",
+          "replacements_desc": "When an approved rider replaces a document, it shows up here until someone at Blink checks it.",
+          "rejected": "No rejected riders",
+          "rejected_desc": "Riders with a rejected document show up here until they upload a new one."
+        }
+      },
+      "agent": {
+        "documents": "Commercial register",
+        "shops": "Shops to review",
+        "filter": {
+          "pending": "Pending review",
+          "rejected": "Rejected"
+        },
+        "hint": {
+          "pending": "Agents with a commercial register scan or a shop waiting for a decision, oldest first.",
+          "rejected": "Agents whose register scan or shop was rejected and who haven't fixed it yet."
+        },
+        "empty": {
+          "pending": "No agents waiting",
+          "pending_desc": "Agent registers and shops show up here before they are approved.",
+          "rejected": "No rejected agents",
+          "rejected_desc": "Rejected documents and shops show up here until the agent fixes them."
+        }
+      },
+      "shop": {
+        "status": {
+          "under_review": "Pending review",
+          "rejected": "Rejected"
+        },
+        "reject_title": "Reject {name}?",
+        "reject_message": "The agent is told the shop couldn't be verified and to check its details and documents. This can't carry a note.",
+        "reject_confirm": "Reject shop"
+      },
+      "shop_file": {
+        "photo": "Shop photo",
+        "commercial_register_front": "Commercial register (front)",
+        "commercial_register_back": "Commercial register (back)"
+      },
+      "reject_rider_doc": {
+        "title": "Reject {doc}",
+        "note_label": "Reason for rejecting",
+        "note_placeholder": "What's wrong with it? e.g. The photo is blurry. Please upload a clear one.",
+        "note_hint": "Required. The rider sees this note in the app and has to upload a new document. A rider who was approved goes offline.",
+        "confirm": "Reject document"
+      },
+      "reject_agent_doc": {
+        "title": "Reject {doc}",
+        "note_label": "Reason for rejecting",
+        "note_placeholder": "What's wrong with it? e.g. The scan is blurry. Please upload a clear photo.",
+        "note_hint": "Required. The agent sees this reason in the app and can fix the document.",
+        "confirm": "Reject document"
+      },
+      "done": {
+        "rider_verified": "{doc} verified for {name}.",
+        "rider_rejected": "{doc} rejected for {name}. The rider was notified.",
+        "agent_verified": "{doc} verified for {name}.",
+        "agent_rejected": "{doc} rejected for {name}. The agent was notified.",
+        "shop_approve": "{name} approved. The agent was notified.",
+        "shop_reject": "{name} rejected. The agent was notified."
+      },
+      "errors": {
+        "invalid_target": "This item can't be reviewed.",
+        "note_required": "Add a note so they know why.",
+        "note_too_long": "The note is too long.",
+        "stale": "This document changed — review the new one. The list was refreshed.",
+        "document_missing": "This document is no longer uploaded. The list was refreshed.",
+        "not_found": "This person no longer exists. The list was refreshed."
+      }
     }
   }
 }

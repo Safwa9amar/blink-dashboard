@@ -27,6 +27,112 @@
       "rejected": "rejeté",
       "missing_info": "info manquante",
       "approved": "approuvé"
+    },
+    "partners": {
+      "tab": {
+        "riders": "Livreurs",
+        "agents": "Agents"
+      },
+      "filter_count": "{label} ({n})",
+      "showing": "{shown} affichés sur {total}",
+      "uploaded_at": "Envoyé le {date}",
+      "fields": {
+        "phone": "Téléphone",
+        "vehicle": "Véhicule"
+      },
+      "vehicle": {
+        "bicycle": "Vélo",
+        "motorcycle": "Moto"
+      },
+      "doc": {
+        "license_front": "Permis de conduire (recto)",
+        "license_back": "Permis de conduire (verso)",
+        "id_front": "Carte d'identité (recto)",
+        "id_back": "Carte d'identité (verso)"
+      },
+      "rider": {
+        "documents": "Documents de vérification",
+        "filter": {
+          "pending": "À examiner",
+          "replacements": "Documents remplacés",
+          "rejected": "Refusés"
+        },
+        "hint": {
+          "pending": "Livreurs ayant envoyé leurs quatre documents et attendant une décision, du plus ancien au plus récent. Vérifiez ou refusez chaque document.",
+          "replacements": "Livreurs approuvés ayant envoyé un nouveau document. Ils restent approuvés pendant l'examen, du plus ancien au plus récent.",
+          "rejected": "Livreurs dont un document est refusé. Ils doivent en envoyer un nouveau, ou vous pouvez finalement le vérifier."
+        },
+        "empty": {
+          "pending": "Aucun livreur en attente",
+          "pending_desc": "Les livreurs apparaissent ici dès qu'ils ont envoyé leur permis et leur carte d'identité.",
+          "replacements": "Aucun document remplacé",
+          "replacements_desc": "Quand un livreur approuvé remplace un document, il apparaît ici jusqu'à ce que quelqu'un chez Blink le contrôle.",
+          "rejected": "Aucun livreur refusé",
+          "rejected_desc": "Les livreurs avec un document refusé apparaissent ici jusqu'à l'envoi d'un nouveau."
+        }
+      },
+      "agent": {
+        "documents": "Registre de commerce",
+        "shops": "Points de vente à examiner",
+        "filter": {
+          "pending": "À examiner",
+          "rejected": "Refusés"
+        },
+        "hint": {
+          "pending": "Agents dont le registre de commerce ou un point de vente attend une décision, du plus ancien au plus récent.",
+          "rejected": "Agents dont le registre ou le point de vente a été refusé et n'a pas encore été corrigé."
+        },
+        "empty": {
+          "pending": "Aucun agent en attente",
+          "pending_desc": "Les registres et points de vente des agents apparaissent ici avant leur approbation.",
+          "rejected": "Aucun agent refusé",
+          "rejected_desc": "Les documents et points de vente refusés apparaissent ici jusqu'à leur correction par l'agent."
+        }
+      },
+      "shop": {
+        "status": {
+          "under_review": "À examiner",
+          "rejected": "Refusé"
+        },
+        "reject_title": "Refuser « {name} » ?",
+        "reject_message": "L'agent est informé que le point de vente n'a pas pu être vérifié et doit contrôler ses informations et documents. Aucune note ne peut être jointe.",
+        "reject_confirm": "Refuser le point de vente"
+      },
+      "shop_file": {
+        "photo": "Photo du point de vente",
+        "commercial_register_front": "Registre de commerce (recto)",
+        "commercial_register_back": "Registre de commerce (verso)"
+      },
+      "reject_rider_doc": {
+        "title": "Refuser « {doc} »",
+        "note_label": "Motif du refus",
+        "note_placeholder": "Quel est le problème ? ex. La photo est floue. Merci d'en envoyer une nette.",
+        "note_hint": "Obligatoire. Le livreur verra cette note dans l'application et devra envoyer un nouveau document. Un livreur approuvé passe hors ligne.",
+        "confirm": "Refuser le document"
+      },
+      "reject_agent_doc": {
+        "title": "Refuser « {doc} »",
+        "note_label": "Motif du refus",
+        "note_placeholder": "Quel est le problème ? ex. Le scan est flou. Merci d'envoyer une photo nette.",
+        "note_hint": "Obligatoire. L'agent verra ce motif dans l'application et pourra corriger le document.",
+        "confirm": "Refuser le document"
+      },
+      "done": {
+        "rider_verified": "{doc} vérifié pour {name}.",
+        "rider_rejected": "{doc} refusé pour {name}. Le livreur a été notifié.",
+        "agent_verified": "{doc} vérifié pour {name}.",
+        "agent_rejected": "{doc} refusé pour {name}. L'agent a été notifié.",
+        "shop_approve": "{name} approuvé. L'agent a été notifié.",
+        "shop_reject": "{name} refusé. L'agent a été notifié."
+      },
+      "errors": {
+        "invalid_target": "Cet élément ne peut pas être examiné.",
+        "note_required": "Ajoutez une note pour qu'il sache pourquoi.",
+        "note_too_long": "La note est trop longue.",
+        "stale": "Ce document a changé — examinez le nouveau. La liste a été actualisée.",
+        "document_missing": "Ce document n'est plus envoyé. La liste a été actualisée.",
+        "not_found": "Cette personne n'existe plus. La liste a été actualisée."
+      }
     }
   }
 }

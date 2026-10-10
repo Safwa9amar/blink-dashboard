@@ -1,0 +1,79 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
+import { hasStaffRole } from "@/lib/auth/staff";
+import { blinkApi } from "@/lib/blink-api";
+import { blinkApiErrorKey, blinkApiErrorMessage } from "@/lib/blink-api-errors";
+import type {
+  AgentDocTarget,
+  PartnerVerdict,
+  ReviewErrorCode,
+  ReviewOutcome,
+  RiderDocTarget,
+  ShopDecision,
+} from "@/features/verification";
+import {
+  buildAgentDocumentRequest,
+  buildAgentShopRequest,
+  buildRiderDocumentRequest,
+  partnerErrorCode,
+} from "./partner-request";
+import { REVIEW_ROLES, type ReviewRequest } from "./review-request";
+
+// Verify / reject a rider's or agent's documents, and approve / reject an agent
+// shop, from the verification queue. Like action.ts, nothing here writes a
+// status column: each decision goes to blink-server's staff endpoint with the
+// operator's access token (requireStaff there is the authority), then the page
+// re-reads the queues. revalidatePath takes the rewritten route (/d/…).
+const NS = "verification";
+const PATH = "/d/verification";
+
+async function send(request: ReviewRequest | { code: ReviewErrorCode }): Promise<ReviewOutcome> {
+  if (!(await hasStaffRole(...REVIEW_ROLES))) {
+    return { ok: false, code: "forbidden", message: await blinkApiErrorMessage(NS, { status: 403, error: "" }) };
+  }
+  if ("code" in request) {
+    const t = await getTranslations(`${NS}.partners.errors`);
+    return { ok: false, code: request.code, message: t(request.code, { max: "" }) };
+  }
+
+  const res = await blinkApi(request.path, { method: "PATCH", body: request.body, roles: REVIEW_ROLES });
+  if (res.ok) {
+    revalidatePath(PATH);
+    return { ok: true };
+  }
+
+  const code = partnerErrorCode(res);
+  // The document changed (or the partner is gone): what's on screen is stale.
+  if (code || res.status === 404) revalidatePath(PATH);
+  if (code || res.status === 404) {
+    const key = code ?? "not_found";
+    const t = await getTranslations(`${NS}.partners.errors`);
+    return { ok: false, code: key, message: t(key, { max: "" }) };
+  }
+  return { ok: false, code: blinkApiErrorKey(res.status), message: await blinkApiErrorMessage(NS, res) };
+}
+
+/** Verify / reject one rider document, on the stored path the reviewer saw (409 = the rider replaced it since). */
+export async function reviewRiderDocument(
+  target: RiderDocTarget,
+  verdict: PartnerVerdict,
+  note?: string
+): Promise<ReviewOutcome> {
+  return send(buildRiderDocumentRequest(target, verdict, note));
+}
+
+/** Verify / reject an agent's commercial register scan. */
+export async function reviewAgentDocument(
+  target: AgentDocTarget,
+  verdict: PartnerVerdict,
+  reason?: string
+): Promise<ReviewOutcome> {
+  return send(buildAgentDocumentRequest(target, verdict, reason));
+}
+
+/** Approve (active) or reject one agent shop. */
+export async function reviewAgentShop(shopId: string, decision: ShopDecision): Promise<ReviewOutcome> {
+  return send(buildAgentShopRequest(shopId, decision));
+}
