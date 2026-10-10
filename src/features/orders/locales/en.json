@@ -8,6 +8,12 @@
     "total": "Total",
     "items": "Items",
     "empty": "No orders found.",
+    "types": {
+      "merchant": "Merchant",
+      "shopper": "Shopper",
+      "courier": "Courier",
+      "ride": "Ride"
+    },
     "statuses": {
       "delivered": "delivered",
       "canceled": "canceled",

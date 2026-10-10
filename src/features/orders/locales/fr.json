@@ -8,6 +8,12 @@
     "total": "Total",
     "items": "Articles",
     "empty": "Aucune commande trouvée.",
+    "types": {
+      "merchant": "Marchand",
+      "shopper": "Achats",
+      "courier": "Coursier",
+      "ride": "Course"
+    },
     "statuses": {
       "delivered": "livrée",
       "canceled": "annulée",

@@ -8,6 +8,12 @@
     "total": "المجموع",
     "items": "العناصر",
     "empty": "لم يتم العثور على طلبات.",
+    "types": {
+      "merchant": "تاجر",
+      "shopper": "تسوّق",
+      "courier": "توصيل طرود",
+      "ride": "رحلة"
+    },
     "statuses": {
       "delivered": "تم التوصيل",
       "canceled": "ملغي",

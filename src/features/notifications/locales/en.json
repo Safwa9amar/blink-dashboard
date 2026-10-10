@@ -36,7 +36,7 @@
       "channels": "Channels",
       "channels_hint": "Where this is delivered.",
       "type": "Notification type",
-      "type_hint": "Sets the icon, colour & in-app routing. 10 types — from the app.",
+      "type_hint": "Sets the icon, colour & in-app routing. 11 types — from the app.",
       "write": "Write",
       "targeting": "Channels & Audience",
       "lang": "Content language",

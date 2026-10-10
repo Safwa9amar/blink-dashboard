@@ -35,9 +35,12 @@ export default function OrdersClient({ orders, error }: OrdersClientProps) {
     {
       key: "type",
       label: t("type"),
-      render: (row: Record<string, unknown>) => (
-        <span className="capitalize">{row.type as string}</span>
-      ),
+      render: (row: Record<string, unknown>) => {
+        const type = row.type as string;
+        const key = `types.${type}` as Parameters<typeof t>[0];
+        // Unknown (newer) order types fall back to the raw enum value.
+        return t.has(key) ? <span>{t(key)}</span> : <span className="capitalize">{type}</span>;
+      },
     },
     {
       key: "status",

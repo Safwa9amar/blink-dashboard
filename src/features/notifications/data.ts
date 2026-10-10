@@ -37,6 +37,7 @@ export const NSTATUS: Record<string, Variant> = {
 export const NTYPES: Record<string, NType> = {
   order: { label: "Order", icon: "package", color: "var(--primary)", bg: "var(--soft-pink)" },
   courier: { label: "Courier", icon: "truck", color: "var(--primary)", bg: "var(--soft-pink)" },
+  ride: { label: "Ride", icon: "bike", color: "var(--primary)", bg: "var(--soft-pink)" },
   promo: { label: "Promo", icon: "gift", color: "var(--primary)", bg: "var(--soft-pink)" },
   offer: { label: "Offer", icon: "tag", color: "#D97706", bg: "var(--warning-light)" },
   alert: { label: "Alert", icon: "warn", color: "var(--danger)", bg: "var(--danger-light)" },
@@ -50,6 +51,7 @@ export const NTYPE_KEYS = Object.keys(NTYPES);
 export const NTYPE_BADGE: Record<string, Variant> = {
   order: "primary",
   courier: "primary",
+  ride: "primary",
   promo: "primary",
   offer: "warning",
   alert: "danger",

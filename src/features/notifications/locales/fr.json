@@ -36,7 +36,7 @@
       "channels": "Canaux",
       "channels_hint": "Où ceci est livré.",
       "type": "Type de notification",
-      "type_hint": "Définit l'icône, la couleur et le routage. 10 types.",
+      "type_hint": "Définit l'icône, la couleur et le routage. 11 types.",
       "write": "Rédiger",
       "targeting": "Canaux et public",
       "lang": "Langue du contenu",
