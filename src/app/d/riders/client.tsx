@@ -82,7 +82,7 @@ export default function RidersClient({ riders, error }: { riders: RiderRow[]; er
         description={t("description")}
         actions={
           <Link href="/riders/verification" className="text-[13px] font-semibold text-primary hover:underline">
-            {t("detail.review")}
+            {t("verification_queue")}
           </Link>
         }
       />

@@ -133,6 +133,7 @@
         "throttled": "Too many requests. Wait a moment and try again.",
         "generic": "Something went wrong. ({detail})"
       }
-    }
+    },
+    "verification_queue": "Verification queue"
   }
 }

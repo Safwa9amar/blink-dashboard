@@ -133,6 +133,7 @@
         "throttled": "Trop de requêtes. Patientez un instant et réessayez.",
         "generic": "Une erreur s'est produite. ({detail})"
       }
-    }
+    },
+    "verification_queue": "File de vérification"
   }
 }
