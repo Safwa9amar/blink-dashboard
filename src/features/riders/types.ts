@@ -3,7 +3,10 @@
 // receives plain, serializable fields.
 export type RiderVerification = "not_submitted" | "pending" | "approved" | "rejected";
 export type RiderVehicleType = "bicycle" | "motorcycle";
-export type VehicleDocState = "approved" | "needs_update" | "pending" | "not_uploaded";
+/** Review state of a vehicle document held in rider_profiles.documents. */
+export type VehicleDocState = "not_uploaded" | "pending" | "verified" | "rejected";
+export const VEHICLE_DOC_KEYS = ["gray_card_front", "gray_card_back", "insurance"] as const;
+export type VehicleDocKey = (typeof VEHICLE_DOC_KEYS)[number];
 
 export interface RiderVehicle {
   brand: string;
@@ -12,8 +15,6 @@ export interface RiderVehicle {
   year: string;
   color: string;
   category: string;
-  grayCard: VehicleDocState;
-  insurance: VehicleDocState;
 }
 
 export interface RiderRow {
@@ -26,6 +27,8 @@ export interface RiderRow {
   wilaya: string | null;
   vehicleType: RiderVehicleType | null;
   vehicle: RiderVehicle | null;
+  /** Gray card / insurance review state, from rider_profiles.documents. */
+  vehicleDocs: Record<VehicleDocKey, VehicleDocState>;
   verification: RiderVerification;
   available: boolean;
   joinedAt: string;

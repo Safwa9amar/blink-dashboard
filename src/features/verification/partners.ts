@@ -8,8 +8,31 @@ import type { ReviewDocState, TFn } from "./types";
 
 // ─── Rider documents (rider_profiles.documents) ──────────────────────
 // Mirrors blink-server src/lib/rider-verification.ts — keep in sync by hand.
-export const RIDER_DOC_KEYS = ["license_front", "license_back", "id_front", "id_back"] as const;
+export const RIDER_DOC_KEYS = [
+  "license_front",
+  "license_back",
+  "id_front",
+  "id_back",
+  "gray_card_front",
+  "gray_card_back",
+  "insurance",
+] as const;
 export type RiderDocKey = (typeof RIDER_DOC_KEYS)[number];
+
+export type RiderDocGroup = "identity" | "licence" | "vehicle";
+/** Display order of the tile groups. */
+export const RIDER_DOC_GROUPS: readonly RiderDocGroup[] = ["identity", "licence", "vehicle"];
+
+export function riderDocGroup(key: RiderDocKey): RiderDocGroup {
+  if (key.startsWith("id_")) return "identity";
+  if (key.startsWith("license_")) return "licence";
+  return "vehicle";
+}
+
+/** A bicycle rider only needs the national ID; every other vehicle needs all documents. */
+export function isRiderDocRequired(vehicleType: string | null, key: RiderDocKey): boolean {
+  return vehicleType === "bicycle" ? riderDocGroup(key) === "identity" : true;
+}
 
 /** rider_profiles.verification_status values the queue reads. */
 export type RiderVerificationStatus = "not_submitted" | "pending" | "approved" | "rejected";
@@ -40,7 +63,8 @@ export interface RiderDocSlot {
   status: ReviewDocState;
   note: string | null;
   uploadedAt: string | null;
-  /** false for a bicycle rider's driving licence (they only need the national ID). */
+  group: RiderDocGroup;
+  /** false for a bicycle rider's licence and vehicle documents (they only need the national ID). */
   required: boolean;
 }
 
@@ -240,17 +264,19 @@ export function buildRiderQueue(rows: readonly unknown[], signed: ReadonlyMap<st
     const stored = isRecord(row.documents) ? row.documents : {};
     const vehicle = text(row.vehicle_type);
     const docs: RiderDocSlot[] = RIDER_DOC_KEYS.map((key) => {
-      const required = !(vehicle === "bicycle" && key.startsWith("license_"));
+      const required = isRiderDocRequired(vehicle, key);
+      const group = riderDocGroup(key);
       const entry = stored[key];
       const path = isRecord(entry) ? text(entry.path) : null;
       if (!isRecord(entry) || !path) {
-        return { key, path: null, url: null, trusted: false, isPdf: false, status: "missing", note: null, uploadedAt: null, required };
+        return { key, group, path: null, url: null, trusted: false, isPdf: false, status: "missing", note: null, uploadedAt: null, required };
       }
       const legacy = isFullUrl(path);
       const url = legacy ? path : (signed.get(path) ?? null);
       const status = docStatus(entry.status);
       return {
         key,
+        group,
         path,
         url,
         trusted: !legacy && !!url,

@@ -33,8 +33,8 @@
       "rejected": "Rejeté"
     },
     "doc": {
-      "approved": "Approuvé",
-      "needs_update": "À mettre à jour",
+      "verified": "Vérifié",
+      "rejected": "Refusé",
       "pending": "En attente",
       "not_uploaded": "Non envoyé"
     },
@@ -51,8 +51,9 @@
       "color": "Couleur",
       "category": "Catégorie",
       "no_vehicle": "Aucun véhicule enregistré",
-      "gray_card": "Carte grise",
-      "insurance": "Assurance",
+      "gray_card_front": "Carte grise (recto)",
+      "gray_card_back": "Carte grise (verso)",
+      "insurance": "Attestation d'assurance",
       "no_documents": "Aucun document de véhicule requis",
       "licence_note": "Le permis de conduire est vérifié avec les documents du livreur.",
       "review": "Vérifier les documents"

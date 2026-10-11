@@ -33,8 +33,8 @@
       "rejected": "Rejected"
     },
     "doc": {
-      "approved": "Approved",
-      "needs_update": "Needs update",
+      "verified": "Verified",
+      "rejected": "Rejected",
       "pending": "Pending",
       "not_uploaded": "Not uploaded"
     },
@@ -51,8 +51,9 @@
       "color": "Color",
       "category": "Category",
       "no_vehicle": "No vehicle registered",
-      "gray_card": "Gray card",
-      "insurance": "Insurance",
+      "gray_card_front": "Gray card (front)",
+      "gray_card_back": "Gray card (back)",
+      "insurance": "Insurance certificate",
       "no_documents": "No vehicle documents required",
       "licence_note": "The driving licence is reviewed with the rider's documents.",
       "review": "Review documents"

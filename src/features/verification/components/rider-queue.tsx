@@ -5,6 +5,7 @@ import { Badge, Button, DashIcon, EmptyState, FilterPills } from "@/components/u
 import { reviewRiderDocument } from "@/app/d/verification/partner-action";
 import { formatDateTime } from "../queue";
 import {
+  RIDER_DOC_GROUPS,
   RIDER_NOTE_MAX,
   RIDER_VIEWS,
   ridersInView,
@@ -210,34 +211,46 @@ function RiderCard({
         <DetailField label={t("partners.fields.vehicle")}>{vehicle ?? "—"}</DetailField>
       </dl>
       <p className="text-[11px] font-bold uppercase text-subtext mb-2.5">{t("partners.rider.documents")}</p>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {r.docs.map((d: RiderDocSlot) => {
-          const label = riderDocLabel(t, d.key);
+      <div className="space-y-4">
+        {RIDER_DOC_GROUPS.map((group) => {
+          // A group shows when a document in it is required or has been uploaded.
+          const docs = r.docs.filter((d) => d.group === group && (d.required || d.status !== "missing"));
+          if (docs.length === 0) return null;
           return (
-            <DocumentTile
-              key={d.key}
-              t={t}
-              label={label}
-              url={d.url}
-              trusted={d.trusted}
-              isPdf={d.isPdf}
-              status={d.status}
-              note={d.note}
-              actions={
-                <PartnerDocActions
-                  t={t}
-                  label={label}
-                  status={d.status}
-                  untrusted={!!d.url && !d.trusted}
-                  noteVariant="reject_rider_doc"
-                  noteMax={RIDER_NOTE_MAX}
-                  submit={(verdict, reason) =>
-                    reviewRiderDocument({ riderId: r.id, document: d.key, path: d.path ?? "" }, verdict, reason)
-                  }
-                  onOutcome={(verdict, outcome) => handle(label, verdict, outcome)}
-                />
-              }
-            />
+            <section key={group}>
+              <h4 className="text-xs font-semibold text-text mb-2">{t(`partners.rider.group.${group}`)}</h4>
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] gap-3">
+                {docs.map((d: RiderDocSlot) => {
+                  const label = riderDocLabel(t, d.key);
+                  return (
+                    <DocumentTile
+                      key={d.key}
+                      t={t}
+                      label={label}
+                      url={d.url}
+                      trusted={d.trusted}
+                      isPdf={d.isPdf}
+                      status={d.status}
+                      note={d.note}
+                      actions={
+                        <PartnerDocActions
+                          t={t}
+                          label={label}
+                          status={d.status}
+                          untrusted={!!d.url && !d.trusted}
+                          noteVariant="reject_rider_doc"
+                          noteMax={RIDER_NOTE_MAX}
+                          submit={(verdict, reason) =>
+                            reviewRiderDocument({ riderId: r.id, document: d.key, path: d.path ?? "" }, verdict, reason)
+                          }
+                          onOutcome={(verdict, outcome) => handle(label, verdict, outcome)}
+                        />
+                      }
+                    />
+                  );
+                })}
+              </div>
+            </section>
           );
         })}
       </div>

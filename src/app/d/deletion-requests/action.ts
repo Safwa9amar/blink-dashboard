@@ -114,8 +114,6 @@ export async function completeDeletionRequest(requestId: string) {
     supabase
       .from("rider_profiles")
       .update({
-        license_front_url: null,
-        license_back_url: null,
         is_available: false,
         latitude: null,
         longitude: null,

@@ -1,4 +1,10 @@
-import type { RiderRow, RiderVehicle, RiderVerification, VehicleDocState } from "./types";
+import {
+  type RiderRow,
+  type RiderVehicle,
+  type RiderVerification,
+  type VehicleDocKey,
+  type VehicleDocState,
+} from "./types";
 
 type Rec = Record<string, unknown>;
 const isRec = (v: unknown): v is Rec => typeof v === "object" && v !== null && !Array.isArray(v);
@@ -8,8 +14,21 @@ const strOrNull = (v: unknown): string | null => (typeof v === "string" && v ? v
 const one = (v: unknown): Rec | null => (Array.isArray(v) ? (isRec(v[0]) ? v[0] : null) : isRec(v) ? v : null);
 
 const VERIFICATION: readonly RiderVerification[] = ["not_submitted", "pending", "approved", "rejected"];
-const DOC_STATES: readonly VehicleDocState[] = ["approved", "needs_update", "pending", "not_uploaded"];
-const docState = (v: unknown): VehicleDocState => DOC_STATES.find((s) => s === v) ?? "not_uploaded";
+
+/** State of one rider_profiles.documents entry: no stored path = not uploaded. */
+function docState(entry: unknown): VehicleDocState {
+  if (!isRec(entry) || !strOrNull(entry.path)) return "not_uploaded";
+  return entry.status === "verified" || entry.status === "rejected" ? entry.status : "pending";
+}
+
+function toVehicleDocs(documents: unknown): Record<VehicleDocKey, VehicleDocState> {
+  const docs = isRec(documents) ? documents : {};
+  return {
+    gray_card_front: docState(docs.gray_card_front),
+    gray_card_back: docState(docs.gray_card_back),
+    insurance: docState(docs.insurance),
+  };
+}
 
 function toVehicle(v: Rec | null): RiderVehicle | null {
   if (!v) return null;
@@ -20,12 +39,10 @@ function toVehicle(v: Rec | null): RiderVehicle | null {
     year: str(v.year),
     color: str(v.color),
     category: str(v.category),
-    grayCard: docState(v.gray_card_status),
-    insurance: docState(v.insurance_status),
   };
 }
 
-/** rider_profiles row with `users(first_name, last_name, phone_number, wilaya, vehicles(...))` embedded. */
+/** rider_profiles row (with `documents`) with `users(first_name, last_name, phone_number, wilaya, vehicles(...))` embedded. */
 export function toRiderRow(row: unknown): RiderRow | null {
   if (!isRec(row) || typeof row.id !== "string") return null;
   const user = one(row.users);
@@ -39,6 +56,7 @@ export function toRiderRow(row: unknown): RiderRow | null {
     wilaya: strOrNull(user?.wilaya),
     vehicleType: type,
     vehicle: toVehicle(one(user?.vehicles)),
+    vehicleDocs: toVehicleDocs(row.documents),
     verification: VERIFICATION.find((s) => s === row.verification_status) ?? "not_submitted",
     available: row.is_available === true,
     joinedAt: str(row.created_at),

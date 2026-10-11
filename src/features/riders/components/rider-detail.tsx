@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { Avatar, Badge, Modal, btnSecondary, type Variant } from "@/components/ui";
-import type { RiderRow, RiderVerification, VehicleDocState } from "../types";
+import { VEHICLE_DOC_KEYS, type RiderRow, type RiderVerification, type VehicleDocState } from "../types";
 
 export const VERIFICATION_VARIANT: Record<RiderVerification, Variant> = {
   not_submitted: "default",
@@ -13,8 +13,8 @@ export const VERIFICATION_VARIANT: Record<RiderVerification, Variant> = {
 };
 
 const DOC_VARIANT: Record<VehicleDocState, Variant> = {
-  approved: "success",
-  needs_update: "danger",
+  verified: "success",
+  rejected: "danger",
   pending: "warning",
   not_uploaded: "default",
 };
@@ -38,7 +38,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 // Profile, vehicle specs and the vehicle documents a motorcycle needs (gray card,
-// insurance). The driving licence is a rider document, reviewed in rider verification.
+// insurance), read from rider_profiles.documents. The driving licence is a rider document, reviewed in rider verification.
 export function RiderDetail({ rider, onClose }: { rider: RiderRow | null; onClose: () => void }) {
   const t = useTranslations("riders");
   const locale = useLocale();
@@ -93,12 +93,11 @@ export function RiderDetail({ rider, onClose }: { rider: RiderRow | null; onClos
           <p className="py-1.5 text-[13px] text-subtext">{t("detail.no_documents")}</p>
         ) : (
           <>
-            <Field label={t("detail.gray_card")}>
-              <Badge variant={DOC_VARIANT[v?.grayCard ?? "not_uploaded"]}>{t(`doc.${v?.grayCard ?? "not_uploaded"}`)}</Badge>
-            </Field>
-            <Field label={t("detail.insurance")}>
-              <Badge variant={DOC_VARIANT[v?.insurance ?? "not_uploaded"]}>{t(`doc.${v?.insurance ?? "not_uploaded"}`)}</Badge>
-            </Field>
+            {VEHICLE_DOC_KEYS.map((key) => (
+              <Field key={key} label={t(`detail.${key}`)}>
+                <Badge variant={DOC_VARIANT[rider.vehicleDocs[key]]}>{t(`doc.${rider.vehicleDocs[key]}`)}</Badge>
+              </Field>
+            ))}
           </>
         )}
       </Section>

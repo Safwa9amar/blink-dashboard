@@ -281,10 +281,18 @@
         "license_front": "Driving licence (front)",
         "license_back": "Driving licence (back)",
         "id_front": "National ID (front)",
-        "id_back": "National ID (back)"
+        "id_back": "National ID (back)",
+        "gray_card_front": "Gray card (front)",
+        "gray_card_back": "Gray card (back)",
+        "insurance": "Insurance certificate"
       },
       "rider": {
         "documents": "Verification documents",
+        "group": {
+          "identity": "Identity",
+          "licence": "Driving licence",
+          "vehicle": "Vehicle documents"
+        },
         "filter": {
           "pending": "Pending review",
           "replacements": "Replacement documents",

@@ -6,6 +6,7 @@ import {
   agentViewCounts,
   buildAgentQueue,
   buildRiderQueue,
+  RIDER_DOC_KEYS,
   riderPathsToSign,
   type AgentQueueLoad,
   type RiderQueueLoad,
@@ -33,8 +34,8 @@ const AGENT_SHOP_SELECT = `id, user_id, shop_name, phone_number, address, descri
 const NO_RIDERS: RiderQueueLoad = { items: [], error: null, counts: { pending: 0, replacements: 0, rejected: 0 } };
 const NO_AGENTS: AgentQueueLoad = { items: [], error: null, counts: { pending: 0, rejected: 0 } };
 
-const RIDER_DOCS = ["license_front", "license_back", "id_front", "id_back"];
-/** PostgREST `or` filter: any of the four documents is waiting on staff. */
+const RIDER_DOCS: readonly string[] = RIDER_DOC_KEYS;
+/** PostgREST `or` filter: any rider document is waiting on staff. */
 const ANY_DOC_PENDING = RIDER_DOCS.map((k) => `documents->${k}->>status.eq.pending`).join(",");
 
 async function loadRiders(db: Admin): Promise<RiderQueueLoad> {

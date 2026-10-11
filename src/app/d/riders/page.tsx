@@ -19,7 +19,7 @@ export default async function RidersPage() {
   const { data, error } = await supabase
     .from("rider_profiles")
     .select(
-      "id, rider_id, vehicle_type, verification_status, is_available, created_at, users!rider_profiles_user_id_fkey(first_name, last_name, phone_number, wilaya, vehicles(brand, model, license_plate, year, color, category, gray_card_status, insurance_status))"
+      "id, rider_id, vehicle_type, documents, verification_status, is_available, created_at, users!rider_profiles_user_id_fkey(first_name, last_name, phone_number, wilaya, vehicles(brand, model, license_plate, year, color, category))"
     )
     .order("created_at", { ascending: false })
     .limit(LIMIT);
