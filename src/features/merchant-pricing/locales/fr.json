@@ -1,57 +1,119 @@
 {
   "merchant_pricing": {
-    "title": "Revision des prix",
-    "description": "Examiner et gerer les suggestions de prix des commercants",
+    "title": "Revue du catalogue",
+    "description": "Approuvez les suggestions de prix et les nouveaux produits des marchands avant leur mise en ligne",
+
+    "tab_prices": "Suggestions de prix",
+    "tab_products": "Nouveaux produits",
+    "tab_history": "Historique",
 
     "all": "Tout",
-    "search": "Rechercher par produit, magasin ou code-barres",
+    "search": "Rechercher par produit, magasin, marchand ou code-barres",
     "review_btn": "Examiner",
+    "view": "Voir les détails",
+    "showing_oldest": "Affichage des {shown} plus anciens sur {total} — traitez-les pour voir la suite.",
+    "showing_latest": "Affichage des {shown} plus récents sur {total}.",
 
     "stats": {
-      "pending": "En attente",
-      "pending_desc": "en attente d'action",
-      "accepted": "Acceptees",
-      "accepted_desc": "suggestions approuvees",
-      "rejected": "Rejetees",
-      "rejected_desc": "suggestions refusees",
-      "avg_deviation": "Ecart moyen",
-      "avg_deviation_desc": "par rapport au prix Blink"
+      "prices": "Suggestions de prix",
+      "prices_desc": "hors de la tolérance de ±20 %",
+      "products": "Nouveaux produits",
+      "products_desc": "en attente d'approbation",
+      "applied": "Prix appliqués",
+      "applied_desc": "en ligne — auto dans ±20 % ou approuvés par l'équipe",
+      "rejected": "Refusés par Blink",
+      "rejected_desc": "prix et produits refusés par l'équipe"
     },
 
     "col": {
       "product": "Produit",
       "store": "Magasin",
-      "category": "Categorie",
+      "merchant": "Marchand",
+      "phone": "Téléphone",
+      "category": "Catégorie",
       "barcode": "Code-barres",
+      "brand": "Marque",
+      "unit": "Unité",
+      "stock": "Stock",
+      "description": "Description",
       "blink_price": "Prix Blink",
-      "suggested": "Suggere",
-      "deviation": "Ecart",
-      "status": "Statut",
+      "current": "Actuel",
+      "suggested": "Suggéré",
+      "deviation": "Écart",
+      "submitted": "Soumis le",
+      "price": "Prix",
+      "photos": "Photos",
+      "decision": "Décision",
+      "note": "Note de revue",
+      "updated": "Mis à jour",
       "actions": "Actions"
     },
 
     "status": {
       "pending": "En attente",
-      "accepted": "Accepte",
-      "rejected": "Rejete"
+      "accepted": "Prix appliqué",
+      "rejected": "Refusé par Blink"
+    },
+
+    "review_status": {
+      "approved": "Approuvé",
+      "pending": "En attente",
+      "rejected": "Refusé"
     },
 
     "review": {
       "title": "Examiner la suggestion de prix",
-      "blink_price": "Prix de reference Blink",
+      "blink_price": "Prix de référence Blink",
+      "no_reference": "Non défini",
       "current_price": "Prix de vente actuel",
-      "suggested_price": "Prix suggere",
-      "deviation": "Ecart de prix",
-      "over_tolerance": "Cette suggestion depasse le seuil de tolerance de 20%.",
-      "note": "Note de revision",
-      "note_placeholder": "Raison optionnelle de l'approbation/rejet…",
+      "suggested_price": "Prix suggéré",
+      "deviation": "Écart avec le prix Blink",
+      "deviation_current": "Écart avec le prix actuel",
+      "over_tolerance": "Cette suggestion dépasse la tolérance de ±20 %.",
+      "product_pending": "Ce produit attend lui-même son approbation (onglet Nouveaux produits). Les clients ne le verront à aucun prix tant qu'il n'est pas approuvé.",
+      "accept_hint": "L'approbation fait du prix suggéré le prix de vente. Le marchand est notifié dans tous les cas.",
+      "note": "Motif du refus",
+      "note_hint": "Envoyé uniquement en cas de refus — obligatoire alors, et visible par le marchand. Ignoré si vous approuvez.",
+      "note_placeholder": "ex. Bien au-dessus du prix du marché pour ce produit…",
+      "note_required": "Ajoutez une note pour que le marchand sache pourquoi c'est refusé.",
       "approve": "Approuver",
-      "reject": "Rejeter"
+      "reject": "Refuser"
+    },
+
+    "product": {
+      "title": "Examiner le nouveau produit",
+      "no_photos": "Aucune photo envoyée",
+      "photo_n": "Photo {n}",
+      "from_library": "De la bibliothèque",
+      "no_description": "Aucune description."
+    },
+
+    "history": {
+      "price_accepted": "Prix appliqué",
+      "price_rejected": "Prix refusé par Blink",
+      "product_rejected": "Produit refusé par Blink",
+      "applied_hint": "« Prix appliqué » signifie que le prix suggéré est en ligne — appliqué automatiquement s'il restait dans ±20 %, ou approuvé par l'équipe.",
+      "suggested": "Suggéré {price}",
+      "filter_prices": "Prix",
+      "filter_products": "Produits"
+    },
+
+    "errors": {
+      "network": "Impossible de joindre Blink Server. Vérifiez votre connexion et réessayez.",
+      "session": "Votre session a expiré. Reconnectez-vous pour continuer.",
+      "forbidden": "Votre rôle ne permet pas de réviser le catalogue.",
+      "not_found": "Ce produit n'existe plus. La liste a été actualisée.",
+      "invalid": "Blink Server a refusé cette décision. Un refus doit être motivé. ({detail})",
+      "conflict": "Cet élément a changé ou a déjà été traité depuis son ouverture. La liste a été actualisée — rouvrez-le pour voir la dernière version.",
+      "throttled": "Trop de requêtes. Patientez un instant puis réessayez.",
+      "generic": "Une erreur est survenue. ({detail})"
     },
 
     "empty": {
-      "none": "Aucune suggestion de prix pour le moment.",
-      "filtered": "Aucune suggestion ne correspond a vos filtres."
+      "prices": "Aucune suggestion de prix en attente. Tout est à jour !",
+      "products": "Aucun nouveau produit en attente d'approbation.",
+      "history": "Aucune décision pour l'instant.",
+      "filtered": "Aucun résultat pour votre recherche."
     }
   }
 }

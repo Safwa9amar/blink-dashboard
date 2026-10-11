@@ -1,63 +1,115 @@
 {
   "packs": {
     "title": "Packs Management",
-    "description": "Review and manage promotional packs across all merchant stores",
+    "description": "Approve free-delivery packs and keep an eye on every merchant pack",
+
+    "tab_review": "Under Review",
+    "tab_all": "All Packs",
 
     "all": "All",
-    "search": "Search packs or stores",
-    "view": "View details",
+    "search": "Search packs, stores or merchants",
+    "view": "View",
+    "review_btn": "Review",
     "free": "Free",
     "standard": "Standard",
-    "off": "Off",
     "free_delivery": "Free Delivery",
     "qty_promo": "Qty Promo",
-    "items_label": "items",
+    "items_count": "{n, plural, one {# item} other {# items}}",
+    "free_units": "+{n} free",
+    "unsellable_short": "Hidden from customers",
+    "showing_oldest": "Showing the oldest {shown} of {total} — decide these to see the rest.",
+    "showing_latest": "Showing the latest {shown} of {total}.",
+    "pct_off": "{pct}% off",
 
     "stats": {
-      "total": "Total Packs",
-      "total_desc": "across all stores",
-      "active": "Active",
-      "active_desc": "live packs",
       "reviewing": "Under Review",
       "reviewing_desc": "awaiting approval",
+      "active": "Active",
+      "active_desc": "live packs",
       "free_delivery": "Free Delivery",
-      "free_delivery_desc": "packs with free delivery"
+      "free_delivery_desc": "live packs with free delivery",
+      "total": "Total Packs",
+      "total_desc": "across all stores"
     },
 
     "col": {
       "name": "Pack",
+      "merchant": "Merchant",
       "items": "Items",
       "discount": "Discount",
       "delivery": "Delivery",
       "price": "Pack Price",
       "status": "Status",
+      "submitted": "Submitted",
+      "updated": "Updated",
       "actions": "Actions"
     },
 
     "status": {
       "active": "Active",
-      "reviewing": "Under Review",
+      "under_review": "Under Review",
       "inactive": "Inactive",
       "archived": "Archived"
     },
 
     "detail": {
+      "created": "Created {date}",
       "items": "Included Items",
+      "missing_product": "Product no longer available",
       "buy_x_get_y": "Buy {buy} Get {get} Free",
-      "original": "Original Price",
+      "unsellable_review": "Customers can't see this pack until every item is from this store, available, approved and has a whole-number quantity — approving it won't change that. See the items flagged above.",
+      "unsellable_active": "Customers can't see this pack until every item is from this store, available, approved and has a whole-number quantity. See the items flagged above.",
+      "unsellable_empty": "This pack has no items, so customers can't see it.",
+      "original": "Items bought separately",
       "discount": "Discount ({pct}%)",
-      "delivery": "Delivery Fee",
-      "total": "Total"
+      "pack_price": "Pack price",
+      "delivery": "Delivery fee",
+      "total": "Customer pays",
+      "free_delivery_hint": "Approving lets this pack go live with free delivery. Blink covers the delivery fee.",
+      "reviewed_at": "Free delivery approved {date}",
+      "review_note": "Staff note"
+    },
+
+    "decision": {
+      "note_reject": "Reason for rejecting",
+      "note_deactivate": "Reason for deactivating",
+      "note_hint_review": "Only sent if you reject — required then, and shown to the merchant. Approving ignores it.",
+      "note_hint_deactivate": "Required — shown to the merchant.",
+      "note_required": "Add a note so the merchant knows why.",
+      "reject_placeholder": "e.g. The discount and free delivery together sell this pack below cost…",
+      "deactivate_placeholder": "e.g. This pack contains an item that is no longer allowed…"
+    },
+
+    "issue": {
+      "missing": "Product deleted",
+      "other_store": "Belongs to another store",
+      "unavailable": "Marked unavailable by the merchant",
+      "pending_review": "Product still awaiting approval",
+      "rejected": "Product rejected by Blink",
+      "bad_quantity": "Invalid quantity"
+    },
+
+    "errors": {
+      "network": "Couldn't reach Blink Server. Check your connection and try again.",
+      "session": "Your session expired. Sign in again to continue.",
+      "forbidden": "Your staff role isn't allowed to manage packs.",
+      "not_found": "This pack no longer exists. The list has been refreshed.",
+      "invalid": "Blink Server refused this decision. Rejecting or deactivating needs a reason. ({detail})",
+      "conflict": "This pack changed or was already decided since you opened it (or it can't change from its current status). The list has been refreshed — reopen it to see the latest version.",
+      "throttled": "Too many requests. Wait a moment and try again.",
+      "generic": "Something went wrong. ({detail})"
     },
 
     "action": {
       "approve": "Approve",
       "reject": "Reject",
-      "archive": "Archive Pack",
-      "reactivate": "Reactivate"
+      "deactivate": "Deactivate pack",
+      "cancel": "Cancel",
+      "confirm_deactivate": "Deactivate"
     },
 
     "empty": {
+      "review": "No packs waiting for review. All caught up!",
       "none": "No packs yet.",
       "filtered": "No packs match your filters."
     }

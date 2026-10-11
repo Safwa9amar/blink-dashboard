@@ -1,57 +1,119 @@
 {
   "merchant_pricing": {
-    "title": "Pricing Review",
-    "description": "Review and manage merchant price suggestions across the platform",
+    "title": "Catalog Review",
+    "description": "Approve merchant price suggestions and new products before customers see them",
+
+    "tab_prices": "Price Suggestions",
+    "tab_products": "New Products",
+    "tab_history": "History",
 
     "all": "All",
-    "search": "Search by product, store or barcode",
+    "search": "Search by product, store, merchant or barcode",
     "review_btn": "Review",
+    "view": "View details",
+    "showing_oldest": "Showing the oldest {shown} of {total} — decide these to see the rest.",
+    "showing_latest": "Showing the latest {shown} of {total}.",
 
     "stats": {
-      "pending": "Pending Review",
-      "pending_desc": "awaiting action",
-      "accepted": "Accepted",
-      "accepted_desc": "approved suggestions",
-      "rejected": "Rejected",
-      "rejected_desc": "declined suggestions",
-      "avg_deviation": "Avg Deviation",
-      "avg_deviation_desc": "from blink reference"
+      "prices": "Price Suggestions",
+      "prices_desc": "outside the ±20% tolerance",
+      "products": "New Products",
+      "products_desc": "awaiting approval",
+      "applied": "Prices Applied",
+      "applied_desc": "live — auto within ±20% or approved by staff",
+      "rejected": "Rejected by Blink",
+      "rejected_desc": "prices and products staff declined"
     },
 
     "col": {
       "product": "Product",
       "store": "Store",
+      "merchant": "Merchant",
+      "phone": "Phone",
       "category": "Category",
       "barcode": "Barcode",
+      "brand": "Brand",
+      "unit": "Unit",
+      "stock": "Stock",
+      "description": "Description",
       "blink_price": "Blink Price",
+      "current": "Current",
       "suggested": "Suggested",
       "deviation": "Deviation",
-      "status": "Status",
+      "submitted": "Submitted",
+      "price": "Price",
+      "photos": "Photos",
+      "decision": "Decision",
+      "note": "Review Note",
+      "updated": "Updated",
       "actions": "Actions"
     },
 
     "status": {
       "pending": "Pending",
-      "accepted": "Accepted",
+      "accepted": "Price applied",
+      "rejected": "Rejected by Blink"
+    },
+
+    "review_status": {
+      "approved": "Approved",
+      "pending": "Pending",
       "rejected": "Rejected"
     },
 
     "review": {
       "title": "Review Price Suggestion",
       "blink_price": "Blink Reference Price",
+      "no_reference": "Not set",
       "current_price": "Current Selling Price",
       "suggested_price": "Suggested Price",
-      "deviation": "Price Deviation",
-      "over_tolerance": "This suggestion exceeds the 20% tolerance threshold.",
-      "note": "Review Note",
-      "note_placeholder": "Optional reason for approval/rejection…",
+      "deviation": "Deviation from Blink price",
+      "deviation_current": "Deviation from current price",
+      "over_tolerance": "This suggestion is outside the ±20% tolerance.",
+      "product_pending": "This product itself is still waiting for approval (New Products tab). Customers won't see it at any price until it's approved.",
+      "accept_hint": "Approving makes the suggested price the live selling price. The merchant is notified either way.",
+      "note": "Reason for rejecting",
+      "note_hint": "Only sent if you reject — required then, and shown to the merchant. Approving ignores it.",
+      "note_placeholder": "e.g. Too far above the market price for this product…",
+      "note_required": "Add a note so the merchant knows why it was rejected.",
       "approve": "Approve",
       "reject": "Reject"
     },
 
+    "product": {
+      "title": "Review New Product",
+      "no_photos": "No photos uploaded",
+      "photo_n": "Photo {n}",
+      "from_library": "From library",
+      "no_description": "No description."
+    },
+
+    "history": {
+      "price_accepted": "Price applied",
+      "price_rejected": "Price rejected by Blink",
+      "product_rejected": "Product rejected by Blink",
+      "applied_hint": "“Price applied” means the suggested price is live — applied automatically when it was within ±20%, or approved by staff.",
+      "suggested": "Suggested {price}",
+      "filter_prices": "Prices",
+      "filter_products": "Products"
+    },
+
+    "errors": {
+      "network": "Couldn't reach Blink Server. Check your connection and try again.",
+      "session": "Your session expired. Sign in again to continue.",
+      "forbidden": "Your staff role isn't allowed to review the catalog.",
+      "not_found": "This product no longer exists. The list has been refreshed.",
+      "invalid": "Blink Server refused this decision. A rejection needs a reason. ({detail})",
+      "conflict": "This item changed or was already decided since you opened it. The list has been refreshed — reopen it to review the latest version.",
+      "throttled": "Too many requests. Wait a moment and try again.",
+      "generic": "Something went wrong. ({detail})"
+    },
+
     "empty": {
-      "none": "No price suggestions yet.",
-      "filtered": "No suggestions match your filters."
+      "prices": "No price suggestions waiting. All caught up!",
+      "products": "No new products waiting for approval.",
+      "history": "No decisions yet.",
+      "filtered": "Nothing matches your search."
     }
   }
 }

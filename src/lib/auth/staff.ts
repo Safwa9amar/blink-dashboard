@@ -1,8 +1,10 @@
 // Server-side staff resolution + guards. Imported only by server entries (the `d`
 // layout and `action.ts` mutations) — never by client components.
 
+import { cache } from "react";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { isStaffRole, type StaffRole } from "./access";
+import { canAccessPath, defaultPathFor, isStaffRole, type StaffRole } from "./access";
 
 // Resolves the current viewer's dashboard role, or null if they aren't staff.
 //
@@ -41,4 +43,23 @@ export async function getCurrentStaffRole(): Promise<StaffRole | null> {
 export async function hasStaffRole(...allowed: StaffRole[]): Promise<boolean> {
   const role = await getCurrentStaffRole();
   return role !== null && allowed.includes(role);
+}
+
+// One role lookup per request, shared by every gate a render runs (layout, page and
+// data loaders all call requirePathAccess).
+const roleForRequest = cache(getCurrentStaffRole);
+
+/**
+ * Server gate for one dashboard section (`path` = its nav href, e.g. "/merchant-pricing").
+ * Redirects a viewer whose staff role can't reach it to their landing page (non-staff
+ * to /login) and returns the role otherwise. Call it in the page / data loader that
+ * reads the rows, not only in a layout: a layout doesn't re-run on client navigation
+ * and renders in parallel with its page, so a layout-only check would still let the
+ * page's data reach the RSC payload.
+ */
+export async function requirePathAccess(path: string): Promise<StaffRole> {
+  const role = await roleForRequest();
+  if (!role) redirect("/login");
+  if (!canAccessPath(role, path)) redirect(defaultPathFor(role));
+  return role;
 }

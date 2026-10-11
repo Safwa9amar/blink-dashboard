@@ -185,7 +185,7 @@
     "deep_links": "الروابط العميقة",
     "marketplace": "السوق",
     "library": "مكتبة المنتجات",
-    "pricing": "مراجعة الاسعار",
+    "pricing": "مراجعة الكتالوج",
     "packs": "الحزم",
     "customers": "العملاء",
     "merchants": "التجار",
@@ -193,7 +193,8 @@
     "platform": "المنصة",
     "access": "الوصول",
     "blink_server": "خادم Blink",
-    "email": "البريد"
+    "email": "البريد",
+    "deletion_requests": "طلبات الحذف"
   },
   "dash": {
     "search": "بحث",

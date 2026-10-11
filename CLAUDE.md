@@ -47,10 +47,15 @@ Sidebar nav, grouped (labels & order from [src/components/sidebar.tsx](src/compo
 | `/trips`        | `trips` (limit 50)                                           | —                                                                                              |
 | `/blink-cash`   | `transactions` (limit 50) — feeds the **Ledger** tab & Overview "latest activity" | —                                                                         |
 | `/agent-shops`  | `agent_shops`                                                | —                                                                                              |
+| `/merchant-pricing` (Catalog review: prices · products · history) | `store_products` ⨝ `stores` ⨝ `users` (service role) | **yes** — via blink-server `PATCH /merchant/admin/products/{id}/review` ([action.ts](src/app/d/merchant-pricing/action.ts)) |
+| `/packs-management` (under review · all) | `store_packs` ⨝ `stores` ⨝ `users` + item products (service role) | **yes** — via blink-server `PATCH /merchant/admin/packs/{id}/status` ([action.ts](src/app/d/packs-management/action.ts)) |
+| `/verification` (Merchant stores tab: pending review · rejected · live) | `stores` ⨝ `users` + `store_products(count)` (service role), loaders in [data.ts](src/app/d/verification/data.ts) | **yes** — via blink-server `PATCH /merchant/admin/stores/{id}/status` with `expected_updated_at` ([action.ts](src/app/d/verification/action.ts)); the dashboard never writes status columns. Riders / Agents tabs not built yet |
 
-`/transactions` is now a **redirect → `/blink-cash`** (no UI of its own). Within Blink Cash, only the **Ledger** is real data; the **Dues** and **Agent Float** tabs (and the deposits-vs-withdrawals chart, fee config & headline stats) stay UI aggregates over mock data — the mobile app derives them client-side and there are no DB tables for them.
+`/transactions` is now a **redirect → `/blink-cash`** (no UI of its own). Within Blink Cash, the **Ledger** is real data and the **Dues** tab shows real *merchant* dues from blink-server (`GET /merchant/admin/dues`, "Remind" → `POST /merchant/admin/dues/{store_id}/remind`, see [action.ts](src/app/d/blink-cash/action.ts)); the **Agent Float** tab, the deposits-vs-withdrawals chart, fee config & headline stats stay UI aggregates over mock data.
 
-Everything else (`coupons`, `deep-links`, `demand`, `live-ops`, `marketplace`, `news`, `notifications` + `notifications/[id]`, `promotions`, `settings`, `support`, `verification`) is presentational over mock data — safe to iterate on without a database.
+Staff writes that blink-server owns (it notifies the merchant, applies side effects) go through [src/lib/blink-api.ts](src/lib/blink-api.ts) (`blinkApi(path, { method, body, roles })`, signed with the operator's Supabase token) — server actions and server components only.
+
+Everything else (`coupons`, `deep-links`, `demand`, `live-ops`, `marketplace`, `news`, `notifications` + `notifications/[id]`, `promotions`, `settings`, `support`) is presentational over mock data — safe to iterate on without a database.
 
 ## Feature-first layout (`src/features/`)
 
@@ -61,7 +66,7 @@ The codebase follows a **feature-first** structure (see the Next.js "split by fe
 A feature folder holds:
 
 - a **`components/` folder, one React component per file** (kebab-case). Each imports the UI kit from `@/components/ui` and data/types from `../data`. Mark a component `"use client"` **only when it uses hooks**.
-- **`data.ts`** — mock/seed data + re-exported types (most features; `settings` and `users` have none — they're driven by Supabase rows or static config).
+- **`data.ts`** — mock/seed data + re-exported types (most features; `settings`, `users` and `verification` have none — they're driven by Supabase rows or static config; `verification` keeps pure row mappers in `queue.ts` instead).
 - **`types.ts`** — domain types (a `TFn` translator type recurs across features).
 - a public **`index.ts` barrel** — the only allowed import surface: `@/features/<name>`, never deep paths.
 - **`locales/{en,fr,ar}.json`** — the feature's own strings (all 13 have these).

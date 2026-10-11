@@ -185,7 +185,7 @@
     "deep_links": "Deep Links",
     "marketplace": "Marketplace",
     "library": "Products Library",
-    "pricing": "Pricing Review",
+    "pricing": "Catalog Review",
     "packs": "Packs",
     "customers": "Customers",
     "merchants": "Merchants",
@@ -193,7 +193,8 @@
     "platform": "Platform",
     "access": "Access",
     "blink_server": "Blink Server",
-    "email": "Email"
+    "email": "Email",
+    "deletion_requests": "Deletion Requests"
   },
   "dash": {
     "search": "Search",

@@ -185,7 +185,7 @@
     "deep_links": "Liens profonds",
     "marketplace": "Marketplace",
     "library": "Bibliothèque de Produits",
-    "pricing": "Revision des Prix",
+    "pricing": "Revue du catalogue",
     "packs": "Packs",
     "customers": "Clients",
     "merchants": "Commerçants",
@@ -193,7 +193,8 @@
     "platform": "Plateforme",
     "access": "Accès",
     "blink_server": "Serveur Blink",
-    "email": "E-mail"
+    "email": "E-mail",
+    "deletion_requests": "Demandes de suppression"
   },
   "dash": {
     "search": "Rechercher",

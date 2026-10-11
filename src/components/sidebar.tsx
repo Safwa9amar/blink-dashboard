@@ -61,6 +61,7 @@ const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
       { key: "demand", href: "/demand", icon: "trending" },
       { key: "live_ops", href: "/live-ops", icon: "activity" },
       { key: "users", href: "/users", icon: "users" },
+      { key: "deletion_requests", href: "/deletion-requests", icon: "trash" },
       { key: "access", href: "/access", icon: "lock" },
       { key: "verification", href: "/verification", icon: "shield" },
       { key: "blink_cash", href: "/blink-cash", icon: "wallet" },

@@ -3,12 +3,23 @@ import { BC_WEEK, type BlinkTransaction } from "../data";
 import { BCStats } from "./bc-stats";
 import { ConfigRow } from "./config-row";
 import { ledgerColumns } from "./ledger-columns";
-import type { TFn } from "../types";
+import type { DuesHeadline, TFn } from "../types";
 
-export function Overview({ t, txns, error }: { t: TFn; txns: BlinkTransaction[] | null; error?: string }) {
+export function Overview({
+  t,
+  txns,
+  error,
+  dues,
+}: {
+  t: TFn;
+  txns: BlinkTransaction[] | null;
+  error?: string;
+  /** Merchant dues headline, streamed from the page (see BCStats). */
+  dues?: Promise<DuesHeadline | null>;
+}) {
   return (
     <>
-      <BCStats t={t} />
+      <BCStats t={t} dues={dues} />
       <div className="grid grid-cols-1 lg:grid-cols-[1.55fr_1fr] gap-5 mb-5">
         <Card>
           <ChartHead

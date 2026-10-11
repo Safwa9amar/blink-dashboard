@@ -1,32 +1,264 @@
 {
   "verification": {
     "title": "Verification",
-    "description": "KYC & document review queue",
+    "description": "Review new merchant stores before they go live",
     "awaiting": "{n} awaiting review",
-    "applicant": "Applicant",
-    "role": "Role",
-    "status": "Status",
-    "documents": "Documents",
-    "submitted": "Submitted",
-    "review": "Review",
-    "search": "Search applicants",
-    "empty": "Queue is clear.",
-    "stats": {
-      "pending": "Pending Review",
-      "pending_chg": "9 over 24h SLA",
-      "approved": "Approved Today",
-      "approved_chg": "▲ 8% vs yesterday",
-      "rejected": "Rejected",
-      "rejected_chg": "Mostly blurry docs",
-      "avg_time": "Avg Review Time",
-      "avg_time_chg": "Target < 4h"
+    "submitted_at": "Submitted {date}",
+    "updated_at": "Updated {date}",
+    "unnamed": "Unnamed",
+    "load_error": "Couldn't load this queue: {error}",
+    "note": "Staff note: {note}",
+    "notice_dismiss": "Dismiss",
+    "service_role_missing": "Server misconfigured: service role key missing",
+    "tabs": {
+      "stores": "Merchant stores"
     },
-    "st": {
-      "pending": "pending",
-      "in_progress": "in progress",
-      "rejected": "rejected",
-      "missing_info": "missing info",
-      "approved": "approved"
+    "stats": {
+      "stores": "Stores to review",
+      "stores_chg": "Waiting for a decision",
+      "stores_resubmitted": "Resubmitted",
+      "stores_resubmitted_chg": "Back after a rejection",
+      "stores_documents": "Documents to verify",
+      "stores_documents_chg": "Live stores with unverified documents",
+      "stores_rejected": "Rejected",
+      "stores_rejected_chg": "Waiting on the merchant",
+      "stores_live": "Live stores",
+      "stores_live_chg": "Visible to customers"
+    },
+    "status": {
+      "pending": "Pending",
+      "verified": "Verified",
+      "rejected": "Rejected",
+      "missing": "Not uploaded"
+    },
+    "doc_status": {
+      "missing": "Missing",
+      "pending": "Pending verification",
+      "verified": "Verified",
+      "rejected": "Rejected"
+    },
+    "doc_summary": {
+      "label": "Documents:",
+      "verified": "{n}/{total} verified",
+      "pending": "{n} pending",
+      "rejected": "{n} rejected",
+      "missing": "{n} missing"
+    },
+    "doc_review": {
+      "verify": "Verify",
+      "reject": "Reject",
+      "verify_label": "Verify {doc}",
+      "reject_label": "Reject {doc}",
+      "verify_title": "Verify {doc}?",
+      "untrusted_warning": "This file isn't in Blink's storage, so it can't be previewed or checked here. Only verify it if you've checked the original some other way.",
+      "verify_anyway": "Verify anyway"
+    },
+    "doc": {
+      "commercial_register_front": "Commercial register (front)",
+      "commercial_register_back": "Commercial register (back)",
+      "logo": "Logo",
+      "cover": "Cover photo",
+      "gallery": "Gallery photo {n}",
+      "additional": "Additional document"
+    },
+    "category": {
+      "restaurant": "Restaurant",
+      "supermarket": "Supermarket",
+      "parcels": "Parcels",
+      "pastry": "Pastry",
+      "cosmetics": "Cosmetics",
+      "others": "Others",
+      "convenience": "Convenience store",
+      "grocery": "Grocery",
+      "bakery": "Bakery",
+      "pharmacy": "Pharmacy",
+      "electronics": "Electronics",
+      "clothing": "Clothing",
+      "other": "Other"
+    },
+    "days": {
+      "sat": "Sat",
+      "sun": "Sun",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri"
+    },
+    "hours": {
+      "range": "{from} – {to}",
+      "closed": "Closed",
+      "not_set": "Not set"
+    },
+    "fields": {
+      "nif": "NIF",
+      "nis": "NIS"
+    },
+    "stores": {
+      "status": {
+        "pending": "Pending review",
+        "rejected": "Rejected",
+        "live": "Live"
+      },
+      "resubmitted": "Resubmitted",
+      "owner_deletion": {
+        "pending": "Owner is deleting their account",
+        "completed": "Owner deleted their account"
+      },
+      "owner_deletion_hint": {
+        "pending": "The owner asked to delete their Blink account, so this store can't be approved.",
+        "completed": "The owner's Blink account was deleted, so this store can't be approved."
+      },
+      "degraded_title": "Some details couldn't be read.",
+      "degraded": "This store's data is malformed, so only the basics are shown. Check it in the database before approving it.",
+      "filter": {
+        "pending": "Pending review",
+        "documents": "Documents to verify",
+        "rejected": "Rejected",
+        "live": "Live"
+      },
+      "filter_count": "{label} ({n})",
+      "filter_hint": {
+        "pending": "New stores and resubmissions waiting for a decision, oldest first.",
+        "documents": "Live stores with a document Blink hasn't verified yet (new, or changed since it was checked), oldest first. Verify or reject each document.",
+        "rejected": "Rejected or deactivated with a note. The merchant can fix and resubmit, or you can approve it directly.",
+        "live": "Approved stores customers can see. Deactivating takes a store down and needs a note."
+      },
+      "previous_note": "Rejected before. Previous note:",
+      "review_note": "Note sent to the merchant:",
+      "missing": "Missing documents: {list}",
+      "owner": "Owner",
+      "contact": "Store contact",
+      "phone": "Phone",
+      "whatsapp": "WhatsApp",
+      "address": "Address",
+      "open_map": "Open in Google Maps",
+      "hours": "Opening hours",
+      "category": "Category",
+      "products": "Products",
+      "product_count": "{n, plural, =0 {No products} one {# product} other {# products}}",
+      "description": "Description",
+      "no_description": "No description.",
+      "documents": "Business documents",
+      "photos": "Store photos",
+      "no_photos": "No photos uploaded.",
+      "showing_oldest": "Showing the {shown} oldest of {total}.",
+      "showing_latest": "Showing the {shown} most recently updated of {total}.",
+      "badge_documents": "Documents to verify",
+      "documents_checked": "Counted over the {checked} oldest of {total} live stores.",
+      "doc_done": {
+        "verified": "{doc} verified for {name}.",
+        "rejected": "{doc} rejected for {name}. The merchant sees your reason."
+      },
+      "done": {
+        "approve": "{name} approved. It's live now.",
+        "reject": "{name} rejected. The merchant sees your note.",
+        "deactivate": "{name} deactivated. The merchant sees your note."
+      },
+      "stages": {
+        "journey_title": "Compliance Trust Journey",
+        "journey_sub": "Step-by-step verification pipeline & store credentials",
+        "stage1_title": "Stage 1: Merchant & Ownership Credential",
+        "stage1_desc": "Account identity, owner details, and direct contact channels",
+        "stage2_title": "Stage 2: Official Fiscal Identifiers (NIF & NIS)",
+        "stage2_desc": "Tax registry validation and commercial numbers",
+        "stage3_title": "Stage 3: Physical Operations & Storefront",
+        "stage3_desc": "Store location, schedule, catalog items, and description",
+        "stage4_title": "Stage 4: Registre du Commerce (RC) & Official Scans",
+        "stage4_desc": "Official scanned filings, endorsements, and storefront photos",
+        "passed": "Verified",
+        "action_needed": "Action Needed",
+        "missing_alert": "Missing Required Files",
+        "audit_status": "Compliance Audit Progress",
+        "complete": "Complete"
+      },
+      "table": {
+        "col_store": "Merchant Store",
+        "col_owner": "Owner & Contact",
+        "col_status": "Status",
+        "col_compliance": "Documents Health",
+        "col_date": "Last Activity",
+        "col_action": "Action",
+        "inspect": "Inspect Store",
+        "back_to_list": "Back to Stores List",
+        "view_table": "Table View",
+        "view_cards": "Cards View",
+        "store_counter": "Store {current} of {total}",
+        "rider_counter": "Rider {current} of {total}",
+        "agent_counter": "Agent {current} of {total}",
+        "back_to_riders": "Back to Riders List",
+        "back_to_agents": "Back to Agents List"
+      }
+    },
+    "viewer": {
+      "open": "Open {doc}",
+      "open_new_tab": "Open in a new tab",
+      "pdf": "PDF document",
+      "not_uploaded": "Not uploaded",
+      "unavailable": "Preview unavailable",
+      "untrusted": "External link — not verified"
+    },
+    "actions": {
+      "approve": "Approve",
+      "reject": "Reject",
+      "deactivate": "Deactivate"
+    },
+    "approve": {
+      "title": "Approve {name}?",
+      "missing": "Approve without: {list}?",
+      "degraded": "Some of this store's details couldn't be read, so its documents weren't checked. Approve anyway?",
+      "confirm": "Approve anyway",
+      "verifies_shown": "Approving also verifies the documents shown.",
+      "verifies_all": "Approving also marks all of its documents as verified.",
+      "overrides_rejected": "That includes the ones you rejected: {list}."
+    },
+    "reject": {
+      "title": "Reject {name}",
+      "note_label": "Reason for rejecting",
+      "note_placeholder": "What needs fixing? e.g. The commercial register scan is blurry. Please upload a clear photo.",
+      "note_hint": "Required. They'll see this note in the app.",
+      "cancel": "Cancel",
+      "confirm": "Reject"
+    },
+    "deactivate": {
+      "title": "Deactivate {name}",
+      "note_label": "Reason for deactivating",
+      "note_placeholder": "e.g. The store sells items that aren't allowed on Blink.",
+      "note_hint": "Required. They'll see this note in the app, and customers won't see the store anymore.",
+      "confirm": "Deactivate"
+    },
+    "reject_doc": {
+      "title": "Reject {doc}",
+      "note_label": "Reason for rejecting",
+      "note_placeholder": "What's wrong with it? e.g. The scan is blurry. Please upload a clear photo.",
+      "note_hint": "Required. The merchant sees this reason in the app and can fix the document.",
+      "confirm": "Reject document"
+    },
+    "errors": {
+      "invalid_target": "This item can't be reviewed.",
+      "note_required": "Add a note so the merchant knows why.",
+      "note_too_long": "The note is too long (300 characters max).",
+      "owner_leaving": "The owner asked to delete their Blink account, so this store can't be approved. The list was refreshed.",
+      "stale": "This document changed since you loaded it. The list was refreshed, so check it again.",
+      "document_missing": "The merchant removed this document. The list was refreshed.",
+      "network": "Couldn't reach Blink Server. Check your connection and try again.",
+      "session": "Your session expired. Sign in again to continue.",
+      "forbidden": "Your staff role isn't allowed to review applications.",
+      "not_found": "This store no longer exists. The list was refreshed.",
+      "invalid": "Blink Server refused this decision. ({detail})",
+      "conflict": "This store changed or was already decided since you loaded it. The list was refreshed, so check it and try again.",
+      "throttled": "Too many requests. Wait a moment and try again.",
+      "generic": "Something went wrong. ({detail})"
+    },
+    "empty": {
+      "stores_pending": "No stores waiting",
+      "stores_pending_desc": "New merchant stores show up here before they go live.",
+      "stores_documents": "No documents to verify",
+      "stores_documents_desc": "When a live store uploads or changes a document, it shows up here until someone at Blink checks it.",
+      "stores_rejected": "No rejected stores",
+      "stores_rejected_desc": "Stores you reject or deactivate with a note show up here until the merchant resubmits.",
+      "stores_live": "No live stores",
+      "stores_live_desc": "Approved stores show up here."
     },
     "partners": {
       "tab": {

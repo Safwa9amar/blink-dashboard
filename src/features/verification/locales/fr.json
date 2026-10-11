@@ -1,32 +1,264 @@
 {
   "verification": {
     "title": "Vérification",
-    "description": "File de vérification KYC et documents",
-    "awaiting": "{n} en attente",
-    "applicant": "Demandeur",
-    "role": "Rôle",
-    "status": "Statut",
-    "documents": "Documents",
-    "submitted": "Soumis",
-    "review": "Examiner",
-    "search": "Rechercher des demandeurs",
-    "empty": "File vide.",
-    "stats": {
-      "pending": "En attente",
-      "pending_chg": "9 au-delà du SLA 24h",
-      "approved": "Approuvés aujourd'hui",
-      "approved_chg": "▲ 8% vs hier",
-      "rejected": "Rejetés",
-      "rejected_chg": "Surtout documents flous",
-      "avg_time": "Temps moyen",
-      "avg_time_chg": "Objectif < 4h"
+    "description": "Vérifiez les nouvelles boutiques avant leur mise en ligne",
+    "awaiting": "{n} en attente de vérification",
+    "submitted_at": "Soumis le {date}",
+    "updated_at": "Modifié le {date}",
+    "unnamed": "Sans nom",
+    "load_error": "Impossible de charger cette file : {error}",
+    "note": "Note de l'équipe : {note}",
+    "notice_dismiss": "Fermer",
+    "service_role_missing": "Serveur mal configuré : clé service role manquante",
+    "tabs": {
+      "stores": "Boutiques"
     },
-    "st": {
-      "pending": "en attente",
-      "in_progress": "en cours",
-      "rejected": "rejeté",
-      "missing_info": "info manquante",
-      "approved": "approuvé"
+    "stats": {
+      "stores": "Boutiques à vérifier",
+      "stores_chg": "En attente d'une décision",
+      "stores_resubmitted": "Soumises à nouveau",
+      "stores_resubmitted_chg": "Revenues après un refus",
+      "stores_documents": "Documents à vérifier",
+      "stores_documents_chg": "Boutiques en ligne aux documents non vérifiés",
+      "stores_rejected": "Refusées",
+      "stores_rejected_chg": "En attente du commerçant",
+      "stores_live": "Boutiques en ligne",
+      "stores_live_chg": "Visibles par les clients"
+    },
+    "status": {
+      "pending": "En attente",
+      "verified": "Vérifié",
+      "rejected": "Refusé",
+      "missing": "Non envoyé"
+    },
+    "doc_status": {
+      "missing": "Manquant",
+      "pending": "En attente de vérification",
+      "verified": "Vérifié",
+      "rejected": "Refusé"
+    },
+    "doc_summary": {
+      "label": "Documents :",
+      "verified": "{n}/{total} {n, plural, one {vérifié} other {vérifiés}}",
+      "pending": "{n} en attente",
+      "rejected": "{n, plural, one {# refusé} other {# refusés}}",
+      "missing": "{n, plural, one {# manquant} other {# manquants}}"
+    },
+    "doc_review": {
+      "verify": "Vérifier",
+      "reject": "Refuser",
+      "verify_label": "Vérifier : {doc}",
+      "reject_label": "Refuser : {doc}",
+      "verify_title": "Vérifier « {doc} » ?",
+      "untrusted_warning": "Ce fichier n'est pas dans le stockage de Blink : il ne peut être ni prévisualisé ni contrôlé ici. Ne le vérifiez que si vous avez contrôlé l'original autrement.",
+      "verify_anyway": "Vérifier quand même"
+    },
+    "doc": {
+      "commercial_register_front": "Registre de commerce (recto)",
+      "commercial_register_back": "Registre de commerce (verso)",
+      "logo": "Logo",
+      "cover": "Photo de couverture",
+      "gallery": "Photo de galerie {n}",
+      "additional": "Document supplémentaire"
+    },
+    "category": {
+      "restaurant": "Restaurant",
+      "supermarket": "Supermarché",
+      "parcels": "Colis",
+      "pastry": "Pâtisserie",
+      "cosmetics": "Cosmétiques",
+      "others": "Autres",
+      "convenience": "Supérette",
+      "grocery": "Épicerie",
+      "bakery": "Boulangerie",
+      "pharmacy": "Pharmacie",
+      "electronics": "Électronique",
+      "clothing": "Vêtements",
+      "other": "Autre"
+    },
+    "days": {
+      "sat": "Sam",
+      "sun": "Dim",
+      "mon": "Lun",
+      "tue": "Mar",
+      "wed": "Mer",
+      "thu": "Jeu",
+      "fri": "Ven"
+    },
+    "hours": {
+      "range": "{from} – {to}",
+      "closed": "Fermé",
+      "not_set": "Non renseignés"
+    },
+    "fields": {
+      "nif": "NIF",
+      "nis": "NIS"
+    },
+    "stores": {
+      "status": {
+        "pending": "En vérification",
+        "rejected": "Refusée",
+        "live": "En ligne"
+      },
+      "resubmitted": "Soumise à nouveau",
+      "owner_deletion": {
+        "pending": "Le propriétaire supprime son compte",
+        "completed": "Compte du propriétaire supprimé"
+      },
+      "owner_deletion_hint": {
+        "pending": "Le propriétaire a demandé la suppression de son compte Blink : cette boutique ne peut pas être approuvée.",
+        "completed": "Le compte Blink du propriétaire a été supprimé : cette boutique ne peut pas être approuvée."
+      },
+      "degraded_title": "Certaines informations sont illisibles.",
+      "degraded": "Les données de cette boutique sont mal formées, seules les informations de base sont affichées. Vérifiez-la dans la base de données avant de l'approuver.",
+      "filter": {
+        "pending": "En vérification",
+        "documents": "Documents à vérifier",
+        "rejected": "Refusées",
+        "live": "En ligne"
+      },
+      "filter_count": "{label} ({n})",
+      "filter_hint": {
+        "pending": "Nouvelles boutiques et boutiques soumises à nouveau en attente d'une décision, les plus anciennes d'abord.",
+        "documents": "Boutiques en ligne dont un document n'a pas encore été vérifié par Blink (nouveau, ou modifié depuis sa vérification), les plus anciennes d'abord. Vérifiez ou refusez chaque document.",
+        "rejected": "Refusées ou désactivées avec une note. Le commerçant peut corriger et soumettre à nouveau, ou vous pouvez l'approuver directement.",
+        "live": "Boutiques approuvées, visibles par les clients. La désactivation retire la boutique et demande une note."
+      },
+      "previous_note": "Déjà refusée. Note précédente :",
+      "review_note": "Note envoyée au commerçant :",
+      "missing": "Documents manquants : {list}",
+      "owner": "Propriétaire",
+      "contact": "Contact de la boutique",
+      "phone": "Téléphone",
+      "whatsapp": "WhatsApp",
+      "address": "Adresse",
+      "open_map": "Ouvrir dans Google Maps",
+      "hours": "Horaires d'ouverture",
+      "category": "Catégorie",
+      "products": "Produits",
+      "product_count": "{n, plural, =0 {Aucun produit} one {# produit} other {# produits}}",
+      "description": "Description",
+      "no_description": "Aucune description.",
+      "documents": "Documents commerciaux",
+      "photos": "Photos de la boutique",
+      "no_photos": "Aucune photo envoyée.",
+      "showing_oldest": "Affichage des {shown} plus anciennes sur {total}.",
+      "showing_latest": "Affichage des {shown} plus récemment modifiées sur {total}.",
+      "badge_documents": "Documents à vérifier",
+      "documents_checked": "Compté sur les {checked} plus anciennes des {total} boutiques en ligne.",
+      "doc_done": {
+        "verified": "{doc} vérifié pour {name}.",
+        "rejected": "{doc} refusé pour {name}. Le commerçant voit votre motif."
+      },
+      "done": {
+        "approve": "{name} approuvée. Elle est en ligne.",
+        "reject": "{name} refusée. Le commerçant voit votre note.",
+        "deactivate": "{name} désactivée. Le commerçant voit votre note."
+      },
+      "stages": {
+        "journey_title": "Parcours de Conformité & Confiance",
+        "journey_sub": "Pipeline de vérification étape par étape et accréditations",
+        "stage1_title": "Étape 1 : Identité & Propriétaire",
+        "stage1_desc": "Compte commerçant, coordonnées et canaux de contact direct",
+        "stage2_title": "Étape 2 : Identifiants Fiscaux Officiels (NIF & NIS)",
+        "stage2_desc": "Validation du registre fiscal et numéros d'immatriculation",
+        "stage3_title": "Étape 3 : Opérations Physiques & Point de Vente",
+        "stage3_desc": "Adresse physique, horaires, catalogue de produits et description",
+        "stage4_title": "Étape 4 : Registre de Commerce (RC) & Documents Officiels",
+        "stage4_desc": "Scans officiels obligatoires, visas légaux et photos du magasin",
+        "passed": "Vérifié",
+        "action_needed": "Action requise",
+        "missing_alert": "Documents manquants requis",
+        "audit_status": "Progression de l'Audit de Conformité",
+        "complete": "Complet"
+      },
+      "table": {
+        "col_store": "Boutique du Commerçant",
+        "col_owner": "Propriétaire & Contact",
+        "col_status": "Statut",
+        "col_compliance": "Conformité des Documents",
+        "col_date": "Dernière Activité",
+        "col_action": "Action",
+        "inspect": "Examiner la Boutique",
+        "back_to_list": "Retour à la Liste des Boutiques",
+        "view_table": "Vue Tableau",
+        "view_cards": "Vue Cartes",
+        "store_counter": "Boutique {current} sur {total}",
+        "rider_counter": "Livreur {current} sur {total}",
+        "agent_counter": "Agent {current} sur {total}",
+        "back_to_riders": "Retour à la Liste des Livreurs",
+        "back_to_agents": "Retour à la Liste des Agents"
+      }
+    },
+    "viewer": {
+      "open": "Ouvrir {doc}",
+      "open_new_tab": "Ouvrir dans un nouvel onglet",
+      "pdf": "Document PDF",
+      "not_uploaded": "Non envoyé",
+      "unavailable": "Aperçu indisponible",
+      "untrusted": "Lien externe — non vérifié"
+    },
+    "actions": {
+      "approve": "Approuver",
+      "reject": "Refuser",
+      "deactivate": "Désactiver"
+    },
+    "approve": {
+      "title": "Approuver {name} ?",
+      "missing": "Approuver sans : {list} ?",
+      "degraded": "Certaines informations de cette boutique sont illisibles, ses documents n'ont donc pas été vérifiés. Approuver quand même ?",
+      "confirm": "Approuver quand même",
+      "verifies_shown": "Approuver vérifie aussi les documents affichés.",
+      "verifies_all": "Approuver marque aussi tous ses documents comme vérifiés.",
+      "overrides_rejected": "Y compris ceux que vous avez refusés : {list}."
+    },
+    "reject": {
+      "title": "Refuser {name}",
+      "note_label": "Motif du refus",
+      "note_placeholder": "Que faut-il corriger ? ex. Le scan du registre de commerce est flou. Merci d'envoyer une photo nette.",
+      "note_hint": "Obligatoire. Cette note s'affichera dans l'application.",
+      "cancel": "Annuler",
+      "confirm": "Refuser"
+    },
+    "deactivate": {
+      "title": "Désactiver {name}",
+      "note_label": "Motif de la désactivation",
+      "note_placeholder": "ex. La boutique vend des articles non autorisés sur Blink.",
+      "note_hint": "Obligatoire. Cette note s'affichera dans l'application, et les clients ne verront plus la boutique.",
+      "confirm": "Désactiver"
+    },
+    "reject_doc": {
+      "title": "Refuser « {doc} »",
+      "note_label": "Motif du refus",
+      "note_placeholder": "Quel est le problème ? ex. Le scan est flou. Merci d'envoyer une photo nette.",
+      "note_hint": "Obligatoire. Le commerçant verra ce motif dans l'application et pourra corriger le document.",
+      "confirm": "Refuser le document"
+    },
+    "errors": {
+      "invalid_target": "Cet élément ne peut pas être vérifié.",
+      "note_required": "Ajoutez une note pour que le commerçant sache pourquoi.",
+      "note_too_long": "La note est trop longue (300 caractères max).",
+      "owner_leaving": "Le propriétaire a demandé la suppression de son compte Blink : cette boutique ne peut pas être approuvée. La liste a été actualisée.",
+      "stale": "Ce document a changé depuis son chargement. La liste a été actualisée : vérifiez-le à nouveau.",
+      "document_missing": "Le commerçant a retiré ce document. La liste a été actualisée.",
+      "network": "Impossible de joindre Blink Server. Vérifiez votre connexion et réessayez.",
+      "session": "Votre session a expiré. Reconnectez-vous pour continuer.",
+      "forbidden": "Votre rôle ne permet pas de vérifier les demandes.",
+      "not_found": "Cette boutique n'existe plus. La liste a été actualisée.",
+      "invalid": "Blink Server a refusé cette décision. ({detail})",
+      "conflict": "Cette boutique a changé ou a déjà été traitée depuis son chargement. La liste a été actualisée : vérifiez-la et réessayez.",
+      "throttled": "Trop de requêtes. Patientez un instant et réessayez.",
+      "generic": "Une erreur est survenue. ({detail})"
+    },
+    "empty": {
+      "stores_pending": "Aucune boutique en attente",
+      "stores_pending_desc": "Les nouvelles boutiques apparaissent ici avant leur mise en ligne.",
+      "stores_documents": "Aucun document à vérifier",
+      "stores_documents_desc": "Quand une boutique en ligne envoie ou modifie un document, elle apparaît ici jusqu'à ce que Blink le vérifie.",
+      "stores_rejected": "Aucune boutique refusée",
+      "stores_rejected_desc": "Les boutiques refusées ou désactivées avec une note apparaissent ici jusqu'à ce que le commerçant les soumette à nouveau.",
+      "stores_live": "Aucune boutique en ligne",
+      "stores_live_desc": "Les boutiques approuvées apparaissent ici."
     },
     "partners": {
       "tab": {

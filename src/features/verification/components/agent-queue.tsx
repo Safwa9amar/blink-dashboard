@@ -23,48 +23,148 @@ import { DetailField } from "./detail-field";
 import { DocumentTile } from "./document-tile";
 import { PartnerDocActions } from "./partner-doc-actions";
 import { PartnerNotice, type PartnerNoticeValue } from "./partner-notice";
+import { AgentTable } from "./agent-table";
 
 const VIEW_VARIANT = { pending: "warning", rejected: "danger" } as const;
 const sectionTitle = "text-[11px] font-bold uppercase text-subtext mb-2.5";
 
-// Agents: the commercial register scans (verified / rejected one by one, with a
-// reason the agent sees) and the agent's shops (approved or rejected as a whole
-// — blink-server takes no note for a shop). Pending = something waits on staff;
-// rejected = only rejected items remain, waiting on the agent. Files are public
-// objects of the `agent` bucket; only those are previewed.
+// Agents queue: displays a master table list by default.
+// Selecting an agent row opens their detailed verification card,
+// with previous/next navigation and a back button.
 export function AgentQueue({ t, locale, load }: { t: TFn; locale: string; load: AgentQueueLoad }) {
   const [view, setView] = useState<AgentView>("pending");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<"table" | "cards">("table");
   const [notice, setNotice] = useState<PartnerNoticeValue | null>(null);
+
   const shown = agentsInView(load.items, view);
+  const selectedAgent = selectedId ? load.items.find((a) => a.id === selectedId) : null;
+  const currentIndex = selectedAgent ? shown.findIndex((a) => a.id === selectedAgent.id) : -1;
+
   const options: [AgentView, string][] = AGENT_VIEWS.map((v) => [
     v,
     t("partners.filter_count", { label: t(`partners.agent.filter.${v}`), n: load.counts[v] }),
   ]);
 
+  function changeView(v: AgentView) {
+    setView(v);
+    setSelectedId(null);
+    setNotice(null);
+  }
+
   return (
     <>
-      <FilterPills
-        options={options}
-        value={view}
-        onChange={(v) => {
-          setView(v);
-          setNotice(null);
-        }}
-      />
-      <p className="text-xs text-subtext -mt-2.5 mb-4">{t(`partners.agent.hint.${view}`)}</p>
       <PartnerNotice t={t} notice={notice} onDismiss={() => setNotice(null)} />
-      {shown.length === 0 ? (
-        <EmptyState
-          icon={<DashIcon name="shield" className="w-10 h-10" />}
-          title={t(`partners.agent.empty.${view}`)}
-          description={t(`partners.agent.empty.${view}_desc`)}
-        />
-      ) : (
-        <div className="space-y-4">
-          {shown.map((a) => (
-            <AgentCard key={a.id} t={t} locale={locale} agent={a} onNotice={setNotice} />
-          ))}
+
+      {selectedAgent ? (
+        <div>
+          {/* Top Back & Stepper Navigation Bar */}
+          <div className="flex flex-wrap items-center justify-between gap-3 bg-card border border-border/80 rounded-2xl p-3 sm:p-3.5 mb-4 shadow-sm">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <Button
+                size="xs"
+                variant="secondary"
+                onClick={() => setSelectedId(null)}
+                className="flex items-center gap-1.5"
+              >
+                <DashIcon name="chevron-left" className="w-3.5 h-3.5" />
+                <span>{t("stores.table.back_to_agents")}</span>
+              </Button>
+              <span className="text-xs text-subtext/60 hidden sm:inline">|</span>
+              <span className="text-xs font-semibold text-text truncate max-w-[200px] sm:max-w-xs">
+                {selectedAgent.name || t("unnamed")}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              {currentIndex >= 0 && (
+                <span className="text-xs text-subtext font-medium">
+                  {t("stores.table.agent_counter", { current: currentIndex + 1, total: shown.length })}
+                </span>
+              )}
+              <div className="flex items-center gap-1">
+                <Button
+                  size="xs"
+                  variant="outline"
+                  disabled={currentIndex <= 0}
+                  onClick={() => currentIndex > 0 && setSelectedId(shown[currentIndex - 1].id)}
+                  aria-label="Previous agent"
+                  className="px-2"
+                >
+                  <DashIcon name="chevron-left" className="w-3.5 h-3.5" />
+                </Button>
+                <Button
+                  size="xs"
+                  variant="outline"
+                  disabled={currentIndex < 0 || currentIndex >= shown.length - 1}
+                  onClick={() => currentIndex < shown.length - 1 && setSelectedId(shown[currentIndex + 1].id)}
+                  aria-label="Next agent"
+                  className="px-2"
+                >
+                  <DashIcon name="chevron-right" className="w-3.5 h-3.5" />
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <AgentCard t={t} locale={locale} agent={selectedAgent} onNotice={setNotice} />
         </div>
+      ) : (
+        <>
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <FilterPills options={options} value={view} onChange={changeView} />
+
+            <div className="flex items-center gap-1 bg-muted p-1 rounded-xl border border-border/40">
+              <button
+                type="button"
+                onClick={() => setViewMode("table")}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${
+                  viewMode === "table"
+                    ? "bg-card text-text shadow-sm border border-border/80"
+                    : "text-subtext hover:text-text"
+                }`}
+              >
+                <span>☷</span>
+                <span>{t("stores.table.view_table")}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("cards")}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${
+                  viewMode === "cards"
+                    ? "bg-card text-text shadow-sm border border-border/80"
+                    : "text-subtext hover:text-text"
+                }`}
+              >
+                <span>⊞</span>
+                <span>{t("stores.table.view_cards")}</span>
+              </button>
+            </div>
+          </div>
+
+          <p className="text-xs text-subtext -mt-2.5 mb-4">{t(`partners.agent.hint.${view}`)}</p>
+
+          {shown.length === 0 ? (
+            <EmptyState
+              icon={<DashIcon name="shield" className="w-10 h-10" />}
+              title={t(`partners.agent.empty.${view}`)}
+              description={t(`partners.agent.empty.${view}_desc`)}
+            />
+          ) : viewMode === "table" ? (
+            <AgentTable
+              t={t}
+              locale={locale}
+              agents={shown}
+              onSelectAgent={(a) => setSelectedId(a.id)}
+            />
+          ) : (
+            <div className="space-y-4">
+              {shown.map((a) => (
+                <AgentCard key={a.id} t={t} locale={locale} agent={a} onNotice={setNotice} />
+              ))}
+            </div>
+          )}
+        </>
       )}
     </>
   );
@@ -158,8 +258,6 @@ function AgentCard({
   );
 }
 
-// One agent shop: its details and files, with Approve / Reject. Reject asks
-// first (it can't carry a note, so the agent is only told it wasn't verified).
 function ShopRow({
   t,
   shop: s,

@@ -10,7 +10,7 @@ export default async function BlinkCashLayout({ children }: { children: ReactNod
   const items = [
     { href: "/blink-cash", label: t("overview"), icon: "wallet" },
     { href: "/blink-cash/ledger", label: t("tab_ledger"), icon: "card", count: String(rows?.length ?? 0) },
-    { href: "/blink-cash/dues", label: t("tab_dues"), icon: "dollar", count: "48" },
+    { href: "/blink-cash/dues", label: t("tab_dues"), icon: "dollar" },
     { href: "/blink-cash/agents", label: t("agent_float"), icon: "store" },
   ];
 

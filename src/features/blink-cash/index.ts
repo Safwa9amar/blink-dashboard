@@ -7,5 +7,6 @@ export { ConfigRow } from "./components/config-row";
 export { ledgerColumns } from "./components/ledger-columns";
 export type { TFn } from "./types";
 
-// `./data` re-exports the BlinkTransaction & DueRow types alongside the mock data.
+// `./data` re-exports the domain types alongside the ledger decoration maps,
+// the merchant-dues normalizer and the remaining mock data.
 export * from "./data";

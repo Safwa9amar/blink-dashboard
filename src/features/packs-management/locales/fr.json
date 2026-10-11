@@ -1,65 +1,117 @@
 {
   "packs": {
-    "title": "Gestion des Packs",
-    "description": "Examiner et gerer les packs promotionnels de tous les magasins",
+    "title": "Gestion des packs",
+    "description": "Approuvez les packs en livraison gratuite et suivez tous les packs des marchands",
+
+    "tab_review": "En révision",
+    "tab_all": "Tous les packs",
 
     "all": "Tout",
-    "search": "Rechercher packs ou magasins",
-    "view": "Voir les details",
-    "free": "Gratuit",
+    "search": "Rechercher packs, magasins ou marchands",
+    "view": "Voir",
+    "review_btn": "Examiner",
+    "free": "Gratuite",
     "standard": "Standard",
-    "off": "Reduction",
     "free_delivery": "Livraison gratuite",
-    "qty_promo": "Promo quantite",
-    "items_label": "articles",
+    "qty_promo": "Promo quantité",
+    "items_count": "{n, plural, one {# article} other {# articles}}",
+    "free_units": "+{n} offert(s)",
+    "unsellable_short": "Invisible pour les clients",
+    "showing_oldest": "Affichage des {shown} plus anciens sur {total} — traitez-les pour voir la suite.",
+    "showing_latest": "Affichage des {shown} plus récents sur {total}.",
+    "pct_off": "-{pct} %",
 
     "stats": {
-      "total": "Total des Packs",
-      "total_desc": "dans tous les magasins",
+      "reviewing": "En révision",
+      "reviewing_desc": "en attente d'approbation",
       "active": "Actifs",
       "active_desc": "packs en ligne",
-      "reviewing": "En revision",
-      "reviewing_desc": "en attente d'approbation",
       "free_delivery": "Livraison gratuite",
-      "free_delivery_desc": "packs avec livraison gratuite"
+      "free_delivery_desc": "packs en ligne avec livraison gratuite",
+      "total": "Total des packs",
+      "total_desc": "dans tous les magasins"
     },
 
     "col": {
       "name": "Pack",
+      "merchant": "Marchand",
       "items": "Articles",
       "discount": "Remise",
       "delivery": "Livraison",
-      "price": "Prix du Pack",
+      "price": "Prix du pack",
       "status": "Statut",
+      "submitted": "Soumis le",
+      "updated": "Mis à jour",
       "actions": "Actions"
     },
 
     "status": {
       "active": "Actif",
-      "reviewing": "En revision",
+      "under_review": "En révision",
       "inactive": "Inactif",
-      "archived": "Archive"
+      "archived": "Archivé"
     },
 
     "detail": {
+      "created": "Créé le {date}",
       "items": "Articles inclus",
-      "buy_x_get_y": "Achetez {buy} Obtenez {get} Gratuit",
-      "original": "Prix original",
-      "discount": "Remise ({pct}%)",
+      "missing_product": "Produit plus disponible",
+      "buy_x_get_y": "{buy} achetés, {get} offert(s)",
+      "unsellable_review": "Les clients ne verront pas ce pack tant que chaque article n'est pas de ce magasin, disponible, approuvé et en quantité entière — l'approuver n'y change rien. Voir les articles signalés ci-dessus.",
+      "unsellable_active": "Les clients ne verront pas ce pack tant que chaque article n'est pas de ce magasin, disponible, approuvé et en quantité entière. Voir les articles signalés ci-dessus.",
+      "unsellable_empty": "Ce pack ne contient aucun article : les clients ne le voient pas.",
+      "original": "Articles achetés séparément",
+      "discount": "Remise ({pct} %)",
+      "pack_price": "Prix du pack",
       "delivery": "Frais de livraison",
-      "total": "Total"
+      "total": "Le client paie",
+      "free_delivery_hint": "L'approbation met ce pack en ligne avec la livraison gratuite. Blink prend en charge les frais de livraison.",
+      "reviewed_at": "Livraison gratuite approuvée le {date}",
+      "review_note": "Note de l'équipe"
+    },
+
+    "decision": {
+      "note_reject": "Motif du refus",
+      "note_deactivate": "Motif de la désactivation",
+      "note_hint_review": "Envoyé uniquement en cas de refus — obligatoire alors, et visible par le marchand. Ignoré si vous approuvez.",
+      "note_hint_deactivate": "Obligatoire — visible par le marchand.",
+      "note_required": "Ajoutez une note pour que le marchand sache pourquoi.",
+      "reject_placeholder": "ex. Avec la remise et la livraison gratuite, ce pack est vendu à perte…",
+      "deactivate_placeholder": "ex. Ce pack contient un article qui n'est plus autorisé…"
+    },
+
+    "issue": {
+      "missing": "Produit supprimé",
+      "other_store": "Appartient à un autre magasin",
+      "unavailable": "Marqué indisponible par le marchand",
+      "pending_review": "Produit en attente d'approbation",
+      "rejected": "Produit refusé par Blink",
+      "bad_quantity": "Quantité invalide"
+    },
+
+    "errors": {
+      "network": "Impossible de joindre Blink Server. Vérifiez votre connexion et réessayez.",
+      "session": "Votre session a expiré. Reconnectez-vous pour continuer.",
+      "forbidden": "Votre rôle ne permet pas de gérer les packs.",
+      "not_found": "Ce pack n'existe plus. La liste a été actualisée.",
+      "invalid": "Blink Server a refusé cette décision. Un refus ou une désactivation doit être motivé. ({detail})",
+      "conflict": "Ce pack a changé ou a déjà été traité depuis son ouverture (ou son statut actuel ne le permet pas). La liste a été actualisée — rouvrez-le pour voir la dernière version.",
+      "throttled": "Trop de requêtes. Patientez un instant puis réessayez.",
+      "generic": "Une erreur est survenue. ({detail})"
     },
 
     "action": {
       "approve": "Approuver",
-      "reject": "Rejeter",
-      "archive": "Archiver le pack",
-      "reactivate": "Reactiver"
+      "reject": "Refuser",
+      "deactivate": "Désactiver le pack",
+      "cancel": "Annuler",
+      "confirm_deactivate": "Désactiver"
     },
 
     "empty": {
+      "review": "Aucun pack en attente de révision. Tout est à jour !",
       "none": "Aucun pack pour le moment.",
-      "filtered": "Aucun pack ne correspond a vos filtres."
+      "filtered": "Aucun pack ne correspond à vos filtres."
     }
   }
 }

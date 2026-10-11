@@ -1,56 +1,123 @@
+// Domain types for the packs-management feature.
+//
+// One row of `store_packs` (blink-server Drizzle schema `merchant.ts`) joined to its
+// store and the store's merchant, with its `items` resolved against `store_products`.
+// Kept in sync by hand. A free-delivery pack waits in `under_review` until staff
+// approve it; staff decisions go through blink-server
+// (`PATCH /merchant/admin/packs/{id}/status`), never straight to the DB.
 import type { Variant } from "@/components/ui";
 
-export type TFn = (k: string, v?: Record<string, string | number>) => string;
+export type PackStatus = "active" | "under_review" | "inactive" | "archived";
 
-export type PackStatus = "active" | "reviewing" | "inactive" | "archived";
+export const PACK_STATUS: Record<PackStatus, Variant> = {
+  active: "success",
+  under_review: "warning",
+  inactive: "default",
+  archived: "default",
+};
 
-export interface PackProduct {
-  id: string;
-  name: string;
-  price: number; // DZD per unit
+export const PACK_STATUS_KEYS: PackStatus[] = ["active", "under_review", "inactive", "archived"];
+
+/** One `store_packs.items[]` entry as stored. */
+export interface PackItemRow {
+  product_id: string;
+  quantity: number;
+  qty_promo_enabled?: boolean | null;
+  buy_qty?: number | null;
+  get_qty?: number | null;
 }
 
+/** The `store_products` columns a pack item is resolved with. */
+export interface PackProductRow {
+  id: string;
+  store_id: string;
+  title: string;
+  price: number | string;
+  image?: string | null;
+  photos?: string[] | null;
+  unit?: string | null;
+  is_available: boolean | null;
+  review_status: string | null;
+}
+
+/**
+ * Why customers can't buy a pack because of this item — the same checks as
+ * blink-server's store-packs.ts (product of this store, available, approved) and
+ * pack-pricing.ts (positive whole quantity). Null = the item is sellable.
+ */
+export type PackItemIssue = "missing" | "other_store" | "unavailable" | "pending_review" | "rejected" | "bad_quantity";
+
 export interface PackItem {
-  product: PackProduct;
+  productId: string;
+  /** Null when the product no longer exists. */
+  name: string | null;
+  image: string | null;
+  unit: string | null;
+  /** The product's live price; 0 when it is missing. */
+  unitPrice: number;
+  /** Charged units. */
   quantity: number;
-  qtyPromoEnabled: boolean;
+  /** Buy-X-get-Y units given on top, never charged. */
+  freeQty: number;
+  qtyPromo: boolean;
   buyQty: number;
   getQty: number;
+  issue: PackItemIssue | null;
 }
 
 export interface Pack {
   id: string;
   storeId: string;
   storeName: string;
+  storeDeliveryFee: number;
+  merchantName: string | null;
+  merchantPhone: string | null;
   name: string;
-  imageUrl?: string;
+  description: string | null;
+  image: string | null;
   items: PackItem[];
-  discountPercent: number; // 0-100
+  /** % discount in effect (0 when the discount is switched off). */
+  discountPercent: number;
   freeDelivery: boolean;
   status: PackStatus;
-  analysisAngle?: string; // for AI suggested packs
-  createdAt: number;
+  /** Why staff rejected / deactivated the pack. */
+  reviewNote: string | null;
+  /** When staff approved the pack's free delivery. */
+  reviewedAt: string | null;
+  createdAt: string;
+  /**
+   * The row's raw `updated_at`, untouched (no Date round-trip: Postgres keeps µs).
+   * Sent back with a decision so blink-server can refuse a stale one (409).
+   */
+  updatedAt: string;
+  /** Σ charged units. */
+  itemCount: number;
+  /** Σ free units. */
+  freeCount: number;
+  /** Σ unit price × quantity — the items bought separately. */
+  originalPrice: number;
+  savings: number;
+  /** What one pack costs the customer (before delivery). */
+  price: number;
+  /**
+   * Whether customers could buy this pack's contents: at least one item and no
+   * item issue (blink-server drops the whole pack from the store page otherwise).
+   * Independent of `status` — only `active` packs are listed at all.
+   */
+  sellable: boolean;
 }
 
-export const PACK_STATUS: Record<PackStatus, Variant> = {
-  active: "success",
-  reviewing: "warning",
-  inactive: "default",
-  archived: "default",
-};
+/** PostgREST select for a pack + its store + the store's merchant. */
+// One literal (not concatenated) so supabase-js can type the select.
+export const PACK_SELECT =
+  "id, store_id, name, description, image, items, discount_enabled, discount_percent, free_delivery, status, review_note, reviewed_at, created_at, updated_at, store:stores!store_packs_store_id_fkey(id, name, delivery_fee, owner:users!stores_owner_id_fkey(first_name, last_name, phone_number))";
 
-export const PACK_STATUS_KEYS: PackStatus[] = ["active", "reviewing", "inactive", "archived"];
+/** The product columns a pack's items are resolved (and checked for sellability) with. */
+export const PACK_PRODUCT_SELECT = "id, store_id, title, price, image, photos, unit, is_available, review_status";
 
-export const STANDARD_DELIVERY_FEE = 150; // DZD
-
-export function packOriginalPrice(items: PackItem[]): number {
-  return items.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
-}
-
-export function packDiscountAmount(pack: Pack): number {
-  return Math.round((packOriginalPrice(pack.items) * pack.discountPercent) / 100);
-}
-
-export function packFinalPrice(pack: Pack): number {
-  return packOriginalPrice(pack.items) - packDiscountAmount(pack);
+/** Exact pack counts per status (+ totals) — the "All" pills and headline stats. */
+export interface PackCounts {
+  total: number;
+  freeDeliveryActive: number;
+  byStatus: Record<PackStatus, number>;
 }
