@@ -5,8 +5,8 @@
 // `agent` in the app AND a `finance_admin` in the console without conflict.
 //
 // This file is intentionally pure (no imports, client- and server-safe) so both the
-// sidebar (hide nav) and the server gates (block access) read the same map. The route
-// keys are the nav `href`s from `src/components/sidebar.tsx`.
+// shell nav (hide menu entries) and the server gates (block access) read the same map.
+// The route keys are the nav `href`s from `src/lib/nav/modules.ts`.
 
 export const STAFF_ROLES = [
   "super_admin",

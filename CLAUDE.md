@@ -23,18 +23,27 @@ The admin console for **Blink** — a multi-service delivery super-app for the A
 
 - **Subdomain routing** ([src/middleware.ts](src/middleware.ts)): requests to a `dashboard.*` host are internally rewritten to `/d/*` and gated by Supabase auth (`updateSession` from [src/lib/supabase/middleware.ts](src/lib/supabase/middleware.ts) — unauthenticated → `/login`, authenticated-on-`/login` → `/`). On the main domain, `/d` routes are blocked (rewritten to `not-found`). `/login` is shared by both surfaces. The matcher skips static assets.
 - **Landing site** — [src/app/(landing)/](<src/app/(landing)/>): the home `page.tsx` + 16 footer pages (about, blink-pay, careers, courier, drive, driver-app, driver-hub, earnings-calculator, for-business, marketplace, press, privacy, rides, safety, support, terms). Shared shell in `(landing)/components/page-shell.tsx` (Nav + Footer) and `content.tsx` (Section/FeatureGrid/CTA/…); styling in [src/app/landing.css](src/app/landing.css) (its own `--brand`/`--ink` token set, separate from the dashboard tokens).
-- **Dashboard** — [src/app/d/](src/app/d/): routing + server data only. Each route is a thin **triad** (below) that composes UI from `src/features/` and `src/components/ui`. Chrome (sidebar, theme/lang switchers, scrollbar) lives in `d/layout.tsx` → [src/components/dashboard-shell.tsx](src/components/dashboard-shell.tsx) + [src/components/sidebar.tsx](src/components/sidebar.tsx).
+- **Dashboard** — [src/app/d/](src/app/d/): routing + server data only. Each route is a thin **triad** (below) that composes UI from `src/features/` and `src/components/ui`. Chrome (top bar, module rail + menu, breadcrumbs, ⌘K, theme/lang switchers, scrollbar) lives in `d/layout.tsx` → [src/components/dashboard-shell.tsx](src/components/dashboard-shell.tsx) + [src/components/shell/](src/components/shell/).
 - **Root layout** ([src/app/layout.tsx](src/app/layout.tsx)) loads Google fonts (Poppins/Inter/Arimo) for the **landing**, wraps `NextIntlClientProvider`, sets `<html lang dir>` from the locale, and runs an inline pre-paint script that applies the saved `data-theme` to avoid a flash.
 
 ## Dashboard routes (`src/app/d/`)
 
-Sidebar nav, grouped (labels & order from [src/components/sidebar.tsx](src/components/sidebar.tsx); keys are translated):
+Navigation is a module workspace: an icon rail of modules, a module menu of pages, a top bar and breadcrumbs. One config drives all of it: [src/lib/nav/modules.ts](src/lib/nav/modules.ts) (`MODULES`, `CREATE_ACTIONS`, `resolvePath`, `visibleModules`, `pageCount`). Page labels reuse `sidebar.<key>`, module names/descriptions live in `shell.modules.<key>`. A module/page is shown only if `canAccessPath(role, href)`.
 
-- **Operations** — Overview `/` · Demand · Live Ops · Orders · Trips
-- **People** — Users · Riders · Verification
-- **Commerce** — Marketplace · Agent Shops · Promotions · Coupons · News
-- **Money** — Blink Cash (the single finance hub: deposits, withdrawals, dues & agent float; the old standalone Transactions page folded into its **Ledger** tab and `/transactions` now redirects here)
-- **System** — Support · Notifications · Deep Links · Settings
+| Module | Pages |
+|---|---|
+| Home | Overview `/` |
+| Operations | Live ops · Orders · Trips · Demand |
+| Customers | Customers · All accounts (`/users`) · Support · Deletion requests |
+| Partners | Merchants · Riders · Agents · Agent shops · Vehicles · Verification |
+| Catalog | Marketplace · Product library · Merchant pricing · Packs |
+| Marketing | Promotions · Coupons · News · Notifications · Email · Deep links |
+| Finance | Blink Cash (the single finance hub; `/transactions` redirects here) |
+| People | Access |
+| Analytics | (no pages yet, hidden) |
+| System | Server · Settings |
+
+**Add a page = the route triad + one entry in `src/lib/nav/modules.ts`** (plus its `sidebar.<key>` label in all three locales and an `access.ts` rule). Sub-routes are not menu entries; they resolve to their parent page. Shell components live in [src/components/shell/](src/components/shell/). Run `npm test` for the nav config tests (Vitest).
 
 **Data source per route** — most pages are **mock/seed-driven** (data lives in the feature's `data.ts` or a client store). Only these fetch real Supabase data in `page.tsx`:
 
@@ -74,7 +83,7 @@ A feature folder holds:
 
 > **Route vs. feature:** a route under `src/app/d/<name>/` may compose a matching feature (e.g. `/coupons` → `@/features/coupons`), or hold its view directly in `client.tsx` with co-located locales and no feature folder — this is the case for the Supabase-backed list routes `agent-shops`, `orders`, `riders`, `trips`, and `blink-cash` (the latter composes the `@/features/blink-cash` components but fetches the `transactions` ledger in its own `page.tsx`).
 
-**`src/components/`** holds only cross-feature code: `ui/` (the shared UI kit, below) and standalone chrome — `dashboard-shell.tsx`, `sidebar.tsx`, `theme-switcher.tsx`, `language-switcher.tsx`, `motion-scrollbar.tsx`.
+**`src/components/`** holds only cross-feature code: `ui/` (the shared UI kit, below) and standalone chrome — `dashboard-shell.tsx`, `shell/`, `theme-switcher.tsx`, `language-switcher.tsx`, `motion-scrollbar.tsx`.
 
 **`src/lib/`** is cross-cutting infra: `supabase/{server,client,middleware}.ts` (server client uses cookie sessions; `client.ts` is the browser factory; `middleware.ts` does the auth refresh/gate), `theme.ts` (color tokens mirroring the mobile app), `dash-metadata.ts` (`pageMeta()` builds per-page `<title>` from translations), `use-document-title.ts` (client hook for live badge titles).
 
@@ -86,7 +95,7 @@ Each dashboard route folder follows a strict triad so `app/` stays routing/data 
 - **`client.tsx`** — `"use client"`; **holds the view**. Owns `useTranslations`, column/render definitions, local state, and the JSX. Composes the feature's components from `@/features/<name>` and primitives from `@/components/ui`. Default export `function <Name>Client()`.
 - **`action.ts`** — `"use server"` mutations, **only when the page actually mutates data**. Currently only `users` has one; read-only pages omit it. Client components import server actions from `@/app/d/<name>/action`.
 
-When adding a dashboard domain: create `src/features/<name>/` (`components/*` + `data.ts` + `types.ts` + `locales/*` + `index.ts`), then the `src/app/d/<name>/` triad (`page.tsx` → `client.tsx` → `action.ts` if it mutates), and add the nav entry in `sidebar.tsx`.
+When adding a dashboard domain: create `src/features/<name>/` (`components/*` + `data.ts` + `types.ts` + `locales/*` + `index.ts`), then the `src/app/d/<name>/` triad (`page.tsx` → `client.tsx` → `action.ts` if it mutates), and add the nav entry in `src/lib/nav/modules.ts`.
 
 ### The UI kit (`src/components/ui/`)
 
@@ -129,4 +138,4 @@ Brand essentials (reference the CSS vars in `globals.css`, never hardcode hex):
 - Reference design tokens through the Tailwind theme vars (e.g. `bg-card`, `text-subtext`, `border-border`) rather than literal colors.
 - Keep all user-facing copy in the co-located `locales/*.json` across **all three** locales; respect RTL for Arabic.
 - Import features and the UI kit only through their barrels — `@/features/<name>` and `@/components/ui`, never deep paths.
-- `npm run dev` to develop · `npm run build` · `npm run lint`.
+- `npm run dev` to develop · `npm run build` · `npm run lint` · `npm test`.
