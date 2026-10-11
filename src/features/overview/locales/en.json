@@ -38,7 +38,9 @@
       "duesOutstanding": "Merchants with unpaid dues",
       "deletionPending": "Account deletion requests",
       "supportUnread": "Unread support conversations",
-      "alertsOpen": "Open server alerts"
+      "alertsOpen": "Open server alerts",
+      "ridersPending": "Riders under review",
+      "agentsPending": "Agents awaiting review"
     },
     "activity": {
       "title": "Latest activity",

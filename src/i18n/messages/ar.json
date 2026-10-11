@@ -155,18 +155,15 @@
     "french": "الفرنسية"
   },
   "sidebar": {
-    "vehicles": "المركبات",
     "overview": "نظرة عامة",
     "users": "كل الحسابات",
     "riders": "السائقون",
     "orders": "الطلبات",
     "trips": "الرحلات",
-    "agent_shops": "متاجر الوكلاء",
     "notifications": "الإشعارات",
     "settings": "الإعدادات",
     "demand": "الطلب",
     "live_ops": "العمليات المباشرة",
-    "verification": "التحقق",
     "promotions": "العروض الترويجية",
     "coupons": "القسائم",
     "news": "أخبار Blink",
@@ -191,7 +188,10 @@
     "access": "الوصول",
     "blink_server": "خادم Blink",
     "email": "البريد",
-    "deletion_requests": "طلبات الحذف"
+    "deletion_requests": "طلبات الحذف",
+    "merchant_verification": "التحقق من المتاجر",
+    "rider_verification": "التحقق من السائقين",
+    "agent_verification": "التحقق من الوكلاء"
   },
   "dash": {
     "search": "بحث",
@@ -225,7 +225,7 @@
       "requests": "طلبات الحسابات",
       "riders": "السائقون",
       "agents": "الوكلاء",
-      "onboarding": "التسجيل"
+      "merchants": "التجار"
     },
     "modules": {
       "home": {

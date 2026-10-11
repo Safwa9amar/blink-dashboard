@@ -1,12 +1,61 @@
 {
   "riders": {
     "title": "السائقون",
-    "description": "إدارة ملفات السائقين والمركبات",
-    "rider_id": "معرّف السائق",
-    "name": "الاسم",
+    "description": "ملفات السائقين مع مركباتهم وحالة التحقق",
+    "search": "ابحث بالاسم أو الهاتف أو معرّف السائق",
+    "rider": "السائق",
     "phone": "الهاتف",
     "wilaya": "الولاية",
     "vehicle": "المركبة",
-    "empty": "لم يتم العثور على سائقين."
+    "verification_status": "التحقق",
+    "available": "متاح",
+    "joined": "تاريخ الانضمام",
+    "actions": "الإجراءات",
+    "view": "عرض",
+    "empty": "لا يوجد سائقون.",
+    "unnamed": "سائق بلا اسم",
+    "no_plate": "بدون لوحة",
+    "yes": "نعم",
+    "no": "لا",
+    "types": {
+      "bicycle": "دراجة هوائية",
+      "motorcycle": "دراجة نارية"
+    },
+    "categories": {
+      "standard": "عادية",
+      "electric": "كهربائية",
+      "hybrid": "هجينة"
+    },
+    "verification": {
+      "not_submitted": "لم يُرسل",
+      "pending": "قيد المراجعة",
+      "approved": "مقبول",
+      "rejected": "مرفوض"
+    },
+    "doc": {
+      "approved": "مقبول",
+      "needs_update": "يحتاج تحديثًا",
+      "pending": "قيد المراجعة",
+      "not_uploaded": "لم يُرفع"
+    },
+    "detail": {
+      "title": "تفاصيل السائق",
+      "profile": "الملف الشخصي",
+      "vehicle": "المركبة",
+      "documents": "مستندات المركبة",
+      "type": "النوع",
+      "brand": "العلامة",
+      "model": "الطراز",
+      "plate": "لوحة الترقيم",
+      "year": "السنة",
+      "color": "اللون",
+      "category": "الفئة",
+      "no_vehicle": "لا توجد مركبة مسجّلة",
+      "gray_card": "البطاقة الرمادية",
+      "insurance": "التأمين",
+      "no_documents": "لا حاجة إلى مستندات للمركبة",
+      "licence_note": "تتم مراجعة رخصة القيادة مع مستندات السائق.",
+      "review": "مراجعة المستندات"
+    }
   }
 }

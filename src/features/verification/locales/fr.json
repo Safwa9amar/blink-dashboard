@@ -366,6 +366,20 @@
         "document_missing": "Ce document n'est plus envoyé. La liste a été actualisée.",
         "not_found": "Cette personne n'existe plus. La liste a été actualisée."
       }
+    },
+    "pages": {
+      "riders": {
+        "title": "Vérification des livreurs",
+        "description": "Vérifiez les documents des livreurs et approuvez les nouveaux livreurs"
+      },
+      "agents": {
+        "title": "Vérification des agents",
+        "description": "Vérifiez les documents des agents et leurs boutiques"
+      },
+      "merchants": {
+        "title": "Vérification des magasins",
+        "description": "Vérifiez les nouveaux magasins avant leur mise en ligne"
+      }
     }
   }
 }

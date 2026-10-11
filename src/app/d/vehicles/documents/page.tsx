@@ -1,11 +1,6 @@
-import type { Metadata } from "next";
-import { pageMeta } from "@/lib/dash-metadata";
-import VehiclesClient from "../client";
+import { redirect } from "next/navigation";
 
-export function generateMetadata(): Promise<Metadata> {
-  return pageMeta("vehicles", undefined, "documents");
-}
-
-export default function Page() {
-  return <VehiclesClient tab="documents" />;
+// Vehicle documents are reviewed with the rider documents.
+export default function VehicleDocumentsPage() {
+  redirect("/riders/verification");
 }

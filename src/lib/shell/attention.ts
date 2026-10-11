@@ -14,8 +14,30 @@ async function countOf(q: PromiseLike<{ count: number | null; error: { message: 
   return count ?? 0;
 }
 
+/** PostgREST `or` filter: an agent's commercial register scan is waiting on staff. */
+const AGENT_DOC_PENDING = ["commercial_register_front", "commercial_register_back"]
+  .map((k) => `documents->${k}->>status.eq.pending`)
+  .join(",");
+
+/**
+ * Agents waiting on staff, the same definition as the agents verification
+ * queue ("pending" view): a register scan pending, or a shop under review.
+ * One agent with both counts once, so the user ids are unioned.
+ */
+async function agentsWaiting(db: Admin): Promise<number> {
+  const [docs, shops] = await Promise.all([
+    db.from("agent_profiles").select("user_id").or(AGENT_DOC_PENDING),
+    db.from("agent_shops").select("user_id").eq("review_status", "under_review"),
+  ]);
+  const failed = docs.error ?? shops.error;
+  if (failed) throw new Error(failed.message);
+  return new Set([...(docs.data ?? []), ...(shops.data ?? [])].map((r) => r.user_id as string)).size;
+}
+
 const SOURCES: Record<AttentionKey, (db: Admin) => Promise<number>> = {
   storesPending: (db) => countOf(db.from("stores").select("id", HEAD).eq("status", "under_review")),
+  ridersPending: (db) => countOf(db.from("rider_profiles").select("user_id", HEAD).eq("verification_status", "pending")),
+  agentsPending: agentsWaiting,
   productsPending: (db) => countOf(db.from("store_products").select("id", HEAD).eq("review_status", "pending")),
   packsPending: (db) => countOf(db.from("store_packs").select("id", HEAD).eq("status", "under_review")),
   deletionPending: (db) => countOf(db.from("account_deletion_requests").select("id", HEAD).eq("status", "pending")),

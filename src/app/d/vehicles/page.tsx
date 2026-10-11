@@ -1,11 +1,7 @@
-import type { Metadata } from "next";
-import { pageMeta } from "@/lib/dash-metadata";
-import VehiclesClient from "./client";
+import { redirect } from "next/navigation";
 
-export function generateMetadata(): Promise<Metadata> {
-  return pageMeta("vehicles");
-}
-
+// Vehicles were folded into Riders (each rider's vehicle shows in the rider list
+// and detail). Keep this route as a redirect so old links / bookmarks still land.
 export default function VehiclesPage() {
-  return <VehiclesClient tab="fleet" />;
+  redirect("/riders");
 }

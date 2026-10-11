@@ -1,93 +1,99 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { PageHeader, SubNav, DataTable } from "@/components/ui";
-import { buildDocRows } from "@/features/vehicles";
-import { useVehiclesStore, useHydrateVehicles } from "@/features/vehicles/store";
+import { useMemo, useState } from "react";
+import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
+import { Badge, DashIcon, DataTable, NameCell, PageHeader, SearchBox, type Column } from "@/components/ui";
+import { matchesRider, RiderDetail, VERIFICATION_VARIANT, type RiderRow } from "@/features/riders";
 
-interface RidersClientProps {
-  riders: Record<string, unknown>[] | null;
-  error?: string;
-}
-
-export default function RidersClient({ riders, error }: RidersClientProps) {
+export default function RidersClient({ riders, error }: { riders: RiderRow[]; error?: string }) {
   const t = useTranslations("riders");
-  const tv = useTranslations("vehicles");
-  const tc = useTranslations("common");
-  useHydrateVehicles();
+  const locale = useLocale();
+  const [query, setQuery] = useState("");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  const vehicles = useVehiclesStore((s) => s.vehicles);
-  const pendingDocs = buildDocRows(vehicles).filter((d) => d.status === "pending").length;
+  const rows = useMemo(() => riders.filter((r) => matchesRider(r, query)), [riders, query]);
+  const selected = riders.find((r) => r.id === selectedId) ?? null;
 
-  const columns = [
-    {
-      key: "rider_id",
-      label: t("rider_id"),
-      render: (row: Record<string, unknown>) => (
-        <span className="font-mono text-primary font-medium">{row.rider_id as string}</span>
-      ),
-    },
+  const columns: Column<RiderRow>[] = [
     {
       key: "name",
-      label: t("name"),
-      render: (row: Record<string, unknown>) => {
-        const user = row.users as { first_name: string | null; last_name: string | null } | null;
-        return (
-          <span className="font-medium text-text">
-            {user ? [user.first_name, user.last_name].filter(Boolean).join(" ") : "—"}
-          </span>
-        );
-      },
+      label: t("rider"),
+      render: (r) => (
+        <button type="button" onClick={() => setSelectedId(r.id)} className="flex items-center gap-2.5 text-start cursor-pointer">
+          <NameCell name={r.name || r.riderId} />
+          <span className="font-mono text-xs text-primary">{r.riderId}</span>
+        </button>
+      ),
     },
+    { key: "phone", label: t("phone"), render: (r) => <span dir="ltr">{r.phone ?? "—"}</span> },
+    { key: "wilaya", label: t("wilaya"), render: (r) => r.wilaya ?? "—" },
     {
-      key: "phone",
-      label: t("phone"),
-      render: (row: Record<string, unknown>) => {
-        const user = row.users as { phone_number: string } | null;
-        return user?.phone_number ?? "—";
-      },
-    },
-    {
-      key: "wilaya",
-      label: t("wilaya"),
-      render: (row: Record<string, unknown>) => (row.wilaya as string) ?? "—",
-    },
-    {
-      key: "vehicle_type",
+      key: "vehicleType",
       label: t("vehicle"),
-      render: (row: Record<string, unknown>) => (
-        <span className="capitalize">{(row.vehicle_type as string) ?? "—"}</span>
-      ),
+      render: (r) =>
+        r.vehicleType ? (
+          <span className="flex items-center gap-2">
+            <Badge variant={r.vehicleType === "motorcycle" ? "info" : "default"}>{t(`types.${r.vehicleType}`)}</Badge>
+            <span className="text-subtext">
+              {r.vehicle ? [r.vehicle.brand, r.vehicle.model].filter(Boolean).join(" ") || "—" : "—"}
+              {" · "}
+              {r.vehicleType === "bicycle" ? t("no_plate") : <span dir="ltr">{r.vehicle?.plate || "—"}</span>}
+            </span>
+          </span>
+        ) : (
+          "—"
+        ),
     },
     {
-      key: "created_at",
-      label: tc("created"),
-      render: (row: Record<string, unknown>) => (
-        <span className="text-subtext">
-          {new Date(row.created_at as string).toLocaleDateString()}
-        </span>
-      ),
+      key: "verification",
+      label: t("verification_status"),
+      render: (r) => <Badge variant={VERIFICATION_VARIANT[r.verification]}>{t(`verification.${r.verification}`)}</Badge>,
     },
-  ];
-
-  // Fleet & Documents are owned by the Vehicles route — these sub-nav entries
-  // link out to it rather than duplicating the fleet views under /riders.
-  const navItems = [
-    { href: "/riders", label: t("title"), icon: "users", count: riders ? String(riders.length) : undefined },
-    { href: "/vehicles", label: tv("fleet"), icon: "bike", count: String(vehicles.length) },
     {
-      href: "/vehicles/documents",
-      label: tv("documents"),
-      icon: "shield",
-      count: pendingDocs ? String(pendingDocs) : undefined,
+      key: "available",
+      label: t("available"),
+      render: (r) => <Badge variant={r.available ? "success" : "default"}>{r.available ? t("yes") : t("no")}</Badge>,
+    },
+    {
+      key: "joinedAt",
+      label: t("joined"),
+      render: (r) => <span className="text-subtext">{r.joinedAt ? new Date(r.joinedAt).toLocaleDateString(locale) : "—"}</span>,
+    },
+    {
+      key: "actions",
+      label: t("actions"),
+      sortable: false,
+      render: (r) => (
+        <button
+          type="button"
+          onClick={() => setSelectedId(r.id)}
+          aria-label={t("view")}
+          title={t("view")}
+          className="w-8 h-8 inline-flex items-center justify-center rounded-lg text-subtext hover:text-text hover:bg-card-hover transition-colors cursor-pointer"
+        >
+          <DashIcon name="eye" className="w-4 h-4" />
+        </button>
+      ),
     },
   ];
 
   return (
     <div>
-      <PageHeader title={t("title")} description={t("description")} />
-      <SubNav items={navItems} />
-      <DataTable columns={columns} data={riders} error={error} emptyMessage={t("empty")} />
+      <PageHeader
+        title={t("title")}
+        description={t("description")}
+        actions={
+          <Link href="/riders/verification" className="text-[13px] font-semibold text-primary hover:underline">
+            {t("detail.review")}
+          </Link>
+        }
+      />
+      <div className="mb-4">
+        <SearchBox placeholder={t("search")} value={query} onChange={setQuery} />
+      </div>
+      <DataTable columns={columns} data={rows} error={error} emptyMessage={t("empty")} />
+      <RiderDetail rider={selected} onClose={() => setSelectedId(null)} />
     </div>
   );
 }

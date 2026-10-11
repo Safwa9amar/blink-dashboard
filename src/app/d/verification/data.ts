@@ -10,12 +10,12 @@ import {
   type VerificationQueues,
 } from "@/features/verification";
 
-// Server-only reads for /verification through the service-role client: `stores`
-// only exposes active rows under RLS, so the cookie client would miss every
-// store waiting on review. Every load gates on the section first, so a staff
-// role without /verification never gets applicant rows in its payload. Nothing
-// is written here — see action.ts.
-const SECTION = "/verification";
+// Server-only reads for /merchants/verification through the service-role client:
+// `stores` only exposes active rows under RLS, so the cookie client would miss
+// every store waiting on review. Every load gates on the section first, so a
+// staff role without /merchants never gets applicant rows in its payload.
+// Nothing is written here — see action.ts.
+const SECTION = "/merchants";
 
 /** Rows loaded per store filter; the exact totals come back alongside (`counts`). */
 const QUEUE_LIMIT = 100;
@@ -154,8 +154,7 @@ async function loadStores(db: Admin): Promise<StoreQueueLoad> {
   };
 }
 
-// Riders and agents load here too once their tabs land (plan Task 8): add their
-// loaders to the Promise.all and their keys to VerificationQueues.
+// Riders and agents have their own loaders (partner-data.ts) behind their own sections.
 export const getVerificationQueues = cache(async (): Promise<VerificationQueues> => {
   await requirePathAccess(SECTION);
   // Without the service key createAdminClient falls back to the RLS client,

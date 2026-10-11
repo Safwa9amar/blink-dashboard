@@ -10,12 +10,12 @@ export type ModuleKey =
 
 export type AttentionKey =
   | "storesPending" | "productsPending" | "packsPending" | "duesOutstanding"
-  | "deletionPending" | "supportUnread" | "alertsOpen";
+  | "deletionPending" | "supportUnread" | "alertsOpen" | "ridersPending" | "agentsPending";
 
 export type AttentionCounts = Partial<Record<AttentionKey, number>>;
 
 export type SectionKey =
-  | "conversations" | "tools" | "performance" | "requests" | "riders" | "agents" | "onboarding";
+  | "conversations" | "tools" | "performance" | "requests" | "merchants" | "riders" | "agents";
 
 export interface NavPage { key: string; href: string; icon: string; attention?: AttentionKey[]; section?: SectionKey }
 export interface NavModule { key: ModuleKey; icon: string; pages: NavPage[] }
@@ -54,12 +54,12 @@ export const MODULES: readonly NavModule[] = [
   },
   {
     key: "partners", icon: "store", pages: [
-      { key: "merchants", href: "/merchants", icon: "store" },
+      { key: "merchants", href: "/merchants", icon: "store", section: "merchants" },
+      { key: "merchant_verification", href: "/merchants/verification", icon: "shield", attention: ["storesPending"], section: "merchants" },
       { key: "riders", href: "/riders", icon: "bike", section: "riders" },
-      { key: "vehicles", href: "/vehicles", icon: "truck", section: "riders" },
+      { key: "rider_verification", href: "/riders/verification", icon: "shield", attention: ["ridersPending"], section: "riders" },
       { key: "agents", href: "/agents", icon: "users", section: "agents" },
-      { key: "agent_shops", href: "/agent-shops", icon: "pin", section: "agents" },
-      { key: "verification", href: "/verification", icon: "shield", attention: ["storesPending"], section: "onboarding" },
+      { key: "agent_verification", href: "/agents/verification", icon: "shield", attention: ["agentsPending"], section: "agents" },
     ],
   },
   {

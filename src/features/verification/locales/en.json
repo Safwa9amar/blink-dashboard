@@ -366,6 +366,20 @@
         "document_missing": "This document is no longer uploaded. The list was refreshed.",
         "not_found": "This person no longer exists. The list was refreshed."
       }
+    },
+    "pages": {
+      "riders": {
+        "title": "Rider verification",
+        "description": "Review rider documents and approve new riders"
+      },
+      "agents": {
+        "title": "Agent verification",
+        "description": "Review agent documents and agent shops"
+      },
+      "merchants": {
+        "title": "Store verification",
+        "description": "Review new merchant stores before they go live"
+      }
     }
   }
 }

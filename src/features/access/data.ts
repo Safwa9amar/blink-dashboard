@@ -40,9 +40,7 @@ const ROUTE_LABEL_KEY: Record<string, string> = {
   "/live-ops": "live_ops",
   "/trips": "trips",
   "/riders": "riders",
-  "/vehicles": "vehicles",
   "/users": "users",
-  "/verification": "verification",
   "/blink-cash": "blink_cash",
   "/notifications": "notifications",
   "/news": "news",
@@ -50,7 +48,6 @@ const ROUTE_LABEL_KEY: Record<string, string> = {
   "/merchants": "merchants",
   "/marketplace": "marketplace",
   "/agents": "agents",
-  "/agent-shops": "agent_shops",
   "/promotions": "promotions",
   "/coupons": "coupons",
 };

@@ -5,3 +5,4 @@ export { AgentQueue } from "./components/agent-queue";
 export * from "./partners";
 export * from "./queue";
 export * from "./types";
+export { OpeningHours } from "./components/opening-hours";

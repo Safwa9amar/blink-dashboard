@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { MotionScrollbar } from "./motion-scrollbar";
 import { NavigationProgress } from "./navigation-progress";
 import { CommandPalette } from "@/features/search";
-import { canAccessPath, defaultPathFor, type StaffRole } from "@/lib/auth/access";
+import { canAccessPath, defaultPathFor, isRedirectOnlyPath, type StaffRole } from "@/lib/auth/access";
 import type { AttentionCounts } from "@/lib/nav/modules";
 import { AttentionProvider } from "./shell/attention-provider";
 import { Breadcrumbs } from "./shell/breadcrumbs";
@@ -52,7 +52,7 @@ export function DashboardShell({
   // Client-side guard for deep-links into a section this role can't see. The real
   // boundary is the server layout (staff gate) + server actions (mutations); this is a
   // UX redirect so the address bar and the rendered page stay consistent with the nav.
-  const allowed = canAccessPath(staffRole, pathname);
+  const allowed = canAccessPath(staffRole, pathname) || isRedirectOnlyPath(pathname);
   useEffect(() => {
     if (!allowed) router.replace(defaultPathFor(staffRole));
   }, [allowed, staffRole, router]);

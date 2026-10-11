@@ -1,11 +1,10 @@
-// Maps a review decision from /verification onto the blink-server staff
+// Maps a review decision from /merchants/verification onto the blink-server staff
 // endpoint that applies it. Pure (no I/O) so the server action stays a thin
 // wrapper. blink-server re-validates everything (requireStaff + Zod + the
 // allowed status transitions); the checks here keep a malformed id out of the
 // URL path and give the reviewer a readable error. Type-only imports from the
 // feature keep this module free of runtime dependencies (the reject dialog
 // imports NOTE_MAX from here).
-import type { StaffRole } from "@/lib/auth/access";
 import type {
   DocumentReviewTarget,
   DocumentVerdict,
@@ -14,9 +13,6 @@ import type {
   ReviewTarget,
   StoreDocKey,
 } from "@/features/verification";
-
-/** Staff roles that can open /verification (ROLE_ACCESS in src/lib/auth/access.ts). */
-export const REVIEW_ROLES: readonly StaffRole[] = ["super_admin", "ops_admin", "hr_admin"];
 
 /** Same cap as blink-server's review notes. */
 export const NOTE_MAX = 300;

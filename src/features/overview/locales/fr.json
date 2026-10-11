@@ -38,7 +38,9 @@
       "duesOutstanding": "Marchands avec des dus impayés",
       "deletionPending": "Demandes de suppression de compte",
       "supportUnread": "Conversations support non lues",
-      "alertsOpen": "Alertes serveur ouvertes"
+      "alertsOpen": "Alertes serveur ouvertes",
+      "ridersPending": "Livreurs en vérification",
+      "agentsPending": "Agents en attente de vérification"
     },
     "activity": {
       "title": "Activité récente",

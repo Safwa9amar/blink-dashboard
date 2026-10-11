@@ -1,12 +1,61 @@
 {
   "riders": {
     "title": "Riders",
-    "description": "Manage rider profiles and vehicles",
-    "rider_id": "Rider ID",
-    "name": "Name",
+    "description": "Rider profiles with their vehicle and verification status",
+    "search": "Search by name, phone or rider ID",
+    "rider": "Rider",
     "phone": "Phone",
     "wilaya": "Wilaya",
     "vehicle": "Vehicle",
-    "empty": "No riders found."
+    "verification_status": "Verification",
+    "available": "Available",
+    "joined": "Joined",
+    "actions": "Actions",
+    "view": "View",
+    "empty": "No riders found.",
+    "unnamed": "Unnamed rider",
+    "no_plate": "No plate",
+    "yes": "Yes",
+    "no": "No",
+    "types": {
+      "bicycle": "Bicycle",
+      "motorcycle": "Motorcycle"
+    },
+    "categories": {
+      "standard": "Standard",
+      "electric": "Electric",
+      "hybrid": "Hybrid"
+    },
+    "verification": {
+      "not_submitted": "Not submitted",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "doc": {
+      "approved": "Approved",
+      "needs_update": "Needs update",
+      "pending": "Pending",
+      "not_uploaded": "Not uploaded"
+    },
+    "detail": {
+      "title": "Rider details",
+      "profile": "Profile",
+      "vehicle": "Vehicle",
+      "documents": "Vehicle documents",
+      "type": "Type",
+      "brand": "Brand",
+      "model": "Model",
+      "plate": "License plate",
+      "year": "Year",
+      "color": "Color",
+      "category": "Category",
+      "no_vehicle": "No vehicle registered",
+      "gray_card": "Gray card",
+      "insurance": "Insurance",
+      "no_documents": "No vehicle documents required",
+      "licence_note": "The driving licence is reviewed with the rider's documents.",
+      "review": "Review documents"
+    }
   }
 }

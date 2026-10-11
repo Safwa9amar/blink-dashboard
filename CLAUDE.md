@@ -36,7 +36,7 @@ Navigation is a module workspace: an icon rail of modules, a module menu of page
 | Operations | Live ops · Orders · Trips · Demand |
 | Customers | Customers · All accounts (`/users`) |
 | Support | Overview · *Conversations:* Live chat · Email · Tickets · *Tools:* Knowledge base · Macros · AI bot · *Performance:* CSAT · SLA & rules · Agents · *Requests:* Deletion requests |
-| Partners | Merchants · *Riders:* Riders · Vehicles · *Agents:* Agents · Agent shops · *Onboarding:* Verification |
+| Partners | *Merchants:* Merchants · Store verification · *Riders:* Riders · Rider verification · *Agents:* Agents · Agent verification |
 | Catalog | Marketplace · Product library · Packs · Catalog review (`/merchant-pricing`) |
 | Marketing | Promotions · Coupons · News · Notifications · Deep links |
 | Finance | Blink Cash (the single finance hub; `/transactions` redirects here) |
@@ -53,13 +53,17 @@ Navigation is a module workspace: an icon rail of modules, a module menu of page
 | `/` (overview)  | counts of users, rider_profiles, orders, trips, transactions | —                                                                                              |
 | `/users`        | `users` table                                                | **yes** — [src/app/d/users/action.ts](src/app/d/users/action.ts) (toggle active, edit, delete) |
 | `/orders`       | `orders` (limit 50)                                          | —                                                                                              |
-| `/riders`       | `rider_profiles` ⨝ `users` (limit 50)                        | —                                                                                              |
+| `/riders`       | `rider_profiles` ⨝ `users` (name, phone, `users.wilaya`) ⨝ `vehicles` by `user_id`, newest first, limit 1000 (service role); client-side search + pagination; detail panel shows vehicle specs and gray card / insurance (motorcycles only) | — |
 | `/trips`        | `trips` (limit 50)                                           | —                                                                                              |
 | `/blink-cash`   | `transactions` (limit 50) — feeds the **Ledger** tab & Overview "latest activity" | —                                                                         |
-| `/agent-shops`  | `agent_shops`                                                | —                                                                                              |
+| `/agents`       | `users` (role agent) ⨝ `agent_profiles` ⨝ `agent_shops` (service role, limit 1000); list shows the shop + its review status, detail panel shows profile, shop and weekly hours | **yes** — edit / delete ([action.ts](src/app/d/agents/action.ts)) |
 | `/merchant-pricing` (Catalog review: prices · products · history) | `store_products` ⨝ `stores` ⨝ `users` (service role) | **yes** — via blink-server `PATCH /merchant/admin/products/{id}/review` ([action.ts](src/app/d/merchant-pricing/action.ts)) |
 | `/packs-management` (under review · all) | `store_packs` ⨝ `stores` ⨝ `users` + item products (service role) | **yes** — via blink-server `PATCH /merchant/admin/packs/{id}/status` ([action.ts](src/app/d/packs-management/action.ts)) |
-| `/verification` (Merchant stores tab: pending review · rejected · live) | `stores` ⨝ `users` + `store_products(count)` (service role), loaders in [data.ts](src/app/d/verification/data.ts) | **yes** — via blink-server `PATCH /merchant/admin/stores/{id}/status` with `expected_updated_at` ([action.ts](src/app/d/verification/action.ts)); the dashboard never writes status columns. Riders / Agents tabs not built yet |
+| `/merchants/verification` (pending review · rejected · live) | `stores` ⨝ `users` + `store_products(count)` (service role), loaders in [data.ts](src/app/d/verification/data.ts), gated on `/merchants` | **yes** — via blink-server `PATCH /merchant/admin/stores/{id}/status` with `expected_updated_at` ([action.ts](src/app/d/verification/action.ts)); the dashboard never writes status columns |
+| `/riders/verification` | `rider_profiles` ⨝ `users`, documents signed from the private `rider-documents` bucket ([partner-data.ts](src/app/d/verification/partner-data.ts) `getRiderQueue`, gated on `/riders`) | **yes** — rider document verdicts via blink-server staff endpoints ([partner-action.ts](src/app/d/verification/partner-action.ts), re-checks `/riders`) |
+| `/agents/verification` | `agent_profiles` + `agent_shops` under review / rejected (`getAgentQueue`, gated on `/agents`) | **yes** — agent document verdicts and shop approve / reject ([partner-action.ts](src/app/d/verification/partner-action.ts), re-checks `/agents`) |
+
+**Partners restructure:** verification is split per partner type and lives under its section (`/merchants|riders|agents/verification`; the loaders and actions stay in `src/app/d/verification/` and each gates on its own section, so the review access follows `ROLE_ACCESS` — see `rolesWithAccess`). `/verification` redirects to the first of the three the role can open (else `/`), `/vehicles` → `/riders`, `/vehicles/documents` → `/riders/verification`, `/agent-shops` → `/agents`. Those legacy paths are not in `ROLE_ACCESS` (the shell lets them through via `isRedirectOnlyPath`; the target enforces access). Vehicles (previously a mock store) are now the real `vehicles` table inside Riders. Attention counts: `storesPending`, `ridersPending`, `agentsPending` (src/lib/shell/attention.ts).
 
 `/transactions` is now a **redirect → `/blink-cash`** (no UI of its own). Within Blink Cash, the **Ledger** is real data and the **Dues** tab shows real *merchant* dues from blink-server (`GET /merchant/admin/dues`, "Remind" → `POST /merchant/admin/dues/{store_id}/remind`, see [action.ts](src/app/d/blink-cash/action.ts)); the **Agent Float** tab, the deposits-vs-withdrawals chart, fee config & headline stats stay UI aggregates over mock data.
 
@@ -82,7 +86,7 @@ A feature folder holds:
 - **`locales/{en,fr,ar}.json`** — the feature's own strings (all 13 have these).
 - some features also keep a **`store.ts`** (Zustand) for client-side state: `deep-links`, `marketplace`, `notifications`.
 
-> **Route vs. feature:** a route under `src/app/d/<name>/` may compose a matching feature (e.g. `/coupons` → `@/features/coupons`), or hold its view directly in `client.tsx` with co-located locales and no feature folder — this is the case for the Supabase-backed list routes `agent-shops`, `orders`, `riders`, `trips`, and `blink-cash` (the latter composes the `@/features/blink-cash` components but fetches the `transactions` ledger in its own `page.tsx`).
+> **Route vs. feature:** a route under `src/app/d/<name>/` may compose a matching feature (e.g. `/coupons` → `@/features/coupons`), or hold its view directly in `client.tsx` with co-located locales and no feature folder — this is the case for the Supabase-backed list routes `orders`, `trips`, and `blink-cash` (the latter composes the `@/features/blink-cash` components but fetches the `transactions` ledger in its own `page.tsx`).
 
 **`src/components/`** holds only cross-feature code: `ui/` (the shared UI kit, below) and standalone chrome — `dashboard-shell.tsx`, `shell/`, `theme-switcher.tsx`, `language-switcher.tsx`, `motion-scrollbar.tsx`.
 
@@ -116,7 +120,7 @@ Conventions worth knowing: `Button` and `StatCard` accept `icon` as a **DashIcon
 - **Strings are distributed, not centralized.** There is **no root `messages/` directory.** They come from three places, all merged by `getAllMessages()` in [src/i18n/messages.ts](src/i18n/messages.ts) into the flat object next-intl expects:
   1. **Shared** — [src/i18n/messages/{en,fr,ar}.json](src/i18n/messages/) (namespaces: `landing`, `common`, `auth`, `language`, `sidebar`, `dash`).
   2. **Per feature** — `src/features/<name>/locales/{en,fr,ar}.json`.
-  3. **Per Supabase-backed route** — `src/app/d/<name>/locales/{en,fr,ar}.json` (`agent-shops`, `orders`, `riders`, `trips`, plus the dashboard-root `src/app/d/locales/`). The `blink-cash` strings live in the feature bundle (`src/features/blink-cash/locales/`).
+  3. **Per Supabase-backed route** — `src/app/d/<name>/locales/{en,fr,ar}.json` (`orders`, `trips`, plus the dashboard-root `src/app/d/locales/`). The `blink-cash` strings live in the feature bundle (`src/features/blink-cash/locales/`).
 - **When you add or change copy, edit all three languages** and register any new bundle in `messages.ts`. Respect RTL for Arabic (use logical classes — `ms-`/`me-`, `ps-`/`pe-`, `start`/`end`, `rtl:` — and the `dirFor(lang)` helper).
 
 ## Theming

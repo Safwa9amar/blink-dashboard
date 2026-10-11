@@ -33,17 +33,15 @@ export const ROLE_ACCESS: Record<StaffRole, "*" | readonly string[]> = {
     "/live-ops",
     "/trips",
     "/riders",
-    "/vehicles",
     "/users",
     "/deletion-requests",
-    "/verification",
   ],
   finance_admin: ["/", "/blink-cash"],
   support_admin: ["/", "/notifications", "/news", "/deep-links", "/support", "/email", "/deletion-requests"],
-  commerce_admin: ["/", "/merchants", "/marketplace", "/library", "/agent-shops", "/promotions", "/coupons", "/merchant-pricing", "/packs-management"],
+  commerce_admin: ["/", "/merchants", "/marketplace", "/library", "/promotions", "/coupons", "/merchant-pricing", "/packs-management"],
   // HR / RH manager — people-facing sections: the customer & merchant rosters,
-  // platform users and rider onboarding/verification.
-  hr_admin: ["/", "/customers", "/merchants", "/agents", "/users", "/deletion-requests", "/riders", "/verification"],
+  // platform users, riders and agents (each with its verification sub-route).
+  hr_admin: ["/", "/customers", "/merchants", "/agents", "/users", "/deletion-requests", "/riders"],
 };
 
 export function isStaffRole(value: unknown): value is StaffRole {
@@ -71,4 +69,21 @@ export function defaultPathFor(role: StaffRole | null | undefined): string {
   const allowed = ROLE_ACCESS[role];
   if (allowed === "*") return "/";
   return allowed[0] ?? "/";
+}
+
+// Every staff role that can open `pathname`. Server actions use it to re-check the
+// caller against the section they review (e.g. "/riders" for rider documents), so the
+// guard can never drift from the nav map above.
+export function rolesWithAccess(pathname: string): StaffRole[] {
+  return STAFF_ROLES.filter((role) => canAccessPath(role, pathname));
+}
+
+// Legacy routes that only forward to a merged page (no data, no UI). They are not in
+// any role's list — the target page enforces access — but the shell's client guard
+// must let them through, otherwise it would bounce a role home before the server
+// redirect lands it on the right target.
+const REDIRECT_ONLY = ["/vehicles", "/agent-shops", "/verification"] as const;
+
+export function isRedirectOnlyPath(pathname: string): boolean {
+  return REDIRECT_ONLY.some((route) => routeMatches(pathname, route));
 }

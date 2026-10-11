@@ -49,6 +49,13 @@ describe("sections", () => {
       }
     }
   });
+  it("partners page order", () => {
+    const partners = MODULES.find((m) => m.key === "partners")!;
+    expect(partners.pages.map((p) => p.href)).toEqual([
+      "/merchants", "/merchants/verification", "/riders", "/riders/verification", "/agents", "/agents/verification",
+    ]);
+    expect(partners.pages.map((p) => p.section)).toEqual(["merchants", "merchants", "riders", "riders", "agents", "agents"]);
+  });
   it("support page order", () => {
     const support = MODULES.find((m) => m.key === "support")!;
     expect(support.pages.map((p) => p.href)).toEqual([
@@ -71,6 +78,10 @@ describe("resolvePath", () => {
     ["/support", "support", "/support"],
     ["/deletion-requests/history", "support", "/deletion-requests"],
     ["/email", "support", "/email"],
+    ["/riders", "partners", "/riders"],
+    ["/riders/verification", "partners", "/riders/verification"],
+    ["/agents/verification", "partners", "/agents/verification"],
+    ["/merchants/verification", "partners", "/merchants/verification"],
   ])("%s → %s", (path, mod, href) => {
     const r = resolvePath(path);
     expect(r?.module.key).toBe(mod);
@@ -92,6 +103,15 @@ describe("visibleModules", () => {
   it("never shows analytics while it has no pages", () => {
     for (const r of STAFF_ROLES) expect(keys(r)).not.toContain("analytics");
   });
+  it("partner pages follow each role's access", () => {
+    const partners = (r: (typeof STAFF_ROLES)[number]) =>
+      visibleModules(r).find((m) => m.key === "partners")?.pages.map((p) => p.href) ?? [];
+    expect(partners("ops_admin")).toEqual(["/riders", "/riders/verification", "/agents", "/agents/verification"]);
+    expect(partners("hr_admin")).toEqual(["/merchants", "/merchants/verification", "/riders", "/riders/verification", "/agents", "/agents/verification"]);
+    expect(partners("commerce_admin")).toEqual(["/merchants", "/merchants/verification"]);
+    expect(partners("finance_admin")).toEqual([]);
+    expect(partners("support_admin")).toEqual([]);
+  });
   it("filters pages inside a module", () => {
     const support = visibleModules("ops_admin").find((m) => m.key === "support")!;
     expect(support.pages.map((p) => p.href)).toEqual(["/deletion-requests"]);
@@ -99,10 +119,15 @@ describe("visibleModules", () => {
 });
 
 describe("attention", () => {
-  const verification = MODULES.flatMap((m) => m.pages).find((p) => p.href === "/verification")!;
+  const pages = MODULES.flatMap((m) => m.pages);
+  const verification = pages.find((p) => p.href === "/merchants/verification")!;
   it("pageCount sums the page's keys", () => {
     expect(pageCount(verification, { storesPending: 3, supportUnread: 9 })).toBe(3);
     expect(pageCount(verification, {})).toBe(0);
+  });
+  it("each verification page counts its own queue", () => {
+    expect(pageCount(pages.find((p) => p.href === "/riders/verification")!, { ridersPending: 2, agentsPending: 5 })).toBe(2);
+    expect(pageCount(pages.find((p) => p.href === "/agents/verification")!, { ridersPending: 2, agentsPending: 5 })).toBe(5);
   });
   it("moduleHasAttention", () => {
     const partners = MODULES.find((m) => m.key === "partners")!;

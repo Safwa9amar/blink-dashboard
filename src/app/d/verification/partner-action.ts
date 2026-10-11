@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
+import { rolesWithAccess } from "@/lib/auth/access";
 import { hasStaffRole } from "@/lib/auth/staff";
 import { blinkApi } from "@/lib/blink-api";
 import { blinkApiErrorKey, blinkApiErrorMessage } from "@/lib/blink-api-errors";
@@ -19,17 +20,28 @@ import {
   buildRiderDocumentRequest,
   partnerErrorCode,
 } from "./partner-request";
-import { REVIEW_ROLES, type ReviewRequest } from "./review-request";
+import type { ReviewRequest } from "./review-request";
 
 // Verify / reject a rider's or agent's documents, and approve / reject an agent
-// shop, from the verification queue. Like action.ts, nothing here writes a
+// shop, from the riders / agents verification queues. Like action.ts, nothing here writes a
 // status column: each decision goes to blink-server's staff endpoint with the
 // operator's access token (requireStaff there is the authority), then the page
 // re-reads the queues. revalidatePath takes the rewritten route (/d/…).
+// Rider review belongs to the Riders section and agent / shop review to Agents:
+// whoever can open that section may decide (re-checked here on every call).
 const NS = "verification";
-const PATH = "/d/verification";
 
-async function send(request: ReviewRequest | { code: ReviewErrorCode }): Promise<ReviewOutcome> {
+const SECTIONS = {
+  rider: { section: "/riders", path: "/d/riders/verification" },
+  agent: { section: "/agents", path: "/d/agents/verification" },
+} as const;
+
+async function send(
+  request: ReviewRequest | { code: ReviewErrorCode },
+  kind: keyof typeof SECTIONS
+): Promise<ReviewOutcome> {
+  const { section, path: PATH } = SECTIONS[kind];
+  const REVIEW_ROLES = rolesWithAccess(section);
   if (!(await hasStaffRole(...REVIEW_ROLES))) {
     return { ok: false, code: "forbidden", message: await blinkApiErrorMessage(NS, { status: 403, error: "" }) };
   }
@@ -61,7 +73,7 @@ export async function reviewRiderDocument(
   verdict: PartnerVerdict,
   note?: string
 ): Promise<ReviewOutcome> {
-  return send(buildRiderDocumentRequest(target, verdict, note));
+  return send(buildRiderDocumentRequest(target, verdict, note), "rider");
 }
 
 /** Verify / reject an agent's commercial register scan. */
@@ -70,10 +82,10 @@ export async function reviewAgentDocument(
   verdict: PartnerVerdict,
   reason?: string
 ): Promise<ReviewOutcome> {
-  return send(buildAgentDocumentRequest(target, verdict, reason));
+  return send(buildAgentDocumentRequest(target, verdict, reason), "agent");
 }
 
 /** Approve (active) or reject one agent shop. */
 export async function reviewAgentShop(shopId: string, decision: ShopDecision): Promise<ReviewOutcome> {
-  return send(buildAgentShopRequest(shopId, decision));
+  return send(buildAgentShopRequest(shopId, decision), "agent");
 }

@@ -264,3 +264,19 @@ The status tokens (`success`, `danger`, `info`, `warning` and their `-light` var
 
 1. **Finance & Accounting** (ERP Phase 1): ledger, chart of accounts (SCF), auto-posting from orders, trips and Blink Cash, invoices, P&L and TVA. Adds pages to the Finance module, the "Revenue this month" KPI, and the Analytics module's first page.
 2. Treasury & Settlements → Expenses → Reporting → HR → Assets, each as its own spec.
+
+## Addendum: Partners restructure
+
+The Partners module now has three sections, each with the partner list and its verification queue:
+
+- `merchants`: Merchants `/merchants`, Store verification `/merchants/verification` (attention `storesPending`)
+- `riders`: Riders `/riders`, Rider verification `/riders/verification` (attention `ridersPending`)
+- `agents`: Agents `/agents`, Agent verification `/agents/verification` (attention `agentsPending`)
+
+The page count stays 37. The `onboarding` section and the `vehicles`, `agent_shops` and `verification` pages are gone.
+
+- The old 3-tab `/verification` page is split per partner type. Loaders and server actions stay in `src/app/d/verification/`, but each now gates on its own section (`/merchants`, `/riders`, `/agents`) and revalidates its own route. Actions derive the allowed roles from `ROLE_ACCESS` (`rolesWithAccess`), so the guard cannot drift from the nav.
+- Vehicles are merged into Riders (real `vehicles` rows, replacing the mock store) and Agent shops into Agents. `/verification`, `/vehicles`, `/vehicles/documents` and `/agent-shops` remain only as server redirects.
+- `ROLE_ACCESS` loses `/verification`, `/vehicles` and `/agent-shops` and gains nothing. Effect: store verification moves from ops/hr to commerce/hr; agent shops move from commerce to ops/hr; rider and agent verification stay with ops/hr.
+- Attention: `ridersPending` counts `rider_profiles.verification_status = 'pending'`; `agentsPending` counts distinct agents with a register scan pending or a shop under review (the agents queue's "waiting" definition).
+

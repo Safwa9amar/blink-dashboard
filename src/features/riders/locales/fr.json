@@ -1,12 +1,61 @@
 {
   "riders": {
     "title": "Livreurs",
-    "description": "Gérer les profils des livreurs et véhicules",
-    "rider_id": "ID Livreur",
-    "name": "Nom",
+    "description": "Profils des livreurs avec leur véhicule et leur statut de vérification",
+    "search": "Rechercher par nom, téléphone ou ID livreur",
+    "rider": "Livreur",
     "phone": "Téléphone",
     "wilaya": "Wilaya",
     "vehicle": "Véhicule",
-    "empty": "Aucun livreur trouvé."
+    "verification_status": "Vérification",
+    "available": "Disponible",
+    "joined": "Inscrit le",
+    "actions": "Actions",
+    "view": "Voir",
+    "empty": "Aucun livreur trouvé.",
+    "unnamed": "Livreur sans nom",
+    "no_plate": "Sans plaque",
+    "yes": "Oui",
+    "no": "Non",
+    "types": {
+      "bicycle": "Vélo",
+      "motorcycle": "Moto"
+    },
+    "categories": {
+      "standard": "Standard",
+      "electric": "Électrique",
+      "hybrid": "Hybride"
+    },
+    "verification": {
+      "not_submitted": "Non soumis",
+      "pending": "En attente",
+      "approved": "Approuvé",
+      "rejected": "Rejeté"
+    },
+    "doc": {
+      "approved": "Approuvé",
+      "needs_update": "À mettre à jour",
+      "pending": "En attente",
+      "not_uploaded": "Non envoyé"
+    },
+    "detail": {
+      "title": "Détails du livreur",
+      "profile": "Profil",
+      "vehicle": "Véhicule",
+      "documents": "Documents du véhicule",
+      "type": "Type",
+      "brand": "Marque",
+      "model": "Modèle",
+      "plate": "Plaque d'immatriculation",
+      "year": "Année",
+      "color": "Couleur",
+      "category": "Catégorie",
+      "no_vehicle": "Aucun véhicule enregistré",
+      "gray_card": "Carte grise",
+      "insurance": "Assurance",
+      "no_documents": "Aucun document de véhicule requis",
+      "licence_note": "Le permis de conduire est vérifié avec les documents du livreur.",
+      "review": "Vérifier les documents"
+    }
   }
 }

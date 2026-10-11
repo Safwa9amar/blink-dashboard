@@ -1,4 +1,4 @@
-// Maps a rider / agent review decision from /verification onto the blink-server
+// Maps a rider / agent review decision from the riders / agents verification queues onto the blink-server
 // staff endpoint that applies it. Pure (no I/O). blink-server re-validates
 // everything (requireStaff + Zod); the checks here keep a malformed id out of
 // the URL path and give the reviewer a readable error.

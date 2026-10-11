@@ -1,7 +1,7 @@
 {
   "agents": {
     "title": "Agents",
-    "description": "Manage agent accounts — shops, profiles and access",
+    "description": "Agent accounts with their shops, profiles and access",
     "total": "Total Agents",
     "new_30d": "New (30 days)",
     "male": "Male",
@@ -26,6 +26,28 @@
     "delete": "Delete",
     "delete_agent": "Delete Agent",
     "delete_confirm": "Are you sure you want to delete this agent? This action cannot be undone.",
-    "deleting": "Deleting..."
+    "deleting": "Deleting...",
+    "shop": "Shop",
+    "shop_review_status": "Shop review",
+    "search": "Search by name, phone, agent ID or shop",
+    "no_shop": "No shop",
+    "detail_title": "Agent details",
+    "profile": "Profile",
+    "shop_details": "Shop",
+    "shop_phone": "Shop phone",
+    "address": "Address",
+    "shop_status": "Status",
+    "open": "Open",
+    "closed": "Closed",
+    "default_hours": "Daily hours",
+    "hours": "Opening hours",
+    "rating": "Rating",
+    "description_label": "Description",
+    "review": "Review",
+    "shop_review": {
+      "under_review": "Under review",
+      "active": "Approved",
+      "rejected": "Rejected"
+    }
   }
 }

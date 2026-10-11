@@ -1,7 +1,7 @@
 {
   "agents": {
     "title": "Agents",
-    "description": "Gérez les comptes agents — boutiques, profils et accès",
+    "description": "Comptes agents avec leurs boutiques, profils et accès",
     "total": "Total des agents",
     "new_30d": "Nouveaux (30 jours)",
     "male": "Hommes",
@@ -26,6 +26,28 @@
     "delete": "Supprimer",
     "delete_agent": "Supprimer l'agent",
     "delete_confirm": "Voulez-vous vraiment supprimer cet agent ? Cette action est irréversible.",
-    "deleting": "Suppression..."
+    "deleting": "Suppression...",
+    "shop": "Boutique",
+    "shop_review_status": "Vérification boutique",
+    "search": "Rechercher par nom, téléphone, ID agent ou boutique",
+    "no_shop": "Aucune boutique",
+    "detail_title": "Détails de l'agent",
+    "profile": "Profil",
+    "shop_details": "Boutique",
+    "shop_phone": "Téléphone boutique",
+    "address": "Adresse",
+    "shop_status": "Statut",
+    "open": "Ouverte",
+    "closed": "Fermée",
+    "default_hours": "Horaires quotidiens",
+    "hours": "Horaires d'ouverture",
+    "rating": "Note",
+    "description_label": "Description",
+    "review": "Vérifier",
+    "shop_review": {
+      "under_review": "En vérification",
+      "active": "Approuvée",
+      "rejected": "Rejetée"
+    }
   }
 }

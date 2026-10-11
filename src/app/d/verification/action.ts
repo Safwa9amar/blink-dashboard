@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
+import { rolesWithAccess } from "@/lib/auth/access";
 import { hasStaffRole } from "@/lib/auth/staff";
 import { blinkApi } from "@/lib/blink-api";
 import { blinkApiErrorKey, blinkApiErrorMessage } from "@/lib/blink-api-errors";
@@ -17,7 +18,6 @@ import {
   buildReviewRequest,
   documentErrorCode,
   isOwnerLeaving,
-  REVIEW_ROLES,
 } from "./review-request";
 
 // Approve / reject / deactivate a store, and verify / reject one of its
@@ -25,9 +25,12 @@ import {
 // (or review) column: each decision goes to blink-server's staff
 // endpoint with the operator's access token (requireStaff there is the
 // authority), then the page re-reads the queues. revalidatePath takes the
-// rewritten route (/d/…) — the browser shows /verification.
+// rewritten route (/d/…) — the browser shows /merchants/verification.
+// Store review belongs to the Merchants section: whoever can open /merchants
+// may decide (re-checked here, not only on the page).
 const NS = "verification";
-const PATH = "/d/verification";
+const PATH = "/d/merchants/verification";
+const REVIEW_ROLES = rolesWithAccess("/merchants");
 
 export async function submitReview(
   target: ReviewTarget,

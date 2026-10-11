@@ -155,18 +155,15 @@
     "french": "Français"
   },
   "sidebar": {
-    "vehicles": "Véhicules",
     "overview": "Aperçu",
     "users": "Tous les comptes",
     "riders": "Livreurs",
     "orders": "Commandes",
     "trips": "Trajets",
-    "agent_shops": "Boutiques Agents",
     "notifications": "Notifications",
     "settings": "Paramètres",
     "demand": "Demande",
     "live_ops": "Opérations en direct",
-    "verification": "Vérification",
     "promotions": "Promotions",
     "coupons": "Coupons",
     "news": "Blink News",
@@ -191,7 +188,10 @@
     "access": "Accès",
     "blink_server": "Serveur Blink",
     "email": "E-mail",
-    "deletion_requests": "Demandes de suppression"
+    "deletion_requests": "Demandes de suppression",
+    "merchant_verification": "Vérification des magasins",
+    "rider_verification": "Vérification des livreurs",
+    "agent_verification": "Vérification des agents"
   },
   "dash": {
     "search": "Rechercher",
@@ -225,7 +225,7 @@
       "requests": "Demandes",
       "riders": "Livreurs",
       "agents": "Agents",
-      "onboarding": "Intégration"
+      "merchants": "Marchands"
     },
     "modules": {
       "home": {

@@ -8,16 +8,14 @@ import {
   buildRiderQueue,
   riderPathsToSign,
   type AgentQueueLoad,
-  type PartnerQueues,
   type RiderQueueLoad,
   type RiderView,
 } from "@/features/verification";
 
-// Server-only reads for the Riders and Agents tabs of /verification, through
+// Server-only reads for /riders/verification and /agents/verification, through
 // the service-role client (rider_profiles.documents is service-role only, and
-// agent shops under review are hidden by RLS). Every load gates on the section
-// first. Nothing is written here — see partner-action.ts.
-const SECTION = "/verification";
+// agent shops under review are hidden by RLS). Each load gates on its own
+// section first (/riders, /agents). Nothing is written here — see partner-action.ts.
 
 /** Rows loaded per rider view; the exact totals come back alongside. */
 const QUEUE_LIMIT = 100;
@@ -112,15 +110,14 @@ async function loadAgents(db: Admin): Promise<AgentQueueLoad> {
   return { items, error: null, counts: agentViewCounts(items) };
 }
 
-// Riders and agents for the verification page, next to the stores queue.
-export const getPartnerQueues = cache(async (): Promise<PartnerQueues> => {
-  await requirePathAccess(SECTION);
-  if (!hasServiceRole()) {
-    const t = await getTranslations("verification");
-    const error = t("service_role_missing");
-    return { riders: { ...NO_RIDERS, error }, agents: { ...NO_AGENTS, error } };
-  }
-  const db = await createAdminClient();
-  const [riders, agents] = await Promise.all([loadRiders(db), loadAgents(db)]);
-  return { riders, agents };
+export const getRiderQueue = cache(async (): Promise<RiderQueueLoad> => {
+  await requirePathAccess("/riders");
+  if (!hasServiceRole()) return { ...NO_RIDERS, error: (await getTranslations("verification"))("service_role_missing") };
+  return loadRiders(await createAdminClient());
+});
+
+export const getAgentQueue = cache(async (): Promise<AgentQueueLoad> => {
+  await requirePathAccess("/agents");
+  if (!hasServiceRole()) return { ...NO_AGENTS, error: (await getTranslations("verification"))("service_role_missing") };
+  return loadAgents(await createAdminClient());
 });

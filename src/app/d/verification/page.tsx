@@ -1,15 +1,12 @@
-import type { Metadata } from "next";
-import { pageMeta } from "@/lib/dash-metadata";
-import { getVerificationQueues } from "./data";
-import { getPartnerQueues } from "./partner-data";
-import Client from "./client";
+import { redirect } from "next/navigation";
+import { canAccessPath } from "@/lib/auth/access";
+import { requirePathAccess } from "@/lib/auth/staff";
 
-export function generateMetadata(): Promise<Metadata> {
-  return pageMeta("verification");
-}
+// The old 3-tab review queue is split per partner type. Send the viewer to the
+// first verification route their staff role can open (else the Overview).
+const TARGETS = ["/riders/verification", "/agents/verification", "/merchants/verification"] as const;
 
-// The review queue — the loader gates on /verification (super / ops / HR admins).
-export default async function Page() {
-  const [queues, partners] = await Promise.all([getVerificationQueues(), getPartnerQueues()]);
-  return <Client queues={queues} partners={partners} />;
+export default async function VerificationRedirect() {
+  const role = await requirePathAccess("/");
+  redirect(TARGETS.find((href) => canAccessPath(role, href)) ?? "/");
 }

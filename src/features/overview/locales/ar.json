@@ -38,7 +38,9 @@
       "duesOutstanding": "تجّار لديهم مستحقات غير مدفوعة",
       "deletionPending": "طلبات حذف الحساب",
       "supportUnread": "محادثات دعم غير مقروءة",
-      "alertsOpen": "تنبيهات الخادم المفتوحة"
+      "alertsOpen": "تنبيهات الخادم المفتوحة",
+      "ridersPending": "سائقون قيد المراجعة",
+      "agentsPending": "وكلاء بانتظار المراجعة"
     },
     "activity": {
       "title": "آخر النشاطات",
