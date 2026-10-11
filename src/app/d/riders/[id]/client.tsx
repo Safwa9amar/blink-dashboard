@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Avatar, Badge, Card, DashIcon, PageHeader, StatCard, StatGrid, btnPrimary, btnSecondary } from "@/components/ui";
 import { money, relativeTime } from "@/features/overview/components/format";
@@ -25,6 +26,9 @@ import {
   type RiderDocSlot,
 } from "@/features/verification";
 import { reviewRiderDocument } from "@/app/d/verification/partner-action";
+import { PartnerNotice, type PartnerNoticeValue } from "@/features/verification/components/partner-notice";
+import { RequestVerificationDialog } from "@/features/riders/components/request-verification-dialog";
+import { requestRiderVerification } from "./action";
 
 export interface RiderStats {
   delivered: Block<number>;
@@ -55,6 +59,8 @@ export default function RiderDetailClient({ profile: p, docs, orders, trips, tra
   const tv = useTranslations("verification");
   const router = useRouter();
   const locale = useLocale();
+  const [requesting, setRequesting] = useState(false);
+  const [notice, setNotice] = useState<PartnerNoticeValue | null>(null);
   const dash = "—";
   const name = p.name || t("unnamed");
 
@@ -80,6 +86,8 @@ export default function RiderDetailClient({ profile: p, docs, orders, trips, tra
     <div>
       <PageHeader title={name} description={t("detail.page_description")} />
 
+      <PartnerNotice t={tv as never} notice={notice} onDismiss={() => setNotice(null)} />
+
       <Card className="mb-4">
         <div className="flex flex-wrap items-center gap-4">
           <Avatar name={p.name || p.riderId} />
@@ -100,6 +108,13 @@ export default function RiderDetailClient({ profile: p, docs, orders, trips, tra
                 {t("detail.call")}
               </a>
             )}
+            <button
+              type="button"
+              onClick={() => setRequesting(true)}
+              className={`${btnSecondary} border-warning/40 bg-warning-light text-warning hover:border-warning`}
+            >
+              {t("request.button")}
+            </button>
             <Link href="/riders" className={btnSecondary}>
               <DashIcon name="chevron-left" className="w-4 h-4 rtl:rotate-180" />
               {t("detail.back")}
@@ -107,6 +122,25 @@ export default function RiderDetailClient({ profile: p, docs, orders, trips, tra
           </div>
         </div>
       </Card>
+
+      {requesting && (
+        <RequestVerificationDialog
+          name={name}
+          vehicleType={p.vehicleType}
+          approved={p.verification === "approved"}
+          docs={docs.data}
+          onClose={() => setRequesting(false)}
+          submit={async (documents, note) => {
+            const outcome = await requestRiderVerification(p.id, documents, note);
+            return outcome.ok ? { ok: true } : { ok: false, message: outcome.message };
+          }}
+          onSent={() => {
+            setRequesting(false);
+            setNotice({ tone: "success", text: t("request.sent", { name }) });
+            router.refresh();
+          }}
+        />
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         <Card title={t("detail.profile")}>

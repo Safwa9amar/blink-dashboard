@@ -17,3 +17,11 @@ export {
   type ActivityTx,
   type RiderProfileView,
 } from "./detail";
+export {
+  buildVerificationRequest,
+  defaultSelection,
+  requiredDocKeys,
+  requiredSlots,
+  type VerificationRequest,
+  type VerificationRequestError,
+} from "./verification-request";

@@ -100,6 +100,39 @@
       "ride": "Ride",
       "deposit": "Deposit",
       "withdrawal": "Withdrawal"
+    },
+    "request": {
+      "button": "Request new verification",
+      "title": "Request new verification",
+      "intro": "{name} will have to upload the selected documents again.",
+      "documents": "Documents to re-submit",
+      "select_all": "Select all",
+      "clear": "Clear",
+      "pick_one": "Select at least one document.",
+      "reason": "Reason",
+      "reason_placeholder": "e.g. Your insurance has expired, please upload the new certificate",
+      "warning_offline": "{name} will go offline and can't take orders until staff approve the new documents.",
+      "note_neutral": "{name} will be asked to upload these documents again and staff will review them.",
+      "cancel": "Cancel",
+      "send": "Send request",
+      "sending": "Sending…",
+      "sent": "Verification request sent to {name}",
+      "errors": {
+        "invalid_target": "This request can't be sent. Reload the page and try again.",
+        "no_documents": "Select at least one document.",
+        "note_required": "Add a reason so the rider knows what to upload.",
+        "note_too_long": "The reason is too long ({max} characters max).",
+        "not_required": "One of the selected documents isn't required for this rider's vehicle. Reload and try again.",
+        "not_found": "This rider no longer exists. The page was refreshed.",
+        "documents_conflict": "The rider's documents changed while you were sending. The page was refreshed, so check and try again.",
+        "network": "Couldn't reach Blink Server. Check your connection and try again.",
+        "session": "Your session expired. Sign in again to continue.",
+        "forbidden": "Your staff role isn't allowed to request verifications.",
+        "invalid": "Blink Server refused this request. ({detail})",
+        "conflict": "The rider's documents changed. The page was refreshed, so check and try again.",
+        "throttled": "Too many requests. Wait a moment and try again.",
+        "generic": "Something went wrong. ({detail})"
+      }
     }
   }
 }

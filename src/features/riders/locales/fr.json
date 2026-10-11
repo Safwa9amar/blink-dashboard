@@ -100,6 +100,39 @@
       "ride": "Trajet",
       "deposit": "Dépôt",
       "withdrawal": "Retrait"
+    },
+    "request": {
+      "button": "Demander une nouvelle vérification",
+      "title": "Demander une nouvelle vérification",
+      "intro": "{name} devra téléverser à nouveau les documents sélectionnés.",
+      "documents": "Documents à renvoyer",
+      "select_all": "Tout sélectionner",
+      "clear": "Effacer",
+      "pick_one": "Sélectionnez au moins un document.",
+      "reason": "Motif",
+      "reason_placeholder": "ex. Votre assurance a expiré, veuillez téléverser la nouvelle attestation",
+      "warning_offline": "{name} passera hors ligne et ne pourra plus prendre de commandes tant que l'équipe n'aura pas approuvé les nouveaux documents.",
+      "note_neutral": "{name} devra téléverser à nouveau ces documents et l'équipe les examinera.",
+      "cancel": "Annuler",
+      "send": "Envoyer la demande",
+      "sending": "Envoi…",
+      "sent": "Demande de vérification envoyée à {name}",
+      "errors": {
+        "invalid_target": "Cette demande ne peut pas être envoyée. Rechargez la page et réessayez.",
+        "no_documents": "Sélectionnez au moins un document.",
+        "note_required": "Ajoutez un motif pour que le livreur sache quoi téléverser.",
+        "note_too_long": "Le motif est trop long ({max} caractères max).",
+        "not_required": "L'un des documents sélectionnés n'est pas requis pour le véhicule de ce livreur. Rechargez et réessayez.",
+        "not_found": "Ce livreur n'existe plus. La page a été actualisée.",
+        "documents_conflict": "Les documents du livreur ont changé pendant l'envoi. La page a été actualisée, vérifiez et réessayez.",
+        "network": "Impossible de joindre Blink Server. Vérifiez votre connexion et réessayez.",
+        "session": "Votre session a expiré. Reconnectez-vous pour continuer.",
+        "forbidden": "Votre rôle ne permet pas de demander des vérifications.",
+        "invalid": "Blink Server a refusé cette demande. ({detail})",
+        "conflict": "Les documents du livreur ont changé. La page a été actualisée, vérifiez et réessayez.",
+        "throttled": "Trop de requêtes. Patientez un instant et réessayez.",
+        "generic": "Une erreur s'est produite. ({detail})"
+      }
     }
   }
 }
