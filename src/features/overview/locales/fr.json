@@ -1,16 +1,51 @@
 {
   "overview": {
-    "title": "Aperçu",
+    "title": "Vue d'ensemble",
     "description": "Votre plateforme Blink en un coup d'œil",
-    "total_users": "Total Utilisateurs",
-    "active_riders": "Livreurs Actifs",
-    "orders": "Commandes",
-    "trips": "Trajets",
-    "transactions": "Transactions",
-    "recent_orders": "Commandes Récentes",
-    "recent_orders_desc": "Dernière activité des commandes",
-    "recent_trips": "Trajets Récents",
-    "recent_trips_desc": "Dernière activité des trajets",
-    "placeholder_text": "Les données apparaîtront ici une fois connecté."
+    "block_error": "Impossible de charger cette section.",
+    "kpi": {
+      "orders_today": "Commandes aujourd'hui",
+      "order_value": "Valeur des commandes",
+      "riders_available": "Livreurs disponibles",
+      "riders_of": "sur {total} livreurs",
+      "blink_cash": "Blink Cash aujourd'hui",
+      "cash_count": "{count, plural, one {# transaction} other {# transactions}}",
+      "waiting": "En attente du personnel"
+    },
+    "chart": {
+      "title": "Commandes, 14 derniers jours",
+      "description": "Livrées contre annulées ou refusées",
+      "delivered": "Livrées",
+      "failed": "Annulées ou refusées"
+    },
+    "pipeline": {
+      "title": "Opérations en direct",
+      "description": "Commandes en cours en ce moment",
+      "searching": "Recherche d'un livreur",
+      "heading_to_store": "En route vers le magasin",
+      "preparation": "En préparation",
+      "pickup": "Prête à récupérer",
+      "on_the_way": "En route",
+      "delivered_today": "Livrées aujourd'hui"
+    },
+    "attention": {
+      "title": "À traiter",
+      "description": "Tâches en attente du personnel",
+      "empty": "Rien n'est en attente.",
+      "storesPending": "Magasins en vérification",
+      "productsPending": "Produits à vérifier",
+      "packsPending": "Packs en vérification",
+      "duesOutstanding": "Marchands avec des dus impayés",
+      "deletionPending": "Demandes de suppression de compte",
+      "supportUnread": "Conversations support non lues",
+      "alertsOpen": "Alertes serveur ouvertes"
+    },
+    "activity": {
+      "title": "Activité récente",
+      "description": "Dernières commandes et transactions",
+      "empty": "Aucune activité pour l'instant.",
+      "order": "Commande",
+      "transaction": "Transaction"
+    }
   }
 }

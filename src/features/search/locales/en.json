@@ -1,0 +1,39 @@
+{
+  "search": {
+    "placeholder": "Search pages, actions, orders, people, stores…",
+    "esc": "Esc",
+    "hint": "Type to search. Order and transaction references (like 3F2A9C1B) work too.",
+    "searching": "Searching…",
+    "empty": "No results for “{query}”",
+    "close": "Close",
+    "not_found": "This record could not be found.",
+    "open_in": "Open in {page}",
+    "groups": {
+      "recent": "Recent",
+      "pages": "Pages",
+      "actions": "Actions",
+      "order": "Orders",
+      "transaction": "Transactions",
+      "person": "People",
+      "store": "Stores"
+    },
+    "fields": {
+      "status": "Status",
+      "type": "Type",
+      "store": "Store",
+      "customer": "Customer",
+      "total": "Total",
+      "created": "Created",
+      "updated": "Updated",
+      "amount": "Amount (fees)",
+      "agent": "Agent",
+      "role": "Role",
+      "phone": "Phone",
+      "email": "Email",
+      "joined": "Joined",
+      "owner": "Owner",
+      "products": "Products",
+      "location": "Location"
+    }
+  }
+}

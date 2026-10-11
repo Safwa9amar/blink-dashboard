@@ -1,0 +1,39 @@
+{
+  "search": {
+    "placeholder": "Rechercher pages, actions, commandes, personnes, magasins…",
+    "esc": "Échap",
+    "hint": "Saisissez pour rechercher. Les références de commande et de transaction (ex. 3F2A9C1B) fonctionnent aussi.",
+    "searching": "Recherche…",
+    "empty": "Aucun résultat pour « {query} »",
+    "close": "Fermer",
+    "not_found": "Cet enregistrement est introuvable.",
+    "open_in": "Ouvrir dans {page}",
+    "groups": {
+      "recent": "Récents",
+      "pages": "Pages",
+      "actions": "Actions",
+      "order": "Commandes",
+      "transaction": "Transactions",
+      "person": "Personnes",
+      "store": "Magasins"
+    },
+    "fields": {
+      "status": "Statut",
+      "type": "Type",
+      "store": "Magasin",
+      "customer": "Client",
+      "total": "Total",
+      "created": "Créé le",
+      "updated": "Mis à jour",
+      "amount": "Montant (frais)",
+      "agent": "Agent",
+      "role": "Rôle",
+      "phone": "Téléphone",
+      "email": "E-mail",
+      "joined": "Inscrit le",
+      "owner": "Propriétaire",
+      "products": "Produits",
+      "location": "Emplacement"
+    }
+  }
+}

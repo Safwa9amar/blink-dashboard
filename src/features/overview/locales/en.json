@@ -2,15 +2,50 @@
   "overview": {
     "title": "Overview",
     "description": "Your Blink platform at a glance",
-    "total_users": "Total Users",
-    "active_riders": "Active Riders",
-    "orders": "Orders",
-    "trips": "Trips",
-    "transactions": "Transactions",
-    "recent_orders": "Recent Orders",
-    "recent_orders_desc": "Latest order activity",
-    "recent_trips": "Recent Trips",
-    "recent_trips_desc": "Latest trip activity",
-    "placeholder_text": "Data will appear here once connected."
+    "block_error": "Couldn't load this section.",
+    "kpi": {
+      "orders_today": "Orders today",
+      "order_value": "Order value today",
+      "riders_available": "Riders available",
+      "riders_of": "of {total} riders",
+      "blink_cash": "Blink Cash today",
+      "cash_count": "{count, plural, one {# transaction} other {# transactions}}",
+      "waiting": "Waiting on staff"
+    },
+    "chart": {
+      "title": "Orders, last 14 days",
+      "description": "Delivered versus canceled or rejected",
+      "delivered": "Delivered",
+      "failed": "Canceled or rejected"
+    },
+    "pipeline": {
+      "title": "Live operations",
+      "description": "Orders in progress right now",
+      "searching": "Searching for a rider",
+      "heading_to_store": "Heading to store",
+      "preparation": "Preparing",
+      "pickup": "Ready for pickup",
+      "on_the_way": "On the way",
+      "delivered_today": "Delivered today"
+    },
+    "attention": {
+      "title": "Needs attention",
+      "description": "Work waiting on staff",
+      "empty": "Nothing is waiting on you.",
+      "storesPending": "Stores under review",
+      "productsPending": "Products pending review",
+      "packsPending": "Packs under review",
+      "duesOutstanding": "Merchants with unpaid dues",
+      "deletionPending": "Account deletion requests",
+      "supportUnread": "Unread support conversations",
+      "alertsOpen": "Open server alerts"
+    },
+    "activity": {
+      "title": "Latest activity",
+      "description": "Newest orders and transactions",
+      "empty": "No activity yet.",
+      "order": "Order",
+      "transaction": "Transaction"
+    }
   }
 }

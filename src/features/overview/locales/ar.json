@@ -1,16 +1,51 @@
 {
   "overview": {
     "title": "نظرة عامة",
-    "description": "منصة بلينك الخاصة بك في لمحة",
-    "total_users": "إجمالي المستخدمين",
-    "active_riders": "السائقون النشطون",
-    "orders": "الطلبات",
-    "trips": "الرحلات",
-    "transactions": "المعاملات",
-    "recent_orders": "الطلبات الأخيرة",
-    "recent_orders_desc": "آخر نشاط الطلبات",
-    "recent_trips": "الرحلات الأخيرة",
-    "recent_trips_desc": "آخر نشاط الرحلات",
-    "placeholder_text": "ستظهر البيانات هنا بمجرد الاتصال."
+    "description": "منصة بلينك في لمحة",
+    "block_error": "تعذّر تحميل هذا القسم.",
+    "kpi": {
+      "orders_today": "طلبات اليوم",
+      "order_value": "قيمة طلبات اليوم",
+      "riders_available": "السائقون المتاحون",
+      "riders_of": "من أصل {total} سائق",
+      "blink_cash": "بلينك كاش اليوم",
+      "cash_count": "{count, plural, zero {لا معاملات} one {معاملة واحدة} two {معاملتان} few {# معاملات} many {# معاملة} other {# معاملة}}",
+      "waiting": "بانتظار الفريق"
+    },
+    "chart": {
+      "title": "الطلبات خلال آخر 14 يومًا",
+      "description": "المسلَّمة مقابل الملغاة أو المرفوضة",
+      "delivered": "مسلَّمة",
+      "failed": "ملغاة أو مرفوضة"
+    },
+    "pipeline": {
+      "title": "العمليات المباشرة",
+      "description": "الطلبات الجارية الآن",
+      "searching": "البحث عن سائق",
+      "heading_to_store": "في الطريق إلى المتجر",
+      "preparation": "قيد التحضير",
+      "pickup": "جاهز للاستلام",
+      "on_the_way": "في الطريق",
+      "delivered_today": "سُلّمت اليوم"
+    },
+    "attention": {
+      "title": "يحتاج إلى انتباه",
+      "description": "أعمال بانتظار الفريق",
+      "empty": "لا شيء بانتظارك.",
+      "storesPending": "متاجر قيد المراجعة",
+      "productsPending": "منتجات بانتظار المراجعة",
+      "packsPending": "باقات قيد المراجعة",
+      "duesOutstanding": "تجّار لديهم مستحقات غير مدفوعة",
+      "deletionPending": "طلبات حذف الحساب",
+      "supportUnread": "محادثات دعم غير مقروءة",
+      "alertsOpen": "تنبيهات الخادم المفتوحة"
+    },
+    "activity": {
+      "title": "آخر النشاطات",
+      "description": "أحدث الطلبات والمعاملات",
+      "empty": "لا يوجد نشاط بعد.",
+      "order": "طلب",
+      "transaction": "معاملة"
+    }
   }
 }
