@@ -1,11 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { Badge, Button, DashIcon } from "@/components/ui";
 import { formatDateTime } from "../queue";
-import type { RiderQueueItem } from "../partners";
+import { riderDocLabel, riderUploadProgress, type RiderQueueItem } from "../partners";
 import type { TFn } from "../types";
 
-const VIEW_VARIANT = { pending: "warning", replacements: "info", rejected: "danger" } as const;
+const VIEW_VARIANT = { pending: "warning", replacements: "info", rejected: "danger", waiting: "default" } as const;
 
 export function RiderTable({
   t,
@@ -39,12 +40,16 @@ export function RiderTable({
               const vehicle = r.vehicle ? t(`partners.vehicle.${r.vehicle}`) : "—";
               const verifiedDocs = r.docs.filter((d) => d.status === "verified").length;
               const totalDocs = r.docs.length;
+              const waiting = r.view === "waiting";
+              const progress = riderUploadProgress(r.docs);
+              const missing = progress.missing.map((k) => riderDocLabel(t, k)).join(", ");
+              const hasUploads = r.docs.some((d) => d.status !== "missing");
 
               return (
                 <tr
                   key={r.id}
-                  onClick={() => onSelectRider(r)}
-                  className="hover:bg-card-hover/80 cursor-pointer transition-colors group"
+                  onClick={waiting && !hasUploads ? undefined : () => onSelectRider(r)}
+                  className={`hover:bg-card-hover/80 ${waiting && !hasUploads ? "" : "cursor-pointer"} transition-colors group`}
                 >
                   <td className="py-3.5 px-4 min-w-[180px]">
                     <div className="flex items-center gap-3">
@@ -58,6 +63,11 @@ export function RiderTable({
                         <span className="text-[11px] text-subtext truncate block mt-0.5">
                           {r.riderId || "—"}
                         </span>
+                        {waiting && missing && (
+                          <span className="text-[11px] text-warning block mt-0.5 max-w-[260px]">
+                            {t("partners.rider.missing", { docs: missing })}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </td>
@@ -78,7 +88,9 @@ export function RiderTable({
 
                   <td className="py-3.5 px-4 hidden lg:table-cell">
                     <span className="text-subtext font-medium text-[11px]">
-                      {verifiedDocs}/{totalDocs} Verified
+                      {waiting
+                        ? t("partners.rider.uploaded", { done: progress.done, total: progress.total })
+                        : `${verifiedDocs}/${totalDocs} Verified`}
                     </span>
                   </td>
 
@@ -87,6 +99,16 @@ export function RiderTable({
                   </td>
 
                   <td className="py-3.5 px-4 text-end">
+                    {waiting ? (
+                      <Link
+                        href={`/riders/${r.id}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
+                      >
+                        <span>{t("partners.rider.open_page")}</span>
+                        <DashIcon name="chevron-right" className="w-3.5 h-3.5" />
+                      </Link>
+                    ) : (
                     <Button
                       size="xs"
                       variant="outline"
@@ -99,6 +121,7 @@ export function RiderTable({
                       <span>Inspect</span>
                       <DashIcon name="chevron-right" className="w-3.5 h-3.5" />
                     </Button>
+                    )}
                   </td>
                 </tr>
               );

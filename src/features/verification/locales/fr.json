@@ -297,12 +297,14 @@
         "filter": {
           "pending": "À examiner",
           "replacements": "Documents remplacés",
-          "rejected": "Refusés"
+          "rejected": "Refusés",
+          "waiting": "En attente du livreur"
         },
         "hint": {
-          "pending": "Livreurs ayant envoyé leurs quatre documents et attendant une décision, du plus ancien au plus récent. Vérifiez ou refusez chaque document.",
+          "pending": "Livreurs ayant envoyé tous les documents obligatoires et attendant une décision, du plus ancien au plus récent. Vérifiez ou refusez chaque document.",
           "replacements": "Livreurs approuvés ayant envoyé un nouveau document. Ils restent approuvés pendant l'examen, du plus ancien au plus récent.",
-          "rejected": "Livreurs dont un document est refusé. Ils doivent en envoyer un nouveau, ou vous pouvez finalement le vérifier."
+          "rejected": "Livreurs dont un document est refusé. Ils doivent en envoyer un nouveau, ou vous pouvez finalement le vérifier.",
+          "waiting": "Livreurs qui doivent encore envoyer des documents obligatoires, par exemple après une nouvelle demande de vérification."
         },
         "empty": {
           "pending": "Aucun livreur en attente",
@@ -310,9 +312,14 @@
           "replacements": "Aucun document remplacé",
           "replacements_desc": "Quand un livreur approuvé remplace un document, il apparaît ici jusqu'à ce que quelqu'un chez Blink le contrôle.",
           "rejected": "Aucun livreur refusé",
-          "rejected_desc": "Les livreurs avec un document refusé apparaissent ici jusqu'à l'envoi d'un nouveau."
+          "rejected_desc": "Les livreurs avec un document refusé apparaissent ici jusqu'à l'envoi d'un nouveau.",
+          "waiting": "Aucun livreur n'a de document à envoyer",
+          "waiting_desc": "Les livreurs auxquels il manque des documents obligatoires apparaissent ici jusqu'à l'envoi de tout."
         },
-        "open_page": "Ouvrir la fiche du livreur"
+        "open_page": "Ouvrir la fiche du livreur",
+        "uploaded": "{done}/{total} envoyés",
+        "missing": "Manquants : {docs}",
+        "nothing_to_review": "Rien à examiner pour l'instant"
       },
       "agent": {
         "documents": "Registre de commerce",

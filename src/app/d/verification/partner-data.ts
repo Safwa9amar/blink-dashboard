@@ -31,7 +31,7 @@ const RIDER_SELECT = `user_id, rider_id, vehicle_type, documents, verification_s
 const AGENT_PROFILE_SELECT = `user_id, agent_id, documents, created_at, updated_at, ${USER.replace("{fk}", "agent_profiles_user_id_fkey")}`;
 const AGENT_SHOP_SELECT = `id, user_id, shop_name, phone_number, address, description, shop_image_url, documents, review_status, created_at, ${USER.replace("{fk}", "agent_shops_user_id_fkey")}`;
 
-const NO_RIDERS: RiderQueueLoad = { items: [], error: null, counts: { pending: 0, replacements: 0, rejected: 0 } };
+const NO_RIDERS: RiderQueueLoad = { items: [], error: null, counts: { pending: 0, replacements: 0, rejected: 0, waiting: 0 } };
 const NO_AGENTS: AgentQueueLoad = { items: [], error: null, counts: { pending: 0, rejected: 0 } };
 
 const RIDER_DOCS: readonly string[] = RIDER_DOC_KEYS;
@@ -54,7 +54,7 @@ export async function signRiderDocPaths(db: Admin, paths: readonly string[]): Pr
 
 async function loadRiders(db: Admin): Promise<RiderQueueLoad> {
   const list = () => db.from("rider_profiles").select(RIDER_SELECT, { count: "exact" });
-  const [pending, rejected, replacements] = await Promise.all([
+  const [pending, rejected, replacements, waiting] = await Promise.all([
     list().eq("verification_status", "pending").order("created_at", { ascending: true }).limit(QUEUE_LIMIT),
     list().eq("verification_status", "rejected").order("updated_at", { ascending: false }).limit(QUEUE_LIMIT),
     // Approved riders stay approved while a replacement document waits for review.
@@ -63,11 +63,13 @@ async function loadRiders(db: Admin): Promise<RiderQueueLoad> {
       .or(ANY_DOC_PENDING)
       .order("updated_at", { ascending: true })
       .limit(QUEUE_LIMIT),
+    // Required documents still to upload (e.g. after "Request new verification").
+    list().eq("verification_status", "not_submitted").order("updated_at", { ascending: false }).limit(QUEUE_LIMIT),
   ]);
-  const failed = pending.error ?? rejected.error ?? replacements.error;
+  const failed = pending.error ?? rejected.error ?? replacements.error ?? waiting.error;
   if (failed) return { ...NO_RIDERS, error: failed.message };
 
-  const rows: unknown[] = [...(pending.data ?? []), ...(replacements.data ?? []), ...(rejected.data ?? [])];
+  const rows: unknown[] = [...(pending.data ?? []), ...(replacements.data ?? []), ...(rejected.data ?? []), ...(waiting.data ?? [])];
 
   // The bucket is private: sign each object server-side. A failure only costs
   // that preview (the tile says "Preview unavailable"); legacy rows holding a
@@ -78,6 +80,7 @@ async function loadRiders(db: Admin): Promise<RiderQueueLoad> {
     pending: pending.count ?? 0,
     replacements: replacements.count ?? 0,
     rejected: rejected.count ?? 0,
+    waiting: waiting.count ?? 0,
   };
   return { items: buildRiderQueue(rows, signed), error: null, counts };
 }

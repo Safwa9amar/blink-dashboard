@@ -10,6 +10,7 @@ import {
   RIDER_VIEWS,
   ridersInView,
   riderDocLabel,
+  riderUploadProgress,
   type RiderDocSlot,
   type RiderQueueItem,
   type RiderQueueLoad,
@@ -23,7 +24,7 @@ import { PartnerDocActions } from "./partner-doc-actions";
 import { PartnerNotice, type PartnerNoticeValue } from "./partner-notice";
 import { RiderTable } from "./rider-table";
 
-const VIEW_VARIANT = { pending: "warning", replacements: "info", rejected: "danger" } as const;
+const VIEW_VARIANT = { pending: "warning", replacements: "info", rejected: "danger", waiting: "default" } as const;
 
 export function RiderQueue({
   t,
@@ -185,6 +186,8 @@ function RiderCard({
 }) {
   const name = r.name || t("unnamed");
   const vehicle = r.vehicle ? t(`partners.vehicle.${r.vehicle}`) : null;
+  const progress = riderUploadProgress(r.docs);
+  const waiting = r.view === "waiting";
 
   function handle(label: string, verdict: "verified" | "rejected", outcome: ReviewOutcome) {
     if (outcome.ok) {
@@ -209,17 +212,34 @@ function RiderCard({
           {r.phone ? <span dir="ltr">{r.phone}</span> : "—"}
         </DetailField>
         <DetailField label={t("partners.fields.vehicle")}>{vehicle ?? "—"}</DetailField>
+        {waiting && (
+          <DetailField label={t("partners.rider.documents")}>
+            {t("partners.rider.uploaded", { done: progress.done, total: progress.total })}
+          </DetailField>
+        )}
         <DetailField label={t("partners.fields.profile")}>
           <Link href={`/riders/${r.id}`} className="font-semibold text-primary hover:underline">
             {t("partners.rider.open_page")}
           </Link>
         </DetailField>
       </dl>
+      {waiting && progress.missing.length > 0 && (
+        <p className="text-xs text-warning mb-3">
+          {t("partners.rider.missing", { docs: progress.missing.map((k) => riderDocLabel(t, k)).join(", ") })}
+        </p>
+      )}
+      {waiting && !r.docs.some((d) => d.status !== "missing") ? (
+        <p className="text-xs text-subtext">{t("partners.rider.nothing_to_review")}</p>
+      ) : (
+      <>
       <p className="text-[11px] font-bold uppercase text-subtext mb-2.5">{t("partners.rider.documents")}</p>
       <div className="space-y-4">
         {RIDER_DOC_GROUPS.map((group) => {
           // A group shows when a document in it is required or has been uploaded.
-          const docs = r.docs.filter((d) => d.group === group && (d.required || d.status !== "missing"));
+          // A waiting rider's missing documents are listed above, so only uploads get tiles.
+          const docs = r.docs.filter(
+            (d) => d.group === group && (waiting ? d.status !== "missing" : d.required || d.status !== "missing")
+          );
           if (docs.length === 0) return null;
           return (
             <section key={group}>
@@ -259,6 +279,8 @@ function RiderCard({
           );
         })}
       </div>
+      </>
+      )}
     </ApplicantCard>
   );
 }

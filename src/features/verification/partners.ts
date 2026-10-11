@@ -42,8 +42,10 @@ export type RiderVerificationStatus = "not_submitted" | "pending" | "approved" |
  * - `pending`      — every document is in, none decided yet / some still to decide
  * - `replacements` — an approved rider whose replacement document awaits review
  * - `rejected`     — a document was rejected; the rider has to upload a new one
+ * - `waiting`      — `not_submitted`: required documents are still missing (e.g. after a
+ *                    new verification request); nothing to review, the rider has to upload
  */
-export const RIDER_VIEWS = ["pending", "replacements", "rejected"] as const;
+export const RIDER_VIEWS = ["pending", "replacements", "rejected", "waiting"] as const;
 export type RiderView = (typeof RIDER_VIEWS)[number];
 
 /** A rider's rejection note is capped by blink-server (reviewRiderDocumentSchema). */
@@ -249,7 +251,19 @@ export function riderViewOf(status: unknown, docs: readonly Pick<RiderDocSlot, "
   if (status === "rejected") return "rejected";
   if (status === "pending") return "pending";
   if (status === "approved" && docs.some((d) => d.status === "pending")) return "replacements";
+  if (status === "not_submitted") return "waiting";
   return null;
+}
+
+/** Required documents uploaded so far, and the required ones still missing. */
+export function riderUploadProgress(docs: readonly Pick<RiderDocSlot, "key" | "status" | "required">[]): {
+  done: number;
+  total: number;
+  missing: RiderDocKey[];
+} {
+  const required = docs.filter((d) => d.required);
+  const missing = required.filter((d) => d.status === "missing").map((d) => d.key);
+  return { done: required.length - missing.length, total: required.length, missing };
 }
 
 /**
@@ -326,11 +340,15 @@ export function buildRiderQueue(rows: readonly unknown[], signed: ReadonlyMap<st
   return items;
 }
 
-/** Oldest first for work waiting on staff, latest first for the rejected list. */
+/** Oldest first for work waiting on staff, latest first for the rejected and waiting-for-rider lists. */
 export function ridersInView(items: readonly RiderQueueItem[], view: RiderView): RiderQueueItem[] {
   return items
     .filter((r) => r.view === view)
-    .sort((a, b) => (view === "rejected" ? time(b.updatedAt) - time(a.updatedAt) : time(a.submittedAt) - time(b.submittedAt)));
+    .sort((a, b) =>
+      view === "rejected" || view === "waiting"
+        ? time(b.updatedAt) - time(a.updatedAt)
+        : time(a.submittedAt) - time(b.submittedAt)
+    );
 }
 
 // ─── Agents ──────────────────────────────────────────────────────────

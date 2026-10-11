@@ -297,12 +297,14 @@
         "filter": {
           "pending": "Pending review",
           "replacements": "Replacement documents",
-          "rejected": "Rejected"
+          "rejected": "Rejected",
+          "waiting": "Waiting for rider"
         },
         "hint": {
-          "pending": "Riders who sent all four documents and are waiting for a decision, oldest first. Verify or reject each document.",
+          "pending": "Riders who sent all required documents and are waiting for a decision, oldest first. Verify or reject each document.",
           "replacements": "Approved riders who uploaded a new document. They stay approved while it waits for review, oldest first.",
-          "rejected": "Riders with a rejected document. They have to upload a new one, or you can verify it after all."
+          "rejected": "Riders with a rejected document. They have to upload a new one, or you can verify it after all.",
+          "waiting": "Riders who still have required documents to upload, e.g. after a new verification request."
         },
         "empty": {
           "pending": "No riders waiting",
@@ -310,9 +312,14 @@
           "replacements": "No replacement documents",
           "replacements_desc": "When an approved rider replaces a document, it shows up here until someone at Blink checks it.",
           "rejected": "No rejected riders",
-          "rejected_desc": "Riders with a rejected document show up here until they upload a new one."
+          "rejected_desc": "Riders with a rejected document show up here until they upload a new one.",
+          "waiting": "No riders waiting to upload",
+          "waiting_desc": "Riders with missing required documents show up here until they upload everything."
         },
-        "open_page": "Open rider page"
+        "open_page": "Open rider page",
+        "uploaded": "{done}/{total} uploaded",
+        "missing": "Missing: {docs}",
+        "nothing_to_review": "Nothing to review yet"
       },
       "agent": {
         "documents": "Commercial register",
