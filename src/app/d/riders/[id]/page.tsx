@@ -27,7 +27,7 @@ const RECENT = 10;
 /** Upper bound on completed transactions summed for the Blink Cash volume. */
 const SUM_LIMIT = 5000;
 const PROFILE_SELECT =
-  "user_id, rider_id, vehicle_type, documents, verification_status, is_available, latitude, longitude, location_updated_at, created_at, users!rider_profiles_user_id_fkey(first_name, last_name, phone_number, email, wilaya, is_active, vehicles(brand, model, license_plate, year, color, category))";
+  "user_id, rider_id, vehicle_type, documents, verification_status, is_available, latitude, longitude, location_updated_at, created_at, users!rider_profiles_user_id_fkey(first_name, last_name, phone_number, email, wilaya, vehicles(brand, model, license_plate, year, color, category))";
 
 type Admin = Awaited<ReturnType<typeof createAdminClient>>;
 const msg = (e: { message: string } | null) => e?.message ?? null;

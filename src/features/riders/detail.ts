@@ -23,7 +23,7 @@ export interface RiderProfileView {
   phone: string | null;
   email: string | null;
   wilaya: string | null;
-  /** users.is_active; null when the column isn't there / unset. */
+  /** users has no is_active column (not selected), so this stays null and the account row is hidden. */
   active: boolean | null;
   vehicleType: RiderVehicleType | null;
   vehicle: RiderVehicle | null;
