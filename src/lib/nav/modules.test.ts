@@ -14,10 +14,10 @@ describe("MODULES", () => {
   it("every create action has a route", () => {
     for (const a of CREATE_ACTIONS) expect(existsSync(routeFile(a.href)), a.href).toBe(true);
   });
-  it("has the 29 pages of the old sidebar, no duplicates", () => {
+  it("has 37 pages, no duplicates", () => {
     const hrefs = MODULES.flatMap((m) => m.pages.map((p) => p.href));
-    expect(hrefs).toHaveLength(29);
-    expect(new Set(hrefs).size).toBe(29);
+    expect(hrefs).toHaveLength(37);
+    expect(new Set(hrefs).size).toBe(37);
   });
   it.each(["en", "fr", "ar"])("labels exist in %s", (l) => {
     const msg = locale(l);
@@ -38,6 +38,10 @@ describe("resolvePath", () => {
     ["/news/compose", "marketing", "/news"],
     ["/access/roles", "people", "/access"],
     ["/library/products/abc", "catalog", "/library"],
+    ["/support/inbox", "support", "/support/inbox"],
+    ["/support/articles/new", "support", "/support"],
+    ["/support", "support", "/support"],
+    ["/deletion-requests/history", "support", "/deletion-requests"],
   ])("%s → %s", (path, mod, href) => {
     const r = resolvePath(path);
     expect(r?.module.key).toBe(mod);
@@ -52,16 +56,16 @@ describe("resolvePath", () => {
 describe("visibleModules", () => {
   const keys = (r: (typeof STAFF_ROLES)[number]) => visibleModules(r).map((m) => m.key);
   it("super_admin sees all modules with pages", () => {
-    expect(keys("super_admin")).toEqual(["home", "operations", "customers", "partners", "catalog", "marketing", "finance", "people", "system"]);
+    expect(keys("super_admin")).toEqual(["home", "operations", "customers", "support", "partners", "catalog", "marketing", "finance", "people", "system"]);
   });
   it("finance_admin sees Home and Finance", () => expect(keys("finance_admin")).toEqual(["home", "finance"]));
-  it("support_admin", () => expect(keys("support_admin")).toEqual(["home", "customers", "marketing"]));
+  it("support_admin", () => expect(keys("support_admin")).toEqual(["home", "support", "marketing"]));
   it("never shows analytics while it has no pages", () => {
     for (const r of STAFF_ROLES) expect(keys(r)).not.toContain("analytics");
   });
   it("filters pages inside a module", () => {
-    const customers = visibleModules("support_admin").find((m) => m.key === "customers")!;
-    expect(customers.pages.map((p) => p.href)).toEqual(["/support", "/deletion-requests"]);
+    const support = visibleModules("ops_admin").find((m) => m.key === "support")!;
+    expect(support.pages.map((p) => p.href)).toEqual(["/deletion-requests"]);
   });
 });
 

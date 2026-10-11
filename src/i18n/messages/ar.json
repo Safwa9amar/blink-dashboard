@@ -171,7 +171,15 @@
     "coupons": "القسائم",
     "news": "أخبار Blink",
     "blink_cash": "Blink Cash",
-    "support": "الدعم",
+    "support_overview": "نظرة عامة",
+    "support_tickets": "التذاكر",
+    "support_inbox": "الدردشة المباشرة",
+    "support_ai": "روبوت الذكاء الاصطناعي",
+    "support_kb": "قاعدة المعرفة",
+    "support_macros": "الردود الجاهزة",
+    "support_csat": "رضا العملاء",
+    "support_agents": "الوكلاء",
+    "support_sla": "اتفاقيات الخدمة والقواعد",
     "deep_links": "الروابط العميقة",
     "marketplace": "السوق",
     "library": "مكتبة المنتجات",
@@ -222,6 +230,10 @@
       "customers": {
         "name": "العملاء",
         "description": "الأشخاص الذين يطلبون ويتنقلون، والدعم الذي يتلقونه."
+      },
+      "support": {
+        "name": "الدعم",
+        "description": "المحادثات والتذاكر ومحتوى المساعدة للعملاء والشركاء."
       },
       "partners": {
         "name": "الشركاء",

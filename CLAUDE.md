@@ -34,7 +34,8 @@ Navigation is a module workspace: an icon rail of modules, a module menu of page
 |---|---|
 | Home | Overview `/` |
 | Operations | Live ops · Orders · Trips · Demand |
-| Customers | Customers · All accounts (`/users`) · Support · Deletion requests |
+| Customers | Customers · All accounts (`/users`) |
+| Support | Overview · Tickets · Live chat · AI bot · Knowledge base · Macros · CSAT · Agents · SLA & rules · Deletion requests |
 | Partners | Merchants · Riders · Agents · Agent shops · Vehicles · Verification |
 | Catalog | Marketplace · Product library · Merchant pricing · Packs |
 | Marketing | Promotions · Coupons · News · Notifications · Email · Deep links |

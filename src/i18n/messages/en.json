@@ -171,7 +171,15 @@
     "coupons": "Coupons",
     "news": "Blink News",
     "blink_cash": "Blink Cash",
-    "support": "Support",
+    "support_overview": "Overview",
+    "support_tickets": "Tickets",
+    "support_inbox": "Live Chat",
+    "support_ai": "AI Bot",
+    "support_kb": "Knowledge Base",
+    "support_macros": "Macros",
+    "support_csat": "CSAT",
+    "support_agents": "Agents",
+    "support_sla": "SLA & Rules",
     "deep_links": "Deep Links",
     "marketplace": "Marketplace",
     "library": "Product library",
@@ -222,6 +230,10 @@
       "customers": {
         "name": "Customers",
         "description": "The people who order and ride, and the help they get."
+      },
+      "support": {
+        "name": "Support",
+        "description": "Conversations, tickets and help content for customers and partners."
       },
       "partners": {
         "name": "Partners",

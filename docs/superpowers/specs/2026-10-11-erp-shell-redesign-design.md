@@ -46,18 +46,19 @@ Order = rail order. Page labels reuse the existing `sidebar.*` translation keys.
 |---|---|---|
 | 1 | Home | Overview `/` |
 | 2 | Operations | Live ops `/live-ops` · Orders `/orders` · Trips `/trips` · Demand `/demand` |
-| 3 | Customers | Customers `/customers` · All accounts `/users` · Support `/support` · Deletion requests `/deletion-requests` |
-| 4 | Partners | Merchants `/merchants` · Riders `/riders` · Agents `/agents` · Agent shops `/agent-shops` · Vehicles `/vehicles` · Verification `/verification` |
-| 5 | Catalog | Marketplace `/marketplace` · Product library `/library` · Merchant pricing `/merchant-pricing` · Packs `/packs-management` |
-| 6 | Marketing | Promotions `/promotions` · Coupons `/coupons` · News `/news` · Notifications `/notifications` · Email `/email` · Deep links `/deep-links` |
-| 7 | Finance | Blink Cash `/blink-cash` |
-| 8 | People | Access `/access` |
-| 9 | Analytics | (no pages yet, so the module is hidden) |
-| 10 | System | Server `/blink-server` · Settings `/settings` |
+| 3 | Customers | Customers `/customers` · All accounts `/users` |
+| 4 | Support | Overview `/support` · Tickets `/support/tickets` · Live chat `/support/inbox` · AI bot `/support/ai` · Knowledge base `/support/kb` · Macros `/support/macros` · CSAT `/support/csat` · Agents `/support/agents` · SLA & rules `/support/sla` · Deletion requests `/deletion-requests` |
+| 5 | Partners | Merchants `/merchants` · Riders `/riders` · Agents `/agents` · Agent shops `/agent-shops` · Vehicles `/vehicles` · Verification `/verification` |
+| 6 | Catalog | Marketplace `/marketplace` · Product library `/library` · Merchant pricing `/merchant-pricing` · Packs `/packs-management` |
+| 7 | Marketing | Promotions `/promotions` · Coupons `/coupons` · News `/news` · Notifications `/notifications` · Email `/email` · Deep links `/deep-links` |
+| 8 | Finance | Blink Cash `/blink-cash` |
+| 9 | People | Access `/access` |
+| 10 | Analytics | (no pages yet, so the module is hidden) |
+| 11 | System | Server `/blink-server` · Settings `/settings` |
 
-That is 29 pages, the same set as today's sidebar. `/test` and `/transactions` (a redirect) are not in the nav.
+That is 37 pages (the old sidebar's 29 plus the 8 support sections promoted from `/support`'s in-page tabs). `/test` and `/transactions` (a redirect) are not in the nav.
 
-Sub-routes (`/blink-cash/dues`, `/access/roles`, `/support/inbox`, `/news/compose`, …) are **not** menu entries. They keep their existing in-page `SubNav` / `SubTabs`, and they resolve to their parent page for highlighting and breadcrumbs.
+Sub-routes (`/blink-cash/dues`, `/access/roles`, `/support/articles/new`, `/news/compose`, …) are **not** menu entries. They keep their existing in-page `SubNav` / `SubTabs`, and they resolve to their parent page for highlighting and breadcrumbs.
 
 ### 4.2 Rules
 
@@ -71,7 +72,7 @@ New file `src/lib/nav/modules.ts`. It is pure, with no React and no server impor
 
 ```ts
 export type ModuleKey =
-  | "home" | "operations" | "customers" | "partners" | "catalog"
+  | "home" | "operations" | "customers" | "support" | "partners" | "catalog"
   | "marketing" | "finance" | "people" | "analytics" | "system";
 
 export type AttentionKey =
@@ -106,7 +107,7 @@ Badge wiring:
 | `/packs-management` | `packsPending` |
 | `/blink-cash` | `duesOutstanding` |
 | `/deletion-requests` | `deletionPending` |
-| `/support` | `supportUnread` |
+| `/support/inbox` | `supportUnread` |
 | `/blink-server` | `alertsOpen` |
 
 A module's rail dot appears when any of its visible pages has a count above 0.

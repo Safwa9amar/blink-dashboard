@@ -5,7 +5,7 @@
 import { canAccessPath, type StaffRole } from "@/lib/auth/access";
 
 export type ModuleKey =
-  | "home" | "operations" | "customers" | "partners" | "catalog"
+  | "home" | "operations" | "customers" | "support" | "partners" | "catalog"
   | "marketing" | "finance" | "people" | "analytics" | "system";
 
 export type AttentionKey =
@@ -32,7 +32,19 @@ export const MODULES: readonly NavModule[] = [
     key: "customers", icon: "users", pages: [
       { key: "customers", href: "/customers", icon: "users" },
       { key: "users", href: "/users", icon: "users" },
-      { key: "support", href: "/support", icon: "chat", attention: ["supportUnread"] },
+    ],
+  },
+  {
+    key: "support", icon: "support", pages: [
+      { key: "support_overview", href: "/support", icon: "grid" },
+      { key: "support_tickets", href: "/support/tickets", icon: "support" },
+      { key: "support_inbox", href: "/support/inbox", icon: "chat", attention: ["supportUnread"] },
+      { key: "support_ai", href: "/support/ai", icon: "sparkles" },
+      { key: "support_kb", href: "/support/kb", icon: "doc" },
+      { key: "support_macros", href: "/support/macros", icon: "activity" },
+      { key: "support_csat", href: "/support/csat", icon: "star" },
+      { key: "support_agents", href: "/support/agents", icon: "users" },
+      { key: "support_sla", href: "/support/sla", icon: "shield" },
       { key: "deletion_requests", href: "/deletion-requests", icon: "trash", attention: ["deletionPending"] },
     ],
   },
