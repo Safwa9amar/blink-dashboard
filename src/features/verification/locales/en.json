@@ -271,7 +271,8 @@
       "not_required_bicycle": "Not required (bicycle)",
       "fields": {
         "phone": "Phone",
-        "vehicle": "Vehicle"
+        "vehicle": "Vehicle",
+        "profile": "Profile"
       },
       "vehicle": {
         "bicycle": "Bicycle",
@@ -310,7 +311,8 @@
           "replacements_desc": "When an approved rider replaces a document, it shows up here until someone at Blink checks it.",
           "rejected": "No rejected riders",
           "rejected_desc": "Riders with a rejected document show up here until they upload a new one."
-        }
+        },
+        "open_page": "Open rider page"
       },
       "agent": {
         "documents": "Commercial register",

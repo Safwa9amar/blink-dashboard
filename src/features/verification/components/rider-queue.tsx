@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Badge, Button, DashIcon, EmptyState, FilterPills } from "@/components/ui";
 import { reviewRiderDocument } from "@/app/d/verification/partner-action";
-import { formatDateTime } from "../queue";
 import {
   RIDER_DOC_GROUPS,
   RIDER_NOTE_MAX,
@@ -209,6 +209,11 @@ function RiderCard({
           {r.phone ? <span dir="ltr">{r.phone}</span> : "—"}
         </DetailField>
         <DetailField label={t("partners.fields.vehicle")}>{vehicle ?? "—"}</DetailField>
+        <DetailField label={t("partners.fields.profile")}>
+          <Link href={`/riders/${r.id}`} className="font-semibold text-primary hover:underline">
+            {t("partners.rider.open_page")}
+          </Link>
+        </DetailField>
       </dl>
       <p className="text-[11px] font-bold uppercase text-subtext mb-2.5">{t("partners.rider.documents")}</p>
       <div className="space-y-4">

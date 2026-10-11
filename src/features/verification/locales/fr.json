@@ -271,7 +271,8 @@
       "not_required_bicycle": "Non requis (vélo)",
       "fields": {
         "phone": "Téléphone",
-        "vehicle": "Véhicule"
+        "vehicle": "Véhicule",
+        "profile": "Profil"
       },
       "vehicle": {
         "bicycle": "Vélo",
@@ -310,7 +311,8 @@
           "replacements_desc": "Quand un livreur approuvé remplace un document, il apparaît ici jusqu'à ce que quelqu'un chez Blink le contrôle.",
           "rejected": "Aucun livreur refusé",
           "rejected_desc": "Les livreurs avec un document refusé apparaissent ici jusqu'à l'envoi d'un nouveau."
-        }
+        },
+        "open_page": "Ouvrir la fiche du livreur"
       },
       "agent": {
         "documents": "Registre de commerce",

@@ -171,11 +171,6 @@ export default function RiderDetailClient({ profile: p, docs, orders, trips, tra
         className="mb-4"
         title={t("detail.documents")}
         description={t("detail.documents_desc")}
-        action={
-          <Link href="/riders/verification" className="text-[13px] font-semibold text-primary hover:underline">
-            {t("detail.review")}
-          </Link>
-        }
       >
         {docs.error ? (
           failed(docs.error)
