@@ -157,21 +157,13 @@
     "vehicles": "Vehicles",
     "admin_dashboard": "Admin Dashboard",
     "overview": "Overview",
-    "users": "Users",
+    "users": "All accounts",
     "riders": "Riders",
     "orders": "Orders",
     "trips": "Trips",
-    "transactions": "Transactions",
     "agent_shops": "Agent Shops",
     "notifications": "Notifications",
     "settings": "Settings",
-    "search_menu": "Search menu…",
-    "no_menu_match": "No menu items match “{query}”.",
-    "operations": "Operations",
-    "people": "People",
-    "commerce": "Commerce",
-    "money": "Money",
-    "system": "Comms & System",
     "demand": "Demand",
     "live_ops": "Live Ops",
     "verification": "Verification",
@@ -180,17 +172,14 @@
     "news": "Blink News",
     "blink_cash": "Blink Cash",
     "support": "Support",
-    "collapse_sidebar": "Collapse sidebar",
-    "expand_sidebar": "Expand sidebar",
     "deep_links": "Deep Links",
     "marketplace": "Marketplace",
-    "library": "Products Library",
-    "pricing": "Catalog Review",
+    "library": "Product library",
+    "pricing": "Merchant pricing",
     "packs": "Packs",
     "customers": "Customers",
     "merchants": "Merchants",
     "agents": "Agents",
-    "platform": "Platform",
     "access": "Access",
     "blink_server": "Blink Server",
     "email": "Email",
@@ -218,5 +207,85 @@
     "live_preview": "Live preview",
     "publish_now": "Publish now",
     "send_now": "Send now"
+  },
+  "shell": {
+    "admin": "Admin",
+    "modules": {
+      "home": {
+        "name": "Home",
+        "description": "Start of the day: key numbers and everything waiting on you."
+      },
+      "operations": {
+        "name": "Operations",
+        "description": "What is happening on the ground right now."
+      },
+      "customers": {
+        "name": "Customers",
+        "description": "The people who order and ride, and the help they get."
+      },
+      "partners": {
+        "name": "Partners",
+        "description": "Merchants, riders and agents who work with Blink."
+      },
+      "catalog": {
+        "name": "Catalog",
+        "description": "What is sold on Blink and at what price."
+      },
+      "marketing": {
+        "name": "Marketing",
+        "description": "Bring customers in and keep them coming back."
+      },
+      "finance": {
+        "name": "Finance",
+        "description": "Money moving through Blink."
+      },
+      "people": {
+        "name": "People",
+        "description": "Blink staff and their permissions."
+      },
+      "analytics": {
+        "name": "Analytics",
+        "description": "Reports and trends across the business."
+      },
+      "system": {
+        "name": "System",
+        "description": "Platform health and global settings."
+      }
+    },
+    "create": {
+      "button": "Create",
+      "promotion": "Promotion",
+      "coupon": "Coupon",
+      "news": "News post",
+      "notification": "Push notification",
+      "library_product": "Library product",
+      "help_article": "Help article"
+    },
+    "topbar": {
+      "search_placeholder": "Search orders, people, stores…",
+      "open_menu": "Open menu",
+      "close_menu": "Close menu"
+    },
+    "nav": {
+      "collapse": "Collapse menu",
+      "expand": "Expand menu",
+      "modules": "Modules",
+      "waiting": "{count} waiting"
+    },
+    "staff_menu": {
+      "signed_in_as": "Signed in as",
+      "sign_out": "Sign out",
+      "roles": {
+        "super_admin": "Super admin",
+        "ops_admin": "Operations admin",
+        "finance_admin": "Finance admin",
+        "support_admin": "Support admin",
+        "commerce_admin": "Commerce admin",
+        "hr_admin": "HR admin"
+      }
+    },
+    "breadcrumbs": {
+      "label": "Breadcrumb"
+    }
   }
 }

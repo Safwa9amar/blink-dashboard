@@ -157,21 +157,13 @@
     "vehicles": "المركبات",
     "admin_dashboard": "لوحة الإدارة",
     "overview": "نظرة عامة",
-    "users": "المستخدمون",
+    "users": "كل الحسابات",
     "riders": "السائقون",
     "orders": "الطلبات",
     "trips": "الرحلات",
-    "transactions": "المعاملات",
     "agent_shops": "متاجر الوكلاء",
     "notifications": "الإشعارات",
     "settings": "الإعدادات",
-    "search_menu": "بحث في القائمة…",
-    "no_menu_match": "لا توجد عناصر تطابق «{query}».",
-    "operations": "العمليات",
-    "people": "الأشخاص",
-    "commerce": "التجارة",
-    "money": "المال",
-    "system": "الاتصالات والنظام",
     "demand": "الطلب",
     "live_ops": "العمليات المباشرة",
     "verification": "التحقق",
@@ -180,17 +172,14 @@
     "news": "أخبار Blink",
     "blink_cash": "Blink Cash",
     "support": "الدعم",
-    "collapse_sidebar": "طيّ الشريط الجانبي",
-    "expand_sidebar": "توسيع الشريط الجانبي",
     "deep_links": "الروابط العميقة",
     "marketplace": "السوق",
     "library": "مكتبة المنتجات",
-    "pricing": "مراجعة الكتالوج",
+    "pricing": "تسعير التجار",
     "packs": "الحزم",
     "customers": "العملاء",
     "merchants": "التجار",
     "agents": "الوكلاء",
-    "platform": "المنصة",
     "access": "الوصول",
     "blink_server": "خادم Blink",
     "email": "البريد",
@@ -218,5 +207,85 @@
     "live_preview": "معاينة مباشرة",
     "publish_now": "نشر الآن",
     "send_now": "إرسال الآن"
+  },
+  "shell": {
+    "admin": "المشرف",
+    "modules": {
+      "home": {
+        "name": "الرئيسية",
+        "description": "بداية اليوم: الأرقام الأساسية وكل ما ينتظر انتباهك."
+      },
+      "operations": {
+        "name": "العمليات",
+        "description": "ما يجري على أرض الواقع الآن."
+      },
+      "customers": {
+        "name": "العملاء",
+        "description": "الأشخاص الذين يطلبون ويتنقلون، والدعم الذي يتلقونه."
+      },
+      "partners": {
+        "name": "الشركاء",
+        "description": "التجار والسائقون والوكلاء الذين يعملون مع بلينك."
+      },
+      "catalog": {
+        "name": "الكتالوج",
+        "description": "ما يُباع على بلينك وبأي سعر."
+      },
+      "marketing": {
+        "name": "التسويق",
+        "description": "اجتذاب العملاء وإبقاؤهم على تواصل."
+      },
+      "finance": {
+        "name": "المالية",
+        "description": "الأموال المتدفقة عبر بلينك."
+      },
+      "people": {
+        "name": "الفريق",
+        "description": "موظفو بلينك وصلاحياتهم."
+      },
+      "analytics": {
+        "name": "التحليلات",
+        "description": "التقارير والاتجاهات على مستوى النشاط."
+      },
+      "system": {
+        "name": "النظام",
+        "description": "سلامة المنصة والإعدادات العامة."
+      }
+    },
+    "create": {
+      "button": "إنشاء",
+      "promotion": "عرض ترويجي",
+      "coupon": "قسيمة",
+      "news": "منشور إخباري",
+      "notification": "إشعار فوري",
+      "library_product": "منتج في المكتبة",
+      "help_article": "مقال مساعدة"
+    },
+    "topbar": {
+      "search_placeholder": "ابحث في الطلبات والأشخاص والمتاجر…",
+      "open_menu": "فتح القائمة",
+      "close_menu": "إغلاق القائمة"
+    },
+    "nav": {
+      "collapse": "طيّ القائمة",
+      "expand": "توسيع القائمة",
+      "modules": "الوحدات",
+      "waiting": "{count} قيد الانتظار"
+    },
+    "staff_menu": {
+      "signed_in_as": "تم تسجيل الدخول باسم",
+      "sign_out": "تسجيل الخروج",
+      "roles": {
+        "super_admin": "مشرف عام",
+        "ops_admin": "مشرف العمليات",
+        "finance_admin": "مشرف مالي",
+        "support_admin": "مشرف الدعم",
+        "commerce_admin": "مشرف التجارة",
+        "hr_admin": "مشرف الموارد البشرية"
+      }
+    },
+    "breadcrumbs": {
+      "label": "مسار التنقل"
+    }
   }
 }

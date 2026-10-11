@@ -157,21 +157,13 @@
     "vehicles": "Véhicules",
     "admin_dashboard": "Tableau de Bord",
     "overview": "Aperçu",
-    "users": "Utilisateurs",
+    "users": "Tous les comptes",
     "riders": "Livreurs",
     "orders": "Commandes",
     "trips": "Trajets",
-    "transactions": "Transactions",
     "agent_shops": "Boutiques Agents",
     "notifications": "Notifications",
     "settings": "Paramètres",
-    "search_menu": "Rechercher…",
-    "no_menu_match": "Aucun élément ne correspond à « {query} ».",
-    "operations": "Opérations",
-    "people": "Personnes",
-    "commerce": "Commerce",
-    "money": "Finances",
-    "system": "Comms & Système",
     "demand": "Demande",
     "live_ops": "Opérations en direct",
     "verification": "Vérification",
@@ -180,17 +172,14 @@
     "news": "Blink News",
     "blink_cash": "Blink Cash",
     "support": "Assistance",
-    "collapse_sidebar": "Réduire le menu",
-    "expand_sidebar": "Agrandir le menu",
     "deep_links": "Liens profonds",
     "marketplace": "Marketplace",
-    "library": "Bibliothèque de Produits",
-    "pricing": "Revue du catalogue",
+    "library": "Catalogue produits",
+    "pricing": "Tarifs marchands",
     "packs": "Packs",
     "customers": "Clients",
     "merchants": "Commerçants",
     "agents": "Agents",
-    "platform": "Plateforme",
     "access": "Accès",
     "blink_server": "Serveur Blink",
     "email": "E-mail",
@@ -218,5 +207,85 @@
     "live_preview": "Aperçu en direct",
     "publish_now": "Publier maintenant",
     "send_now": "Envoyer maintenant"
+  },
+  "shell": {
+    "admin": "Admin",
+    "modules": {
+      "home": {
+        "name": "Accueil",
+        "description": "Le point de départ de la journée : les chiffres clés et tout ce qui vous attend."
+      },
+      "operations": {
+        "name": "Opérations",
+        "description": "Ce qui se passe sur le terrain en ce moment."
+      },
+      "customers": {
+        "name": "Clients",
+        "description": "Les personnes qui commandent et se déplacent, et l'aide qu'elles reçoivent."
+      },
+      "partners": {
+        "name": "Partenaires",
+        "description": "Les marchands, livreurs et agents qui travaillent avec Blink."
+      },
+      "catalog": {
+        "name": "Catalogue",
+        "description": "Ce qui est vendu sur Blink et à quel prix."
+      },
+      "marketing": {
+        "name": "Marketing",
+        "description": "Attirer des clients et les fidéliser."
+      },
+      "finance": {
+        "name": "Finance",
+        "description": "Les flux d'argent qui transitent par Blink."
+      },
+      "people": {
+        "name": "Équipe",
+        "description": "Le personnel de Blink et ses autorisations."
+      },
+      "analytics": {
+        "name": "Analytique",
+        "description": "Rapports et tendances de l'activité."
+      },
+      "system": {
+        "name": "Système",
+        "description": "État de la plateforme et paramètres globaux."
+      }
+    },
+    "create": {
+      "button": "Créer",
+      "promotion": "Promotion",
+      "coupon": "Coupon",
+      "news": "Article d'actualité",
+      "notification": "Notification push",
+      "library_product": "Produit du catalogue",
+      "help_article": "Article d'aide"
+    },
+    "topbar": {
+      "search_placeholder": "Rechercher commandes, personnes, boutiques…",
+      "open_menu": "Ouvrir le menu",
+      "close_menu": "Fermer le menu"
+    },
+    "nav": {
+      "collapse": "Réduire le menu",
+      "expand": "Développer le menu",
+      "modules": "Modules",
+      "waiting": "{count} en attente"
+    },
+    "staff_menu": {
+      "signed_in_as": "Connecté en tant que",
+      "sign_out": "Se déconnecter",
+      "roles": {
+        "super_admin": "Super administrateur",
+        "ops_admin": "Administrateur des opérations",
+        "finance_admin": "Administrateur financier",
+        "support_admin": "Administrateur support",
+        "commerce_admin": "Administrateur commerce",
+        "hr_admin": "Administrateur RH"
+      }
+    },
+    "breadcrumbs": {
+      "label": "Fil d'Ariane"
+    }
   }
 }
