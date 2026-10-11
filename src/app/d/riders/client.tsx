@@ -4,26 +4,24 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { Badge, DashIcon, DataTable, NameCell, PageHeader, SearchBox, type Column } from "@/components/ui";
-import { matchesRider, RiderDetail, VERIFICATION_VARIANT, type RiderRow } from "@/features/riders";
+import { matchesRider, VERIFICATION_VARIANT, type RiderRow } from "@/features/riders";
 
 export default function RidersClient({ riders, error }: { riders: RiderRow[]; error?: string }) {
   const t = useTranslations("riders");
   const locale = useLocale();
   const [query, setQuery] = useState("");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const rows = useMemo(() => riders.filter((r) => matchesRider(r, query)), [riders, query]);
-  const selected = riders.find((r) => r.id === selectedId) ?? null;
 
   const columns: Column<RiderRow>[] = [
     {
       key: "name",
       label: t("rider"),
       render: (r) => (
-        <button type="button" onClick={() => setSelectedId(r.id)} className="flex items-center gap-2.5 text-start cursor-pointer">
+        <Link href={`/riders/${r.userId}`} className="flex items-center gap-2.5 text-start">
           <NameCell name={r.name || r.riderId} />
           <span className="font-mono text-xs text-primary">{r.riderId}</span>
-        </button>
+        </Link>
       ),
     },
     { key: "phone", label: t("phone"), render: (r) => <span dir="ltr">{r.phone ?? "—"}</span> },
@@ -65,15 +63,14 @@ export default function RidersClient({ riders, error }: { riders: RiderRow[]; er
       label: t("actions"),
       sortable: false,
       render: (r) => (
-        <button
-          type="button"
-          onClick={() => setSelectedId(r.id)}
+        <Link
+          href={`/riders/${r.userId}`}
           aria-label={t("view")}
           title={t("view")}
-          className="w-8 h-8 inline-flex items-center justify-center rounded-lg text-subtext hover:text-text hover:bg-card-hover transition-colors cursor-pointer"
+          className="w-8 h-8 inline-flex items-center justify-center rounded-lg text-subtext hover:text-text hover:bg-card-hover transition-colors"
         >
           <DashIcon name="eye" className="w-4 h-4" />
-        </button>
+        </Link>
       ),
     },
   ];
@@ -92,8 +89,7 @@ export default function RidersClient({ riders, error }: { riders: RiderRow[]; er
       <div className="mb-4">
         <SearchBox placeholder={t("search")} value={query} onChange={setQuery} />
       </div>
-      <DataTable columns={columns} data={rows} error={error} emptyMessage={t("empty")} />
-      <RiderDetail rider={selected} onClose={() => setSelectedId(null)} />
+      <DataTable columns={columns} data={rows} error={error} emptyMessage={t("empty")} rowHref={(r) => `/riders/${r.userId}`} />
     </div>
   );
 }

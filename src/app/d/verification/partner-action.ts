@@ -38,7 +38,8 @@ const SECTIONS = {
 
 async function send(
   request: ReviewRequest | { code: ReviewErrorCode },
-  kind: keyof typeof SECTIONS
+  kind: keyof typeof SECTIONS,
+  alsoRevalidate?: string
 ): Promise<ReviewOutcome> {
   const { section, path: PATH } = SECTIONS[kind];
   const REVIEW_ROLES = rolesWithAccess(section);
@@ -53,12 +54,16 @@ async function send(
   const res = await blinkApi(request.path, { method: "PATCH", body: request.body, roles: REVIEW_ROLES });
   if (res.ok) {
     revalidatePath(PATH);
+    if (alsoRevalidate) revalidatePath(alsoRevalidate);
     return { ok: true };
   }
 
   const code = partnerErrorCode(res);
   // The document changed (or the partner is gone): what's on screen is stale.
-  if (code || res.status === 404) revalidatePath(PATH);
+  if (code || res.status === 404) {
+    revalidatePath(PATH);
+    if (alsoRevalidate) revalidatePath(alsoRevalidate);
+  }
   if (code || res.status === 404) {
     const key = code ?? "not_found";
     const t = await getTranslations(`${NS}.partners.errors`);
@@ -73,7 +78,9 @@ export async function reviewRiderDocument(
   verdict: PartnerVerdict,
   note?: string
 ): Promise<ReviewOutcome> {
-  return send(buildRiderDocumentRequest(target, verdict, note), "rider");
+  // The rider's own page (/riders/<id>, rewritten to /d/riders/<id>) shows the same documents.
+  const detail = /^[0-9a-f-]{36}$/i.test(target.riderId) ? `/d/riders/${target.riderId}` : undefined;
+  return send(buildRiderDocumentRequest(target, verdict, note), "rider", detail);
 }
 
 /** Verify / reject an agent's commercial register scan. */

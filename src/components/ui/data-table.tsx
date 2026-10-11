@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState, type KeyboardEvent, type MouseEvent, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   useReactTable,
@@ -37,7 +38,14 @@ interface DataTableProps<T> {
   pageSize?: number;
   enableSorting?: boolean;
   enablePagination?: boolean;
+  /**
+   * Makes each row a link: click (or Enter on the focused row) navigates to the returned
+   * href. Buttons, links and form controls inside a row keep their own behaviour. Optional.
+   */
+  rowHref?: (row: T) => string;
 }
+
+const INTERACTIVE = "a,button,input,select,textarea,label,summary,[role='button'],[role='link'],[data-row-ignore]";
 
 const PAGE_SIZES = [10, 25, 50];
 
@@ -51,7 +59,9 @@ export function DataTable<T>({
   pageSize = 10,
   enableSorting = true,
   enablePagination = true,
+  rowHref,
 }: DataTableProps<T>) {
+  const router = useRouter();
   const t = useTranslations("common");
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -84,6 +94,23 @@ export function DataTable<T>({
     initialState: enablePagination ? { pagination: { pageSize } } : {},
     getRowId: (row, i) => String(get(row, keyField) ?? i),
   });
+
+  const goTo = (href: string, newTab: boolean) => {
+    if (newTab) window.open(href, "_blank", "noopener");
+    else router.push(href);
+  };
+  const onRowClick = (e: MouseEvent<HTMLTableRowElement>, href: string) => {
+    if (e.defaultPrevented || e.button !== 0) return;
+    const hit = (e.target as HTMLElement).closest(INTERACTIVE);
+    if (hit && hit !== e.currentTarget) return;
+    if (window.getSelection()?.toString()) return; // the user is selecting text
+    goTo(href, e.metaKey || e.ctrlKey);
+  };
+  const onRowKeyDown = (e: KeyboardEvent<HTMLTableRowElement>, href: string) => {
+    if (e.key !== "Enter" || e.target !== e.currentTarget) return; // Enter on an inner control is its own
+    e.preventDefault();
+    goTo(href, e.metaKey || e.ctrlKey);
+  };
 
   const showPagination = enablePagination && !error && rows.length > Math.min(...PAGE_SIZES);
   const { pageIndex, pageSize: activePageSize } = table.getState().pagination;
@@ -140,8 +167,16 @@ export function DataTable<T>({
                 </td>
               </tr>
             ) : (
-              table.getRowModel().rows.map((row) => (
-                <tr key={row.id} className="text-text hover:bg-card-hover transition-colors">
+              table.getRowModel().rows.map((row) => {
+                const href = rowHref?.(row.original);
+                return (
+                <tr
+                  key={row.id}
+                  className={`text-text hover:bg-card-hover transition-colors ${href ? "cursor-pointer focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary" : ""}`}
+                  {...(href
+                    ? { tabIndex: 0, onClick: (e: MouseEvent<HTMLTableRowElement>) => onRowClick(e, href), onKeyDown: (e: KeyboardEvent<HTMLTableRowElement>) => onRowKeyDown(e, href) }
+                    : {})}
+                >
                   {row.getVisibleCells().map((cell) => {
                     const col = columns.find((c) => c.key === cell.column.id);
                     return (
@@ -151,7 +186,8 @@ export function DataTable<T>({
                     );
                   })}
                 </tr>
-              ))
+                );
+              })
             )}
           </tbody>
         </table>

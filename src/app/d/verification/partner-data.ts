@@ -38,6 +38,20 @@ const RIDER_DOCS: readonly string[] = RIDER_DOC_KEYS;
 /** PostgREST `or` filter: any rider document is waiting on staff. */
 const ANY_DOC_PENDING = RIDER_DOCS.map((k) => `documents->${k}->>status.eq.pending`).join(",");
 
+/**
+ * Signs private `rider-documents` object paths (path → short-lived URL). A path that
+ * can't be signed is simply absent from the map. Server-only; no access check — callers gate first.
+ */
+export async function signRiderDocPaths(db: Admin, paths: readonly string[]): Promise<Map<string, string>> {
+  const signed = new Map<string, string>();
+  if (paths.length === 0) return signed;
+  const { data } = await db.storage.from(RIDER_BUCKET).createSignedUrls([...paths], SIGNED_URL_TTL);
+  for (const entry of data ?? []) {
+    if (entry.path && entry.signedUrl && !entry.error) signed.set(entry.path, entry.signedUrl);
+  }
+  return signed;
+}
+
 async function loadRiders(db: Admin): Promise<RiderQueueLoad> {
   const list = () => db.from("rider_profiles").select(RIDER_SELECT, { count: "exact" });
   const [pending, rejected, replacements] = await Promise.all([
@@ -58,14 +72,7 @@ async function loadRiders(db: Admin): Promise<RiderQueueLoad> {
   // The bucket is private: sign each object server-side. A failure only costs
   // that preview (the tile says "Preview unavailable"); legacy rows holding a
   // full URL in `path` are skipped here and shown as links.
-  const signed = new Map<string, string>();
-  const paths = riderPathsToSign(rows);
-  if (paths.length > 0) {
-    const { data } = await db.storage.from(RIDER_BUCKET).createSignedUrls(paths, SIGNED_URL_TTL);
-    for (const entry of data ?? []) {
-      if (entry.path && entry.signedUrl && !entry.error) signed.set(entry.path, entry.signedUrl);
-    }
-  }
+  const signed = await signRiderDocPaths(db, riderPathsToSign(rows));
 
   const counts: Record<RiderView, number> = {
     pending: pending.count ?? 0,

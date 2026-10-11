@@ -67,6 +67,7 @@
         "merchant": "Marchand",
         "agent": "Agent"
       }
-    }
+    },
+    "open_rider": "Ouvrir la fiche du livreur"
   }
 }

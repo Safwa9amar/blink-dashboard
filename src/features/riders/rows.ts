@@ -50,6 +50,7 @@ export function toRiderRow(row: unknown): RiderRow | null {
   const type = row.vehicle_type === "bicycle" || row.vehicle_type === "motorcycle" ? row.vehicle_type : null;
   return {
     id: row.id,
+    userId: str(row.user_id),
     riderId: str(row.rider_id),
     name,
     phone: strOrNull(user?.phone_number),

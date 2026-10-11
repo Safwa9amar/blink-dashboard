@@ -15,4 +15,4 @@ export interface SearchHit {
 }
 export interface SearchGroup { kind: RecordKind; hits: SearchHit[] }
 /** `label` is a key under the `search.fields.*` namespace. Values of `status`/`type`/`role` fields are raw enums and `created`/`updated`/`joined` are ISO timestamps; the client formats both. */
-export interface RecordDetail { kind: RecordKind; id: string; title: string; fields: { label: string; value: string }[]; listHref: string }
+export interface RecordDetail { kind: RecordKind; id: string; title: string; fields: { label: string; value: string }[]; listHref: string; /** Set when `listHref` is the record's own page rather than its list (a rider → /riders/<id>). */ openAs?: "rider" }

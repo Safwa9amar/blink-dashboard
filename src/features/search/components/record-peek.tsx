@@ -94,7 +94,7 @@ export function RecordPeek({ kind, id, onClose }: { kind: RecordKind; id: string
               onClick={onClose}
               className="inline-flex items-center gap-2 text-[13px] font-semibold text-primary hover:underline"
             >
-              {t("open_in", { page: tNav(PAGE_LABEL[kind]) })}
+              {detail.openAs === "rider" ? t("open_rider") : t("open_in", { page: tNav(PAGE_LABEL[kind]) })}
               <DashIcon name="chevron-right" className="w-4 h-4 rtl:rotate-180" />
             </Link>
           </footer>

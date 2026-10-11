@@ -20,6 +20,8 @@ export interface RiderVehicle {
 export interface RiderRow {
   /** rider_profiles.id */
   id: string;
+  /** users.id — the rider's page is /riders/<userId>. */
+  userId: string;
   /** Display ID, e.g. "BK-RR-100001". */
   riderId: string;
   name: string;

@@ -253,6 +253,50 @@ export function riderViewOf(status: unknown, docs: readonly Pick<RiderDocSlot, "
 }
 
 /**
+ * One slot per rider document key, from `rider_profiles.documents`. `signed` maps an object
+ * path to its signed URL (missing = couldn't be signed → no preview).
+ */
+export function buildRiderDocSlots(
+  vehicleType: string | null,
+  documents: unknown,
+  signed: ReadonlyMap<string, string>
+): RiderDocSlot[] {
+  const stored = isRecord(documents) ? documents : {};
+  return RIDER_DOC_KEYS.map((key) => {
+    const required = isRiderDocRequired(vehicleType, key);
+    const group = riderDocGroup(key);
+    const entry = stored[key];
+    const path = isRecord(entry) ? text(entry.path) : null;
+    if (!isRecord(entry) || !path) {
+      return { key, group, path: null, url: null, trusted: false, isPdf: false, status: "missing", note: null, uploadedAt: null, required };
+    }
+    const legacy = isFullUrl(path);
+    const url = legacy ? path : (signed.get(path) ?? null);
+    const status = docStatus(entry.status);
+    return {
+      key,
+      group,
+      path,
+      url,
+      trusted: !legacy && !!url,
+      isPdf: isPdf(path),
+      status,
+      note: status === "rejected" ? text(entry.note) : null,
+      uploadedAt: text(entry.uploaded_at),
+      required,
+    };
+  });
+}
+
+/** Groups worth showing: one with a required document or one that has an upload. */
+export function visibleDocGroups(docs: readonly RiderDocSlot[]): { group: RiderDocGroup; docs: RiderDocSlot[] }[] {
+  return RIDER_DOC_GROUPS.map((group) => ({
+    group,
+    docs: docs.filter((d) => d.group === group && (d.required || d.status !== "missing")),
+  })).filter((g) => g.docs.length > 0);
+}
+
+/**
  * Rider rows → queue items. `signed` maps an object path to its signed URL
  * (missing = couldn't be signed → no preview). A malformed row is dropped
  * rather than taking the queue down.
@@ -261,32 +305,8 @@ export function buildRiderQueue(rows: readonly unknown[], signed: ReadonlyMap<st
   const items: RiderQueueItem[] = [];
   for (const row of rows) {
     if (!isRecord(row) || typeof row.user_id !== "string") continue;
-    const stored = isRecord(row.documents) ? row.documents : {};
     const vehicle = text(row.vehicle_type);
-    const docs: RiderDocSlot[] = RIDER_DOC_KEYS.map((key) => {
-      const required = isRiderDocRequired(vehicle, key);
-      const group = riderDocGroup(key);
-      const entry = stored[key];
-      const path = isRecord(entry) ? text(entry.path) : null;
-      if (!isRecord(entry) || !path) {
-        return { key, group, path: null, url: null, trusted: false, isPdf: false, status: "missing", note: null, uploadedAt: null, required };
-      }
-      const legacy = isFullUrl(path);
-      const url = legacy ? path : (signed.get(path) ?? null);
-      const status = docStatus(entry.status);
-      return {
-        key,
-        group,
-        path,
-        url,
-        trusted: !legacy && !!url,
-        isPdf: isPdf(path),
-        status,
-        note: status === "rejected" ? text(entry.note) : null,
-        uploadedAt: text(entry.uploaded_at),
-        required,
-      };
-    });
+    const docs = buildRiderDocSlots(vehicle, row.documents, signed);
     const status = (row.verification_status as RiderVerificationStatus) ?? "not_submitted";
     const view = riderViewOf(status, docs);
     if (!view) continue;

@@ -163,8 +163,10 @@ export async function loadRecord(role: StaffRole, kind: RecordKind, id: string):
       .eq("id", id)
       .maybeSingle();
     if (!u) return null;
+    // A rider opens on their own page (when staff may see /riders), not the users list.
+    const ownPage = u.role === "rider" && canAccessPath(role, "/riders");
     return {
-      kind, id, listHref, title: fullName(u) || u.email || u.phone_number || ref(id),
+      kind, id, listHref: ownPage ? `/riders/${id}` : listHref, ...(ownPage ? { openAs: "rider" as const } : {}), title: fullName(u) || u.email || u.phone_number || ref(id),
       fields: [f("role", u.role), f("status", u.is_active === false ? "inactive" : "active"), f("phone", u.phone_number), f("email", u.email), f("joined", when(u.created_at))],
     };
   }

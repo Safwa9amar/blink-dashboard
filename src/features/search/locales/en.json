@@ -67,6 +67,7 @@
         "merchant": "Merchant",
         "agent": "Agent"
       }
-    }
+    },
+    "open_rider": "Open rider page"
   }
 }

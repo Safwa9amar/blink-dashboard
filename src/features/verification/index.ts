@@ -5,4 +5,6 @@ export { AgentQueue } from "./components/agent-queue";
 export * from "./partners";
 export * from "./queue";
 export * from "./types";
+export { DocumentTile } from "./components/document-tile";
+export { PartnerDocActions } from "./components/partner-doc-actions";
 export { OpeningHours } from "./components/opening-hours";
