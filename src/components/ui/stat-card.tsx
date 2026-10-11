@@ -12,17 +12,17 @@ interface StatCardProps {
 }
 
 const variantStyles: Record<Variant, { bg: string; text: string; iconBg: string }> = {
-  primary: { bg: "bg-soft-pink border-soft-border", text: "text-primary", iconBg: "bg-primary/15" },
-  success: { bg: "bg-success-light/60 border-success/20", text: "text-success", iconBg: "bg-success/15" },
-  info: { bg: "bg-info-light/60 border-info/20", text: "text-info", iconBg: "bg-info/15" },
-  warning: { bg: "bg-warning-light border-warning/20", text: "text-warning", iconBg: "bg-warning/15" },
-  danger: { bg: "bg-danger-light/60 border-danger/20", text: "text-danger", iconBg: "bg-danger/15" },
+  primary: { bg: "bg-card border-border", text: "text-primary", iconBg: "bg-soft-pink" },
+  success: { bg: "bg-card border-border", text: "text-success", iconBg: "bg-success-light" },
+  info: { bg: "bg-card border-border", text: "text-info", iconBg: "bg-info-light" },
+  warning: { bg: "bg-card border-border", text: "text-warning", iconBg: "bg-warning-light" },
+  danger: { bg: "bg-card border-border", text: "text-danger", iconBg: "bg-danger-light" },
   default: { bg: "bg-card border-border", text: "text-text", iconBg: "bg-muted" },
 };
 
 function renderIcon(icon: ReactNode | string) {
   if (icon == null || icon === false) return null;
-  if (typeof icon === "string") return <DashIcon name={icon} className="w-5 h-5" />;
+  if (typeof icon === "string") return <DashIcon name={icon} className="w-4 h-4" />;
   if (isValidElement(icon)) return icon;
   return null;
 }
@@ -32,19 +32,19 @@ export function StatCard({ label, value, variant = "primary", icon, change }: St
   const iconNode = renderIcon(icon);
 
   return (
-    <div className={`rounded-2xl border p-5 ${styles.bg}`}>
-      <div className="flex items-center justify-between mb-3">
-        <p className={`text-sm font-medium ${styles.text} opacity-85`}>{label}</p>
+    <div className={`rounded-xl border p-4 ${styles.bg}`}>
+      <div className="flex items-center justify-between mb-2.5">
+        <p className="text-xs font-medium text-subtext">{label}</p>
         {iconNode && (
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${styles.iconBg} ${styles.text}`}>
+          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${styles.iconBg} ${styles.text}`}>
             {iconNode}
           </div>
         )}
       </div>
-      <p className={`text-3xl font-bold leading-none ${styles.text}`}>
+      <p className={`text-2xl font-bold leading-none tabular-nums text-text`}>
         {typeof value === "number" ? value.toLocaleString() : value}
       </p>
-      {change && <p className="text-xs text-subtext mt-1.5">{change}</p>}
+      {change && <p className={`text-xs font-medium mt-2 tabular-nums ${styles.text}`}>{change}</p>}
     </div>
   );
 }

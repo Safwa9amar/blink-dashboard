@@ -5,11 +5,11 @@ import { useEffect, useState } from "react";
 type Theme = "light" | "dark";
 
 export function ThemeSwitcher() {
-  const [theme, setTheme] = useState<Theme>("dark");
+  const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
     const stored = localStorage.getItem("theme") as Theme | null;
-    const initial = stored ?? "dark";
+    const initial: Theme = stored === "dark" || stored === "light" ? stored : "light";
     setTheme(initial);
     document.documentElement.setAttribute("data-theme", initial);
   }, []);

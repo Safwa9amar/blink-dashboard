@@ -1,52 +1,58 @@
 @import "tailwindcss";
 
-/* Dark theme (default) */
+/* Light theme (default — applies with no data-theme attribute) */
 :root,
-[data-theme="dark"] {
-  --primary: #EE335F;
-  --primary-hover: #D92B53;
-  --background: #020617;
-  --card: #1C1C1E;
-  --card-hover: #242426;
-  --icon-bg: #2C2C2E;
-  --text: #ECEDEE;
-  --subtext: #9BA1A6;
-  --border: #2C2C2C;
-  --muted: #1A1A1A;
-  --soft-pink: #2A1C20;
-  --soft-border: #331517;
-  --success: #10B981;
-  --success-light: #0F3E23;
-  --danger: #EF4444;
-  --danger-light: #331517;
-  --info: #3B82F6;
-  --info-light: #1E2E4B;
-  --warning: #FAAD14;
-  --warning-light: rgba(250, 173, 20, 0.1);
-}
-
-/* Light theme */
 [data-theme="light"] {
   --primary: #EE335F;
   --primary-hover: #D92B53;
-  --background: #F9FAFB;
+  --background: #F6F7F9;
   --card: #FFFFFF;
-  --card-hover: #F3F4F6;
-  --icon-bg: #F3F4F6;
-  --text: #111827;
-  --subtext: #6B7280;
-  --border: #E5E7EB;
-  --muted: #F3F4F6;
+  --card-hover: #F9FAFB;
+  --icon-bg: #F1F5F9;
+  --text: #0F172A;
+  --subtext: #64748B;
+  --border: #E6E8EC;
+  --muted: #F1F5F9;
   --soft-pink: #FFF1F2;
   --soft-border: #FECDD3;
   --success: #059669;
-  --success-light: #D1FAE5;
+  --success-light: #ECFDF5;
   --danger: #DC2626;
-  --danger-light: #FEE2E2;
+  --danger-light: #FEF2F2;
   --info: #2563EB;
-  --info-light: #DBEAFE;
-  --warning: #D97706;
-  --warning-light: #FEF3C7;
+  --info-light: #EFF6FF;
+  --warning: #B45309;
+  --warning-light: #FFFBEB;
+  --rail: #0F172A;
+  --rail-text: #94A3B8;
+  --rail-active: #FFFFFF;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+  --primary: #EE335F;
+  --primary-hover: #D92B53;
+  --background: #0B0F17;
+  --card: #131821;
+  --card-hover: #0F141C;
+  --icon-bg: #1A212C;
+  --text: #E6E8EB;
+  --subtext: #8B95A3;
+  --border: #232B37;
+  --muted: #1A212C;
+  --soft-pink: rgba(238, 51, 95, 0.12);
+  --soft-border: rgba(238, 51, 95, 0.28);
+  --success: #34D399;
+  --success-light: rgba(52, 211, 153, 0.12);
+  --danger: #F87171;
+  --danger-light: rgba(248, 113, 113, 0.12);
+  --info: #60A5FA;
+  --info-light: rgba(96, 165, 250, 0.12);
+  --warning: #FBBF24;
+  --warning-light: rgba(251, 191, 36, 0.12);
+  --rail: #070A10;
+  --rail-text: #8B95A3;
+  --rail-active: #FFFFFF;
 }
 
 @theme inline {
@@ -70,8 +76,16 @@
   --color-info-light: var(--info-light);
   --color-warning: var(--warning);
   --color-warning-light: var(--warning-light);
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --color-rail: var(--rail);
+  --color-rail-text: var(--rail-text);
+  --color-rail-active: var(--rail-active);
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   --font-mono: SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+}
+
+/* Tabular figures for stat values, table numbers and money */
+.tabular {
+  font-variant-numeric: tabular-nums;
 }
 
 body {

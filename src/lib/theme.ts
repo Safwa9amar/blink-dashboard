@@ -1,25 +1,26 @@
 // Blink Design System - Color Tokens
+// Light-theme values (the default); keep in sync with src/app/globals.css.
 // Matches the mobile app's theme from /blink/constants/theme.ts
 
 export const colors = {
   primary: "#EE335F",
   primaryHover: "#D92B53",
 
-  background: "#020617",
-  card: "#1C1C1E",
-  cardHover: "#242426",
-  iconBg: "#2C2C2E",
+  background: "#F6F7F9",
+  card: "#FFFFFF",
+  cardHover: "#F9FAFB",
+  iconBg: "#F1F5F9",
 
-  text: "#ECEDEE",
-  subtext: "#9BA1A6",
-  border: "#2C2C2C",
+  text: "#0F172A",
+  subtext: "#64748B",
+  border: "#E6E8EC",
   lightGrey: "#2C2C2C",
-  muted: "#1A1A1A",
+  muted: "#F1F5F9",
   mutedBorder: "#333333",
 
   // Soft pink accents
-  softPink: "#2A1C20",
-  softBorder: "#331517",
+  softPink: "#FFF1F2",
+  softBorder: "#FECDD3",
 
   // Accent colors
   accentPink: "#FF2D55",
@@ -28,14 +29,19 @@ export const colors = {
   accentGreen: "#4CD964",
 
   // Status colors
-  success: "#10B981",
-  successLight: "#0F3E23",
-  danger: "#EF4444",
-  dangerLight: "#331517",
-  info: "#3B82F6",
-  infoLight: "#1E2E4B",
-  warning: "#FAAD14",
-  warningLight: "rgba(250, 173, 20, 0.1)",
+  success: "#059669",
+  successLight: "#ECFDF5",
+  danger: "#DC2626",
+  dangerLight: "#FEF2F2",
+  info: "#2563EB",
+  infoLight: "#EFF6FF",
+  warning: "#B45309",
+  warningLight: "#FFFBEB",
+
+  // Shell rail
+  rail: "#0F172A",
+  railText: "#94A3B8",
+  railActive: "#FFFFFF",
 
   // Deep tones
   charcoal: "#2D3436",

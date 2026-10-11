@@ -18,7 +18,8 @@ export const metadata: Metadata = {
 // Inline script to apply theme before paint (prevents flash)
 const themeScript = `
   (function() {
-    var t = localStorage.getItem('theme') || 'light';
+    var t = 'light';
+    try { var s = localStorage.getItem('theme'); if (s === 'dark' || s === 'light') t = s; } catch (e) {}
     document.documentElement.setAttribute('data-theme', t);
   })();
 `;

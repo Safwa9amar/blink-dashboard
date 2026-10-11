@@ -89,10 +89,10 @@ export function DataTable<T>({
   const { pageIndex, pageSize: activePageSize } = table.getState().pagination;
 
   return (
-    <div className="bg-card border border-border rounded-2xl overflow-hidden">
+    <div className="bg-card border border-border rounded-xl overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-start">
-          <thead>
+          <thead className="sticky top-0 z-10 bg-card-hover">
             {table.getHeaderGroups().map((hg) => (
               <tr key={hg.id} className="border-b border-border">
                 {hg.headers.map((header) => {
@@ -103,7 +103,7 @@ export function DataTable<T>({
                   return (
                     <th
                       key={header.id}
-                      className={`px-6 py-3.5 text-start text-[11px] font-semibold text-subtext uppercase tracking-wider ${col?.className ?? col?.tdClass ?? ""}`}
+                      className={`px-4 h-10 bg-card-hover text-start text-[11px] font-semibold text-subtext uppercase tracking-wider ${col?.className ?? col?.tdClass ?? ""}`}
                     >
                       {canSort ? (
                         <button
@@ -129,13 +129,13 @@ export function DataTable<T>({
           <tbody className="divide-y divide-border">
             {error ? (
               <tr>
-                <td colSpan={columns.length} className="px-6 py-4 text-danger">
+                <td colSpan={columns.length} className="px-4 py-4 text-danger">
                   {error}
                 </td>
               </tr>
             ) : !rows.length ? (
               <tr>
-                <td colSpan={columns.length} className="px-6 py-12 text-center text-subtext">
+                <td colSpan={columns.length} className="px-4 py-12 text-center text-subtext">
                   {emptyText}
                 </td>
               </tr>
@@ -145,7 +145,7 @@ export function DataTable<T>({
                   {row.getVisibleCells().map((cell) => {
                     const col = columns.find((c) => c.key === cell.column.id);
                     return (
-                      <td key={cell.id} className={`px-6 py-3.5 ${col?.tdClass ?? col?.className ?? ""}`}>
+                      <td key={cell.id} className={`px-4 py-2 h-10 tabular-nums ${col?.tdClass ?? col?.className ?? ""}`}>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     );
@@ -158,7 +158,7 @@ export function DataTable<T>({
       </div>
 
       {showPagination && (
-        <div className="flex items-center justify-between gap-4 px-6 py-3 border-t border-border text-[13px] text-subtext">
+        <div className="flex items-center justify-between gap-4 px-4 py-2.5 border-t border-border text-[13px] text-subtext">
           <label className="flex items-center gap-2">
             <span>{t("rows_per_page")}</span>
             <select

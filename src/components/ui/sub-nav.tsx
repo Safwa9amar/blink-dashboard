@@ -47,7 +47,7 @@ export function SubNav({ items, vertical = false }: { items: SubNavItem[]; verti
             <Link
               key={it.href}
               href={it.href}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-start ${
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-all text-start ${
                 on
                   ? "bg-soft-pink text-primary border border-soft-border"
                   : "text-subtext hover:text-text hover:bg-[var(--muted)] border border-transparent"
@@ -63,14 +63,14 @@ export function SubNav({ items, vertical = false }: { items: SubNavItem[]; verti
   }
 
   return (
-    <div className="flex gap-1 mb-[22px] border-b border-border overflow-x-auto">
+    <div className="flex gap-1 mb-5 border-b border-border overflow-x-auto">
       {items.map((it) => {
         const on = isActive(it);
         return (
           <Link
             key={it.href}
             href={it.href}
-            className={`inline-flex items-center gap-2 px-4 py-[11px] text-sm font-semibold border-b-2 -mb-px whitespace-nowrap transition-colors ${
+            className={`inline-flex items-center gap-2 px-3.5 py-2.5 text-[13px] font-semibold border-b-2 -mb-px whitespace-nowrap transition-colors ${
               on ? "text-primary border-primary" : "text-subtext border-transparent hover:text-text"
             }`}
           >

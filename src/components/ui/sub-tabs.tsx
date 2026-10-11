@@ -17,7 +17,7 @@ export function SubTabs({
   onChange: (id: string) => void;
 }) {
   return (
-    <div className="flex gap-1 mb-[22px] border-b border-border overflow-x-auto">
+    <div className="flex gap-1 mb-5 border-b border-border overflow-x-auto">
       {tabs.map((t) => {
         const on = active === t.id;
         return (
@@ -25,7 +25,7 @@ export function SubTabs({
             key={t.id}
             type="button"
             onClick={() => onChange(t.id)}
-            className={`inline-flex items-center gap-2 px-4 py-[11px] text-sm font-semibold border-b-2 -mb-px whitespace-nowrap transition-colors ${
+            className={`inline-flex items-center gap-2 px-3.5 py-2.5 text-[13px] font-semibold border-b-2 -mb-px whitespace-nowrap transition-colors ${
               on ? "text-primary border-primary" : "text-subtext border-transparent hover:text-text"
             }`}
           >

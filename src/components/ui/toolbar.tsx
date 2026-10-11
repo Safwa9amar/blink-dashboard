@@ -17,7 +17,7 @@ export function Toolbar({
   showExport?: boolean;
 }) {
   return (
-    <div className="flex items-center gap-3 mb-[18px]">
+    <div className="flex items-center gap-3 mb-4">
       <SearchBox placeholder={placeholder} />
       {showFilter && (
         <Button variant="secondary" size="sm" icon="filter">

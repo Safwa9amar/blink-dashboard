@@ -5,13 +5,13 @@ export type Variant = "primary" | "success" | "info" | "warning" | "danger" | "d
 
 // ---- button class fragments (used by Button + Toolbar) ----
 export const btnBase =
-  "inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold border transition-colors cursor-pointer";
+  "inline-flex items-center justify-center gap-2 rounded-lg px-3.5 h-[34px] text-[13px] font-semibold border transition-colors cursor-pointer";
 export const btnSecondary = `${btnBase} border-border bg-card text-text hover:bg-card-hover`;
 export const btnPrimary = `${btnBase} border-primary bg-primary text-white hover:bg-primary-hover`;
 
 // ---- form field ----
 export const fInput =
-  "w-full bg-background border border-border rounded-[10px] px-3.5 py-[11px] text-text text-sm outline-none focus:border-primary";
+  "w-full bg-background border border-border rounded-lg px-3 py-2 text-text text-[13px] outline-none focus:border-primary";
 
 // ---- trilingual helpers ----
 export type Lang = "en" | "fr" | "ar";

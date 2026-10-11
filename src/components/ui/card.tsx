@@ -10,7 +10,7 @@ export function CardHeader({ title, description, action }: CardHeaderProps) {
   return (
     <div className="flex items-start justify-between mb-4">
       <div>
-        <h3 className="text-base font-bold text-text">{title}</h3>
+        <h3 className="text-sm font-semibold text-text">{title}</h3>
         {description && <p className="text-[13px] text-subtext mt-0.5">{description}</p>}
       </div>
       {action}
@@ -40,7 +40,7 @@ export function Card({
 }: CardProps) {
   const hasHeader = title || description || action;
   return (
-    <div className={`bg-card border border-border rounded-2xl ${padding ? "p-[22px]" : ""} ${className}`}>
+    <div className={`bg-card border border-border rounded-xl ${padding ? "p-5" : ""} ${className}`}>
       {hasHeader && <CardHeader title={title ?? ""} description={description} action={action} />}
       {hasHeader ? <div className={bodyClassName}>{children}</div> : children}
     </div>
