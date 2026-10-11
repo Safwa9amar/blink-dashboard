@@ -10,6 +10,7 @@ import { searchRecords } from "@/lib/shell/actions";
 import type { RecordKind, SearchGroup } from "@/lib/shell/search-types";
 import en from "@/i18n/messages/en.json";
 import { RecordPeek } from "./record-peek";
+import { enumLabel } from "./search-format";
 
 const RECENT_KEY = "blink.cmdk.recent";
 const RECENT_MAX = 5;
@@ -133,14 +134,23 @@ function PaletteDialog({
               id: `${h.kind}:${h.id}`,
               group: g.kind,
               icon: KIND_ICON[g.kind],
-              title: h.title,
-              subtitle: [h.ref ? `#${h.ref}` : null, h.subtitle].filter(Boolean).join(" · "),
+              title: h.kind === "transaction" && h.raw?.type ? enumLabel(t, "type", h.raw.type) : h.title,
+              subtitle: h.raw
+                ? [
+                    h.ref ? `#${h.ref}` : null,
+                    h.raw.role ? enumLabel(t, "role", h.raw.role) : null,
+                    h.raw.status ? enumLabel(t, "status", h.raw.status) : null,
+                    h.detail,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")
+                : [h.ref ? `#${h.ref}` : null, h.subtitle].filter(Boolean).join(" · "),
               record: { kind: h.kind, id: h.id },
             }))
           )
         : [];
     return [...pages, ...actions, ...records];
-  }, [q, query, staticItems, recent, results]);
+  }, [q, query, staticItems, recent, results, t]);
 
   const searching = query.trim().length >= 2 && results?.q !== query.trim();
 

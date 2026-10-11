@@ -175,7 +175,11 @@ export function DataTable<T>({
           </label>
           <div className="flex items-center gap-3">
             <span className="tabular-nums">
-              {t("page_of", { page: pageIndex + 1, pages: table.getPageCount() })}
+              {t("rows_range", {
+                from: pageIndex * activePageSize + 1,
+                to: Math.min((pageIndex + 1) * activePageSize, rows.length),
+                total: rows.length,
+              })}
             </span>
             <div className="flex gap-1">
               <button

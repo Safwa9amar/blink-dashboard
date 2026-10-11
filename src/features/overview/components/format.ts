@@ -1,5 +1,6 @@
-export function money(n: number, locale: string): string {
-  return `${Math.round(n).toLocaleString(locale)} DZD`;
+/** "1,250 Da" — project convention; fixed en-US grouping so server and client agree. */
+export function money(n: number, _locale?: string): string {
+  return `${Math.round(n).toLocaleString("en-US")} Da`;
 }
 
 export function humanize(s: string): string {

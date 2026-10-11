@@ -29,7 +29,8 @@ const fullName = (u: { first_name?: string | null; last_name?: string | null }) 
   [u.first_name, u.last_name].filter(Boolean).join(" ");
 
 const money = (n: number | string | null | undefined) => (n == null ? "" : Number(n).toLocaleString("en-US", { maximumFractionDigits: 2 }));
-const when = (iso: string | null | undefined) => (iso ? new Date(iso).toISOString().replace("T", " ").slice(0, 16) + " UTC" : "");
+/** ISO timestamp passed through for the client to format in Africa/Algiers; "" renders as "—". */
+const when = (iso: string | null | undefined) => (iso ? new Date(iso).toISOString() : "");
 
 async function searchIdTable(
   db: Admin,
@@ -50,6 +51,8 @@ async function searchIdTable(
     ref: ref(String(r.id)),
     title: table === "orders" ? String(r.store_name ?? "") : String(r.type ?? "").replace(/_/g, " "),
     subtitle: [String(r.status ?? "").replace(/_/g, " "), money(r.total as number)].filter(Boolean).join(" · "),
+    raw: { status: String(r.status ?? ""), ...(table === "transactions" ? { type: String(r.type ?? "") } : {}) },
+    detail: money(r.total as number),
   }));
 }
 
@@ -66,6 +69,8 @@ async function searchPeople(db: Admin, q: string): Promise<SearchHit[]> {
     id: u.id as string,
     title: fullName(u) || (u.email as string) || (u.phone_number as string) || ref(u.id as string),
     subtitle: [u.role, u.phone_number ?? u.email].filter(Boolean).join(" · "),
+    raw: { role: String(u.role ?? "") },
+    detail: String(u.phone_number ?? u.email ?? ""),
   }));
 }
 
@@ -81,6 +86,8 @@ async function searchStores(db: Admin, q: string): Promise<SearchHit[]> {
     id: s.id as string,
     title: s.name as string,
     subtitle: [String(s.status ?? "").replace(/_/g, " "), s.location].filter(Boolean).join(" · "),
+    raw: { status: String(s.status ?? "") },
+    detail: String(s.location ?? ""),
   }));
 }
 
@@ -122,7 +129,7 @@ export async function loadRecord(role: StaffRole, kind: RecordKind, id: string):
     return {
       kind, id, listHref, title: `#${ref(id)}`,
       fields: [
-        f("status", String(o.status).replace(/_/g, " ")), f("type", String(o.type)), f("store", o.store_name),
+        f("status", String(o.status)), f("type", String(o.type)), f("store", o.store_name),
         f("customer", c ? fullName(c) || c.phone_number : null), f("total", money(o.total)),
         f("created", when(o.created_at)), f("updated", when(o.updated_at)),
       ],
@@ -143,7 +150,7 @@ export async function loadRecord(role: StaffRole, kind: RecordKind, id: string):
     return {
       kind, id, listHref, title: `#${ref(id)}`,
       fields: [
-        f("type", String(t.type).replace(/_/g, " ")), f("status", String(t.status)),
+        f("type", String(t.type)), f("status", String(t.status)),
         f("amount", `${money(t.amount)} (+${money(t.fees)})`), f("total", money(t.total)),
         f("agent", agent), f("created", when(t.created_at)),
       ],
@@ -152,13 +159,13 @@ export async function loadRecord(role: StaffRole, kind: RecordKind, id: string):
   if (kind === "person") {
     const { data: u } = await db
       .from("users")
-      .select("id, first_name, last_name, phone_number, email, role, created_at")
+      .select("id, first_name, last_name, phone_number, email, role, is_active, created_at")
       .eq("id", id)
       .maybeSingle();
     if (!u) return null;
     return {
       kind, id, listHref, title: fullName(u) || u.email || u.phone_number || ref(id),
-      fields: [f("role", u.role), f("phone", u.phone_number), f("email", u.email), f("joined", when(u.created_at))],
+      fields: [f("role", u.role), f("status", u.is_active === false ? "inactive" : "active"), f("phone", u.phone_number), f("email", u.email), f("joined", when(u.created_at))],
     };
   }
   const { data: s } = await db.from("stores").select("id, name, status, owner_id, location, created_at").eq("id", id).maybeSingle();
@@ -172,7 +179,7 @@ export async function loadRecord(role: StaffRole, kind: RecordKind, id: string):
   return {
     kind, id, listHref, title: s.name,
     fields: [
-      f("status", String(s.status).replace(/_/g, " ")), f("owner", owner), f("products", String(count ?? 0)),
+      f("status", String(s.status)), f("owner", owner), f("products", String(count ?? 0)),
       f("location", s.location), f("created", when(s.created_at)),
     ],
   };

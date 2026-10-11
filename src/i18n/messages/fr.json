@@ -138,6 +138,7 @@
     "da": "DA",
     "rows_per_page": "Lignes par page",
     "page_of": "Page {page} sur {pages}",
+    "rows_range": "{from}–{to} sur {total}",
     "prev_page": "Page précédente",
     "next_page": "Page suivante"
   },

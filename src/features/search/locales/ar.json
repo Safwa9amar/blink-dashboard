@@ -34,6 +34,39 @@
       "owner": "المالك",
       "products": "المنتجات",
       "location": "الموقع"
+    },
+    "enums": {
+      "status": {
+        "searching": "جارٍ البحث",
+        "heading_to_store": "في الطريق إلى المتجر",
+        "preparation": "قيد التحضير",
+        "pickup": "الاستلام",
+        "on_the_way": "في الطريق",
+        "delivered": "تم التوصيل",
+        "canceled": "ملغى",
+        "cancelled": "ملغى",
+        "merchant_rejected": "مرفوض من التاجر",
+        "processing": "قيد المعالجة",
+        "completed": "مكتمل",
+        "pending": "قيد الانتظار",
+        "active": "نشط",
+        "inactive": "غير نشط",
+        "under_review": "قيد المراجعة"
+      },
+      "type": {
+        "deposit": "إيداع",
+        "withdrawal": "سحب",
+        "merchant": "طلب تاجر",
+        "shopper": "متسوّق",
+        "courier": "مندوب توصيل",
+        "ride": "رحلة"
+      },
+      "role": {
+        "customer": "عميل",
+        "rider": "سائق",
+        "merchant": "تاجر",
+        "agent": "وكيل"
+      }
     }
   }
 }

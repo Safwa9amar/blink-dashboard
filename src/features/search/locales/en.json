@@ -34,6 +34,39 @@
       "owner": "Owner",
       "products": "Products",
       "location": "Location"
+    },
+    "enums": {
+      "status": {
+        "searching": "Searching",
+        "heading_to_store": "Heading to store",
+        "preparation": "Preparing",
+        "pickup": "Pickup",
+        "on_the_way": "On the way",
+        "delivered": "Delivered",
+        "canceled": "Canceled",
+        "cancelled": "Canceled",
+        "merchant_rejected": "Rejected by merchant",
+        "processing": "Processing",
+        "completed": "Completed",
+        "pending": "Pending",
+        "active": "Active",
+        "inactive": "Inactive",
+        "under_review": "Under review"
+      },
+      "type": {
+        "deposit": "Deposit",
+        "withdrawal": "Withdrawal",
+        "merchant": "Merchant order",
+        "shopper": "Shopper",
+        "courier": "Courier",
+        "ride": "Ride"
+      },
+      "role": {
+        "customer": "Customer",
+        "rider": "Rider",
+        "merchant": "Merchant",
+        "agent": "Agent"
+      }
     }
   }
 }

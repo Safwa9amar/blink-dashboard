@@ -34,6 +34,39 @@
       "owner": "Propriétaire",
       "products": "Produits",
       "location": "Emplacement"
+    },
+    "enums": {
+      "status": {
+        "searching": "Recherche",
+        "heading_to_store": "En route vers le magasin",
+        "preparation": "Préparation",
+        "pickup": "Retrait",
+        "on_the_way": "En route",
+        "delivered": "Livrée",
+        "canceled": "Annulée",
+        "cancelled": "Annulée",
+        "merchant_rejected": "Refusée par le marchand",
+        "processing": "En traitement",
+        "completed": "Terminée",
+        "pending": "En attente",
+        "active": "Actif",
+        "inactive": "Inactif",
+        "under_review": "En examen"
+      },
+      "type": {
+        "deposit": "Dépôt",
+        "withdrawal": "Retrait",
+        "merchant": "Commande marchand",
+        "shopper": "Shopper",
+        "courier": "Coursier",
+        "ride": "Course"
+      },
+      "role": {
+        "customer": "Client",
+        "rider": "Livreur",
+        "merchant": "Marchand",
+        "agent": "Agent"
+      }
     }
   }
 }

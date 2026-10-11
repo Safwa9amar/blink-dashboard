@@ -138,6 +138,7 @@
     "da": "د.ج",
     "rows_per_page": "صفوف لكل صفحة",
     "page_of": "صفحة {page} من {pages}",
+    "rows_range": "{from}–{to} من {total}",
     "prev_page": "الصفحة السابقة",
     "next_page": "الصفحة التالية"
   },

@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { DashIcon, Skeleton } from "@/components/ui";
 import { getRecord } from "@/lib/shell/actions";
 import type { RecordDetail, RecordKind } from "@/lib/shell/search-types";
+import { enumLabel, formatWhen } from "./search-format";
 
 const PAGE_LABEL: Record<RecordKind, string> = { order: "orders", transaction: "blink_cash", person: "users", store: "merchants" };
 
@@ -13,6 +14,7 @@ const PAGE_LABEL: Record<RecordKind, string> = { order: "orders", transaction: "
 export function RecordPeek({ kind, id, onClose }: { kind: RecordKind; id: string; onClose: () => void }) {
   const t = useTranslations("search");
   const tNav = useTranslations("sidebar");
+  const locale = useLocale();
   const [state, setState] = useState<{ key: string; detail: RecordDetail | null } | null>(null);
   const key = `${kind}:${id}`;
   const loading = state?.key !== key;
@@ -27,6 +29,13 @@ export function RecordPeek({ kind, id, onClose }: { kind: RecordKind; id: string
       live = false;
     };
   }, [kind, id, key]);
+
+  const fieldValue = (label: string, value: string) => {
+    if (!value || value === "—") return "—";
+    if (label === "status" || label === "type" || label === "role") return enumLabel(t, label, value);
+    if (label === "created" || label === "updated" || label === "joined") return formatWhen(value, locale);
+    return value;
+  };
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -71,7 +80,7 @@ export function RecordPeek({ kind, id, onClose }: { kind: RecordKind; id: string
                 <div key={f.label} className="flex items-start justify-between gap-4 py-2.5 text-[13px]">
                   <dt className="text-subtext shrink-0">{t(`fields.${f.label}`)}</dt>
                   <dd className="text-text font-medium text-end break-words min-w-0" dir="auto">
-                    {f.value}
+                    {fieldValue(f.label, f.value)}
                   </dd>
                 </div>
               ))}
