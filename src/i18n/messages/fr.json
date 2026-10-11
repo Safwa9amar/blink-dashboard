@@ -183,7 +183,7 @@
     "deep_links": "Liens profonds",
     "marketplace": "Marketplace",
     "library": "Catalogue produits",
-    "pricing": "Tarifs marchands",
+    "pricing": "Revue du catalogue",
     "packs": "Packs",
     "customers": "Clients",
     "merchants": "Commerçants",
@@ -218,6 +218,15 @@
   },
   "shell": {
     "admin": "Admin",
+    "sections": {
+      "conversations": "Conversations",
+      "tools": "Outils",
+      "performance": "Performance",
+      "requests": "Demandes",
+      "riders": "Livreurs",
+      "agents": "Agents",
+      "onboarding": "Intégration"
+    },
     "modules": {
       "home": {
         "name": "Accueil",

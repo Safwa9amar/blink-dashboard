@@ -35,10 +35,10 @@ Navigation is a module workspace: an icon rail of modules, a module menu of page
 | Home | Overview `/` |
 | Operations | Live ops · Orders · Trips · Demand |
 | Customers | Customers · All accounts (`/users`) |
-| Support | Overview · Tickets · Live chat · AI bot · Knowledge base · Macros · CSAT · Agents · SLA & rules · Deletion requests |
-| Partners | Merchants · Riders · Agents · Agent shops · Vehicles · Verification |
-| Catalog | Marketplace · Product library · Merchant pricing · Packs |
-| Marketing | Promotions · Coupons · News · Notifications · Email · Deep links |
+| Support | Overview · *Conversations:* Live chat · Email · Tickets · *Tools:* Knowledge base · Macros · AI bot · *Performance:* CSAT · SLA & rules · Agents · *Requests:* Deletion requests |
+| Partners | Merchants · *Riders:* Riders · Vehicles · *Agents:* Agents · Agent shops · *Onboarding:* Verification |
+| Catalog | Marketplace · Product library · Packs · Catalog review (`/merchant-pricing`) |
+| Marketing | Promotions · Coupons · News · Notifications · Deep links |
 | Finance | Blink Cash (the single finance hub; `/transactions` redirects here) |
 | People | Access |
 | Analytics | (no pages yet, hidden) |

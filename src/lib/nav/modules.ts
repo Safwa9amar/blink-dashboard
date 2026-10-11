@@ -14,7 +14,10 @@ export type AttentionKey =
 
 export type AttentionCounts = Partial<Record<AttentionKey, number>>;
 
-export interface NavPage { key: string; href: string; icon: string; attention?: AttentionKey[] }
+export type SectionKey =
+  | "conversations" | "tools" | "performance" | "requests" | "riders" | "agents" | "onboarding";
+
+export interface NavPage { key: string; href: string; icon: string; attention?: AttentionKey[]; section?: SectionKey }
 export interface NavModule { key: ModuleKey; icon: string; pages: NavPage[] }
 export interface CreateAction { key: string; href: string; icon: string }
 
@@ -37,33 +40,34 @@ export const MODULES: readonly NavModule[] = [
   {
     key: "support", icon: "support", pages: [
       { key: "support_overview", href: "/support", icon: "grid" },
-      { key: "support_tickets", href: "/support/tickets", icon: "support" },
-      { key: "support_inbox", href: "/support/inbox", icon: "chat", attention: ["supportUnread"] },
-      { key: "support_ai", href: "/support/ai", icon: "sparkles" },
-      { key: "support_kb", href: "/support/kb", icon: "doc" },
-      { key: "support_macros", href: "/support/macros", icon: "activity" },
-      { key: "support_csat", href: "/support/csat", icon: "star" },
-      { key: "support_agents", href: "/support/agents", icon: "users" },
-      { key: "support_sla", href: "/support/sla", icon: "shield" },
-      { key: "deletion_requests", href: "/deletion-requests", icon: "trash", attention: ["deletionPending"] },
+      { key: "support_inbox", href: "/support/inbox", icon: "chat", attention: ["supportUnread"], section: "conversations" },
+      { key: "email", href: "/email", icon: "mail", section: "conversations" },
+      { key: "support_tickets", href: "/support/tickets", icon: "support", section: "conversations" },
+      { key: "support_kb", href: "/support/kb", icon: "doc", section: "tools" },
+      { key: "support_macros", href: "/support/macros", icon: "activity", section: "tools" },
+      { key: "support_ai", href: "/support/ai", icon: "sparkles", section: "tools" },
+      { key: "support_csat", href: "/support/csat", icon: "star", section: "performance" },
+      { key: "support_sla", href: "/support/sla", icon: "shield", section: "performance" },
+      { key: "support_agents", href: "/support/agents", icon: "users", section: "performance" },
+      { key: "deletion_requests", href: "/deletion-requests", icon: "trash", attention: ["deletionPending"], section: "requests" },
     ],
   },
   {
     key: "partners", icon: "store", pages: [
       { key: "merchants", href: "/merchants", icon: "store" },
-      { key: "riders", href: "/riders", icon: "bike" },
-      { key: "agents", href: "/agents", icon: "users" },
-      { key: "agent_shops", href: "/agent-shops", icon: "pin" },
-      { key: "vehicles", href: "/vehicles", icon: "truck" },
-      { key: "verification", href: "/verification", icon: "shield", attention: ["storesPending"] },
+      { key: "riders", href: "/riders", icon: "bike", section: "riders" },
+      { key: "vehicles", href: "/vehicles", icon: "truck", section: "riders" },
+      { key: "agents", href: "/agents", icon: "users", section: "agents" },
+      { key: "agent_shops", href: "/agent-shops", icon: "pin", section: "agents" },
+      { key: "verification", href: "/verification", icon: "shield", attention: ["storesPending"], section: "onboarding" },
     ],
   },
   {
     key: "catalog", icon: "package", pages: [
       { key: "marketplace", href: "/marketplace", icon: "store" },
       { key: "library", href: "/library", icon: "package" },
-      { key: "pricing", href: "/merchant-pricing", icon: "tag", attention: ["productsPending"] },
       { key: "packs", href: "/packs-management", icon: "gift", attention: ["packsPending"] },
+      { key: "pricing", href: "/merchant-pricing", icon: "tag", attention: ["productsPending"] },
     ],
   },
   {
@@ -72,7 +76,6 @@ export const MODULES: readonly NavModule[] = [
       { key: "coupons", href: "/coupons", icon: "ticket" },
       { key: "news", href: "/news", icon: "newspaper" },
       { key: "notifications", href: "/notifications", icon: "bell" },
-      { key: "email", href: "/email", icon: "mail" },
       { key: "deep_links", href: "/deep-links", icon: "link" },
     ],
   },

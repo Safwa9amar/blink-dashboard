@@ -183,7 +183,7 @@
     "deep_links": "الروابط العميقة",
     "marketplace": "السوق",
     "library": "مكتبة المنتجات",
-    "pricing": "تسعير التجار",
+    "pricing": "مراجعة الكتالوج",
     "packs": "الحزم",
     "customers": "العملاء",
     "merchants": "التجار",
@@ -218,6 +218,15 @@
   },
   "shell": {
     "admin": "المشرف",
+    "sections": {
+      "conversations": "المحادثات",
+      "tools": "الأدوات",
+      "performance": "الأداء",
+      "requests": "طلبات الحسابات",
+      "riders": "السائقون",
+      "agents": "الوكلاء",
+      "onboarding": "التسجيل"
+    },
     "modules": {
       "home": {
         "name": "الرئيسية",

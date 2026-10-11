@@ -15,6 +15,7 @@ export function ModuleNav({ staffRole, collapsed = false }: { staffRole: StaffRo
   const t = useTranslations("shell.modules");
   const ts = useTranslations("sidebar");
   const tn = useTranslations("shell.nav");
+  const tsec = useTranslations("shell.sections");
   const counts = useAttention();
 
   const modules = visibleModules(staffRole);
@@ -35,11 +36,17 @@ export function ModuleNav({ staffRole, collapsed = false }: { staffRole: StaffRo
           {t(`${current.key}.description`)}
         </p>
         <ul className="space-y-0.5">
-          {current.pages.map((page) => {
+          {current.pages.map((page, i) => {
+            const showHeading = !collapsed && page.section && page.section !== current.pages[i - 1]?.section;
             const active = resolved?.page.href === page.href;
             const count = pageCount(page, counts);
             return (
               <li key={page.href}>
+                {showHeading && (
+                  <div className="px-2.5 pt-3 pb-1 text-[10px] font-bold uppercase text-subtext opacity-75">
+                    {tsec(page.section as never)}
+                  </div>
+                )}
                 <Link
                   href={page.href}
                   tabIndex={collapsed ? -1 : undefined}

@@ -183,7 +183,7 @@
     "deep_links": "Deep Links",
     "marketplace": "Marketplace",
     "library": "Product library",
-    "pricing": "Merchant pricing",
+    "pricing": "Catalog review",
     "packs": "Packs",
     "customers": "Customers",
     "merchants": "Merchants",
@@ -218,6 +218,15 @@
   },
   "shell": {
     "admin": "Admin",
+    "sections": {
+      "conversations": "Conversations",
+      "tools": "Tools",
+      "performance": "Performance",
+      "requests": "Requests",
+      "riders": "Riders",
+      "agents": "Agents",
+      "onboarding": "Onboarding"
+    },
     "modules": {
       "home": {
         "name": "Home",

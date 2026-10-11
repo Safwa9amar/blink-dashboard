@@ -47,14 +47,16 @@ Order = rail order. Page labels reuse the existing `sidebar.*` translation keys.
 | 1 | Home | Overview `/` |
 | 2 | Operations | Live ops `/live-ops` · Orders `/orders` · Trips `/trips` · Demand `/demand` |
 | 3 | Customers | Customers `/customers` · All accounts `/users` |
-| 4 | Support | Overview `/support` · Tickets `/support/tickets` · Live chat `/support/inbox` · AI bot `/support/ai` · Knowledge base `/support/kb` · Macros `/support/macros` · CSAT `/support/csat` · Agents `/support/agents` · SLA & rules `/support/sla` · Deletion requests `/deletion-requests` |
-| 5 | Partners | Merchants `/merchants` · Riders `/riders` · Agents `/agents` · Agent shops `/agent-shops` · Vehicles `/vehicles` · Verification `/verification` |
-| 6 | Catalog | Marketplace `/marketplace` · Product library `/library` · Merchant pricing `/merchant-pricing` · Packs `/packs-management` |
-| 7 | Marketing | Promotions `/promotions` · Coupons `/coupons` · News `/news` · Notifications `/notifications` · Email `/email` · Deep links `/deep-links` |
+| 4 | Support | Overview `/support` · *Conversations:* Live chat `/support/inbox` · Email `/email` · Tickets `/support/tickets` · *Tools:* Knowledge base `/support/kb` · Macros `/support/macros` · AI bot `/support/ai` · *Performance:* CSAT `/support/csat` · SLA & rules `/support/sla` · Agents `/support/agents` · *Requests:* Deletion requests `/deletion-requests` |
+| 5 | Partners | Merchants `/merchants` · *Riders:* Riders `/riders` · Vehicles `/vehicles` · *Agents:* Agents `/agents` · Agent shops `/agent-shops` · *Onboarding:* Verification `/verification` |
+| 6 | Catalog | Marketplace `/marketplace` · Product library `/library` · Packs `/packs-management` · Catalog review `/merchant-pricing` |
+| 7 | Marketing | Promotions `/promotions` · Coupons `/coupons` · News `/news` · Notifications `/notifications` · Deep links `/deep-links` |
 | 8 | Finance | Blink Cash `/blink-cash` |
 | 9 | People | Access `/access` |
 | 10 | Analytics | (no pages yet, so the module is hidden) |
 | 11 | System | Server `/blink-server` · Settings `/settings` |
+
+Italic names are optional section headings (`shell.sections.<key>`) shown in the module menu. Fees (`/settings/fees`) move to Finance in the Finance & Accounting project.
 
 That is 37 pages (the old sidebar's 29 plus the 8 support sections promoted from `/support`'s in-page tabs). `/test` and `/transactions` (a redirect) are not in the nav.
 
@@ -234,7 +236,7 @@ The status tokens (`success`, `danger`, `info`, `warning` and their `-light` var
   - ≥ 1280px: full layout.
   - 1024–1279px: module menu starts collapsed.
   - < 1024px: rail + menu in `mobile-drawer`, ⌘K full-screen.
-- **i18n:** new `shell` namespace in `src/i18n/messages/{en,fr,ar}.json`: `modules.<key>.name|description`, `home.*`, `search.*`, `create.*`, `staff_menu.*`, `breadcrumbs.*`. Existing `sidebar.*` page labels are reused. Three existing labels are renamed in all three locales to fit their module: `sidebar.users` → "All accounts", `sidebar.library` → "Product library", `sidebar.pricing` → "Merchant pricing". Group-only keys that the new shell no longer uses (`platform`, `commerce`, `money`, `operations`, `people`, `system`, `transactions`, `no_menu_match`, `search_menu`, `collapse_sidebar`, `expand_sidebar`) are deleted after a usage search. Keys that double as page labels (`customers`, `riders`, `merchants`, `agents`) stay.
+- **i18n:** new `shell` namespace in `src/i18n/messages/{en,fr,ar}.json`: `modules.<key>.name|description`, `home.*`, `search.*`, `create.*`, `staff_menu.*`, `breadcrumbs.*`. Existing `sidebar.*` page labels are reused. Three existing labels are renamed in all three locales to fit their module: `sidebar.users` → "All accounts", `sidebar.library` → "Product library", `sidebar.pricing` → "Catalog review". Group-only keys that the new shell no longer uses (`platform`, `commerce`, `money`, `operations`, `people`, `system`, `transactions`, `no_menu_match`, `search_menu`, `collapse_sidebar`, `expand_sidebar`) are deleted after a usage search. Keys that double as page labels (`customers`, `riders`, `merchants`, `agents`) stay.
 
 ## 10. Errors and edge cases
 

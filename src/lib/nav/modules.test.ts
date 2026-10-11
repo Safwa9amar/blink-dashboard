@@ -30,6 +30,34 @@ describe("MODULES", () => {
   });
 });
 
+describe("sections", () => {
+  const used = [...new Set(MODULES.flatMap((m) => m.pages.map((p) => p.section).filter(Boolean)))] as string[];
+  it.each(["en", "fr", "ar"])("section labels exist in %s", (l) => {
+    const msg = locale(l);
+    for (const k of used) expect(msg.shell.sections[k], `${l} shell.sections.${k}`).toBeTruthy();
+  });
+  it("pages sharing a section are contiguous within a module", () => {
+    for (const m of MODULES) {
+      const closed = new Set<string>();
+      let prev: string | undefined;
+      for (const p of m.pages) {
+        if (p.section !== prev) {
+          if (p.section) expect(closed.has(p.section), `${m.key}/${p.section}`).toBe(false);
+          if (prev) closed.add(prev);
+          prev = p.section;
+        }
+      }
+    }
+  });
+  it("support page order", () => {
+    const support = MODULES.find((m) => m.key === "support")!;
+    expect(support.pages.map((p) => p.href)).toEqual([
+      "/support", "/support/inbox", "/email", "/support/tickets", "/support/kb", "/support/macros",
+      "/support/ai", "/support/csat", "/support/sla", "/support/agents", "/deletion-requests",
+    ]);
+  });
+});
+
 describe("resolvePath", () => {
   it.each([
     ["/", "home", "/"],
@@ -42,6 +70,7 @@ describe("resolvePath", () => {
     ["/support/articles/new", "support", "/support"],
     ["/support", "support", "/support"],
     ["/deletion-requests/history", "support", "/deletion-requests"],
+    ["/email", "support", "/email"],
   ])("%s → %s", (path, mod, href) => {
     const r = resolvePath(path);
     expect(r?.module.key).toBe(mod);
