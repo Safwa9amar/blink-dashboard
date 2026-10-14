@@ -51,7 +51,7 @@ export function PasswordForm() {
     setLoading(true);
     try {
       const res = await changeOwnPassword({
-        currentPassword: forced ? undefined : current,
+        currentPassword: current,
         newPassword: next,
       });
       if (res.error) {
@@ -87,23 +87,21 @@ export function PasswordForm() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {!forced && (
-            <div>
-              <label htmlFor="current" className="block text-sm font-medium text-subtext mb-1.5">
-                {t("current")}
-              </label>
-              <input
-                id="current"
-                type="password"
-                autoComplete="current-password"
-                dir="ltr"
-                value={current}
-                onChange={(e) => setCurrent(e.target.value)}
-                required
-                className={INPUT}
-              />
-            </div>
-          )}
+          <div>
+            <label htmlFor="current" className="block text-sm font-medium text-subtext mb-1.5">
+              {forced ? t("temporary") : t("current")}
+            </label>
+            <input
+              id="current"
+              type="password"
+              autoComplete="current-password"
+              dir="ltr"
+              value={current}
+              onChange={(e) => setCurrent(e.target.value)}
+              required
+              className={INPUT}
+            />
+          </div>
           <div>
             <label htmlFor="new" className="block text-sm font-medium text-subtext mb-1.5">
               {t("new")}

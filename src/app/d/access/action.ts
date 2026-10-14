@@ -69,7 +69,7 @@ export async function createStaffAccount(input: {
   });
   if (createError || !created?.user) {
     const msg = createError?.message ?? "";
-    if (createError && (/already|registered|exists/i.test(msg) || createError.status === 422)) {
+    if (createError && /already|registered|exists/i.test(msg)) {
       return { error: "email_exists" };
     }
     return { error: msg || "invalid_input" };
@@ -268,20 +268,19 @@ export async function changeOwnPassword(input: {
   } = await ssr.auth.getUser();
   if (!user || !user.email) return { error: "not_signed_in" };
 
-  const forced = user.app_metadata?.must_change_password === true;
-  if (!forced) {
-    if (!input.currentPassword) return { error: "wrong_password" };
-    const verifier = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      { auth: { persistSession: false, autoRefreshToken: false } },
-    );
-    const { error: signInError } = await verifier.auth.signInWithPassword({
-      email: user.email,
-      password: input.currentPassword,
-    });
-    if (signInError) return { error: "wrong_password" };
-  }
+  // Always verify the current password (the temporary one for a flagged account), so an
+  // old session that outlived a reset can't set a new password on its own.
+  if (!input.currentPassword) return { error: "wrong_password" };
+  const verifier = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { auth: { persistSession: false, autoRefreshToken: false } },
+  );
+  const { error: signInError } = await verifier.auth.signInWithPassword({
+    email: user.email,
+    password: input.currentPassword,
+  });
+  if (signInError) return { error: "wrong_password" };
 
   const invalid = validateNewPassword(input.newPassword, input.currentPassword);
   if (invalid) return { error: invalid };

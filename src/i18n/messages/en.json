@@ -154,6 +154,7 @@
       "title": "Change password",
       "subtitle": "Update the password you use to sign in.",
       "current": "Current password",
+      "temporary": "Temporary password",
       "new": "New password",
       "confirm": "Confirm new password",
       "hint": "At least 10 characters, with a letter and a digit.",

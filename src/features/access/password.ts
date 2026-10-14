@@ -2,16 +2,18 @@
 import { randomInt } from "node:crypto";
 
 // No 0/O/1/l/I — easy to misread when read aloud or copied by hand.
-const LETTERS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz";
+const UPPER = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+const LOWER = "abcdefghijkmnpqrstuvwxyz";
+const LETTERS = UPPER + LOWER;
 const DIGITS = "23456789";
 const ALPHABET = LETTERS + DIGITS;
 const TEMP_LENGTH = 14;
 
 const pick = (set: string) => set[randomInt(set.length)];
 
-/** 14-char temporary password with at least one letter and one digit. */
+/** 14-char temporary password with at least one upper-case letter, one lower-case letter and one digit. */
 export function generateTempPassword(): string {
-  const chars = [pick(LETTERS), pick(DIGITS)];
+  const chars = [pick(UPPER), pick(LOWER), pick(DIGITS)];
   while (chars.length < TEMP_LENGTH) chars.push(pick(ALPHABET));
   // Fisher-Yates shuffle so the guaranteed chars aren't always first.
   for (let i = chars.length - 1; i > 0; i--) {
