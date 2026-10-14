@@ -20,11 +20,10 @@ function Row({ label, detail, children }: { label: string; detail?: string; chil
 
 function ApiRow({ label, h }: { label: string; h: ApiHealth }) {
   const t = useTranslations("live_ops");
-  const detail =
-    h.state === "up" && h.p95Ms != null ? t("api_detail", { p95: h.p95Ms, err: (h.errorRatePct ?? 0).toFixed(1) }) : undefined;
+  const detail = h.ms != null ? t("api_detail", { ms: h.ms }) : undefined;
   return (
     <Row label={label} detail={detail}>
-      <Badge variant={h.state === "up" ? "success" : h.state === "down" ? "danger" : "default"}>{t(h.state)}</Badge>
+      <Badge variant={h.state === "up" ? "success" : h.state === "slow" ? "warning" : "danger"}>{t(h.state)}</Badge>
     </Row>
   );
 }

@@ -79,8 +79,7 @@
     "api_spare": "Spare API",
     "up": "Up",
     "down": "Down",
-    "unavailable": "Not available",
-    "api_detail": "p95 {p95} ms · 5xx {err}%",
+    "api_detail": "Responded in {ms} ms",
     "db_roundtrip": "Database round-trip",
     "db_ms": "{n} ms",
     "last_order": "Last order received",
@@ -111,6 +110,7 @@
       "merchant": "store",
       "system": "system",
       "rider": "rider"
-    }
+    },
+    "slow": "Slow"
   }
 }

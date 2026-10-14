@@ -154,10 +154,10 @@ export interface Kpis {
 }
 
 export interface ApiHealth {
-  /** "unavailable" when the viewer may not read server metrics (not super admin). */
-  state: "up" | "down" | "unavailable";
-  p95Ms: number | null;
-  errorRatePct: number | null;
+  /** From GET /health: up, slow (> 2 s, e.g. a Render cold start) or down. */
+  state: "up" | "slow" | "down";
+  /** Response time in ms, null when the request failed. */
+  ms: number | null;
 }
 
 export interface Health {

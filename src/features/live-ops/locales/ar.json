@@ -79,8 +79,7 @@
     "api_spare": "الواجهة الاحتياطية",
     "up": "تعمل",
     "down": "متوقفة",
-    "unavailable": "غير متاح",
-    "api_detail": "p95 ‏{p95} ms · 5xx ‏{err}%",
+    "api_detail": "استجاب خلال ‏{ms} ms",
     "db_roundtrip": "زمن استجابة قاعدة البيانات",
     "db_ms": "{n} ms",
     "last_order": "آخر طلب مستلم",
@@ -111,6 +110,7 @@
       "merchant": "المتجر",
       "system": "النظام",
       "rider": "السائق"
-    }
+    },
+    "slow": "بطيء"
   }
 }

@@ -2,7 +2,6 @@
 // client component. Volumes are small (tens of orders), so rows are fetched and aggregated
 // in TypeScript (capped at ROW_CAP). When volume grows, move the counts/feed to SQL (RPC).
 import { createAdminClient } from "@/lib/supabase/admin";
-import { fetchServerMetrics } from "@/app/d/blink-server/metrics-action";
 import {
   ACTIVE_STATUSES,
   THRESHOLDS,
@@ -26,24 +25,29 @@ import type {
   StoreRow,
   TxRow,
 } from "@/features/live-ops/types";
-import type { ServerInstance } from "@/features/blink-server";
 
 const ROW_CAP = 5000;
 
 const ORDER_COLS =
   "id,type,status,merchant_status,created_at,rider_assigned_at,picked_up_at,delivered_at,canceled_at,canceled_by,cancel_reason,store_name,rider_id,total,scheduled_at,pickup_lat,pickup_lng,destination_lat,destination_lng,pickup_address";
 
-async function apiHealth(instance: ServerInstance): Promise<ApiHealth> {
+// The two Render instances the app fails over between (EXPO_PUBLIC_API_BASE_URL in the app).
+const API_TARGETS = {
+  primary: process.env.BLINK_HEALTH_PRIMARY_URL ?? "https://blink-server-q4ey.onrender.com",
+  spare: process.env.BLINK_HEALTH_SPARE_URL ?? "https://blink-server-spare.onrender.com",
+};
+const SLOW_MS = 2000;
+
+/** GET <api>/health with an 8 s timeout: up / slow (> 2 s) / down, plus the response time. */
+async function apiHealth(base: string): Promise<ApiHealth> {
+  const started = performance.now();
   try {
-    const { metrics, error } = await fetchServerMetrics(instance);
-    if (error === "Not authorized") return { state: "unavailable", p95Ms: null, errorRatePct: null };
-    if (!metrics) return { state: "down", p95Ms: null, errorRatePct: null };
-    const p95 = Math.max(0, ...metrics.latencyBuckets.filter((b) => b.count > 0).map((b) => b.p95));
-    const s = metrics.statusCodes;
-    const total = s.c2xx + s.c3xx + s.c4xx + s.c5xx;
-    return { state: "up", p95Ms: Math.round(p95), errorRatePct: total ? (s.c5xx / total) * 100 : 0 };
+    const res = await fetch(`${base}/health`, { cache: "no-store", signal: AbortSignal.timeout(8000) });
+    const ms = Math.round(performance.now() - started);
+    if (!res.ok) return { state: "down", ms };
+    return { state: ms > SLOW_MS ? "slow" : "up", ms };
   } catch {
-    return { state: "down", p95Ms: null, errorRatePct: null };
+    return { state: "down", ms: null };
   }
 }
 
@@ -81,8 +85,8 @@ export async function loadLiveOps(): Promise<LiveOpsSnapshot> {
     sb.from("stores").select("id,name,city,created_at").gte("created_at", windowISO).limit(200),
     sb.from("agent_shops").select("id,shop_name,latitude,longitude").eq("status", "open").limit(ROW_CAP),
     sb.from("orders").select("created_at").order("created_at", { ascending: false }).limit(1),
-    apiHealth("online"),
-    apiHealth("local"),
+    apiHealth(API_TARGETS.primary),
+    apiHealth(API_TARGETS.spare),
   ]);
 
   const byId = new Map<string, OrderRow>();

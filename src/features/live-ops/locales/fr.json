@@ -79,8 +79,7 @@
     "api_spare": "API de secours",
     "up": "En ligne",
     "down": "Hors ligne",
-    "unavailable": "Indisponible",
-    "api_detail": "p95 {p95} ms · 5xx {err} %",
+    "api_detail": "Réponse en {ms} ms",
     "db_roundtrip": "Aller-retour base de données",
     "db_ms": "{n} ms",
     "last_order": "Dernière commande reçue",
@@ -111,6 +110,7 @@
       "merchant": "magasin",
       "system": "système",
       "rider": "livreur"
-    }
+    },
+    "slow": "Lent"
   }
 }
