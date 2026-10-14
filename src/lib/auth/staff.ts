@@ -63,3 +63,18 @@ export async function requirePathAccess(path: string): Promise<StaffRole> {
   if (!canAccessPath(role, path)) redirect(defaultPathFor(role));
   return role;
 }
+
+/**
+ * Server-action guard for one dashboard section: returns the signed-in staff user's id
+ * and role when their role may reach `path` (via `canAccessPath`), otherwise null.
+ * Use it when the action also needs the actor id (e.g. `created_by` / `issued_by`).
+ */
+export async function getStaffActor(path: string): Promise<{ id: string; role: StaffRole } | null> {
+  const role = await getCurrentStaffRole();
+  if (!role || !canAccessPath(role, path)) return null;
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  return user ? { id: user.id, role } : null;
+}

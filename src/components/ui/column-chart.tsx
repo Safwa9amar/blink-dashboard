@@ -32,6 +32,8 @@ export function ColumnChart({
   height = 180,
   peakIndex,
   peakLabel = "Peak",
+  labelInterval = 0,
+  seriesNames,
 }: {
   data: ColumnDatum[];
   max: number;
@@ -40,6 +42,10 @@ export function ColumnChart({
   height?: number;
   peakIndex?: number;
   peakLabel?: string;
+  /** Recharts tick interval for the x labels (0 = every label; raise for dense ranges). */
+  labelInterval?: number | "preserveStartEnd";
+  /** Tooltip names per series (defaults to the raw series key). */
+  seriesNames?: string[];
 }) {
   const palette = colors ?? CHART_COLORS;
   const seriesCount = data[0]?.values.length ?? 1;
@@ -59,12 +65,12 @@ export function ColumnChart({
           tick={{ fontSize: 9, fill: "var(--subtext)" }}
           axisLine={false}
           tickLine={false}
-          interval={0}
+          interval={labelInterval}
         />
         <YAxis hide domain={[0, max]} />
         <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "var(--muted)", opacity: 0.5 }} />
         {Array.from({ length: seriesCount }).map((_, j) => (
-          <Bar key={j} dataKey={`v${j}`} fill={palette[j] ?? palette[0]} radius={[3, 3, 0, 0]}>
+          <Bar key={j} dataKey={`v${j}`} name={seriesNames?.[j]} fill={palette[j] ?? palette[0]} radius={[3, 3, 0, 0]}>
             {j === 0 && peakIndex != null && (
               <LabelList
                 dataKey={`v${j}`}
