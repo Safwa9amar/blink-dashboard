@@ -1,55 +1,76 @@
 {
   "demand": {
     "title": "Demande",
-    "description": "Demande de commandes en direct sur le réseau",
+    "description": "Demande de commandes sur le réseau, à partir des commandes réelles",
     "analytics": "Analyses",
-    "live_ago": "En direct · il y a {sec}s",
+    "live": "En direct",
+    "updated_ago": "Mis à jour il y a {sec} s",
+    "ranges": {
+      "today": "Aujourd'hui",
+      "7d": "7 jours",
+      "30d": "30 jours"
+    },
+    "empty": "Aucune commande sur cette période",
+    "min": "{n} min",
+    "error": "Impossible de charger la demande : {message}",
+    "truncated": "Seules les 5 000 commandes les plus récentes sont affichées ; les plus anciennes de la période ne sont pas comptées.",
     "stats": {
-      "live_orders": "Commandes en direct",
-      "live_orders_chg": "▲ 18% vs il y a 1h",
-      "demand_index": "Indice de demande",
-      "demand_index_chg": "Élevé — au-dessus de l'offre",
+      "orders": "Commandes",
+      "completion": "Taux de réalisation",
+      "completion_sub": "{n} terminées",
       "unmet": "Demande non satisfaite",
-      "unmet_chg": "Aucun livreur sous 8 min",
-      "online_riders": "Livreurs en ligne",
-      "online_riders_chg": "63% de la demande couverte",
-      "avg_wait": "Attente moy.",
-      "avg_wait_chg": "▼ 1,1m vs hier"
+      "unmet_sub": "{pct} des commandes, sans livreur",
+      "wait": "Délai médian d'un livreur",
+      "delivery": "Délai médian de livraison"
     },
     "charts": {
-      "demand_supply": "Demande vs Offre — aujourd'hui",
-      "demand_supply_desc": "Commandes vs livreurs en ligne, par heure",
-      "demand": "Demande",
-      "riders": "Livreurs",
-      "peak": "Pic",
+      "by_hour": "Commandes par heure",
+      "by_hour_desc": "Heure de la journée (Alger), avec l'attente médiane d'un livreur",
+      "delivered": "Livrées",
+      "failed": "Annulées ou refusées",
+      "active": "En cours",
+      "median_wait": "Attente médiane (min)",
       "service_mix": "Répartition des services",
-      "service_mix_desc": "Part de la demande en direct",
+      "service_mix_desc": "Part des commandes par type",
       "orders": "commandes",
       "heatmap": "Carte de chaleur",
-      "heatmap_desc": "Intensité par zone et tranche horaire",
-      "low": "Faible",
-      "high": "Élevé",
-      "top_zones": "Zones à forte demande",
-      "top_zones_desc": "Charge en direct et tendance 1h"
+      "heatmap_desc": "Commandes par jour de la semaine et moment de la journée",
+      "top_areas": "Principales zones",
+      "top_areas_desc": "Zones de retrait d'environ 1,5 km, livreurs en ligne maintenant",
+      "top_stores": "Principaux magasins",
+      "top_stores_desc": "Les plus commandés, avec taux de réalisation"
+    },
+    "cols": {
+      "area": "Zone",
+      "orders": "Commandes",
+      "unmet": "Non satisfaites",
+      "wait": "Attente médiane",
+      "riders": "Livreurs en ligne",
+      "completion": "Réalisation"
+    },
+    "types": {
+      "merchant": "Commandes magasin",
+      "shopper": "Shopper",
+      "courier": "Coursier",
+      "ride": "Courses"
+    },
+    "weekdays": {
+      "sat": "Sam",
+      "sun": "Dim",
+      "mon": "Lun",
+      "tue": "Mar",
+      "wed": "Mer",
+      "thu": "Jeu",
+      "fri": "Ven"
     },
     "map": {
       "title": "Carte",
-      "demand": "Demande",
-      "light": "Faible",
-      "heavy": "Forte",
       "online_rider": "Livreur en ligne",
-      "live_orders": "Commandes en direct",
-      "online_riders": "Livreurs en ligne",
-      "demand_load": "Charge de demande",
-      "avg_wait": "Attente moy.",
-      "unmet_demand": "Demande non satisfaite",
-      "inspect_hint": "Cliquez sur une bulle pour inspecter une zone. La taille et la couleur varient selon la demande.",
-      "surge_suggestion": "Suggestion de surtarification",
-      "status": "Statut",
-      "rebalance": "Rééquilibrer les livreurs",
-      "balanced": "Équilibré",
-      "rebalance_hint": "{zone} a {unmet} commandes non satisfaites — envisagez une prime de +{riders} livreurs.",
-      "balanced_hint": "L'offre de {zone} suit la demande."
+      "online_riders_count": "{n} livreurs en ligne",
+      "riders_now": "Livreurs maintenant",
+      "size_hint": "Taille du cercle : nombre de commandes",
+      "color_hint": "Plus foncé : plus de demande non satisfaite",
+      "inspect_hint": "Cliquez sur un cercle pour voir une zone."
     }
   }
 }

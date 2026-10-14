@@ -1,55 +1,76 @@
 {
   "demand": {
     "title": "Demand",
-    "description": "Live order demand across the network",
+    "description": "Order demand across the network, from real orders",
     "analytics": "Analytics",
-    "live_ago": "Live · {sec}s ago",
+    "live": "Live",
+    "updated_ago": "Updated {sec}s ago",
+    "ranges": {
+      "today": "Today",
+      "7d": "7 days",
+      "30d": "30 days"
+    },
+    "empty": "No orders in this period",
+    "min": "{n} min",
+    "error": "Could not load demand: {message}",
+    "truncated": "Showing the most recent 5,000 orders only; older orders in this period are not counted.",
     "stats": {
-      "live_orders": "Live Orders",
-      "live_orders_chg": "▲ 18% vs 1h ago",
-      "demand_index": "Demand Index",
-      "demand_index_chg": "High — above supply",
-      "unmet": "Unmet Demand",
-      "unmet_chg": "No rider within 8 min",
-      "online_riders": "Online Riders",
-      "online_riders_chg": "63% of demand covered",
-      "avg_wait": "Avg Wait",
-      "avg_wait_chg": "▼ 1.1m vs yesterday"
+      "orders": "Orders",
+      "completion": "Completion rate",
+      "completion_sub": "{n} finished",
+      "unmet": "Unmet demand",
+      "unmet_sub": "{pct} of orders, no rider assigned",
+      "wait": "Median time to a rider",
+      "delivery": "Median delivery time"
     },
     "charts": {
-      "demand_supply": "Demand vs Supply — today",
-      "demand_supply_desc": "Orders placed against online riders, by hour",
-      "demand": "Demand",
-      "riders": "Riders",
-      "peak": "Peak",
+      "by_hour": "Orders by hour",
+      "by_hour_desc": "Hour of day (Algiers), with median wait for a rider",
+      "delivered": "Delivered",
+      "failed": "Canceled or rejected",
+      "active": "Still active",
+      "median_wait": "Median wait (min)",
       "service_mix": "Service mix",
-      "service_mix_desc": "Share of live demand",
+      "service_mix_desc": "Share of orders by type",
       "orders": "orders",
       "heatmap": "Demand heatmap",
-      "heatmap_desc": "Intensity by zone & day-part",
-      "low": "Low",
-      "high": "High",
-      "top_zones": "Top demand zones",
-      "top_zones_desc": "Live load & 1-hour trend"
+      "heatmap_desc": "Orders by weekday and time of day",
+      "top_areas": "Top areas",
+      "top_areas_desc": "Pickup areas of about 1.5 km, riders online now",
+      "top_stores": "Top stores",
+      "top_stores_desc": "Most ordered from, with completion rate"
+    },
+    "cols": {
+      "area": "Area",
+      "orders": "Orders",
+      "unmet": "Unmet",
+      "wait": "Median wait",
+      "riders": "Riders online",
+      "completion": "Completion"
+    },
+    "types": {
+      "merchant": "Store orders",
+      "shopper": "Shopper",
+      "courier": "Courier",
+      "ride": "Rides"
+    },
+    "weekdays": {
+      "sat": "Sat",
+      "sun": "Sun",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri"
     },
     "map": {
       "title": "Map",
-      "demand": "Demand",
-      "light": "Light",
-      "heavy": "Heavy",
       "online_rider": "Online rider",
-      "live_orders": "Live orders",
-      "online_riders": "Online riders",
-      "demand_load": "Demand load",
-      "avg_wait": "Avg wait",
-      "unmet_demand": "Unmet demand",
-      "inspect_hint": "Click any bubble to inspect a zone. Bubble size & colour scale with live demand.",
-      "surge_suggestion": "Surge suggestion",
-      "status": "Status",
-      "rebalance": "Rebalance riders",
-      "balanced": "Balanced",
-      "rebalance_hint": "{zone} has {unmet} unmet orders — consider a +{riders} rider incentive.",
-      "balanced_hint": "{zone} supply is keeping up with demand."
+      "online_riders_count": "{n} riders online",
+      "riders_now": "Riders now",
+      "size_hint": "Circle size: number of orders",
+      "color_hint": "Darker: more unmet demand",
+      "inspect_hint": "Click a circle to inspect an area."
     }
   }
 }

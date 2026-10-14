@@ -1,17 +1,36 @@
-import { StatGrid, StatCard } from "@/components/ui";
+"use client";
 
-export function DemandStats({
-  t,
-}: {
-  t: (k: string, v?: Record<string, string | number>) => string;
-}) {
+import { useLocale, useTranslations } from "next-intl";
+import { StatCard } from "@/components/ui";
+import { fmtMin, fmtPct } from "../format";
+import type { DemandKpis } from "../types";
+
+export function DemandStats({ kpis }: { kpis: DemandKpis }) {
+  const t = useTranslations("demand");
+  const locale = useLocale();
+  const min = (m: number | null) => {
+    const v = fmtMin(m);
+    return v == null ? "—" : t("min", { n: v });
+  };
   return (
-    <StatGrid cols={5}>
-      <StatCard label={t("stats.live_orders")} value={342} variant="primary" icon="package" change={t("stats.live_orders_chg")} />
-      <StatCard label={t("stats.demand_index")} value="1.27" variant="warning" icon="trending" change={t("stats.demand_index_chg")} />
-      <StatCard label={t("stats.unmet")} value={28} variant="danger" icon="fire" change={t("stats.unmet_chg")} />
-      <StatCard label={t("stats.online_riders")} value={214} variant="info" icon="bike" change={t("stats.online_riders_chg")} />
-      <StatCard label={t("stats.avg_wait")} value="6.4m" variant="success" icon="clock" change={t("stats.avg_wait_chg")} />
-    </StatGrid>
+    <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 mb-6">
+      <StatCard label={t("stats.orders")} value={kpis.orders.toLocaleString(locale)} variant="primary" icon="package" />
+      <StatCard
+        label={t("stats.completion")}
+        value={fmtPct(kpis.completionRate, locale)}
+        variant="success"
+        icon="activity"
+        change={t("stats.completion_sub", { n: kpis.finished.toLocaleString(locale) })}
+      />
+      <StatCard
+        label={t("stats.unmet")}
+        value={kpis.unmet.toLocaleString(locale)}
+        variant="danger"
+        icon="fire"
+        change={t("stats.unmet_sub", { pct: fmtPct(kpis.unmetRate, locale) })}
+      />
+      <StatCard label={t("stats.wait")} value={min(kpis.medianWait)} variant="warning" icon="clock" />
+      <StatCard label={t("stats.delivery")} value={min(kpis.medianDelivery)} variant="info" icon="bike" />
+    </div>
   );
 }
