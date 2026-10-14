@@ -34,6 +34,10 @@ function isDashboard(host: string): boolean {
   return DASHBOARD_PREFIXES.some((p) => h.startsWith(p));
 }
 
+// Landing pages that must also answer on the dashboard host: the Play Store
+// listing links to them, and the only production host is the dashboard one.
+const PUBLIC_LEGAL_PATHS = new Set(["/privacy", "/terms", "/delete-account"]);
+
 // The internal (rewritten) dashboard segment is exactly `/d` or `/d/...` —
 // NOT every path that merely begins with "/d" (e.g. /deep-links, /demand).
 function isInternalDashboardPath(pathname: string): boolean {
@@ -53,6 +57,10 @@ export async function middleware(request: NextRequest) {
     // /login stays at /login (shared between both)
     if (pathname.startsWith("/login")) {
       return await updateSession(request);
+    }
+
+    if (PUBLIC_LEGAL_PATHS.has(pathname)) {
+      return NextResponse.next();
     }
 
     // Rewrite all dashboard subdomain requests to /d/* internally
