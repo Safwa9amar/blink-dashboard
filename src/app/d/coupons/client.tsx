@@ -1,12 +1,15 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { CouponsList, CreateCoupon } from "@/features/coupons";
+import { CouponsList } from "@/features/coupons";
+import type { CouponKpis, CouponListRow, PromotionOption } from "@/features/coupons";
 
-export default function CouponsClient({ tab }: { tab: "list" | "create" }) {
-  const router = useRouter();
-  if (tab === "create") {
-    return <CreateCoupon onCancel={() => router.push("/coupons")} />;
-  }
-  return <CouponsList onNew={() => router.push("/coupons/new")} />;
+export default function CouponsClient(props: {
+  rows: CouponListRow[];
+  kpis: CouponKpis;
+  promotions: PromotionOption[];
+  promotionFilter: string;
+  truncated: boolean;
+  error?: string;
+}) {
+  return <CouponsList {...props} />;
 }

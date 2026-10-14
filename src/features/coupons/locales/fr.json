@@ -1,41 +1,126 @@
 {
   "coupons": {
     "title": "Coupons",
-    "description": "Bons personnels utilisés au paiement",
+    "description": "Bons personnels que les clients appliquent au paiement",
     "all_coupons": "Tous les coupons",
-    "create_coupon": "Créer un coupon",
-    "new_coupon": "Nouveau coupon",
-    "search": "Rechercher des coupons",
-    "status": "Statut",
-    "stats": {
+    "create_coupon": "Émettre un coupon",
+    "new_coupon": "Émettre un coupon",
+    "search": "Rechercher un code, un client ou un téléphone",
+    "empty": "Aucun coupon ne correspond à ces filtres.",
+    "truncated": "Affichage des 1000 derniers coupons. Affinez avec le filtre de promotion.",
+    "free_delivery": "Livraison gratuite",
+    "kpi": {
       "active": "Coupons actifs",
-      "active_chg": "6 expirent cette semaine",
-      "redeemed": "Utilisés aujourd'hui",
-      "redeemed_chg": "▲ 14% vs hier",
-      "locked": "Verrouillés par points",
-      "locked_chg": "bons de récompense",
-      "rate": "Taux d'utilisation",
-      "rate_chg": "activé → utilisé"
+      "used": "Utilisés",
+      "expiring": "Expirent bientôt",
+      "revoked": "Révoqués",
+      "last30": "30 derniers jours",
+      "next7": "7 prochains jours"
     },
-    "form": {
-      "create": "Créer un coupon",
-      "create_desc": "Un bon personnel utilisé au paiement",
+    "filters": {
+      "all_sources": "Toutes les sources",
+      "all_promotions": "Toutes les promotions",
+      "archived": "archivée",
+      "all_status": "Tous"
+    },
+    "cols": {
+      "code": "Code",
+      "customer": "Client",
+      "promotion": "Promotion",
+      "discount": "Remise",
+      "min_order": "Commande min.",
+      "status": "Statut",
+      "expires": "Expire le",
+      "used_on": "Utilisé sur",
+      "source": "Source",
+      "issued_by": "Émis par"
+    },
+    "statuses": {
+      "active": "Actif",
+      "used": "Utilisé",
+      "expired": "Expiré",
+      "revoked": "Révoqué"
+    },
+    "sources": {
+      "promotion": "Promotion",
+      "referral": "Parrainage",
+      "staff": "Équipe"
+    },
+    "actions": {
+      "extend": "Prolonger",
+      "revoke": "Révoquer",
+      "restore": "Rétablir"
+    },
+    "dialog": {
+      "extend_title": "Prolonger le coupon {code}",
+      "revoke_title": "Révoquer le coupon {code}",
+      "revoke_desc": "Le client ne pourra plus utiliser ce coupon au paiement. Vous pourrez le rétablir plus tard.",
+      "new_expiry": "Nouvelle date d'expiration",
+      "reason": "Motif",
+      "note": "Note",
+      "required": "obligatoire",
+      "optional": "facultatif",
+      "cancel": "Annuler"
+    },
+    "errors": {
+      "not_authorized": "Vous n'avez pas l'autorisation de faire cela.",
+      "expiry_future": "La date d'expiration doit être dans le futur.",
+      "expiry_required": "Choisissez une date d'expiration.",
+      "not_found": "Coupon introuvable.",
+      "already_used": "Ce coupon a déjà été utilisé.",
+      "is_revoked": "Rétablissez ce coupon avant de le prolonger.",
+      "note_required": "Un motif est requis.",
+      "promotion_not_found": "Promotion introuvable.",
+      "already_has_coupon": "Ce client possède déjà un coupon de cette promotion. Chaque client n'en reçoit qu'un par promotion.",
+      "code_taken": "Ce code est déjà utilisé. Générez-en un autre.",
+      "save_failed": "Enregistrement impossible. Réessayez.",
+      "validation": "Vérifiez les champs signalés.",
+      "customer_required": "Choisissez un client.",
+      "promotion_required": "Choisissez une promotion.",
+      "code_format": "4 à 16 lettres ou chiffres.",
+      "title_required": "Le titre est obligatoire.",
+      "value_positive": "La valeur doit être supérieure à 0.",
+      "percent_max": "Un pourcentage ne peut pas dépasser 100.",
+      "min_order_negative": "Doit être 0 ou plus.",
+      "cap_positive": "Doit être supérieur à 0."
+    },
+    "art": {
+      "market": "Marché",
+      "food": "Restauration",
+      "cosmetics": "Cosmétiques",
+      "parcels": "Colis",
+      "rides": "Courses",
+      "others": "Autre"
+    },
+    "issue": {
+      "customer": "Client",
+      "customer_desc": "Recherche par nom ou numéro de téléphone",
+      "change": "Changer",
+      "search_ph": "Saisissez au moins 2 caractères",
+      "what": "Coupon",
+      "mode": "Origine des valeurs",
+      "from_promotion": "Depuis une promotion",
+      "custom": "Personnalisé",
+      "promotion": "Promotion",
+      "promotion_hint": "ses valeurs sont copiées ; un coupon par client",
+      "pick_promotion": "Choisir une promotion",
       "title": "Titre",
-      "title_ph": "ex. Remise de bienvenue",
+      "title_ph": "ex. Bon d'excuses",
       "dtype": "Type de remise",
       "pct": "Pourcentage",
       "fixed": "Montant fixe",
+      "art": "Visuel de la carte",
       "percent_off": "Pourcentage de remise",
-      "amount": "Montant (DZD)",
+      "amount": "Montant (DA)",
+      "min_order": "Commande minimale (DA)",
+      "max_discount": "Remise maximale (DA)",
+      "expires": "Expire le",
+      "finish": "Code et note",
       "code": "Code du coupon",
-      "min": "Commande min (DZD)",
-      "max": "Remise max (DZD)",
-      "max_hint": "coupons % uniquement",
-      "days": "Valide (jours)",
-      "unlock": "Déverrouiller et publier",
-      "points_locked": "Verrouillé par points",
-      "points_locked_desc": "Les utilisateurs dépensent des points",
-      "points": "Points pour déverrouiller"
+      "code_hint": "généré, modifiable",
+      "regenerate": "Régénérer",
+      "note": "Note",
+      "submit": "Émettre le coupon"
     }
   }
 }
