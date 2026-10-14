@@ -234,6 +234,15 @@ export function PromoList({
     [rows]
   );
 
+  // Category filter options: the categories present in the current tab (deals use free-text chips).
+  const tabCategories = useMemo(() => {
+    const inTab = rows.filter((r) => (tab === "archived" ? r.archived : !r.archived && r.kind === tab));
+    const present = new Set(inTab.map((r) => r.category).filter(Boolean));
+    const codes = (CATEGORIES as readonly string[]).filter((c) => present.has(c));
+    const rest = [...present].filter((c) => !codes.includes(c)).sort((a, b) => a.localeCompare(b));
+    return [...codes, ...rest];
+  }, [rows, tab]);
+
   const shown = useMemo(() => {
     const needle = q.trim().toLowerCase();
     return rows.filter((r) => {
@@ -256,6 +265,7 @@ export function PromoList({
   };
   const onTab = (v: Tab) => {
     setTab(v);
+    setCat("all");
     syncUrl(v, avail);
   };
   const onAvail = (v: Availability | "all") => {
@@ -446,7 +456,7 @@ export function PromoList({
           aria-label={t("cols.category")}
         >
           <option value="all">{t("filters.all_categories")}</option>
-          {CATEGORIES.map((c) => (
+          {tabCategories.map((c) => (
             <option key={c} value={c}>
               {categoryLabel(c, t)}
             </option>
