@@ -1,61 +1,91 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { PageHeader, Card, LivePill } from "@/components/ui";
+import { PageHeader, LivePill } from "@/components/ui";
 import { useDocumentTitle } from "@/lib/use-document-title";
 import {
-  EVENTS,
+  AttentionList,
   EventFeed,
-  type FeedItem,
-  CountersPanel,
-  type Kpi,
+  LiveKpis,
+  LiveMap,
   SystemHealth,
+  agoLabel,
+  type LiveOpsSnapshot,
 } from "@/features/live-ops";
+import { refreshLiveOps } from "./action";
 
-export default function LiveOpsClient() {
+const POLL_MS = 15_000;
+
+export default function LiveOpsClient({ initial }: { initial: LiveOpsSnapshot }) {
   const t = useTranslations("live_ops");
-  const [feed, setFeed] = useState<FeedItem[]>(() => EVENTS.map((e, i) => ({ ...e, key: i, t: 2 + i * 3 })));
-  const [kpi, setKpi] = useState<Kpi>({ active: 128, enroute: 86, online: 214, agents: 47 });
-  const tick = useRef(0);
-  const seq = useRef(1000);
+  const [snap, setSnap] = useState(initial);
+  const [failed, setFailed] = useState(false);
+  // null until mounted: relative times are only rendered client-side (no hydration mismatch).
+  const [now, setNow] = useState<number | null>(null);
+  const busy = useRef(false);
+  // The map only re-fits on first load, so polling never moves the view.
+  const fitKey = "initial";
 
-  useEffect(() => {
-    const id = setInterval(() => {
-      tick.current += 1;
-      setFeed((f) => {
-        const aged = f.map((e) => ({ ...e, t: e.t + 4 }));
-        if (tick.current % 2 === 0) {
-          const src = EVENTS[seq.current % EVENTS.length];
-          seq.current += 1;
-          return [{ ...src, key: seq.current, t: 1 }, ...aged].slice(0, 9);
-        }
-        return aged;
-      });
-      setKpi((k) => ({
-        active: Math.max(90, k.active + ((tick.current * 7) % 14) - 7),
-        enroute: Math.max(60, k.enroute + ((tick.current * 5) % 10) - 5),
-        online: Math.max(180, k.online + ((tick.current * 3) % 8) - 4),
-        agents: k.agents,
-      }));
-    }, 2200);
-    return () => clearInterval(id);
+  const refresh = useCallback(async () => {
+    if (busy.current) return;
+    busy.current = true;
+    try {
+      const r = await refreshLiveOps();
+      if ("snapshot" in r) {
+        setSnap(r.snapshot);
+        setFailed(false);
+      } else {
+        setFailed(true);
+      }
+    } catch {
+      setFailed(true);
+    } finally {
+      busy.current = false;
+    }
   }, []);
 
-  // live online-rider count reflected in the browser tab title
-  useDocumentTitle(t("title"), kpi.online);
+  useEffect(() => {
+    const first = setTimeout(() => setNow(Date.now()), 0);
+    const tick = setInterval(() => setNow(Date.now()), 1000);
+    const poll = setInterval(() => {
+      if (!document.hidden) void refresh();
+    }, POLL_MS);
+    const onVisible = () => {
+      if (!document.hidden) void refresh();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      clearTimeout(first);
+      clearInterval(tick);
+      clearInterval(poll);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [refresh]);
+
+  useDocumentTitle(t("title"), snap.kpis.activeOrders);
 
   return (
     <div>
-      <PageHeader title={t("title")} description={t("description")} actions={<LivePill>{t("live")}</LivePill>} />
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-5">
-        <Card title={t("feed_title")} description={t("feed_desc")}>
-          <EventFeed feed={feed} />
-        </Card>
-
-        <div className="space-y-4">
-          <CountersPanel kpi={kpi} />
-          <SystemHealth />
+      <PageHeader
+        title={t("title")}
+        description={t("description")}
+        actions={<LivePill>{`${t("live")} · ${t("updated", { ago: agoLabel(t, snap.generatedAt, now) })}`}</LivePill>}
+      />
+      {failed && (
+        <p role="alert" className="mb-3 text-[12.5px] text-danger">
+          {t("refresh_failed")}
+        </p>
+      )}
+      <LiveKpis kpis={snap.kpis} now={now} />
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_380px] gap-5">
+        <div className="space-y-5 min-w-0">
+          <LiveMap snapshot={snap} now={now} fitKey={fitKey} />
+          <EventFeed feed={snap.feed} now={now} />
+        </div>
+        <div className="space-y-5 min-w-0">
+          <AttentionList items={snap.attention} now={now} />
+          <SystemHealth health={snap.health} now={now} />
         </div>
       </div>
     </div>
