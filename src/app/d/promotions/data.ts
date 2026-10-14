@@ -13,8 +13,16 @@ import {
 
 type Admin = Awaited<ReturnType<typeof createAdminClient>>;
 
-export function daysAgoISO(days: number): string {
-  return new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+/**
+ * Start of the N-day window as Africa/Algiers midnight of (today - (N-1)) days,
+ * the same buckets as promotion_daily(p_days = N). Algiers is UTC+1, no DST.
+ */
+export function daysAgoISO(days: number, now: Date = new Date()): string {
+  const DAY = 24 * 60 * 60 * 1000;
+  // Shift to Algiers wall-clock, floor to its midnight, step back, shift back.
+  const algiersNow = now.getTime() + 60 * 60 * 1000;
+  const algiersMidnight = Math.floor(algiersNow / DAY) * DAY;
+  return new Date(algiersMidnight - (days - 1) * DAY - 60 * 60 * 1000).toISOString();
 }
 
 const n = (v: unknown): number => (v == null ? 0 : Number(v));
