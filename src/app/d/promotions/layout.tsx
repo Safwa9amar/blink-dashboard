@@ -5,7 +5,7 @@ import { PageHeader, SubNav } from "@/components/ui";
 export default async function PromotionsLayout({ children }: { children: ReactNode }) {
   const t = await getTranslations("promotions");
   const items = [
-    { href: "/promotions", label: t("campaigns"), icon: "gift", count: "24" },
+    { href: "/promotions", label: t("campaigns"), icon: "gift" },
     { href: "/promotions/new", label: t("create"), icon: "plus" },
     { href: "/promotions/analytics", label: t("analytics"), icon: "trending" },
   ];

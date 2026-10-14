@@ -1,16 +1,12 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { PromoGrid, PromoCreate, PromoAnalytics } from "@/features/promotions";
+import { PromoList } from "@/features/promotions";
+import type { PromotionListItem, PromotionStats } from "@/features/promotions";
 
-export default function PromotionsClient({ tab }: { tab: "grid" | "create" | "analytics" }) {
-  const router = useRouter();
-  switch (tab) {
-    case "create":
-      return <PromoCreate onCancel={() => router.push("/promotions")} />;
-    case "analytics":
-      return <PromoAnalytics />;
-    default:
-      return <PromoGrid onNew={() => router.push("/promotions/new")} />;
-  }
+export default function PromotionsClient(props: {
+  items: PromotionListItem[];
+  stats30: PromotionStats[];
+  error?: string;
+}) {
+  return <PromoList {...props} />;
 }
