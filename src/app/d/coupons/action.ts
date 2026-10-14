@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getStaffActor } from "@/lib/auth/staff";
-import { categoryToArt, validateIssue, type CustomerHit, type IssueValues } from "@/features/coupons";
+import { categoryToArt, customerSearchFilters, validateIssue, type CustomerHit, type IssueValues } from "@/features/coupons";
 
 // Coupon writes: service-role client, gated by `canAccessPath(role, "/coupons")`.
 // Error strings are i18n keys under `coupons.errors.*`; raw DB messages pass through.
@@ -62,18 +62,17 @@ export async function restoreCoupon(id: string): Promise<Result> {
   return { error: null };
 }
 
-// Customer search for the issue flow: name or phone, customers only.
+// Customer search for the issue flow: name or phone. Every app user can hold coupons
+// (`users.role` is the active persona), so only console staff are excluded.
 export async function searchCustomers(query: string): Promise<CustomerHit[]> {
   if (!(await getStaffActor(PATH))) return [];
-  const q = query.replace(/[%,()*\\]/g, " ").trim();
-  if (q.length < 2) return [];
+  if (query.trim().length < 2) return [];
+  const filters = customerSearchFilters(query);
+  if (!filters.length) return [];
   const supabase = await createAdminClient();
-  const { data } = await supabase
-    .from("users")
-    .select("id, first_name, last_name, phone_number")
-    .eq("role", "customer")
-    .or(`first_name.ilike.%${q}%,last_name.ilike.%${q}%,phone_number.ilike.%${q}%`)
-    .limit(8);
+  let req = supabase.from("users").select("id, first_name, last_name, phone_number").is("staff_role", null);
+  for (const f of filters) req = req.or(f);
+  const { data } = await req.limit(8);
   return ((data ?? []) as { id: string; first_name: string | null; last_name: string | null; phone_number: string | null }[]).map((u) => ({
     id: u.id,
     name: [u.first_name, u.last_name].filter(Boolean).join(" "),

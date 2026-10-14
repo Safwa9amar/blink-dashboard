@@ -4,14 +4,26 @@ import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { Badge, Button, DataTable, FilterPills, FormRow, Modal, SearchBox, StatCard, StatGrid, fInput, type Column } from "@/components/ui";
+import { Badge, Button, DataTable, FilterPills, FormRow, Modal, SearchBox, StatCard, fInput, type Column } from "@/components/ui";
 import { extendCoupon, restoreCoupon, revokeCoupon } from "@/app/d/coupons/action";
+import { formatDay } from "@/features/promotions";
 import { SOURCES, STATUS_VARIANT } from "../status";
 import type { CouponKpis, CouponListRow, CouponSource, CouponStatus, PromotionOption } from "../types";
 
 type Dialog = { kind: "extend" | "revoke"; row: CouponListRow } | null;
 
 const fmt = (n: number, locale: string) => n.toLocaleString(locale, { maximumFractionDigits: 2 });
+
+const DAY_MS = 86_400_000;
+const pad = (n: number) => String(n).padStart(2, "0");
+/** yyyy-mm-dd in the browser's local time, for <input type="date">. */
+const toDayInput = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+/** max(current expiry, now) + days, as a date-input value. */
+const addFromBase = (expiresAt: string | null, days: number) => {
+  const exp = expiresAt ? new Date(expiresAt).getTime() : 0;
+  const base = Math.max(Number.isNaN(exp) ? 0 : exp, Date.now());
+  return toDayInput(new Date(base + days * DAY_MS));
+};
 
 export function CouponsList({
   rows,
@@ -39,6 +51,7 @@ export function CouponsList({
   const [q, setQ] = useState("");
   const [dialog, setDialog] = useState<Dialog>(null);
   const [date, setDate] = useState("");
+  const [minDate, setMinDate] = useState("");
   const [note, setNote] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
 
@@ -69,7 +82,8 @@ export function CouponsList({
   const open = (kind: "extend" | "revoke", row: CouponListRow) => {
     setMsg(null);
     setNote("");
-    setDate("");
+    setMinDate(toDayInput(new Date(Date.now() + DAY_MS)));
+    setDate(kind === "extend" ? addFromBase(row.expires_at, 7) : "");
     setDialog({ kind, row });
   };
 
@@ -81,13 +95,13 @@ export function CouponsList({
         : t("free_delivery");
 
   const columns: Column<CouponListRow>[] = [
-    { key: "code", label: t("cols.code"), render: (r) => <span className="font-mono text-xs font-bold">{r.code}</span> },
+    { key: "code", label: t("cols.code"), className: "whitespace-nowrap", render: (r) => <span className="font-mono text-xs font-bold whitespace-nowrap" dir="ltr">{r.code}</span> },
     {
       key: "customer_name",
       label: t("cols.customer"),
       render: (r) => (
         <Link href="/customers" className="hover:underline">
-          <div className="font-semibold text-text">{r.customer_name || "—"}</div>
+          <div className="font-semibold text-text" dir="auto">{r.customer_name || "—"}</div>
           <div className="text-xs text-subtext" dir="ltr">{r.customer_phone}</div>
         </Link>
       ),
@@ -97,7 +111,7 @@ export function CouponsList({
       label: t("cols.promotion"),
       render: (r) =>
         r.promotion_id && r.promotion_title ? (
-          <Link href={`/promotions/${r.promotion_id}`} className="hover:underline">
+          <Link href={`/promotions/${r.promotion_id}`} className="hover:underline" dir="auto">
             {r.promotion_title}
           </Link>
         ) : (
@@ -108,13 +122,14 @@ export function CouponsList({
     {
       key: "min_order",
       label: t("cols.min_order"),
+      className: "whitespace-nowrap",
       render: (r) => <span className="tabular-nums">{r.min_order ? `${fmt(r.min_order, locale)} ${tc("da")}` : "—"}</span>,
     },
     { key: "status", label: t("cols.status"), render: (r) => <Badge variant={STATUS_VARIANT[r.status]}>{t(`statuses.${r.status}` as never)}</Badge> },
     {
       key: "expires_at",
       label: t("cols.expires"),
-      render: (r) => <span className="text-subtext whitespace-nowrap">{r.expires_at ? new Date(r.expires_at).toLocaleDateString(locale) : "—"}</span>,
+      render: (r) => <span className="text-subtext whitespace-nowrap">{formatDay(r.expires_at, locale)}</span>,
     },
     {
       key: "order_id",
@@ -130,7 +145,7 @@ export function CouponsList({
         ),
     },
     { key: "source", label: t("cols.source"), render: (r) => t(`sources.${r.source}` as never) },
-    { key: "issued_by_name", label: t("cols.issued_by"), render: (r) => <span className="text-subtext">{r.issued_by_name ?? "—"}</span> },
+    { key: "issued_by_name", label: t("cols.issued_by"), className: "whitespace-nowrap", render: (r) => <span className="text-subtext">{r.issued_by_name ?? "—"}</span> },
     {
       key: "actions",
       label: tc("actions"),
@@ -160,6 +175,7 @@ export function CouponsList({
     if (!dialog) return;
     if (dialog.kind === "extend") {
       if (!date) return setMsg(errText("expiry_required"));
+      if (date <= toDayInput(new Date())) return setMsg(errText("expiry_future"));
       // End of the chosen day, local time.
       const iso = new Date(`${date}T23:59:59`).toISOString();
       run(() => extendCoupon(dialog.row.id, iso, note), () => setDialog(null));
@@ -171,15 +187,17 @@ export function CouponsList({
 
   return (
     <>
-      <StatGrid cols={4}>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         <StatCard label={t("kpi.active")} value={kpis.active} variant="success" icon="ticket" />
         <StatCard label={t("kpi.used")} value={kpis.used30} variant="info" icon="trending" change={t("kpi.last30")} />
         <StatCard label={t("kpi.expiring")} value={kpis.expiring7} variant="warning" icon="clock" change={t("kpi.next7")} />
         <StatCard label={t("kpi.revoked")} value={kpis.revoked} variant="danger" icon="lock" />
-      </StatGrid>
+      </div>
 
       <div className="flex items-center gap-3 mb-4 flex-wrap">
-        <SearchBox placeholder={t("search")} value={q} onChange={setQ} />
+        <div className="w-full sm:w-auto sm:flex-1 sm:max-w-xs [&>div]:max-w-none">
+          <SearchBox placeholder={t("search")} value={q} onChange={setQ} />
+        </div>
         <select
           className="bg-card border border-border rounded-lg px-3 h-[34px] text-[13px] text-text max-w-56"
           value={source}
@@ -232,13 +250,27 @@ export function CouponsList({
           <div>
             {dialog.kind === "extend" ? (
               <FormRow label={t("dialog.new_expiry")}>
-                <input type="date" className={fInput} value={date} onChange={(e) => setDate(e.target.value)} dir="ltr" />
+                <input
+                  type="date"
+                  className={fInput}
+                  value={date}
+                  min={minDate}
+                  onChange={(e) => setDate(e.target.value)}
+                  dir="ltr"
+                />
+                <div className="flex gap-2 mt-2 flex-wrap">
+                  {[7, 30, 90].map((d) => (
+                    <Button key={d} size="xs" variant="secondary" type="button" onClick={() => setDate(addFromBase(dialog.row.expires_at, d))}>
+                      {t("dialog.plus_days", { n: d })}
+                    </Button>
+                  ))}
+                </div>
               </FormRow>
             ) : (
               <p className="text-sm text-subtext mb-4">{t("dialog.revoke_desc")}</p>
             )}
             <FormRow label={dialog.kind === "revoke" ? t("dialog.reason") : t("dialog.note")} hint={dialog.kind === "revoke" ? t("dialog.required") : t("dialog.optional")}>
-              <textarea className={fInput} rows={3} value={note} onChange={(e) => setNote(e.target.value)} />
+              <textarea className={fInput} dir="auto" rows={3} value={note} onChange={(e) => setNote(e.target.value)} />
             </FormRow>
             {msg && <p className="text-danger text-sm mb-3">{msg}</p>}
             <div className="flex gap-2.5 justify-end">

@@ -21,15 +21,24 @@ export function IssueCoupon({ promotions }: { promotions: PromotionOption[] }) {
   const [query, setQuery] = useState("");
   const [hits, setHits] = useState<CustomerHit[]>([]);
   const [picked, setPicked] = useState<CustomerHit | null>(null);
+  // Query the current `hits` belong to; null while a request is in flight.
+  const [searched, setSearched] = useState<string | null>(null);
 
-  const visibleHits = picked || query.trim().length < 2 ? [] : hits;
+  const active = !picked && query.trim().length >= 2;
+  const visibleHits = active ? hits : [];
+  const searching = active && searched !== query;
+  const noMatch = active && !searching && hits.length === 0;
   const set = <K extends keyof IssueValues>(k: K, val: IssueValues[K]) => setV((p) => ({ ...p, [k]: val }));
 
   useEffect(() => {
     if (picked || query.trim().length < 2) return;
     let live = true;
     const id = setTimeout(() => {
-      searchCustomers(query).then((r) => live && setHits(r));
+      searchCustomers(query).then((r) => {
+        if (!live) return;
+        setHits(r);
+        setSearched(query);
+      });
     }, 250);
     return () => {
       live = false;
@@ -62,7 +71,7 @@ export function IssueCoupon({ promotions }: { promotions: PromotionOption[] }) {
           {picked ? (
             <div className="flex items-center justify-between rounded-lg border border-border bg-background px-3 py-2.5">
               <div>
-                <div className="font-semibold text-sm text-text">{picked.name || "—"}</div>
+                <div className="font-semibold text-sm text-text" dir="auto">{picked.name || "—"}</div>
                 <div className="text-xs text-subtext" dir="ltr">{picked.phone}</div>
               </div>
               <Button
@@ -80,7 +89,12 @@ export function IssueCoupon({ promotions }: { promotions: PromotionOption[] }) {
           ) : (
             <div className="relative">
               <input className={fInput} value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t("issue.search_ph")} />
-              {visibleHits.length > 0 && (
+              {(searching || noMatch) && (
+                <div className="absolute z-10 start-0 end-0 mt-1 bg-card border border-border rounded-lg shadow-lg px-3 py-2 text-sm text-subtext" role="status">
+                  {searching ? t("issue.searching") : <span dir="auto">{t("issue.no_match", { q: query.trim() })}</span>}
+                </div>
+              )}
+              {visibleHits.length > 0 && !searching && (
                 <ul className="absolute z-10 start-0 end-0 mt-1 bg-card border border-border rounded-lg shadow-lg overflow-hidden">
                   {visibleHits.map((h) => (
                     <li key={h.id}>
@@ -93,7 +107,7 @@ export function IssueCoupon({ promotions }: { promotions: PromotionOption[] }) {
                           setQuery("");
                         }}
                       >
-                        <span className="font-medium text-text">{h.name || "—"}</span>
+                        <span className="font-medium text-text" dir="auto">{h.name || "—"}</span>
                         <span className="text-subtext" dir="ltr">{h.phone}</span>
                       </button>
                     </li>
@@ -193,7 +207,7 @@ export function IssueCoupon({ promotions }: { promotions: PromotionOption[] }) {
           {errMsg("code")}
         </FormRow>
         <FormRow label={t("issue.note")} hint={t("dialog.optional")}>
-          <textarea className={fInput} rows={3} value={v.note} onChange={(e) => set("note", e.target.value)} />
+          <textarea className={fInput} dir="auto" rows={3} value={v.note} onChange={(e) => set("note", e.target.value)} />
         </FormRow>
         {formError && <p className="text-danger text-sm mb-3">{formError}</p>}
         <div className="flex gap-2.5">
