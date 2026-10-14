@@ -9,12 +9,15 @@ import { savePromotion } from "@/app/d/promotions/action";
 import {
   ACTIONS,
   CATEGORIES,
+  DEFAULT_DEAL_CATEGORIES,
   DEFAULT_FORM,
+  categoryForKind,
   DISCOUNT_TYPES,
   INFO_ICONS,
   validatePromotionForm,
   type PromotionFormValues,
 } from "../form";
+import { categoryLabel } from "../format";
 import type { StoreOption } from "../types";
 import { CoverField } from "./cover-field";
 import { PromoPreview } from "./promo-preview";
@@ -33,10 +36,13 @@ export function PromoForm({
   id,
   initial,
   stores,
+  dealCategories,
 }: {
   id?: string;
   initial?: PromotionFormValues;
   stores: StoreOption[];
+  /** Distinct categories of existing deals, offered as suggestions for a deal. */
+  dealCategories?: string[];
 }) {
   const t = useTranslations("promotions");
   const router = useRouter();
@@ -56,6 +62,7 @@ export function PromoForm({
   const v = useWatch({ control }) as PromotionFormValues;
   const storeName = useMemo(() => stores.find((s) => s.id === v.store_id)?.name, [stores, v.store_id]);
   const isDeal = v.kind === "deal";
+  const suggestions = dealCategories?.length ? dealCategories : DEFAULT_DEAL_CATEGORIES;
 
   const err = (k: keyof PromotionFormValues) => {
     const m = errors[k]?.message;
@@ -112,19 +119,35 @@ export function PromoForm({
                       ["deal", t("kinds.deal")],
                     ]}
                     value={field.value}
-                    onChange={field.onChange}
+                    onChange={(k) => {
+                      field.onChange(k);
+                      const next = categoryForKind(k, v.category, suggestions);
+                      if (next !== v.category) setValue("category", next, { shouldDirty: true });
+                    }}
                   />
                 )}
               />
             </FormRow>
             <FormRow label={t("form.category")} className="flex-1">
-              <select className={fInput} {...register("category")}>
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>
-                    {t(`categories.${c}` as never)}
-                  </option>
-                ))}
-              </select>
+              {isDeal ? (
+                <>
+                  <input className={fInput} list="deal-categories" dir="auto" placeholder={t("form.category_ph")} {...register("category")} />
+                  <datalist id="deal-categories">
+                    {suggestions.map((c) => (
+                      <option key={c} value={c} />
+                    ))}
+                  </datalist>
+                </>
+              ) : (
+                <select className={fInput} {...register("category")}>
+                  {CATEGORIES.map((c) => (
+                    <option key={c} value={c}>
+                      {categoryLabel(c, t)}
+                    </option>
+                  ))}
+                </select>
+              )}
+              {err("category")}
             </FormRow>
           </div>
           <FormRow label={t("form.title")}>

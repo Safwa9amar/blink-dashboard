@@ -59,7 +59,9 @@
       "archive": "Archiver",
       "unarchive": "Désarchiver",
       "delete": "Supprimer",
-      "confirm_delete": "Supprimer « {title} » ? Cette action est irréversible."
+      "confirm_delete": "Supprimer « {title} » ? Cette action est irréversible.",
+      "delete_blocked": "Des coupons ont été émis — archivez plutôt",
+      "more": "Plus d'actions"
     },
     "categories": {
       "RIDES": "Courses",
@@ -174,8 +176,10 @@
         "code_required_copy": "Un code est requis pour l'action Copier.",
         "code_format": "3 à 24 lettres, chiffres, - ou _.",
         "color_format": "Utilisez une couleur hexadécimale comme #EE335F.",
-        "code_taken": "Ce code est déjà utilisé par une autre promotion."
-      }
+        "code_taken": "Ce code est déjà utilisé par une autre promotion.",
+        "category_required": "La catégorie est obligatoire."
+      },
+      "category_ph": "ex. Épicerie"
     },
     "detail": {
       "stats": "Performance (depuis le début)",
@@ -208,6 +212,15 @@
       "no_data": "Aucune activité sur cette période.",
       "issued_short": "émis",
       "top": "Meilleures promotions par remise accordée"
+    },
+    "dates": {
+      "always_on": "Toujours actif",
+      "from": "Dès le {date}",
+      "until": "Jusqu'au {date}"
+    },
+    "chart": {
+      "no_views": "Aucune vue pour le moment. Les vues et clics arrivent des utilisateurs de l'app avec la dernière mise à jour.",
+      "no_data": "Aucune donnée sur cette période."
     }
   }
 }

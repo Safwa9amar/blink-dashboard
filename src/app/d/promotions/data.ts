@@ -114,6 +114,18 @@ export async function loadStores(): Promise<StoreOption[]> {
   return ((data ?? []) as StoreOption[]).map((s) => ({ id: s.id, name: s.name }));
 }
 
+/** Distinct Top Deals categories already in use (suggestions for the deal category input). */
+export async function loadDealCategories(): Promise<string[]> {
+  const supabase = await createAdminClient();
+  const { data } = await supabase.from("promotions").select("category").eq("kind", "deal").limit(1000);
+  const set = new Set<string>();
+  for (const r of (data ?? []) as { category: string | null }[]) {
+    const c = r.category?.trim();
+    if (c) set.add(c);
+  }
+  return [...set].sort((a, b) => a.localeCompare(b));
+}
+
 export interface PromotionDetailData {
   row: PromotionRow | null;
   stats: PromotionStats;

@@ -2,11 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { Card, ChartHead, DataTable, Donut, EmptyState, Segmented, StatCard, StatGrid, type Column } from "@/components/ui";
-import { fmtNum, pct } from "../format";
-import { CATEGORIES } from "../form";
+import { Card, ChartHead, DataTable, Donut, EmptyState, Segmented, StatCard, type Column } from "@/components/ui";
+import { categoryLabel, fmtNum, pct } from "../format";
 import type { PromotionDay, PromotionListItem } from "../types";
 import { DailyChart } from "./daily-chart";
+import { KpiGrid } from "./kpi-grid";
 
 interface TopRow {
   id: string;
@@ -59,20 +59,22 @@ export function PromoAnalytics({
     .sort((a, b) => b.discount_given - a.discount_given || b.issued - a.issued)
     .slice(0, 10);
 
-  const byCat = CATEGORIES.map((c) => ({
-    cat: c,
-    value: items.filter((i) => i.row.category === c).reduce((a, i) => a + i.stats.issued, 0),
-  })).filter((c) => c.value > 0);
+  const catTotals = new Map<string, number>();
+  for (const i of items) catTotals.set(i.row.category, (catTotals.get(i.row.category) ?? 0) + i.stats.issued);
+  const byCat = [...catTotals]
+    .map(([cat, value]) => ({ cat, value }))
+    .filter((c) => c.value > 0)
+    .sort((a, b) => b.value - a.value);
   const catTotal = byCat.reduce((a, c) => a + c.value, 0);
 
   const columns: Column<TopRow>[] = [
-    { key: "title", label: t("cols.promotion"), render: (r) => <span className="font-semibold">{r.title}</span> },
-    { key: "category", label: t("cols.category"), render: (r) => t(`categories.${r.category}` as never) },
-    { key: "views", label: t("cols.views"), render: (r) => <span className="tabular-nums">{fmtNum(r.views, locale)}</span> },
-    { key: "taps", label: t("cols.ctr"), render: (r) => <span className="tabular-nums">{pct(r.taps, r.views)}</span> },
-    { key: "issued", label: t("cols.issued"), render: (r) => <span className="tabular-nums">{fmtNum(r.issued, locale)}</span> },
-    { key: "used", label: t("cols.conversion"), render: (r) => <span className="tabular-nums">{pct(r.used, r.issued)}</span> },
-    { key: "discount_given", label: t("cols.discount_given"), render: (r) => <span className="tabular-nums">{da(r.discount_given)}</span> },
+    { key: "title", label: t("cols.promotion"), header: <span className="whitespace-nowrap">{t("cols.promotion")}</span>, render: (r) => <span className="font-semibold" dir="auto">{r.title}</span> },
+    { key: "category", label: t("cols.category"), header: <span className="whitespace-nowrap">{t("cols.category")}</span>, render: (r) => <span dir="auto">{categoryLabel(r.category, t)}</span> },
+    { key: "views", label: t("cols.views"), header: <span className="whitespace-nowrap">{t("cols.views")}</span>, render: (r) => <span className="tabular-nums whitespace-nowrap">{fmtNum(r.views, locale)}</span> },
+    { key: "taps", label: t("cols.ctr"), header: <span className="whitespace-nowrap">{t("cols.ctr")}</span>, render: (r) => <span className="tabular-nums whitespace-nowrap">{pct(r.taps, r.views)}</span> },
+    { key: "issued", label: t("cols.issued"), header: <span className="whitespace-nowrap">{t("cols.issued")}</span>, render: (r) => <span className="tabular-nums whitespace-nowrap">{fmtNum(r.issued, locale)}</span> },
+    { key: "used", label: t("cols.conversion"), header: <span className="whitespace-nowrap">{t("cols.conversion")}</span>, render: (r) => <span className="tabular-nums whitespace-nowrap">{pct(r.used, r.issued)}</span> },
+    { key: "discount_given", label: t("cols.discount_given"), header: <span className="whitespace-nowrap">{t("cols.discount_given")}</span>, render: (r) => <span className="tabular-nums whitespace-nowrap">{da(r.discount_given)}</span> },
   ];
 
   return (
@@ -90,13 +92,13 @@ export function PromoAnalytics({
         />
       </div>
       {error && <p className="text-danger text-sm mb-3">{error}</p>}
-      <StatGrid cols={5}>
+      <KpiGrid>
         <StatCard label={t("cols.views")} value={views} variant="info" icon="eye" />
         <StatCard label={t("cols.ctr")} value={pct(taps, views)} variant="primary" icon="activity" />
         <StatCard label={t("cols.issued")} value={issued} variant="success" icon="ticket" change={t("detail.conversion", { n: pct(used, issued) })} />
         <StatCard label={t("cols.discount_given")} value={da(given)} variant="warning" icon="dollar" />
         <StatCard label={t("cols.revenue")} value={da(revenue)} variant="default" icon="trending" />
-      </StatGrid>
+      </KpiGrid>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
         <Card>
@@ -117,7 +119,7 @@ export function PromoAnalytics({
             <p className="text-sm text-subtext py-8 text-center">{t("an.no_data")}</p>
           ) : (
             <Donut
-              segments={byCat.map((c) => ({ name: t(`categories.${c.cat}` as never), pct: Math.round((c.value / catTotal) * 100) }))}
+              segments={byCat.map((c) => ({ name: categoryLabel(c.cat, t), pct: Math.round((c.value / catTotal) * 100) }))}
               centerValue={fmtNum(catTotal, locale)}
               centerLabel={t("an.issued_short")}
             />

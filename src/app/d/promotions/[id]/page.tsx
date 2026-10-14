@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { requirePathAccess } from "@/lib/auth/staff";
 import { pageMeta } from "@/lib/dash-metadata";
-import { loadPromotionDetail, loadStores } from "../data";
+import { loadDealCategories, loadPromotionDetail, loadStores } from "../data";
 import Client from "./client";
 
 export function generateMetadata(): Promise<Metadata> {
@@ -12,7 +12,7 @@ export function generateMetadata(): Promise<Metadata> {
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   await requirePathAccess("/promotions");
   const { id } = await params;
-  const [detail, stores] = await Promise.all([loadPromotionDetail(id), loadStores()]);
+  const [detail, stores, dealCategories] = await Promise.all([loadPromotionDetail(id), loadStores(), loadDealCategories()]);
   if (!detail.row) notFound();
   return (
     <Client
@@ -21,6 +21,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       daily={detail.daily}
       coupons={detail.coupons}
       stores={stores}
+      dealCategories={dealCategories}
       error={detail.error}
     />
   );

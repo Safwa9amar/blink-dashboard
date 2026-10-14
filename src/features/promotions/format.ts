@@ -44,7 +44,8 @@ export function formatDay(iso: string | null | undefined, locale: string): strin
 }
 
 /** Translated label for a promo category code; deals keep their free-text chip as is. */
-export function categoryLabel(category: string, t: { has: (k: never) => boolean; (k: never): string }): string {
-  const key = `categories.${category}` as never;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- accepts the typed next-intl translator
+export function categoryLabel(category: string, t: { has: (k: any) => boolean; (k: any): string }): string {
+  const key = `categories.${category}`;
   return t.has(key) ? t(key) : category;
 }

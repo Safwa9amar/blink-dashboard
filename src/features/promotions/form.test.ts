@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_FORM, formToWrite, validatePromotionForm, type PromotionFormValues } from "./form";
+import { DEFAULT_FORM, categoryForKind, formToWrite, validatePromotionForm, type PromotionFormValues } from "./form";
 import { pct, progress } from "./format";
 
 const ok: PromotionFormValues = { ...DEFAULT_FORM, title: "30% off rides", discount_value: "30" };
@@ -10,6 +10,10 @@ describe("validatePromotionForm", () => {
   });
   it("requires a title", () => {
     expect(validatePromotionForm({ ...ok, title: "  " }).title).toBe("title_required");
+  });
+  it("requires a category", () => {
+    expect(validatePromotionForm({ ...ok, category: "  " }).category).toBe("category_required");
+    expect(validatePromotionForm({ ...ok, kind: "deal", category: "Grocery" })).toEqual({});
   });
   it("requires value > 0 unless free delivery", () => {
     expect(validatePromotionForm({ ...ok, discount_value: "0" }).discount_value).toBe("value_positive");
@@ -44,6 +48,16 @@ describe("formToWrite", () => {
   });
   it("zeroes the value for free delivery", () => {
     expect(formToWrite({ ...ok, discount_type: "free_delivery", discount_value: "50" }).discount_value).toBe(0);
+  });
+});
+
+describe("categoryForKind", () => {
+  it("keeps valid values and resets invalid ones", () => {
+    expect(categoryForKind("promo", "FOOD")).toBe("FOOD");
+    expect(categoryForKind("promo", "Grocery")).toBe("MARKET");
+    expect(categoryForKind("deal", "Grocery", ["Beauty"])).toBe("Grocery");
+    expect(categoryForKind("deal", "MARKET", ["Beauty", "Grocery"])).toBe("Beauty");
+    expect(categoryForKind("deal", "MARKET")).toBe("Food & Drinks");
   });
 });
 

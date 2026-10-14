@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { fmtNum } from "../format";
+import { categoryLabel, fmtNum } from "../format";
 import type { PromotionFormValues } from "../form";
 
 // Phone-frame preview of how the promotion renders in the customer app: the Promos tab
@@ -11,8 +11,11 @@ export function PromoPreview({ v, storeName }: { v: PromotionFormValues; storeNa
   const tc = useTranslations("common");
   const locale = useLocale();
 
+  const amount = Number(v.discount_value) || 0;
   const value =
-    v.discount_type === "percent"
+    v.discount_type !== "free_delivery" && amount === 0
+      ? "—"
+      : v.discount_type === "percent"
       ? `${fmtNum(Number(v.discount_value) || 0, locale)}%`
       : v.discount_type === "fixed"
         ? `${fmtNum(Number(v.discount_value) || 0, locale)} ${tc("da")}`
@@ -29,19 +32,19 @@ export function PromoPreview({ v, storeName }: { v: PromotionFormValues; storeNa
           >
             <div className="absolute inset-0 bg-gradient-to-b from-transparent from-35% to-black/60" />
             <span className="absolute top-2.5 start-2.5 z-[1] bg-white/90 text-primary text-[9px] font-extrabold px-2.5 py-[3px] rounded-full uppercase tracking-wide">
-              {t(`categories.${v.category}` as never)}
+              <span dir="auto">{categoryLabel(v.category, t)}</span>
             </span>
             <span className="absolute top-2.5 end-2.5 z-[1] bg-black/50 text-white text-[9px] font-bold px-2.5 py-[3px] rounded-full uppercase tracking-wide">
               {t(`action_types.${v.action}` as never)}
             </span>
             <div className="absolute start-3 end-3 bottom-2.5 z-[1]">
-              <h4 className="text-white font-extrabold text-base leading-tight">{v.title || t("preview.title_ph")}</h4>
+              <h4 className="text-white font-extrabold text-base leading-tight" dir="auto">{v.title || t("preview.title_ph")}</h4>
             </div>
           </div>
           <div className="flex items-center justify-between gap-2 px-3 py-2.5">
-            <span className="text-xs text-subtext flex-1">{v.subtitle || t("preview.subtitle_ph")}</span>
+            <span className="text-xs text-subtext flex-1" dir="auto">{v.subtitle || t("preview.subtitle_ph")}</span>
             {v.action === "copy" && v.code && (
-              <span className="font-mono text-[11px] font-bold text-text bg-muted border border-dashed border-border rounded-md px-2 py-[3px]">
+              <span dir="auto" className="font-mono text-[11px] font-bold text-text bg-muted border border-dashed border-border rounded-md px-2 py-[3px]">
                 {v.code.toUpperCase()}
               </span>
             )}
@@ -60,6 +63,7 @@ export function PromoPreview({ v, storeName }: { v: PromotionFormValues; storeNa
             {v.badge_text && (
               <span
                 className="absolute top-2.5 start-2.5 text-white text-[10px] font-extrabold px-2.5 py-[3px] rounded-full uppercase tracking-wide"
+                dir="auto"
                 style={{ background: /^#[0-9a-fA-F]{6}$/.test(v.badge_color) ? v.badge_color : "var(--primary)" }}
               >
                 {v.badge_text}
@@ -72,9 +76,9 @@ export function PromoPreview({ v, storeName }: { v: PromotionFormValues; storeNa
             )}
           </div>
           <div className="px-3 py-2.5">
-            <h4 className="font-bold text-sm text-text leading-tight">{v.title || t("preview.title_ph")}</h4>
-            <p className="text-xs text-subtext mt-0.5">{storeName || v.subtitle || t("preview.subtitle_ph")}</p>
-            {v.info_text && <p className="text-[11px] text-subtext mt-1.5">{v.info_text}</p>}
+            <h4 className="font-bold text-sm text-text leading-tight" dir="auto">{v.title || t("preview.title_ph")}</h4>
+            <p className="text-xs text-subtext mt-0.5" dir="auto">{storeName || v.subtitle || t("preview.subtitle_ph")}</p>
+            {v.info_text && <p className="text-[11px] text-subtext mt-1.5" dir="auto">{v.info_text}</p>}
             <p className="text-[11px] font-semibold text-primary mt-1.5">{value}</p>
           </div>
         </div>

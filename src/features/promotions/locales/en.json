@@ -59,7 +59,9 @@
       "archive": "Archive",
       "unarchive": "Unarchive",
       "delete": "Delete",
-      "confirm_delete": "Delete \"{title}\"? This cannot be undone."
+      "confirm_delete": "Delete \"{title}\"? This cannot be undone.",
+      "delete_blocked": "Has issued coupons — archive instead",
+      "more": "More actions"
     },
     "categories": {
       "RIDES": "Rides",
@@ -174,8 +176,10 @@
         "code_required_copy": "A code is required for the Copy action.",
         "code_format": "3 to 24 letters, digits, - or _.",
         "color_format": "Use a hex colour like #EE335F.",
-        "code_taken": "This code is already used by another promotion."
-      }
+        "code_taken": "This code is already used by another promotion.",
+        "category_required": "Category is required."
+      },
+      "category_ph": "e.g. Grocery"
     },
     "detail": {
       "stats": "Performance (all time)",
@@ -208,6 +212,15 @@
       "no_data": "No activity in this range.",
       "issued_short": "issued",
       "top": "Top promotions by discount given"
+    },
+    "dates": {
+      "always_on": "Always on",
+      "from": "From {date}",
+      "until": "Until {date}"
+    },
+    "chart": {
+      "no_views": "No views yet. Views and taps arrive from app users on the latest update.",
+      "no_data": "No data in this period."
     }
   }
 }

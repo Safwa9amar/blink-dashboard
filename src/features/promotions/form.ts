@@ -3,6 +3,21 @@
 import type { DiscountType, PromotionAction, PromotionKind, PromotionRow } from "./types";
 
 export const CATEGORIES = ["RIDES", "FOOD", "SUPERMARKET", "MARKET", "COSMETICS", "PARCELS"] as const;
+/** Fallback Top Deals chips when no deal exists yet. */
+export const DEFAULT_DEAL_CATEGORIES = ["Food & Drinks", "Grocery", "Fashion", "Beauty"];
+
+/**
+ * Category to use after switching `kind`: keep the current value when it is valid for the
+ * new kind (promo: one of CATEGORIES; deal: non-empty free text that is not a promo code),
+ * otherwise a default (promo: MARKET; deal: first suggestion).
+ */
+export function categoryForKind(kind: PromotionKind, current: string, suggestions: string[] = []): string {
+  const isCode = (CATEGORIES as readonly string[]).includes(current);
+  if (kind === "promo") return isCode ? current : "MARKET";
+  if (current.trim() !== "" && (!isCode || suggestions.includes(current))) return current;
+  return (suggestions.length ? suggestions : DEFAULT_DEAL_CATEGORIES)[0];
+}
+
 export const KINDS: PromotionKind[] = ["promo", "deal"];
 export const ACTIONS: PromotionAction[] = ["activate", "copy", "claim", "view"];
 export const DISCOUNT_TYPES: DiscountType[] = ["percent", "fixed", "free_delivery"];
@@ -73,6 +88,7 @@ const time = (s: string) => new Date(s).getTime();
 export function validatePromotionForm(v: PromotionFormValues): FormErrors {
   const e: FormErrors = {};
   if (blank(v.title)) e.title = "title_required";
+  if (blank(v.category)) e.category = "category_required";
 
   if (v.discount_type !== "free_delivery") {
     const d = num(v.discount_value);
@@ -128,7 +144,7 @@ export function formToWrite(v: PromotionFormValues): PromotionWrite {
   const free = v.discount_type === "free_delivery";
   return {
     kind: v.kind,
-    category: v.category,
+    category: v.category.trim(),
     title: v.title.trim(),
     subtitle: v.subtitle.trim(),
     image_url: v.image_url.trim(),

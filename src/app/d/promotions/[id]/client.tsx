@@ -10,6 +10,7 @@ export default function EditPromotionClient({
   daily,
   coupons,
   stores,
+  dealCategories,
   error,
 }: {
   row: PromotionRow;
@@ -17,13 +18,14 @@ export default function EditPromotionClient({
   daily: PromotionDay[];
   coupons: PromotionCouponRow[];
   stores: StoreOption[];
+  dealCategories: string[];
   error?: string;
 }) {
   const [now] = useState(() => new Date());
   return (
     <>
       {error && <p className="text-danger text-sm mb-3">{error}</p>}
-      <PromoForm id={row.id} initial={rowToForm(row)} stores={stores} />
+      <PromoForm id={row.id} initial={rowToForm(row)} stores={stores} dealCategories={dealCategories} />
       <PromoDetail row={row} stats={stats} daily={daily} coupons={coupons} now={now} />
     </>
   );

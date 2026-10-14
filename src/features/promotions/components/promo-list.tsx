@@ -1,10 +1,10 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition, type ReactNode } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { Badge, Button, DataTable, FilterPills, SearchBox, StatCard, StatGrid, type Column } from "@/components/ui";
+import { Badge, Button, DataTable, FilterPills, SearchBox, StatCard, type Column } from "@/components/ui";
 import {
   deletePromotion,
   duplicatePromotion,
@@ -13,9 +13,10 @@ import {
 } from "@/app/d/promotions/action";
 import { promotionAvailability, type Availability } from "../availability";
 import { CATEGORIES } from "../form";
-import { fmtNum, pct, progress } from "../format";
+import { categoryLabel, fmtNum, formatDay, pct, progress } from "../format";
 import { EMPTY_STATS, type PromotionListItem, type PromotionStats } from "../types";
 import { AVAILABILITIES, AVAIL_VARIANT } from "../variants";
+import { KpiGrid } from "./kpi-grid";
 
 interface ListRow {
   id: string;
@@ -44,6 +45,104 @@ interface ListRow {
 }
 
 type Tab = "promo" | "deal" | "archived";
+const TABS: Tab[] = ["promo", "deal", "archived"];
+
+/** Compact accessible "⋯" dropdown. Fixed-positioned so the table's scroll container never clips it. */
+function RowMenu({ label, children }: { label: string; children: (close: () => void) => ReactNode }) {
+  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState<{ top: number; end: number } | null>(null);
+  const btn = useRef<HTMLButtonElement>(null);
+  const menu = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const close = () => setOpen(false);
+    const onDown = (e: MouseEvent) => {
+      const n = e.target as Node;
+      if (!menu.current?.contains(n) && !btn.current?.contains(n)) close();
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        close();
+        btn.current?.focus();
+      }
+    };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    window.addEventListener("scroll", close, true);
+    window.addEventListener("resize", close);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+      window.removeEventListener("scroll", close, true);
+      window.removeEventListener("resize", close);
+    };
+  }, [open]);
+
+  const toggle = () => {
+    if (!open && btn.current) {
+      const r = btn.current.getBoundingClientRect();
+      const rtl = document.documentElement.dir === "rtl";
+      // Anchor the menu's inline-end edge to the button's inline-end edge (logical `end`).
+      setPos({ top: r.bottom + 4, end: rtl ? r.left : window.innerWidth - r.right });
+    }
+    setOpen((o) => !o);
+  };
+
+  return (
+    <>
+      <button
+        ref={btn}
+        type="button"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-label={label}
+        title={label}
+        onClick={toggle}
+        className="inline-flex h-6 w-7 items-center justify-center rounded-md text-subtext hover:bg-muted hover:text-text"
+      >
+        <span aria-hidden>⋯</span>
+      </button>
+      {open && pos && (
+        <div
+          ref={menu}
+          role="menu"
+          className="fixed z-50 min-w-[160px] rounded-lg border border-border bg-card py-1 shadow-lg"
+          style={{ top: pos.top, insetInlineEnd: pos.end }}
+        >
+          {children(() => setOpen(false))}
+        </div>
+      )}
+    </>
+  );
+}
+
+function MenuItem({
+  onClick,
+  disabled,
+  title,
+  danger,
+  children,
+}: {
+  onClick: () => void;
+  disabled?: boolean;
+  title?: string;
+  danger?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      role="menuitem"
+      disabled={disabled}
+      title={title}
+      onClick={onClick}
+      className={`block w-full px-3 py-1.5 text-start text-[13px] hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent ${danger ? "text-danger" : "text-text"}`}
+    >
+      {children}
+    </button>
+  );
+}
 
 export function PromoList({
   items,
@@ -58,9 +157,17 @@ export function PromoList({
   const tc = useTranslations("common");
   const locale = useLocale();
   const router = useRouter();
+  const pathname = usePathname();
+  const params = useSearchParams();
   const [pending, start] = useTransition();
-  const [tab, setTab] = useState<Tab>("promo");
-  const [avail, setAvail] = useState<Availability | "all">("all");
+  const [tab, setTab] = useState<Tab>(() => {
+    const k = params.get("kind");
+    return TABS.includes(k as Tab) ? (k as Tab) : "promo";
+  });
+  const [avail, setAvail] = useState<Availability | "all">(() => {
+    const s = params.get("status");
+    return AVAILABILITIES.includes(s as Availability) ? (s as Availability) : "all";
+  });
   const [cat, setCat] = useState<string>("all");
   const [q, setQ] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
@@ -72,7 +179,9 @@ export function PromoList({
       items.map(({ row, stats }) => {
         const s = stats ?? EMPTY_STATS(row.id);
         const discount =
-          row.discount_type === "percent"
+          row.discount_type !== "free_delivery" && !row.discount_value
+            ? "—"
+            : row.discount_type === "percent"
             ? `${fmtNum(row.discount_value, locale)}%`
             : row.discount_type === "fixed"
               ? `${fmtNum(row.discount_value, locale)} ${tc("da")}`
@@ -135,6 +244,25 @@ export function PromoList({
     });
   }, [rows, tab, avail, cat, q]);
 
+  // Keep the tab + status chip in the URL (shallow: the list is filtered client-side).
+  const syncUrl = (nextTab: Tab, nextAvail: Availability | "all") => {
+    const sp = new URLSearchParams(params.toString());
+    if (nextTab === "promo") sp.delete("kind");
+    else sp.set("kind", nextTab);
+    if (nextTab === "archived" || nextAvail === "all") sp.delete("status");
+    else sp.set("status", nextAvail);
+    const qs = sp.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  };
+  const onTab = (v: Tab) => {
+    setTab(v);
+    syncUrl(v, avail);
+  };
+  const onAvail = (v: Availability | "all") => {
+    setAvail(v);
+    syncUrl(tab, v);
+  };
+
   const run = (fn: () => Promise<{ error: string | null } | { error: string }>) => {
     setMsg(null);
     start(async () => {
@@ -145,12 +273,21 @@ export function PromoList({
   };
 
   const da = (n: number) => `${fmtNum(n, locale)} ${tc("da")}`;
-  const date = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString(locale) : "—");
+  const dateRange = (start: string | null, end: string | null) => {
+    if (!start && !end) return t("dates.always_on");
+    if (!end) return t("dates.from", { date: formatDay(start, locale) });
+    if (!start) return t("dates.until", { date: formatDay(end, locale) });
+    return (
+      <>
+        {formatDay(start, locale)} <span className="inline-block rtl:-scale-x-100">→</span> {formatDay(end, locale)}
+      </>
+    );
+  };
 
   const columns: Column<ListRow>[] = [
     {
       key: "title",
-      label: t("cols.promotion"),
+      label: t("cols.promotion"), header: <span className="whitespace-nowrap">{t("cols.promotion")}</span>,
       render: (r) => (
         <div className="flex items-center gap-3 min-w-[200px]">
           <div
@@ -158,33 +295,39 @@ export function PromoList({
             style={r.image_url ? { backgroundImage: `url(${r.image_url})` } : undefined}
           />
           <div className="min-w-0">
-            <div className="font-semibold text-text truncate max-w-[220px]">{r.title}</div>
-            {r.code && <span className="font-mono text-[11px] text-subtext">{r.code}</span>}
+            <Link href={`/promotions/${r.id}`} dir="auto" className="block font-semibold text-text truncate max-w-[220px] hover:underline">
+              {r.title}
+            </Link>
+            {r.code && (
+              <span className="font-mono text-[11px] text-subtext" dir="auto">
+                {r.code}
+              </span>
+            )}
           </div>
         </div>
       ),
     },
-    { key: "category", label: t("cols.category"), render: (r) => <span>{t(`categories.${r.category}` as never)}</span> },
-    { key: "discount", label: t("cols.discount"), sortable: false, render: (r) => <span className="whitespace-nowrap">{r.discount}</span> },
+    { key: "category", label: t("cols.category"), header: <span className="whitespace-nowrap">{t("cols.category")}</span>, render: (r) => <span dir="auto">{categoryLabel(r.category, t)}</span> },
+    { key: "discount", label: t("cols.discount"), header: <span className="whitespace-nowrap">{t("cols.discount")}</span>, sortable: false, render: (r) => <span className="whitespace-nowrap">{r.discount}</span> },
     {
       key: "availability",
-      label: t("cols.status"),
+      label: t("cols.status"), header: <span className="whitespace-nowrap">{t("cols.status")}</span>,
       render: (r) => <Badge variant={AVAIL_VARIANT[r.availability]}>{t(`avail.${r.availability}` as never)}</Badge>,
     },
     {
       key: "starts_at",
-      label: t("cols.dates"),
+      label: t("cols.dates"), header: <span className="whitespace-nowrap">{t("cols.dates")}</span>,
       render: (r) => (
         <span className="text-subtext whitespace-nowrap text-xs">
-          {date(r.starts_at)} → {date(r.ends_at)}
+          {dateRange(r.starts_at, r.ends_at)}
         </span>
       ),
     },
-    { key: "views", label: t("cols.views"), render: (r) => <span className="tabular-nums">{fmtNum(r.views, locale)}</span> },
-    { key: "ctr", label: t("cols.ctr"), render: (r) => <span className="tabular-nums">{pct(r.taps, r.views)}</span> },
+    { key: "views", label: t("cols.views"), header: <span className="whitespace-nowrap">{t("cols.views")}</span>, render: (r) => <span className="tabular-nums whitespace-nowrap">{fmtNum(r.views, locale)}</span> },
+    { key: "ctr", label: t("cols.ctr"), header: <span className="whitespace-nowrap">{t("cols.ctr")}</span>, render: (r) => <span className="tabular-nums whitespace-nowrap">{pct(r.taps, r.views)}</span> },
     {
       key: "issued",
-      label: t("cols.issued"),
+      label: t("cols.issued"), header: <span className="whitespace-nowrap">{t("cols.issued")}</span>,
       render: (r) => (
         <span className="tabular-nums whitespace-nowrap">
           {fmtNum(r.issued, locale)}
@@ -192,15 +335,15 @@ export function PromoList({
         </span>
       ),
     },
-    { key: "used", label: t("cols.used"), render: (r) => <span className="tabular-nums">{fmtNum(r.used, locale)}</span> },
+    { key: "used", label: t("cols.used"), header: <span className="whitespace-nowrap">{t("cols.used")}</span>, render: (r) => <span className="tabular-nums whitespace-nowrap">{fmtNum(r.used, locale)}</span> },
     {
       key: "conversion",
-      label: t("cols.conversion"),
-      render: (r) => <span className="tabular-nums">{pct(r.used, r.issued)}</span>,
+      label: t("cols.conversion"), header: <span className="whitespace-nowrap">{t("cols.conversion")}</span>,
+      render: (r) => <span className="tabular-nums whitespace-nowrap">{pct(r.used, r.issued)}</span>,
     },
     {
       key: "discount_given",
-      label: t("cols.discount_given"),
+      label: t("cols.discount_given"), header: <span className="whitespace-nowrap">{t("cols.discount_given")}</span>,
       render: (r) => {
         const p = progress(r.discount_given, r.discount_budget);
         return (
@@ -221,41 +364,64 @@ export function PromoList({
         );
       },
     },
-    { key: "revenue", label: t("cols.revenue"), render: (r) => <span className="tabular-nums whitespace-nowrap">{da(r.revenue)}</span> },
+    { key: "revenue", label: t("cols.revenue"), header: <span className="whitespace-nowrap">{t("cols.revenue")}</span>, render: (r) => <span className="tabular-nums whitespace-nowrap">{da(r.revenue)}</span> },
     {
       key: "actions",
-      label: tc("actions"),
+      label: tc("actions"), header: <span className="whitespace-nowrap">{tc("actions")}</span>,
       sortable: false,
       render: (r) => (
-        <div className="flex flex-wrap gap-1 min-w-[170px]" data-row-ignore>
+        <div className="flex items-center gap-1 whitespace-nowrap" data-row-ignore>
           <Link href={`/promotions/${r.id}`} className="inline-flex">
             <Button size="xs" variant="secondary" icon="pencil" type="button">
               {t("actions.edit")}
             </Button>
           </Link>
-          {!r.archived && (
-            <Button size="xs" variant="ghost" type="button" disabled={pending} onClick={() => run(() => setPromotionActive(r.id, !r.is_active))}>
-              {r.is_active ? t("actions.pause") : t("actions.resume")}
-            </Button>
-          )}
-          <Button size="xs" variant="ghost" type="button" disabled={pending} onClick={() => run(() => duplicatePromotion(r.id, t("copy_suffix")))}>
-            {t("actions.duplicate")}
-          </Button>
-          <Button size="xs" variant="ghost" type="button" disabled={pending} onClick={() => run(() => setPromotionArchived(r.id, !r.archived))}>
-            {r.archived ? t("actions.unarchive") : t("actions.archive")}
-          </Button>
-          <Button
-            size="xs"
-            variant="ghost"
-            type="button"
-            icon="trash"
-            disabled={pending}
-            onClick={() => {
-              if (window.confirm(t("actions.confirm_delete", { title: r.title }))) run(() => deletePromotion(r.id));
-            }}
-          >
-            {t("actions.delete")}
-          </Button>
+          <RowMenu label={t("actions.more")}>
+            {(close) => (
+              <>
+                {!r.archived && (
+                  <MenuItem
+                    disabled={pending}
+                    onClick={() => {
+                      close();
+                      run(() => setPromotionActive(r.id, !r.is_active));
+                    }}
+                  >
+                    {r.is_active ? t("actions.pause") : t("actions.resume")}
+                  </MenuItem>
+                )}
+                <MenuItem
+                  disabled={pending}
+                  onClick={() => {
+                    close();
+                    run(() => duplicatePromotion(r.id, t("copy_suffix")));
+                  }}
+                >
+                  {t("actions.duplicate")}
+                </MenuItem>
+                <MenuItem
+                  disabled={pending}
+                  onClick={() => {
+                    close();
+                    run(() => setPromotionArchived(r.id, !r.archived));
+                  }}
+                >
+                  {r.archived ? t("actions.unarchive") : t("actions.archive")}
+                </MenuItem>
+                <MenuItem
+                  danger
+                  disabled={pending || r.issued > 0}
+                  title={r.issued > 0 ? t("actions.delete_blocked") : undefined}
+                  onClick={() => {
+                    close();
+                    if (window.confirm(t("actions.confirm_delete", { title: r.title }))) run(() => deletePromotion(r.id));
+                  }}
+                >
+                  {t("actions.delete")}
+                </MenuItem>
+              </>
+            )}
+          </RowMenu>
         </div>
       ),
     },
@@ -263,13 +429,13 @@ export function PromoList({
 
   return (
     <>
-      <StatGrid cols={5}>
+      <KpiGrid>
         <StatCard label={t("kpi.live")} value={kpi.live} variant="success" icon="gift" change={t("kpi.live_chg", { n: rows.length })} />
         <StatCard label={t("kpi.issued")} value={kpi.issued} variant="primary" icon="ticket" change={t("kpi.last30")} />
         <StatCard label={t("kpi.used")} value={kpi.used} variant="info" icon="trending" change={t("kpi.last30")} />
         <StatCard label={t("kpi.discount")} value={da(kpi.given)} variant="warning" icon="dollar" change={t("kpi.last30")} />
         <StatCard label={t("kpi.ctr")} value={kpi.ctr} variant="default" icon="activity" change={t("kpi.last30")} />
-      </StatGrid>
+      </KpiGrid>
 
       <div className="flex items-center gap-3 mb-4 flex-wrap">
         <SearchBox placeholder={t("search")} value={q} onChange={setQ} />
@@ -282,7 +448,7 @@ export function PromoList({
           <option value="all">{t("filters.all_categories")}</option>
           {CATEGORIES.map((c) => (
             <option key={c} value={c}>
-              {t(`categories.${c}` as never)}
+              {categoryLabel(c, t)}
             </option>
           ))}
         </select>
@@ -300,13 +466,13 @@ export function PromoList({
           ["archived", `${t("tabs.archived")} (${counts.archived})`],
         ]}
         value={tab}
-        onChange={setTab}
+        onChange={onTab}
       />
       {tab !== "archived" && (
         <FilterPills<Availability | "all">
           options={[["all", t("filters.all_status")], ...AVAILABILITIES.map((a) => [a, t(`avail.${a}` as never)] as [Availability, string])]}
           value={avail}
-          onChange={setAvail}
+          onChange={onAvail}
         />
       )}
 
