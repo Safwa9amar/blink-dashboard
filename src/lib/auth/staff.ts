@@ -78,3 +78,12 @@ export async function getStaffActor(path: string): Promise<{ id: string; role: S
   } = await supabase.auth.getUser();
   return user ? { id: user.id, role } : null;
 }
+
+/** True when the signed-in user was issued a temporary password and must set a new one. */
+export async function mustChangePassword(): Promise<boolean> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  return user?.app_metadata?.must_change_password === true;
+}

@@ -146,7 +146,30 @@
     "title": "Blink Dashboard",
     "subtitle": "Sign in to your admin account",
     "email_placeholder": "admin@blink.com",
-    "password_placeholder": "••••••••"
+    "password_placeholder": "••••••••",
+    "suspended": "This account is suspended. Contact a super admin.",
+    "password": {
+      "forced_title": "Set a new password",
+      "forced_subtitle": "You signed in with a temporary password. Choose a new one to continue.",
+      "title": "Change password",
+      "subtitle": "Update the password you use to sign in.",
+      "current": "Current password",
+      "new": "New password",
+      "confirm": "Confirm new password",
+      "hint": "At least 10 characters, with a letter and a digit.",
+      "submit": "Save password",
+      "saving": "Saving…",
+      "mismatch": "The two passwords do not match.",
+      "back": "Back to dashboard",
+      "sign_out": "Sign out",
+      "errors": {
+        "wrong_password": "The current password is incorrect.",
+        "weak_password": "Use at least 10 characters, with a letter and a digit.",
+        "same_password": "The new password must be different from the current one.",
+        "not_signed_in": "Your session has expired. Sign in again.",
+        "generic": "Could not change the password. Try again."
+      }
+    }
   },
   "language": {
     "title": "Language",
@@ -303,7 +326,8 @@
         "support_admin": "Support admin",
         "commerce_admin": "Commerce admin",
         "hr_admin": "HR admin"
-      }
+      },
+      "change_password": "Change password"
     },
     "breadcrumbs": {
       "label": "Breadcrumb"

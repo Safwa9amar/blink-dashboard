@@ -2,11 +2,31 @@
 import type { StaffRole } from "@/lib/auth/access";
 export type { StaffRole } from "@/lib/auth/access";
 
-// Account state of a staff member, separate from their role.
-//  - active:    can sign in now
-//  - invited:   granted a role but hasn't signed in yet
-//  - suspended: kept on the roster but blocked from signing in
-export type StaffStatus = "active" | "invited" | "suspended";
+// Derived account state of a staff member (see the Staff Access spec).
+//  - active:          can sign in now
+//  - must_change:     signs in with a temporary password and must change it
+//  - never_signed_in: account exists but has never signed in
+//  - suspended:       auth-banned, blocked from signing in
+export type StaffStatus = "active" | "must_change" | "never_signed_in" | "suspended";
+
+// Audit-trail actions stored in `staff_access_events.action`.
+export type AccessEventAction =
+  | "created"
+  | "granted"
+  | "role_changed"
+  | "revoked"
+  | "suspended"
+  | "reinstated"
+  | "password_reset"
+  | "password_changed";
+
+// A non-staff user offered by the "Grant access" search.
+export interface CandidateHit {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+}
 
 // A person who can sign in to the admin console. `staffRole` is their dashboard
 // authority — a separate axis from the mobile-app persona (`users.role`).

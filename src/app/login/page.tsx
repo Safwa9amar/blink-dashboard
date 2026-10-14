@@ -23,14 +23,21 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
     if (error) {
-      setError(error.message);
+      setError(/banned/i.test(error.message) ? t("suspended") : error.message);
       setLoading(false);
+      return;
+    }
+
+    // Temporary password (new account / admin reset): must be replaced first.
+    if (data.user?.app_metadata?.must_change_password) {
+      router.push("/login/password");
+      router.refresh();
       return;
     }
 

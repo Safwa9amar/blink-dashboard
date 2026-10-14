@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { redirect } from "next/navigation";
 import { DashboardShell } from "@/components/dashboard-shell";
-import { getCurrentStaffRole } from "@/lib/auth/staff";
+import { getCurrentStaffRole, mustChangePassword } from "@/lib/auth/staff";
 import { getAttentionCounts } from "@/lib/shell/attention";
 import { createClient } from "@/lib/supabase/server";
 
@@ -12,6 +12,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // enforced from the resolved role in the shell (nav) and server actions (mutations).
   const staffRole = await getCurrentStaffRole();
   if (!staffRole) redirect("/login");
+  // Temporary password (new account / admin reset): must be replaced before using the console.
+  if (await mustChangePassword()) redirect("/login/password");
 
   const supabase = await createClient();
   const {

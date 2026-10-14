@@ -54,6 +54,18 @@ export function StaffMenu({ staffRole, staffName }: { staffRole: StaffRole; staf
           <button
             type="button"
             role="menuitem"
+            onClick={() => {
+              close();
+              router.push("/login/password");
+            }}
+            className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm font-medium text-subtext hover:text-text hover:bg-background transition-colors cursor-pointer"
+          >
+            <DashIcon name="lock" className="w-4 h-4" />
+            {t("change_password")}
+          </button>
+          <button
+            type="button"
+            role="menuitem"
             onClick={handleSignOut}
             className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm font-medium text-subtext hover:text-danger hover:bg-danger-light transition-colors cursor-pointer"
           >
