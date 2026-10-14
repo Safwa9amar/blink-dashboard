@@ -31,3 +31,20 @@ export function genCode(len = 8): string {
   for (let i = 0; i < len; i++) out += alphabet[Math.floor(Math.random() * alphabet.length)];
   return out;
 }
+
+/**
+ * Calendar day in Algiers time, identical on the server and in the browser
+ * (no hydration mismatch). English uses day-first dates like fr/ar.
+ */
+export function formatDay(iso: string | null | undefined, locale: string): string {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "—";
+  return d.toLocaleDateString(locale === "en" ? "en-GB" : locale, { timeZone: "Africa/Algiers" });
+}
+
+/** Translated label for a promo category code; deals keep their free-text chip as is. */
+export function categoryLabel(category: string, t: { has: (k: never) => boolean; (k: never): string }): string {
+  const key = `categories.${category}` as never;
+  return t.has(key) ? t(key) : category;
+}
