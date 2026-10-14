@@ -3,10 +3,10 @@ import { Section, SectionTitle, Paragraph } from "../components/content";
 
 export default function PrivacyPage() {
   return (
-    <PageShell title="Privacy Policy" subtitle="Last updated: May 2025">
+    <PageShell title="Privacy Policy" subtitle="Last updated: October 2026">
       <Section>
         <SectionTitle>1. Information We Collect</SectionTitle>
-        <Paragraph>We collect information you provide directly: name, phone number, email, payment information, and location data when using our services. We also collect device information, app usage data, and trip history to improve our services.</Paragraph>
+        <Paragraph>We collect information you provide directly: name, phone number, email, gender, delivery addresses, profile photo, and, for riders, merchants and agents, identity, vehicle and store documents. When you use our services we collect your precise location, your orders, trips and Blink Cash transactions, messages you send to support, ratings, and a notification token for your device. If you pick a recipient from your phone contacts for a delivery, only that contact&apos;s name and number are sent. We do not use advertising or analytics trackers.</Paragraph>
       </Section>
 
       <Section>
@@ -26,7 +26,7 @@ export default function PrivacyPage() {
 
       <Section>
         <SectionTitle>5. Data Retention</SectionTitle>
-        <Paragraph>We retain your account data for as long as your account is active. Trip history is retained for 3 years for legal and accounting purposes. You can request deletion of your account and associated data at any time.</Paragraph>
+        <Paragraph>We retain your account data for as long as your account is active. Trip history is retained for 3 years for legal and accounting purposes. You can request deletion of your account and associated data at any time; see <a href="/delete-account" style={{ color: "var(--brand)" }}>Delete your account</a> for the steps and what is kept.</Paragraph>
       </Section>
 
       <Section>
@@ -41,7 +41,7 @@ export default function PrivacyPage() {
 
       <Section>
         <SectionTitle>8. Contact</SectionTitle>
-        <Paragraph>For privacy-related inquiries, contact our Data Protection Officer at privacy@blink.com or write to: Blink SARL, Bab Ezzouar, Algiers, Algeria.</Paragraph>
+        <Paragraph>For privacy-related inquiries, email <a href="mailto:hassanih97@gmail.com" style={{ color: "var(--brand)" }}>hassanih97@gmail.com</a> or write to: Blink SARL, Bab Ezzouar, Algiers, Algeria.</Paragraph>
       </Section>
     </PageShell>
   );
