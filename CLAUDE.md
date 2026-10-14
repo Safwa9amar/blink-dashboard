@@ -57,6 +57,8 @@ Navigation is a module workspace: an icon rail of modules, a module menu of page
 | `/trips`        | `trips` (limit 50)                                           | —                                                                                              |
 | `/blink-cash`   | `transactions` (limit 50) — feeds the **Ledger** tab & Overview "latest activity" | —                                                                         |
 | `/agents`       | `users` (role agent) ⨝ `agent_profiles` ⨝ `agent_shops` (service role, limit 1000); list shows the shop + its review status, detail panel shows profile, shop and weekly hours | **yes** — edit / delete ([action.ts](src/app/d/agents/action.ts)) |
+| `/promotions` (+ `/new`, `/[id]`, `/analytics`) | `promotions` + `rpc('promotion_stats')` / `rpc('promotion_daily')` (service role; loaders in [data.ts](src/app/d/promotions/data.ts)) | **yes** — create / edit / pause / duplicate / archive / delete, cover upload to the `news` bucket ([action.ts](src/app/d/promotions/action.ts), gated by `getStaffActor`) |
+| `/coupons` (+ `/new`) | `customer_coupons` ⨝ `users` ⨝ `promotions` (service role, limit 1000; `?promotion=<id>` filter) | **yes** — extend / revoke / restore / issue ([action.ts](src/app/d/coupons/action.ts)) |
 | `/merchant-pricing` (Catalog review: prices · products · history) | `store_products` ⨝ `stores` ⨝ `users` (service role) | **yes** — via blink-server `PATCH /merchant/admin/products/{id}/review` ([action.ts](src/app/d/merchant-pricing/action.ts)) |
 | `/packs-management` (under review · all) | `store_packs` ⨝ `stores` ⨝ `users` + item products (service role) | **yes** — via blink-server `PATCH /merchant/admin/packs/{id}/status` ([action.ts](src/app/d/packs-management/action.ts)) |
 | `/merchants/verification` (pending review · rejected · live) | `stores` ⨝ `users` + `store_products(count)` (service role), loaders in [data.ts](src/app/d/verification/data.ts), gated on `/merchants` | **yes** — via blink-server `PATCH /merchant/admin/stores/{id}/status` with `expected_updated_at` ([action.ts](src/app/d/verification/action.ts)); the dashboard never writes status columns |
@@ -69,7 +71,7 @@ Navigation is a module workspace: an icon rail of modules, a module menu of page
 
 Staff writes that blink-server owns (it notifies the merchant, applies side effects) go through [src/lib/blink-api.ts](src/lib/blink-api.ts) (`blinkApi(path, { method, body, roles })`, signed with the operator's Supabase token) — server actions and server components only.
 
-Everything else (`coupons`, `deep-links`, `demand`, `live-ops`, `marketplace`, `news`, `notifications` + `notifications/[id]`, `promotions`, `settings`, `support`) is presentational over mock data — safe to iterate on without a database.
+Everything else (`deep-links`, `demand`, `live-ops`, `marketplace`, `news`, `notifications` + `notifications/[id]`, `settings`, `support`) is presentational over mock data — safe to iterate on without a database.
 
 ## Feature-first layout (`src/features/`)
 
