@@ -38,8 +38,9 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Authenticated on /login → redirect to / (dashboard home)
-  if (user && pathname.startsWith("/login")) {
+  // Authenticated on /login → redirect to / (dashboard home). /login/password is for
+  // signed-in users (forced or voluntary password change), so it stays reachable.
+  if (user && pathname.startsWith("/login") && pathname !== "/login/password") {
     const url = request.nextUrl.clone();
     url.pathname = "/";
     return NextResponse.redirect(url);
