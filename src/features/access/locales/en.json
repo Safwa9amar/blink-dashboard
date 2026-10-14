@@ -2,39 +2,137 @@
   "access": {
     "title": "Dashboard Access",
     "description": "Manage who can sign in to the admin console and what each role can reach",
-    "search_ph": "Search by name or email",
+    "search_ph": "Search by name, email or phone",
     "tabs": {
       "members": "Staff Members",
       "roles": "Roles & Permissions",
       "activity": "Activity"
     },
-    "stats": {
-      "total": "Total Admins",
-      "active": "Active",
-      "invited": "Pending Invites",
+    "kpi": {
+      "total": "Staff",
+      "super_admins": "Super admins",
+      "recent": "Signed in (7 days)",
       "suspended": "Suspended"
     },
     "status": {
       "active": "Active",
-      "invited": "Invited",
+      "must_change": "Temporary password",
+      "never_signed_in": "Never signed in",
       "suspended": "Suspended"
     },
     "filter": {
-      "all": "All roles"
+      "all_roles": "All roles",
+      "all_status": "All statuses",
+      "all_actions": "All actions"
+    },
+    "toolbar": {
+      "grant": "Grant access",
+      "add": "Add staff"
     },
     "table": {
       "name": "Name",
-      "email": "Email",
       "role": "Role",
       "status": "Status",
-      "last_active": "Last active",
-      "actions": "Actions"
+      "last_sign_in": "Last sign-in",
+      "created": "Created",
+      "actions": "Actions",
+      "when": "When",
+      "actor": "Done by",
+      "action": "Action",
+      "target": "Member",
+      "change": "Role",
+      "note": "Note"
     },
+    "you": "You",
+    "never": "Never",
+    "ago_unknown": "—",
     "empty": "No staff members match your filters.",
+    "empty_events": "No access activity recorded yet.",
     "cancel": "Cancel",
+    "done": "Done",
+    "working": "Working…",
     "can_access": "Can access",
     "full_access": "Full access — every section",
-    "pending_note": "Role changes apply once the staff_role column ships in blink-server.",
+    "guard": {
+      "self": "You can't do this to your own account.",
+      "last_super": "This is the last active super admin."
+    },
+    "row": {
+      "change_role": "Change role",
+      "more": "More actions",
+      "reset_password": "Reset password",
+      "suspend": "Suspend",
+      "reinstate": "Reinstate",
+      "revoke": "Revoke access"
+    },
+    "confirm": {
+      "revoke": {
+        "title": "Revoke access",
+        "desc": "Remove dashboard access for {name}? Their account stays, but they can no longer use the console.",
+        "action": "Revoke access"
+      },
+      "suspend": {
+        "title": "Suspend account",
+        "desc": "Block {name} from signing in? Their current session can last up to an hour.",
+        "action": "Suspend"
+      },
+      "reinstate": {
+        "title": "Reinstate account",
+        "desc": "Let {name} sign in again?",
+        "action": "Reinstate"
+      },
+      "reset": {
+        "title": "Reset password",
+        "desc": "Generate a new temporary password for {name}? Their current password stops working immediately.",
+        "action": "Reset password"
+      }
+    },
+    "add": {
+      "title": "Add staff",
+      "desc": "Create a console account with a temporary password.",
+      "first_name": "First name",
+      "last_name": "Last name",
+      "email": "Email",
+      "phone": "Phone (optional)",
+      "role": "Role",
+      "submit": "Create account",
+      "saving": "Creating…",
+      "required": "Required",
+      "invalid_email": "Enter a valid email address",
+      "grant_instead": "Grant access instead"
+    },
+    "grant": {
+      "title": "Grant access",
+      "desc": "Give an existing Blink user a dashboard role.",
+      "search_label": "Find a user",
+      "search_ph": "Name, email or phone",
+      "searching": "Searching…",
+      "no_results": "No users match",
+      "type_more": "Type at least 2 characters to search.",
+      "change_user": "Change",
+      "role": "Role",
+      "submit": "Grant access",
+      "saving": "Granting…"
+    },
+    "role_dialog": {
+      "title": "Change role",
+      "desc": "Update the dashboard role for {name}.",
+      "role": "Role",
+      "save": "Save",
+      "saving": "Saving…"
+    },
+    "temp": {
+      "title": "Temporary password",
+      "created": "Account created. Share these credentials with {name}.",
+      "reset": "Password reset. Share the new credentials with {name}.",
+      "email": "Email",
+      "password": "Password",
+      "copy": "Copy",
+      "copied": "Copied",
+      "note": "Shown once. Share it privately; they must change it at first sign-in.",
+      "done": "Done"
+    },
+    "roles_count": "{count, plural, one {# member} other {# members}}",
     "matrix": {
       "title": "Permission matrix",
       "desc": "Every section, and which roles can reach it — mirrors what's enforced.",
@@ -42,57 +140,30 @@
       "allowed": "Allowed",
       "denied": "No access"
     },
-    "log": {
-      "when": "When",
-      "actor": "Changed by",
-      "action": "Action",
-      "target": "Member",
-      "empty": "No access changes recorded yet.",
-      "actions": {
-        "granted": "Granted",
-        "changed": "Role changed",
-        "revoked": "Revoked",
-        "suspended": "Suspended",
-        "reinstated": "Reinstated"
-      }
+    "events": {
+      "created": "Account created",
+      "granted": "Access granted",
+      "role_changed": "Role changed",
+      "revoked": "Access revoked",
+      "suspended": "Suspended",
+      "reinstated": "Reinstated",
+      "password_reset": "Password reset",
+      "password_changed": "Password changed"
     },
-    "create": {
-      "button": "Add staff member",
-      "title": "Add staff member",
-      "desc": "Create a console account and assign a dashboard role.",
-      "first_name": "First name",
-      "last_name": "Last name",
-      "email": "Email",
-      "phone": "Phone number",
-      "role": "Role",
-      "status": "Status",
-      "submit": "Create member",
-      "saving": "Creating…",
-      "required": "First name, email and phone are required."
-    },
-    "grant": {
-      "button": "Invite by email",
-      "title": "Invite an existing user",
-      "desc": "Give an existing Blink user an admin role by their account email.",
-      "email": "Account email",
-      "email_ph": "name@blink.dz",
-      "role": "Role",
-      "submit": "Send invite",
-      "saving": "Inviting…"
-    },
-    "edit": {
-      "title": "Change role",
-      "desc": "Update the dashboard role for {name}.",
-      "role": "Role",
-      "save": "Save",
-      "saving": "Saving…"
-    },
-    "revoke": {
-      "button": "Revoke",
-      "title": "Revoke access",
-      "desc": "Remove all dashboard access for {name}? They will no longer be able to sign in to the console.",
-      "confirm": "Revoke access",
-      "working": "Revoking…"
+    "errors": {
+      "not_authorized": "You are not allowed to do this.",
+      "invalid_role": "Invalid role.",
+      "invalid_input": "Please check the details and try again.",
+      "email_exists": "An account with this email already exists.",
+      "already_staff": "This user already has dashboard access.",
+      "not_found": "Account not found.",
+      "self_action": "You can't do this to your own account.",
+      "last_super_admin": "There must always be at least one active super admin.",
+      "wrong_password": "Current password is incorrect.",
+      "weak_password": "Password must be at least 10 characters with a letter and a digit.",
+      "same_password": "The new password must be different from the current one.",
+      "not_signed_in": "You are not signed in.",
+      "generic": "Something went wrong. Please try again."
     },
     "roles": {
       "super_admin": {

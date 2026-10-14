@@ -2,12 +2,12 @@
 
 import { useTranslations } from "next-intl";
 import { Card } from "@/components/ui";
-import { STAFF_ROLES, sectionKeysForRole } from "../data";
+import { STAFF_ROLES, sectionKeysForRole, type StaffRole } from "../data";
 import { RoleBadge } from "./role-badge";
 
 // A reference grid: one card per dashboard role, with the sections it can reach
 // (derived from ROLE_ACCESS, so it always mirrors what's actually enforced).
-export function RolesReference() {
+export function RolesReference({ counts }: { counts: Record<StaffRole, number> }) {
   const t = useTranslations("access");
   const ts = useTranslations("sidebar");
 
@@ -21,7 +21,10 @@ export function RolesReference() {
               <h3 className="text-base font-bold text-text">{t(`roles.${role}.name`)}</h3>
               <RoleBadge role={role} />
             </div>
-            <p className="text-[13px] text-subtext mb-4">{t(`roles.${role}.desc`)}</p>
+            <p className="text-[13px] text-subtext mb-2">{t(`roles.${role}.desc`)}</p>
+            <p className="text-xs font-semibold text-text mb-4 tabular-nums">
+              {t("roles_count", { count: counts[role] ?? 0 })}
+            </p>
 
             {sections === "all" ? (
               <div className="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wide bg-soft-pink text-primary">

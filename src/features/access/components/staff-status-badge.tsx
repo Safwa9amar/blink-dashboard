@@ -6,7 +6,8 @@ import type { StaffStatus } from "../data";
 
 const STATUS_VARIANT: Record<StaffStatus, Variant> = {
   active: "success",
-  invited: "info",
+  must_change: "warning",
+  never_signed_in: "info",
   suspended: "danger",
 };
 
