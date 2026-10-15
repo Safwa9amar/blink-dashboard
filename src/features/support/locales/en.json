@@ -73,7 +73,8 @@
       "assistant": "Blink Assistant",
       "note_escalated": "Escalated to a human agent.",
       "note_joined": "{name} joined the conversation.",
-      "note_resolved": "Conversation marked resolved."
+      "note_resolved": "Conversation marked resolved.",
+      "note_rated": "Customer rated this chat {stars}"
     },
     "kb": {
       "published": "Published",

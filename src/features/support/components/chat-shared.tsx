@@ -88,13 +88,15 @@ export function ConversationList({
 // mistakes a bot reply for their own. System events render as a centered note line
 // rather than a bubble. Shared by the live inbox and History.
 export function MessageBubble({ message, whoName, t }: { message: Message; whoName: string; t: TFn }) {
-  // System event — escalated / agent joined / resolved — as a centered note.
+  // System event — escalated / agent joined / resolved / rated — as a centered note.
   if (message.from === "note") {
     const label =
       message.noteType === "assigned"
         ? t("inb.note_joined", { name: message.agentName ?? t("inb.assistant") })
         : message.noteType === "resolved"
         ? t("inb.note_resolved")
+        : message.noteType === "rated"
+        ? t("inb.note_rated", { stars: "★".repeat(Math.min(5, Math.max(0, Number(message.rating) || 0))) })
         : t("inb.note_escalated");
     return (
       <div className="flex justify-center">

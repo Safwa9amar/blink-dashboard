@@ -73,7 +73,8 @@
       "assistant": "مساعد Blink",
       "note_escalated": "تم التحويل إلى وكيل بشري.",
       "note_joined": "انضم {name} إلى المحادثة.",
-      "note_resolved": "تم وضع علامة على المحادثة كمحلولة."
+      "note_resolved": "تم وضع علامة على المحادثة كمحلولة.",
+      "note_rated": "قيّم العميل هذه المحادثة {stars}"
     },
     "kb": {
       "published": "منشورة",

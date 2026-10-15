@@ -73,7 +73,8 @@
       "assistant": "Blink Assistant",
       "note_escalated": "Transmis à un agent humain.",
       "note_joined": "{name} a rejoint la conversation.",
-      "note_resolved": "Conversation marquée comme résolue."
+      "note_resolved": "Conversation marquée comme résolue.",
+      "note_rated": "Le client a noté cette conversation {stars}"
     },
     "kb": {
       "published": "Publiés",

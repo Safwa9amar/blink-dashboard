@@ -8,7 +8,7 @@ export interface Article {
 }
 
 // A single message in a ticket thread or live chat — human-agent reply, AI-bot
-// reply, customer message, or a system event line (escalated / joined / resolved).
+// reply, customer message, or a system event line (escalated / joined / resolved / rated).
 export interface Message {
   from: "customer" | "agent" | "bot" | "note";
   who: string;
@@ -16,8 +16,10 @@ export interface Message {
   time: string;
   attachmentUrl?: string | null;
   // For `from: "note"` system events — drives the friendly localized label.
-  noteType?: "escalated" | "assigned" | "resolved";
+  noteType?: "escalated" | "assigned" | "resolved" | "rated";
   agentName?: string | null;
+  /** `rated` notes: the customer's 1–5 rating. */
+  rating?: number | null;
 }
 
 // A live-chat / omnichannel inbox conversation.
@@ -179,7 +181,7 @@ export function rowToMessage(row: SupportMessageRow): Message {
       ? "bot"
       : "note"; // system
   const meta = row.meta as
-    | { attachmentUrl?: string; type?: Message["noteType"]; agentName?: string }
+    | { attachmentUrl?: string; type?: Message["noteType"]; agentName?: string; rating?: number }
     | null;
   return {
     from,
@@ -189,5 +191,6 @@ export function rowToMessage(row: SupportMessageRow): Message {
     attachmentUrl: meta?.attachmentUrl ?? null,
     noteType: from === "note" ? meta?.type : undefined,
     agentName: meta?.agentName ?? null,
+    rating: meta?.rating ?? null,
   };
 }
