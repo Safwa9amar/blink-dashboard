@@ -8,7 +8,7 @@
     "tab_kb": "Base de connaissances",
     "tab_csat": "CSAT",
     "tab_agents": "Agents",
-    "tab_sla": "SLA & Règles",
+    "tab_sla": "SLA",
     "create_article": "Créer un article",
     "macros": "Macros",
     "new_article": "Nouvel article",
@@ -51,7 +51,7 @@
       "containment_desc": "Conversations traitées par le bot sans humain",
       "top_subjects": "Sujets principaux",
       "top_subjects_desc": "Sujets de conversation les plus fréquents",
-      "conv_count": "{n} conversations"
+      "conv_count": "{n, plural, one {# conversation} other {# conversations}}"
     },
     "inb": {
       "live": "{n} chats en direct",
@@ -66,7 +66,7 @@
       "resolve": "Résoudre",
       "resolved": "Résolu",
       "no_chats": "Aucune conversation active",
-      "history_count": "{n} conversations résolues",
+      "history_count": "{n, plural, one {# conversation résolue} other {# conversations résolues}}",
       "no_history": "Aucune conversation résolue pour l'instant",
       "view_history": "Historique",
       "view_live": "Chats en direct",
@@ -223,7 +223,7 @@
       "never": "jamais",
       "open": "Ouverts assignés",
       "resolved": "Résolus 7 j / 30 j",
-      "frt": "1re réponse (médiane)",
+      "frt": "1re réponse (médiane, 30 j)",
       "csat": "CSAT",
       "online": "En ligne",
       "online_chg": "sur {n} agents du support",

@@ -130,7 +130,7 @@ export interface AgentRow {
   openAssigned: number;
   resolved7: number;
   resolved30: number;
-  /** median minutes to first response on cases assigned to them; null when none */
+  /** median minutes to first response on cases assigned to them, escalated in the last 30 days; null when none */
   medianFirstResponse: number | null;
   csatAvg: number | null;
   csatCount: number;
@@ -159,7 +159,7 @@ export function agentRows(
       const resolved = cases.filter((c) => c.resolvedAt && c.resolvedBy === s.id);
       const within = (days: number) => resolved.filter((c) => nowMs - ts(c.resolvedAt as string) <= days * DAY).length;
       const frt = cases
-        .filter((c) => c.assignedTo === s.id)
+        .filter((c) => c.assignedTo === s.id && nowMs - ts(c.escalatedAt) <= 30 * DAY)
         .map(firstResponseMinutes)
         .filter((x): x is number => x != null);
       const ratings = conversations

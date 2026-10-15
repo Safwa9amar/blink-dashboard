@@ -189,12 +189,17 @@ export async function loadDesk({ days = 30 }: { days?: number } = {}): Promise<D
     policies = DEFAULT_SLA_POLICIES.map((d) => rows.find((r) => r.priority === d.priority) ?? d);
   }
 
+  // The server never clears assigned_agent_id when a resolved chat reopens, so it only names the
+  // current owner while the chat is assigned (or whoever had it last, once resolved).
+  const ownerOf = (c: Raw) =>
+    c.status === "assigned" || c.status === "resolved" ? ((c.assigned_agent_id as string | null) ?? null) : null;
+
   const conversations: DeskConversation[] = rawConvs.map((c) => ({
     id: c.id as string,
     user_id: c.user_id as string,
     user_role: c.user_role as string,
     status: c.status as DeskStatus,
-    assigned_agent_id: (c.assigned_agent_id as string | null) ?? null,
+    assigned_agent_id: ownerOf(c),
     subject: (c.subject as string | null) ?? null,
     locale: (c.locale as string) ?? "en",
     last_message_at: c.last_message_at as string,
@@ -206,7 +211,7 @@ export async function loadDesk({ days = 30 }: { days?: number } = {}): Promise<D
     csat_comment: (c.csat_comment as string | null) ?? null,
     csat_at: (c.csat_at as string | null) ?? null,
     ownerName: names[c.user_id as string] ?? null,
-    assigneeName: c.assigned_agent_id ? (names[c.assigned_agent_id as string] ?? null) : null,
+    assigneeName: ownerOf(c) ? (names[ownerOf(c) as string] ?? null) : null,
   }));
 
   const cases: DeskCase[] = conversations.flatMap((c) =>

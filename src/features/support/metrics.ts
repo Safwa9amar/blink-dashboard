@@ -277,7 +277,7 @@ export function slaMetRate(cases: SupportCase[], policies: SlaPolicy[], now: Dat
   return total ? met / total : null;
 }
 
-/** "1 h", "90 min", "2 d" style label for a minute count (units passed in for i18n). */
+/** "1 h", "90 min", "2 d" (whole days past 48 h) style label for a minute count (units passed in for i18n). */
 export function formatMinutes(min: number, units: { m: string; h: string; d: string }): string {
   const a = Math.abs(Math.round(min));
   if (a < 60) return `${a} ${units.m}`;
@@ -285,6 +285,5 @@ export function formatMinutes(min: number, units: { m: string; h: string; d: str
     const h = a / 60;
     return `${Number.isInteger(h) ? h : h.toFixed(1)} ${units.h}`;
   }
-  const d = a / 1440;
-  return `${Number.isInteger(d) ? d : d.toFixed(1)} ${units.d}`;
+  return `${Math.round(a / 1440)} ${units.d}`;
 }

@@ -8,7 +8,7 @@
     "tab_kb": "Knowledge Base",
     "tab_csat": "CSAT",
     "tab_agents": "Agents",
-    "tab_sla": "SLA & Rules",
+    "tab_sla": "SLA",
     "create_article": "Create Article",
     "macros": "Macros",
     "new_article": "New article",
@@ -51,7 +51,7 @@
       "containment_desc": "Conversations the bot handled without a human",
       "top_subjects": "Top subjects",
       "top_subjects_desc": "Most frequent conversation subjects",
-      "conv_count": "{n} conversations"
+      "conv_count": "{n, plural, one {# conversation} other {# conversations}}"
     },
     "inb": {
       "live": "{n} live chats",
@@ -66,7 +66,7 @@
       "resolve": "Resolve",
       "resolved": "Resolved",
       "no_chats": "No active conversations",
-      "history_count": "{n} resolved conversations",
+      "history_count": "{n, plural, one {# resolved conversation} other {# resolved conversations}}",
       "no_history": "No resolved conversations yet",
       "view_history": "History",
       "view_live": "Live chats",
@@ -223,7 +223,7 @@
       "never": "never",
       "open": "Open assigned",
       "resolved": "Resolved 7d / 30d",
-      "frt": "Median first response",
+      "frt": "Median first response (30d)",
       "csat": "CSAT",
       "online": "Online now",
       "online_chg": "of {n} support staff",

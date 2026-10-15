@@ -149,5 +149,6 @@ describe("aggregations", () => {
     expect(formatMinutes(60, u)).toBe("1 h");
     expect(formatMinutes(1440, u)).toBe("24 h");
     expect(formatMinutes(4320, u)).toBe("3 d");
+    expect(formatMinutes(-126_900, u)).toBe("88 d");
   });
 });

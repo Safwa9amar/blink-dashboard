@@ -54,10 +54,10 @@ export function SlaBadge({ sla, t }: { sla: SlaState | null; t: TFn }) {
   if (!sla) return <span className="text-subtext">—</span>;
   const time = formatMinutes(sla.minutes, unitsOf(t));
   if (sla.state === "breached") {
-    return <Badge variant="danger">{t("tk.sla_late", { time })}</Badge>;
+    return <Badge className="normal-case" variant="danger">{t("tk.sla_late", { time })}</Badge>;
   }
-  if (sla.state === "due_soon") return <Badge variant="warning">{t("tk.sla_due", { time })}</Badge>;
-  return <Badge variant="success">{t("tk.sla_ok")}</Badge>;
+  if (sla.state === "due_soon") return <Badge className="normal-case" variant="warning">{t("tk.sla_due", { time })}</Badge>;
+  return <Badge className="normal-case" variant="success">{t("tk.sla_ok")}</Badge>;
 }
 
 export function MigrationNotice({ t }: { t: TFn }) {
