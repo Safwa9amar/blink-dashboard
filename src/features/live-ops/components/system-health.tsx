@@ -23,7 +23,7 @@ function ApiRow({ label, h }: { label: string; h: ApiHealth }) {
   const detail = h.ms != null ? t("api_detail", { ms: h.ms }) : undefined;
   return (
     <Row label={label} detail={detail}>
-      <Badge variant={h.state === "up" ? "success" : h.state === "slow" ? "warning" : "danger"}>{t(h.state)}</Badge>
+      <Badge variant={h.state === "up" ? "success" : h.state === "down" ? "danger" : "warning"}>{t(h.state)}</Badge>
     </Row>
   );
 }

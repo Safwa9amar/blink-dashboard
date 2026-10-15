@@ -111,6 +111,7 @@
       "system": "system",
       "rider": "rider"
     },
-    "slow": "Slow"
+    "slow": "Slow",
+    "no_reply": "No reply in 8 s"
   }
 }

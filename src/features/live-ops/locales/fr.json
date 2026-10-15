@@ -111,6 +111,7 @@
       "system": "système",
       "rider": "livreur"
     },
-    "slow": "Lent"
+    "slow": "Lent",
+    "no_reply": "Pas de réponse en 8 s"
   }
 }

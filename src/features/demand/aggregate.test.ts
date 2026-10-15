@@ -4,10 +4,12 @@ import {
   algiersParts,
   areaLabel,
   bandOf,
+  computeAreaGroups,
   computeAreas,
   computeHeat,
   computeHours,
   computeKpis,
+  computeStores,
   median,
   rangeStartISO,
 } from "./aggregate";
@@ -124,15 +126,41 @@ describe("areas", () => {
   });
 });
 
+describe("area groups and stores", () => {
+  const stores: DemandStore[] = [{ id: "s2", name: "Grill", city: "Hydra", latitude: 36.74, longitude: 3.04 }];
+  it("merges cells that share a label into one Top areas row", () => {
+    const orders = [
+      order({ pickup_lat: 36.74, pickup_lng: 3.04, rider_assigned_at: "2026-10-14T10:02:00Z" }),
+      order({ pickup_lat: 36.76, pickup_lng: 3.07, rider_assigned_at: "2026-10-14T10:04:00Z" }), // another cell, nearest city Hydra
+    ];
+    expect(computeAreas(orders, stores, [])).toHaveLength(2);
+    const groups = computeAreaGroups(orders, stores, [{ id: "r1", lat: 36.761, lng: 3.071 }]);
+    expect(groups).toHaveLength(1);
+    expect(groups[0]).toMatchObject({ label: "Hydra", orders: 2, ridersNow: 1, medianWait: 3 });
+  });
+  it("keeps courier and ride placeholders out of top stores", () => {
+    const orders = [
+      order({ store_id: "s2", store_name: "Grill" }),
+      order({ type: "courier", store_name: "Courier" }),
+      order({ type: "ride", store_name: "Ride" }),
+    ];
+    expect(computeStores(orders, stores).map((s) => s.name)).toEqual(["Grill"]);
+  });
+});
+
 describe("aggregateDemand", () => {
   it("returns a full snapshot and counts store completion", () => {
     const s = aggregateDemand({
       range: "7d",
-      orders: [order({ type: "ride", store_name: "X" }), order({ type: "ride", status: "canceled", store_name: "X" })],
+      orders: [
+        order({ store_name: "X" }),
+        order({ status: "canceled", store_name: "X" }),
+        order({ type: "ride", store_name: "Ride" }),
+      ],
       stores: [],
       riders: [],
     });
-    expect(s.mix).toEqual([{ type: "ride", count: 2 }]);
+    expect(s.mix).toEqual(expect.arrayContaining([{ type: "merchant", count: 2 }, { type: "ride", count: 1 }]));
     expect(s.stores[0]).toMatchObject({ name: "X", orders: 2, completionRate: 0.5 });
   });
 });

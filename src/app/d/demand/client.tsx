@@ -104,7 +104,7 @@ export default function DemandClient({ initial }: { initial: DemandSnapshot }) {
             <DemandHeatmap heat={snap.heat} total={snap.kpis.orders} />
             <TopStores stores={snap.stores} />
           </div>
-          <TopAreas areas={snap.areas} />
+          <TopAreas areas={snap.areaGroups} />
         </>
       )}
     </div>

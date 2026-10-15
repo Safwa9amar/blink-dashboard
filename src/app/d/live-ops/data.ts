@@ -46,8 +46,10 @@ async function apiHealth(base: string): Promise<ApiHealth> {
     const ms = Math.round(performance.now() - started);
     if (!res.ok) return { state: "down", ms };
     return { state: ms > SLOW_MS ? "slow" : "up", ms };
-  } catch {
-    return { state: "down", ms: null };
+  } catch (e) {
+    // A timeout is usually a sleeping Render instance (cold start), not an outage.
+    const timedOut = e instanceof Error && (e.name === "TimeoutError" || e.name === "AbortError");
+    return { state: timedOut ? "no_reply" : "down", ms: null };
   }
 }
 

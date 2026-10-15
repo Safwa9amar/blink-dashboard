@@ -154,8 +154,8 @@ export interface Kpis {
 }
 
 export interface ApiHealth {
-  /** From GET /health: up, slow (> 2 s, e.g. a Render cold start) or down. */
-  state: "up" | "slow" | "down";
+  /** From GET /health: up, slow (> 2 s), no_reply (8 s timeout, usually a sleeping Render instance) or down. */
+  state: "up" | "slow" | "no_reply" | "down";
   /** Response time in ms, null when the request failed. */
   ms: number | null;
 }

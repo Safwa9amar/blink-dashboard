@@ -102,7 +102,10 @@ export interface DemandSnapshot {
   hours: HourBucket[];
   mix: MixSlice[];
   heat: HeatGrid;
+  /** ~1.5 km cells (map). */
   areas: AreaStat[];
+  /** Cells merged by label (Top areas table). */
+  areaGroups: AreaStat[];
   stores: StoreStat[];
   riders: OnlineRider[];
 }

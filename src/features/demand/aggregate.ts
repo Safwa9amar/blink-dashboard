@@ -157,6 +157,46 @@ export function areaLabel(lat: number, lng: number, stores: DemandStore[]): stri
   return best?.city ?? `${lat.toFixed(3)}, ${lng.toFixed(3)}`;
 }
 
+/** Courier and ride orders carry a placeholder store_name ("Courier", "Ride"): not a store. */
+const isStoreOrder = (o: DemandOrder) => o.type === "merchant" || o.type === "shopper";
+
+function areaStat(
+  id: string,
+  label: string,
+  lat: number,
+  lng: number,
+  list: DemandOrder[],
+  ridersNow: number,
+  byId: Map<string, DemandStore>
+): AreaStat {
+  const unmet = list.filter(isUnmet).length;
+  const perStore = new Map<string, { name: string; orders: number }>();
+  for (const o of list) {
+    if (!isStoreOrder(o)) continue;
+    const name = (o.store_id ? byId.get(o.store_id)?.name : null) ?? o.store_name;
+    if (!name) continue;
+    const k = o.store_id ?? name;
+    const cur = perStore.get(k) ?? { name, orders: 0 };
+    cur.orders++;
+    perStore.set(k, cur);
+  }
+  return {
+    id,
+    label,
+    lat,
+    lng,
+    orders: list.length,
+    unmet,
+    unmetRate: unmet / list.length,
+    medianWait: median(nums(list.map(waitOf))),
+    ridersNow,
+    topStores: [...perStore.values()].sort((a, b) => b.orders - a.orders).slice(0, 3),
+  };
+}
+
+const byOrders = (a: AreaStat, b: AreaStat) => b.orders - a.orders || a.label.localeCompare(b.label);
+
+/** ~1.5 km cells (map circles). */
 export function computeAreas(orders: DemandOrder[], stores: DemandStore[], riders: OnlineRider[]): AreaStat[] {
   const byId = new Map(stores.map((s) => [s.id, s]));
   const ridersIn = new Map<string, number>();
@@ -175,36 +215,44 @@ export function computeAreas(orders: DemandOrder[], stores: DemandStore[], rider
     const [ri, rj] = id.split(":").map(Number);
     const lat = ri * CELL_DEG;
     const lng = rj * CELL_DEG;
-    const unmet = list.filter(isUnmet).length;
-    const perStore = new Map<string, { name: string; orders: number }>();
-    for (const o of list) {
-      const name = (o.store_id ? byId.get(o.store_id)?.name : null) ?? o.store_name;
-      if (!name) continue;
-      const k = o.store_id ?? name;
-      const cur = perStore.get(k) ?? { name, orders: 0 };
-      cur.orders++;
-      perStore.set(k, cur);
-    }
-    out.push({
-      id,
-      label: areaLabel(lat, lng, stores),
-      lat,
-      lng,
-      orders: list.length,
-      unmet,
-      unmetRate: unmet / list.length,
-      medianWait: median(nums(list.map(waitOf))),
-      ridersNow: ridersIn.get(id) ?? 0,
-      topStores: [...perStore.values()].sort((a, b) => b.orders - a.orders).slice(0, 3),
-    });
+    out.push(areaStat(id, areaLabel(lat, lng, stores), lat, lng, list, ridersIn.get(id) ?? 0, byId));
   }
-  return out.sort((a, b) => b.orders - a.orders || a.label.localeCompare(b.label));
+  return out.sort(byOrders);
+}
+
+/** Cells merged by their label (nearest store city), for the Top areas table. */
+export function computeAreaGroups(orders: DemandOrder[], stores: DemandStore[], riders: OnlineRider[]): AreaStat[] {
+  const byId = new Map(stores.map((s) => [s.id, s]));
+  const cells = computeAreas(orders, stores, riders);
+  const labelOfCell = new Map(cells.map((c) => [c.id, c.label]));
+  const ridersByLabel = new Map<string, number>();
+  for (const c of cells) ridersByLabel.set(c.label, (ridersByLabel.get(c.label) ?? 0) + c.ridersNow);
+
+  const groups = new Map<string, { list: DemandOrder[]; latSum: number; lngSum: number }>();
+  for (const o of orders) {
+    const at = locate(o, byId);
+    if (!at) continue;
+    const label = labelOfCell.get(cellId(at[0], at[1]));
+    if (!label) continue;
+    const g = groups.get(label) ?? { list: [], latSum: 0, lngSum: 0 };
+    g.list.push(o);
+    g.latSum += at[0];
+    g.lngSum += at[1];
+    groups.set(label, g);
+  }
+  const out: AreaStat[] = [];
+  for (const [label, g] of groups) {
+    const n = g.list.length;
+    out.push(areaStat(`area:${label}`, label, g.latSum / n, g.lngSum / n, g.list, ridersByLabel.get(label) ?? 0, byId));
+  }
+  return out.sort(byOrders);
 }
 
 export function computeStores(orders: DemandOrder[], stores: DemandStore[]): StoreStat[] {
   const byId = new Map(stores.map((s) => [s.id, s]));
   const m = new Map<string, StoreStat>();
   for (const o of orders) {
+    if (!isStoreOrder(o)) continue;
     const name = (o.store_id ? byId.get(o.store_id)?.name : null) ?? o.store_name;
     if (!name) continue;
     const key = o.store_id ?? name;
@@ -239,6 +287,7 @@ export function aggregateDemand(input: {
     mix: computeMix(orders),
     heat: computeHeat(orders),
     areas: computeAreas(orders, stores, riders),
+    areaGroups: computeAreaGroups(orders, stores, riders),
     stores: computeStores(orders, stores),
     riders,
   };
