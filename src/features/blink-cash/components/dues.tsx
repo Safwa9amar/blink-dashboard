@@ -12,6 +12,7 @@ import {
   type MerchantDuesSummary,
 } from "../data";
 import type { TFn } from "../types";
+import { remindMerchantDues } from "@/app/d/blink-cash/action";
 import { RemindButton } from "./remind-button";
 
 /**
@@ -107,7 +108,7 @@ export function Dues({ t, summary, error }: { t: TFn; summary: MerchantDuesSumma
       key: "act",
       label: "",
       sortable: false,
-      render: (r) => <RemindButton t={t} storeId={r.store_id} />,
+      render: (r) => <RemindButton t={t} id={r.store_id} remind={remindMerchantDues} />,
     },
   ];
 

@@ -5,10 +5,13 @@ import {
   Overview,
   Ledger,
   Dues,
-  AgentFloat,
+  AgentDues,
+  type AgentDuesSummary,
   type BlinkTransaction,
+  type CashDays,
   type DuesHeadline,
   type MerchantDuesSummary,
+  type SummaryResult,
 } from "@/features/blink-cash";
 
 type Tab = "overview" | "ledger" | "dues" | "agents";
@@ -22,6 +25,12 @@ interface BlinkCashClientProps {
   duesError?: string;
   /** Overview: the merchant dues headline, as a promise so it streams in. */
   duesHeadline?: Promise<DuesHeadline | null>;
+  /** Overview: the Blink Cash report for `days`, streamed. */
+  cash?: Promise<SummaryResult>;
+  days?: CashDays;
+  /** Agents tab: agent dues from blink-server, or why they couldn't load. */
+  agents?: AgentDuesSummary | null;
+  agentsError?: string;
 }
 
 export default function BlinkCashClient({
@@ -31,6 +40,10 @@ export default function BlinkCashClient({
   dues,
   duesError,
   duesHeadline,
+  cash,
+  days = 30,
+  agents,
+  agentsError,
 }: BlinkCashClientProps) {
   const t = useTranslations("blink_cash");
   switch (tab) {
@@ -39,8 +52,8 @@ export default function BlinkCashClient({
     case "dues":
       return <Dues t={t} summary={dues ?? null} error={duesError} />;
     case "agents":
-      return <AgentFloat t={t} />;
+      return <AgentDues t={t} summary={agents ?? null} error={agentsError} />;
     default:
-      return <Overview t={t} txns={transactions ?? null} error={error} dues={duesHeadline} />;
+      return <Overview t={t} txns={transactions ?? null} error={error} dues={duesHeadline} cash={cash} days={days} />;
   }
 }

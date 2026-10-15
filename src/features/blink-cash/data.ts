@@ -6,10 +6,10 @@
 //
 // The DUES tab is real too: merchant dues come from blink-server
 // (GET /merchant/admin/dues), fetched in the route's dues/page.tsx and
-// normalized by `summarizeMerchantDues` below. Agent dues are out of scope.
+// normalized by `summarizeMerchantDues` below.
 //
-// Agent float and the deposits-vs-withdrawals chart are still presentational
-// mock data (from the Blink Design System handoff) until they get a source.
+// The Overview stats/chart and the Agents tab are real too: blink-server's
+// GET /blink-cash/admin/summary and GET /agents/admin/dues, normalized in ./report.
 import type { Variant } from "@/components/ui";
 
 import type {
@@ -19,13 +19,22 @@ import type {
   MerchantDuesSummary,
 } from "./types";
 export type {
+  AgentDueRow,
+  AgentDuesPayment,
+  AgentDuesSummary,
+  BlinkCashSummary,
   BlinkTransaction,
+  CashDaily,
+  CashDays,
   DuesHeadline,
+  Exposure,
   MerchantDue,
   MerchantDuesPayment,
   MerchantDuesResponse,
   MerchantDuesSummary,
+  SummaryResult,
 } from "./types";
+export * from "./report";
 
 // ── Ledger decoration (keyed by the real transaction enums) ──────────────────
 // transaction_type → icon. deposit credits the wallet, withdrawal debits it.
@@ -44,19 +53,6 @@ export const TX_STATUS_VARIANT: Record<string, Variant> = {
   pending: "warning",
   cancelled: "danger",
 };
-
-// deposits vs withdrawals by day: [day, deposits, withdrawals] (000 DA)
-export const BC_WEEK: [string, number, number][] = [
-  ["Mon", 62, 40], ["Tue", 70, 52], ["Wed", 58, 48], ["Thu", 82, 60], ["Fri", 96, 72], ["Sat", 88, 80], ["Sun", 74, 55],
-];
-
-// ── Agent float (UI aggregate) ───────────────────────────────────────────────
-export const AGENT_FLOAT = [
-  { who: "Superette El Baraka", area: "Bab Ezzouar", float: 142000, cap: 200000, txns: 318 },
-  { who: "Kiosque Nour", area: "El Harrach", float: 88000, cap: 150000, txns: 204 },
-  { who: "Tabac Presse Centrale", area: "Rouiba", float: 36000, cap: 120000, txns: 96 },
-  { who: "Alimentation Sofiane", area: "Cheraga", float: 174000, cap: 180000, txns: 412 },
-];
 
 // ── Merchant dues (from blink-server) ────────────────────────────────────────
 /** GET /merchant/admin/dues returns at most this many payments, newest first (admin-dues.ts). */

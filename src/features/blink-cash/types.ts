@@ -78,3 +78,86 @@ export interface DuesHeadline {
 }
 
 export type TFn = (k: string, v?: Record<string, string | number>) => string;
+
+// ── Blink Cash report (blink-server GET /blink-cash/admin/summary) ───────────
+export type CashDays = 7 | 30 | 90;
+
+export interface CashDaily {
+  /** YYYY-MM-DD, Africa/Algiers. */
+  date: string;
+  deposits: number;
+  withdrawals: number;
+  deposits_count: number;
+  withdrawals_count: number;
+}
+
+export interface BlinkCashSummary {
+  windowDays: number;
+  generatedAt: string | null;
+  circulation: { total: number; available: number; pendingWithdrawals: number; wallets: number };
+  deposits: { count: number; amount: number };
+  withdrawals: { count: number; amount: number };
+  fees: { total: number; platform: number; tax: number; agentsNet: number };
+  pending: { count: number; amount: number };
+  agentCash: { owedToBlink: number; credit: number; agentsOwing: number; agents: number };
+  daily: CashDaily[];
+}
+
+/** What a page hands the client: the report, or why it couldn't load. */
+export interface SummaryResult {
+  summary: BlinkCashSummary | null;
+  error?: string;
+}
+
+// ── Agent dues (blink-server GET /agents/admin/dues) ─────────────────────────
+export type Exposure = "high" | "medium" | "low" | "none";
+
+/** One agent as the Agents tab renders it (flat, so table columns sort by field). */
+export interface AgentDueRow {
+  id: string;
+  name: string;
+  phone: string | null;
+  shopName: string | null;
+  shopAddress: string | null;
+  lat: number | null;
+  lng: number | null;
+  shopsTotal: number;
+  shopsOpen: number;
+  depCount: number;
+  depAmount: number;
+  wdCount: number;
+  wdAmount: number;
+  ops30: number;
+  feeNet: number;
+  /** Cash the agent owes Blink (0 when settled or in credit). */
+  owed: number;
+  credit: number;
+  exposure: Exposure;
+  /** 0..3 so the Exposure column sorts. */
+  exposureRank: number;
+  lastOperationAt: string | null;
+  lastPaymentAt: string | null;
+  rating: number | null;
+  ratingsCount: number;
+}
+
+export interface AgentDuesPayment {
+  id: string;
+  agentId: string | null;
+  agentName: string | null;
+  amount: number;
+  fees: number;
+  method: string;
+  status: string;
+  createdAt: string;
+}
+
+export interface AgentDuesSummary {
+  /** Largest balance first (as the server sorts). */
+  agents: AgentDueRow[];
+  payments: AgentDuesPayment[];
+  totalOwed: number;
+  totalCredit: number;
+  agentsOwing: number;
+  operations30: number;
+}

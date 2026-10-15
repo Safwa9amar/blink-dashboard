@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/dash-metadata";
-import { getMerchantDues, getTransactions } from "./data";
+import { parseCashDays } from "@/features/blink-cash";
+import { getBlinkCashSummary, getMerchantDues, getTransactions } from "./data";
 import Client from "./client";
 
 export function generateMetadata(): Promise<Metadata> {
@@ -8,16 +9,20 @@ export function generateMetadata(): Promise<Metadata> {
 }
 
 // Blink Cash is the network's single finance hub — the ledger is the real
-// `transactions` table (deposits & withdrawals) and the dues stat is the real
-// merchant outstanding total from blink-server (the same report as the Dues tab).
-// Agent float, the chart and the other headline stats are still mock data inside
-// the client.
-export default async function Page() {
-  // getTransactions gates the section (redirects) before the dues report starts,
-  // so the streamed promise below never carries an access redirect.
+// `transactions` table (deposits & withdrawals); the wallet, deposit/withdrawal,
+// agent-cash stats and the chart come from blink-server's report for `?days=`, and
+// the dues stat from the merchant dues report. Both streamed so a slow report never
+// blocks the page.
+export default async function Page({ searchParams }: { searchParams: Promise<{ days?: string | string[] }> }) {
+  const days = parseCashDays((await searchParams).days);
+  // getTransactions gates the section (redirects) before the reports start,
+  // so the streamed promises below never carry an access redirect.
   const { rows, error } = await getTransactions();
   const duesHeadline = getMerchantDues().then(({ summary }) =>
     summary ? { totalOutstanding: summary.totalOutstanding, storesOwing: summary.owing.length } : null
   );
-  return <Client tab="overview" transactions={rows} error={error} duesHeadline={duesHeadline} />;
+  const cash = getBlinkCashSummary(days);
+  return (
+    <Client tab="overview" transactions={rows} error={error} duesHeadline={duesHeadline} cash={cash} days={days} />
+  );
 }

@@ -13,17 +13,23 @@ const NS = "blink_cash.dues";
 // report). `final` = retrying won't help (409 nothing outstanding, 429 already
 // reminded in the last 24h, 403, 404): the button stays off and shows why.
 export async function remindMerchantDues(storeId: string): Promise<{ error?: string; final?: boolean }> {
+  return remind(NS, `/merchant/admin/dues/${encodeURIComponent(storeId)}/remind`);
+}
+
+// Same for an agent's cash dues (POST /agents/admin/dues/{agent_id}/remind).
+export async function remindAgentDues(agentId: string): Promise<{ error?: string; final?: boolean }> {
+  return remind("blink_cash.agents", `/agents/admin/dues/${encodeURIComponent(agentId)}/remind`);
+}
+
+async function remind(ns: string, path: string): Promise<{ error?: string; final?: boolean }> {
   if (!(await hasStaffRole(...DUES_ROLES))) {
-    return { error: await blinkApiErrorMessage(NS, { status: 403, error: "" }), final: true };
+    return { error: await blinkApiErrorMessage(ns, { status: 403, error: "" }), final: true };
   }
 
-  const res = await blinkApi(`/merchant/admin/dues/${encodeURIComponent(storeId)}/remind`, {
-    method: "POST",
-    roles: DUES_ROLES,
-  });
+  const res = await blinkApi(path, { method: "POST", roles: DUES_ROLES });
   if (res.ok) return {};
   return {
-    error: await blinkApiErrorMessage(NS, res),
+    error: await blinkApiErrorMessage(ns, res),
     final: res.status === 409 || res.status === 429 || res.status === 403 || res.status === 404,
   };
 }

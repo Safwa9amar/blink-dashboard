@@ -3,7 +3,16 @@ import type { StaffRole } from "@/lib/auth/access";
 import { requirePathAccess } from "@/lib/auth/staff";
 import { blinkApi } from "@/lib/blink-api";
 import { createClient } from "@/lib/supabase/server";
-import { summarizeMerchantDues, type BlinkTransaction, type MerchantDuesSummary } from "@/features/blink-cash";
+import {
+  summarizeAgentDues,
+  summarizeBlinkCash,
+  summarizeMerchantDues,
+  type AgentDuesSummary,
+  type BlinkTransaction,
+  type CashDays,
+  type MerchantDuesSummary,
+  type SummaryResult,
+} from "@/features/blink-cash";
 
 // Every loader gates on the section first, so a staff role without /blink-cash
 // never gets ledger or merchant rows in its payload (the layout alone can't
@@ -40,6 +49,38 @@ export const getMerchantDues = cache(
     if (!res.ok) return { summary: null, error: res.status ? `${res.error} (${res.status})` : res.error };
     try {
       return { summary: summarizeMerchantDues(res.data, Date.now()) };
+    } catch (e) {
+      return { summary: null, error: (e as Error).message };
+    }
+  }
+);
+
+const failure = (res: { status: number; error: string }) => (res.status ? `${res.error} (${res.status})` : res.error);
+
+// Network-wide Blink Cash report (wallet circulation, window deposits/withdrawals,
+// fees, agent cash owed, per-day series), computed by blink-server so the money
+// rules stay in one place. Never throws (beyond the access redirect): a 404 from a
+// server that predates the endpoint becomes "Report unavailable" in the UI.
+export const getBlinkCashSummary = cache(async (days: CashDays): Promise<SummaryResult> => {
+  await requirePathAccess(SECTION);
+  const res = await blinkApi(`/blink-cash/admin/summary?days=${days}`, { roles: DUES_ROLES });
+  if (!res.ok) return { summary: null, error: failure(res) };
+  try {
+    return { summary: summarizeBlinkCash(res.data) };
+  } catch (e) {
+    return { summary: null, error: (e as Error).message };
+  }
+});
+
+// What each agent owes Blink (cash collected on deposits minus fees/payments), plus
+// the latest dues payments — blink-server's GET /agents/admin/dues.
+export const getAgentDues = cache(
+  async (): Promise<{ summary: AgentDuesSummary | null; error?: string }> => {
+    await requirePathAccess(SECTION);
+    const res = await blinkApi("/agents/admin/dues", { roles: DUES_ROLES });
+    if (!res.ok) return { summary: null, error: failure(res) };
+    try {
+      return { summary: summarizeAgentDues(res.data) };
     } catch (e) {
       return { summary: null, error: (e as Error).message };
     }

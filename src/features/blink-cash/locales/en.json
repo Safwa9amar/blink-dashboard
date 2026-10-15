@@ -8,24 +8,33 @@
     "tab_dues": "Dues",
     "agent_float": "Agent Float",
     "stats": {
-      "circulation": "Cash in Circulation",
-      "circulation_chg": "across 41k wallets",
-      "deposits": "Deposits (today)",
-      "deposits_chg": "▲ 12% · 3,210 txns",
-      "withdrawals": "Withdrawals (today)",
-      "withdrawals_chg": "2,040 txns",
+      "circulation": "Money in wallets",
+      "deposits": "Deposits",
+      "withdrawals": "Withdrawals",
       "dues": "Merchant Dues",
       "dues_chg": "{n, plural, one {# merchant store owes Blink} other {# merchant stores owe Blink}}",
       "dues_loading": "loading…",
       "dues_unavailable": "couldn't load — see the Dues tab",
-      "float": "Agent Float",
-      "float_chg": "held at 47 agents"
+      "circulation_chg": "{wallets, plural, one {# wallet} other {# wallets}} · {pending} pending withdrawals",
+      "deposits_chg": "{n, plural, one {# transaction} other {# transactions}} · last {days} days",
+      "withdrawals_chg": "{n, plural, one {# transaction} other {# transactions}} · last {days} days",
+      "agent_cash": "Agent cash owed to Blink",
+      "agent_cash_chg": "{n, plural, one {# agent owes Blink} other {# agents owe Blink}}",
+      "report_loading": "loading…",
+      "report_unavailable": "Report unavailable"
     },
     "chart": {
       "dvw": "Deposits vs withdrawals",
-      "dvw_desc": "Network cash flow · this week (000 DA)",
+      "dvw_desc": "Completed network cash flow per day (DA)",
       "deposits": "Deposits",
-      "withdrawals": "Withdrawals"
+      "withdrawals": "Withdrawals",
+      "empty": "No completed deposits or withdrawals in this period.",
+      "unavailable": "Report unavailable — the cash-flow report couldn't be loaded.",
+      "range": "Period",
+      "d7": "7 days",
+      "d30": "30 days",
+      "d90": "90 days",
+      "fees": "Fees in this period: platform {platform} · tax {tax} · agents' net {agents}"
     },
     "cfg": {
       "title": "Wallet & fees",
@@ -61,9 +70,19 @@
       "outstanding": "Outstanding",
       "last_payment": "Last payment"
     },
-    "tx_type": { "deposit": "Deposit", "withdrawal": "Withdrawal" },
-    "method": { "agent": "Agent", "electronic": "Card / online" },
-    "tx_status": { "completed": "completed", "pending": "pending", "cancelled": "cancelled" },
+    "tx_type": {
+      "deposit": "Deposit",
+      "withdrawal": "Withdrawal"
+    },
+    "method": {
+      "agent": "Agent",
+      "electronic": "Card / online"
+    },
+    "tx_status": {
+      "completed": "completed",
+      "pending": "pending",
+      "cancelled": "cancelled"
+    },
     "export": "Export",
     "ledger": {
       "search": "Search transactions, accounts…",
@@ -108,17 +127,67 @@
         "generic": "Couldn't send the reminder. ({detail})"
       }
     },
-    "float": {
-      "held": "Total Float Held",
-      "held_chg": "47 active agents",
-      "dep": "Deposits via Agents",
-      "wd": "Withdrawals via Agents",
-      "today": "today",
-      "near_cap": "Near Capacity",
-      "near_cap_chg": "agents >90% float",
-      "search": "Search agents",
-      "label": "Float"
-    },
-    "txns": "{n} txns"
+    "agents": {
+      "kpi_agents": "Agents",
+      "kpi_agents_chg": "with a Blink Cash profile or shop",
+      "kpi_owing": "Agents owing",
+      "kpi_owing_chg": "have unsettled cash",
+      "kpi_owed": "Owed to Blink",
+      "kpi_owed_chg": "total agent dues",
+      "kpi_credit": "Agent credit",
+      "kpi_credit_chg": "Blink owes agents",
+      "kpi_ops": "Operations (30 d)",
+      "kpi_ops_chg": "deposits & withdrawals",
+      "search": "Search agents, shops or phones",
+      "filter_all": "All",
+      "filter_owing": "Owing",
+      "filter_credit": "In credit",
+      "filter_high": "High exposure",
+      "col": {
+        "agent": "Agent",
+        "shop": "Primary shop",
+        "shops": "Shops",
+        "deposits": "Deposits",
+        "withdrawals": "Withdrawals",
+        "fees": "Net fees",
+        "owed": "Owed to Blink",
+        "exposure": "Exposure",
+        "last_op": "Last operation",
+        "rating": "Rating"
+      },
+      "shops_open": "{open}/{total} open",
+      "ops": "{n} ops",
+      "credit": "credit {amount}",
+      "settled": "Settled",
+      "never": "Never",
+      "no_rating": "—",
+      "exposure": {
+        "high": "High",
+        "medium": "Medium",
+        "low": "Low",
+        "none": "None"
+      },
+      "empty": "No agents yet.",
+      "empty_filtered": "No agents match your filters.",
+      "load_error": "Couldn't load agent dues",
+      "load_error_desc": "Blink Server didn't return the agent dues report. Check that the server is reachable and up to date, then reload.",
+      "map_title": "Agent shops",
+      "map_desc": "Circle size shows cash owed to Blink; colour shows exposure",
+      "map_none": "No agent shop has a location yet.",
+      "popup": "Owed {owed} · last operation {ago}",
+      "payments_title": "Recent dues payments",
+      "payments_desc": "Dues settled by agents, newest first",
+      "payments_empty": "No agent dues payments yet.",
+      "errors": {
+        "network": "Couldn't reach Blink Server. Try again.",
+        "session": "Your session expired. Sign in again.",
+        "forbidden": "Your staff role isn't allowed to chase dues.",
+        "not_found": "This agent no longer exists.",
+        "invalid": "Blink Server refused the reminder. ({detail})",
+        "conflict": "This agent has nothing outstanding any more. Reload to refresh the list.",
+        "throttled": "Already reminded in the last 24 hours.",
+        "generic": "Couldn't send the reminder. ({detail})"
+      }
+    }
   }
 }

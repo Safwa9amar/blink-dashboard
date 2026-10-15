@@ -1,46 +1,33 @@
-import { Card, ColumnChart, ChartHead, Legend, DataTable } from "@/components/ui";
-import { BC_WEEK, type BlinkTransaction } from "../data";
+import { Card, ChartHead, DataTable } from "@/components/ui";
+import type { BlinkTransaction } from "../data";
 import { BCStats } from "./bc-stats";
+import { CashFlowChart } from "./cash-flow-chart";
 import { ConfigRow } from "./config-row";
 import { ledgerColumns } from "./ledger-columns";
-import type { DuesHeadline, TFn } from "../types";
+import type { CashDays, DuesHeadline, SummaryResult, TFn } from "../types";
 
 export function Overview({
   t,
   txns,
   error,
   dues,
+  cash,
+  days = 30,
 }: {
   t: TFn;
   txns: BlinkTransaction[] | null;
   error?: string;
   /** Merchant dues headline, streamed from the page (see BCStats). */
   dues?: Promise<DuesHeadline | null>;
+  /** Blink Cash report for `days`, streamed from the page. */
+  cash?: Promise<SummaryResult>;
+  days?: CashDays;
 }) {
   return (
     <>
-      <BCStats t={t} dues={dues} />
+      <BCStats t={t} dues={dues} cash={cash} days={days} />
       <div className="grid grid-cols-1 lg:grid-cols-[1.55fr_1fr] gap-5 mb-5">
-        <Card>
-          <ChartHead
-            title={t("chart.dvw")}
-            description={t("chart.dvw_desc")}
-            right={
-              <Legend
-                items={[
-                  { label: t("chart.deposits"), color: "var(--success)" },
-                  { label: t("chart.withdrawals"), color: "color-mix(in srgb,var(--info) 60%,transparent)" },
-                ]}
-              />
-            }
-          />
-          <ColumnChart
-            data={BC_WEEK.map(([label, dep, wd]) => ({ label, values: [dep, wd] }))}
-            max={100}
-            colors={["var(--success)", "color-mix(in srgb,var(--info) 60%,transparent)"]}
-            height={150}
-          />
-        </Card>
+        <CashFlowChart t={t} cash={cash} days={days} />
         <Card>
           <ChartHead title={t("cfg.title")} description={t("cfg.desc")} />
           <ConfigRow k={t("cfg.deposit_agent")} v={t("cfg.free")} first />

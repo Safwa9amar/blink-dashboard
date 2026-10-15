@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui";
-import { remindMerchantDues } from "@/app/d/blink-cash/action";
 import type { TFn } from "../types";
 
 type State =
@@ -11,14 +10,16 @@ type State =
   /** `final`: retrying won't help (already reminded today, nothing owed, not allowed). */
   | { kind: "error"; message: string; final: boolean };
 
-/** Sends the merchant a "settle your dues" notification via blink-server. */
-export function RemindButton({ t, storeId }: { t: TFn; storeId: string }) {
+type Remind = (id: string) => Promise<{ error?: string; final?: boolean }>;
+
+/** Sends a merchant / agent a "settle your dues" notification via blink-server (the `remind` action picks which). */
+export function RemindButton({ t, id, remind: send }: { t: TFn; id: string; remind: Remind }) {
   const [state, setState] = useState<State>({ kind: "idle" });
   const [isPending, startTransition] = useTransition();
 
   function remind() {
     startTransition(async () => {
-      const res = await remindMerchantDues(storeId);
+      const res = await send(id);
       if (res.error) {
         setState({ kind: "error", message: res.error, final: !!res.final });
         return;

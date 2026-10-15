@@ -8,24 +8,33 @@
     "tab_dues": "Dus",
     "agent_float": "Encaisse agent",
     "stats": {
-      "circulation": "Liquidités en circulation",
-      "circulation_chg": "sur 41k portefeuilles",
-      "deposits": "Dépôts (aujourd'hui)",
-      "deposits_chg": "▲ 12% · 3 210 trans.",
-      "withdrawals": "Retraits (aujourd'hui)",
-      "withdrawals_chg": "2 040 trans.",
+      "circulation": "Argent dans les portefeuilles",
+      "deposits": "Dépôts",
+      "withdrawals": "Retraits",
       "dues": "Commissions dues",
       "dues_chg": "{n, plural, one {# magasin doit à Blink} other {# magasins doivent à Blink}}",
       "dues_loading": "chargement…",
       "dues_unavailable": "indisponible — voir l'onglet Commissions",
-      "float": "Encaisse agent",
-      "float_chg": "détenu par 47 agents"
+      "circulation_chg": "{wallets, plural, one {# portefeuille} other {# portefeuilles}} · {pending} de retraits en attente",
+      "deposits_chg": "{n, plural, one {# transaction} other {# transactions}} · {days} derniers jours",
+      "withdrawals_chg": "{n, plural, one {# transaction} other {# transactions}} · {days} derniers jours",
+      "agent_cash": "Espèces des agents dues à Blink",
+      "agent_cash_chg": "{n, plural, one {# agent doit à Blink} other {# agents doivent à Blink}}",
+      "report_loading": "chargement…",
+      "report_unavailable": "Rapport indisponible"
     },
     "chart": {
       "dvw": "Dépôts vs retraits",
-      "dvw_desc": "Flux réseau · cette semaine (000 DA)",
+      "dvw_desc": "Flux d'espèces terminés du réseau par jour (DA)",
       "deposits": "Dépôts",
-      "withdrawals": "Retraits"
+      "withdrawals": "Retraits",
+      "empty": "Aucun dépôt ou retrait terminé sur cette période.",
+      "unavailable": "Rapport indisponible — le rapport de flux n'a pas pu être chargé.",
+      "range": "Période",
+      "d7": "7 jours",
+      "d30": "30 jours",
+      "d90": "90 jours",
+      "fees": "Frais sur la période : plateforme {platform} · taxe {tax} · net agents {agents}"
     },
     "cfg": {
       "title": "Portefeuille et frais",
@@ -61,9 +70,19 @@
       "outstanding": "Restant dû",
       "last_payment": "Dernier paiement"
     },
-    "tx_type": { "deposit": "Dépôt", "withdrawal": "Retrait" },
-    "method": { "agent": "Agent", "electronic": "Carte / en ligne" },
-    "tx_status": { "completed": "terminé", "pending": "en attente", "cancelled": "annulé" },
+    "tx_type": {
+      "deposit": "Dépôt",
+      "withdrawal": "Retrait"
+    },
+    "method": {
+      "agent": "Agent",
+      "electronic": "Carte / en ligne"
+    },
+    "tx_status": {
+      "completed": "terminé",
+      "pending": "en attente",
+      "cancelled": "annulé"
+    },
     "export": "Exporter",
     "ledger": {
       "search": "Rechercher transactions, comptes…",
@@ -108,17 +127,67 @@
         "generic": "Impossible d'envoyer la relance. ({detail})"
       }
     },
-    "float": {
-      "held": "Encaisse totale détenue",
-      "held_chg": "47 agents actifs",
-      "dep": "Dépôts via agents",
-      "wd": "Retraits via agents",
-      "today": "aujourd'hui",
-      "near_cap": "Proche capacité",
-      "near_cap_chg": "agents >90% encaisse",
-      "search": "Rechercher des agents",
-      "label": "Encaisse"
-    },
-    "txns": "{n} trans."
+    "agents": {
+      "kpi_agents": "Agents",
+      "kpi_agents_chg": "avec un profil ou un magasin Blink Cash",
+      "kpi_owing": "Agents débiteurs",
+      "kpi_owing_chg": "ont des espèces à régler",
+      "kpi_owed": "Dû à Blink",
+      "kpi_owed_chg": "total des dettes agents",
+      "kpi_credit": "Crédit agents",
+      "kpi_credit_chg": "Blink doit aux agents",
+      "kpi_ops": "Opérations (30 j)",
+      "kpi_ops_chg": "dépôts et retraits",
+      "search": "Rechercher agents, magasins ou téléphones",
+      "filter_all": "Tous",
+      "filter_owing": "Débiteurs",
+      "filter_credit": "Créditeurs",
+      "filter_high": "Exposition élevée",
+      "col": {
+        "agent": "Agent",
+        "shop": "Magasin principal",
+        "shops": "Magasins",
+        "deposits": "Dépôts",
+        "withdrawals": "Retraits",
+        "fees": "Frais nets",
+        "owed": "Dû à Blink",
+        "exposure": "Exposition",
+        "last_op": "Dernière opération",
+        "rating": "Note"
+      },
+      "shops_open": "{open}/{total} ouverts",
+      "ops": "{n} op.",
+      "credit": "crédit {amount}",
+      "settled": "Réglé",
+      "never": "Jamais",
+      "no_rating": "—",
+      "exposure": {
+        "high": "Élevée",
+        "medium": "Moyenne",
+        "low": "Faible",
+        "none": "Aucune"
+      },
+      "empty": "Aucun agent pour le moment.",
+      "empty_filtered": "Aucun agent ne correspond à vos filtres.",
+      "load_error": "Impossible de charger les dettes des agents",
+      "load_error_desc": "Blink Server n'a pas renvoyé le rapport des dettes agents. Vérifiez que le serveur est joignable et à jour, puis rechargez.",
+      "map_title": "Magasins des agents",
+      "map_desc": "La taille du cercle indique les espèces dues à Blink ; la couleur indique l'exposition",
+      "map_none": "Aucun magasin d'agent n'a encore de position.",
+      "popup": "Dû {owed} · dernière opération {ago}",
+      "payments_title": "Derniers paiements de dettes",
+      "payments_desc": "Dettes réglées par les agents, du plus récent au plus ancien",
+      "payments_empty": "Aucun paiement de dettes d'agent pour le moment.",
+      "errors": {
+        "network": "Impossible de joindre Blink Server. Réessayez.",
+        "session": "Votre session a expiré. Reconnectez-vous.",
+        "forbidden": "Votre rôle ne permet pas de relancer les dettes.",
+        "not_found": "Cet agent n'existe plus.",
+        "invalid": "Blink Server a refusé la relance. ({detail})",
+        "conflict": "Cet agent n'a plus rien à régler. Rechargez pour actualiser la liste.",
+        "throttled": "Déjà relancé au cours des dernières 24 heures.",
+        "generic": "Impossible d'envoyer la relance. ({detail})"
+      }
+    }
   }
 }
