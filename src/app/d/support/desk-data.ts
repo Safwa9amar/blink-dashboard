@@ -1,5 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { requirePathAccess } from "@/lib/auth/staff";
+import { getStaffActor, requirePathAccess } from "@/lib/auth/staff";
 import {
   DEFAULT_SLA_POLICIES,
   asPriority,
@@ -57,6 +57,8 @@ export interface DeskData {
   names: Record<string, string>;
   /** staff id -> ISO time of their latest agent message in the window. */
   lastAgentMessageAt: Record<string, string>;
+  /** Signed-in staff user's id (for "assigned to me"). */
+  meId: string | null;
   /** True when the support-desk migration (priority/csat columns, SLA table) is missing. */
   migrationPending: boolean;
   error: string | null;
@@ -91,6 +93,7 @@ function userName(u: { first_name: string | null; last_name: string | null; emai
 
 export async function loadDesk({ days = 30 }: { days?: number } = {}): Promise<DeskData> {
   await requirePathAccess("/support");
+  const me = await getStaffActor("/support");
   const supabase = await createAdminClient();
   const now = new Date();
   const since = new Date(now.getTime() - days * 86400000).toISOString();
@@ -223,6 +226,7 @@ export async function loadDesk({ days = 30 }: { days?: number } = {}): Promise<D
     staff,
     names,
     lastAgentMessageAt,
+    meId: me?.id ?? null,
     migrationPending,
     error,
   };

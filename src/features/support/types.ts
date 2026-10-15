@@ -1,15 +1,3 @@
-// Domain types for the support feature.
-export interface Ticket {
-  id: string;
-  subj: string;
-  who: string;
-  role: string;
-  cat: string;
-  prio: string;
-  status: string;
-  age: string;
-}
-
 export interface Article {
   title: string;
   cat: string;
@@ -54,26 +42,6 @@ export interface Agent {
   csat: number;
   frt: string;
   resolved: number;
-}
-
-// An SLA policy mapping a priority to first-response / resolution targets.
-export interface SlaPolicy {
-  name: string;
-  prio: string;
-  frt: string;
-  resolution: string;
-  met: number;
-  breached: number;
-}
-
-// An automation / routing rule: when → conditions → actions.
-export interface Rule {
-  name: string;
-  when: string;
-  conditions: string[];
-  actions: string[];
-  runs: number;
-  on: boolean;
 }
 
 export type TFn = (k: string, v?: Record<string, string | number>) => string;

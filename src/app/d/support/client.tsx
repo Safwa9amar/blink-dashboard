@@ -2,26 +2,19 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui";
 import {
-  OverviewTab,
-  TicketsTab,
   InboxTab,
   KbTab,
   CreateArticle,
-  SlaTab,
   useKbStore,
   type SupportArticleType,
 } from "@/features/support";
 import { useDocumentTitle } from "@/lib/use-document-title";
 
 type Tab =
-  | "overview"
-  | "tickets"
   | "inbox"
   | "kb"
-  | "create"
-  | "sla";
+  | "create";
 
 export default function SupportClient({ tab }: { tab: Tab }) {
   const t = useTranslations("support");
@@ -31,15 +24,6 @@ export default function SupportClient({ tab }: { tab: Tab }) {
   useDocumentTitle(t("title"), 42); // open tickets
 
   switch (tab) {
-    case "tickets":
-      return (
-        <>
-          <div className="flex justify-end mb-4">
-            <Button icon="plus">{t("new_ticket")}</Button>
-          </div>
-          <TicketsTab t={t} />
-        </>
-      );
     case "inbox":
       return <InboxTab t={t} />;
     case "kb":
@@ -65,9 +49,7 @@ export default function SupportClient({ tab }: { tab: Tab }) {
         />
       );
     }
-    case "sla":
-      return <SlaTab t={t} />;
     default:
-      return <OverviewTab t={t} />;
+      return null;
   }
 }

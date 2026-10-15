@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import { Card, Button, Avatar, Badge, fInput } from "@/components/ui";
 import { ROLE_VARIANT } from "../data";
 import { useSupportStore, rowToChat, rowToMessage } from "@/features/support";
@@ -19,7 +20,7 @@ export function LiveInbox({ t }: { t: TFn }) {
   const conversations = useSupportStore((s) => s.conversations);
   const messagesByConversation = useSupportStore((s) => s.messagesByConversation);
   const chats = conversations.map(rowToChat);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(useSearchParams().get("c"));
   const [draft, setDraft] = useState("");
   const [customerTyping, setCustomerTyping] = useState(false);
   // Resolve/assign hit a server action with a noticeable round-trip — track each
