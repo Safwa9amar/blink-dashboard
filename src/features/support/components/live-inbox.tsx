@@ -7,6 +7,7 @@ import { useSupportStore, rowToChat, rowToMessage } from "@/features/support";
 import { assignChat, replyToChat, resolveChat } from "@/app/d/support/action";
 import { createClient } from "@/lib/supabase/client";
 import { ConversationList, MessageBubble, ThreadSkeleton } from "./chat-shared";
+import { MacroPicker } from "./macro-picker";
 import type { TFn } from "../types";
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
@@ -214,6 +215,12 @@ export function LiveInbox({ t }: { t: TFn }) {
 
             {/* Composer — only when a live conversation is open. */}
             <div className="flex items-center gap-2.5 mt-4 pt-4 border-t border-border">
+              <MacroPicker
+                t={t}
+                locale={activeConv?.locale}
+                role={activeConv?.user_role}
+                onPick={(body) => setDraft((d) => (d.trim() ? `${d.trimEnd()} ${body}` : body))}
+              />
               <input
                 className={fInput}
                 value={draft}

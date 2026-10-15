@@ -9,7 +9,6 @@ import {
   InboxTab,
   KbTab,
   CreateArticle,
-  MacrosTab,
   CsatTab,
   AgentsTab,
   SlaTab,
@@ -24,7 +23,6 @@ type Tab =
   | "inbox"
   | "kb"
   | "create"
-  | "macros"
   | "csat"
   | "agents"
   | "sla";
@@ -71,8 +69,6 @@ export default function SupportClient({ tab }: { tab: Tab }) {
         />
       );
     }
-    case "macros":
-      return <MacrosTab t={t} />;
     case "csat":
       return <CsatTab t={t} />;
     case "agents":
