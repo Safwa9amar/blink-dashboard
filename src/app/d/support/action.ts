@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { hasStaffRole } from "@/lib/auth/staff";
+import { fetchBlinkApi } from "@/lib/blink-api-base";
 import type {
   SupportArticleInsert,
   SupportArticlePatch,
@@ -14,7 +15,6 @@ import type {
   SupportCategoryRow,
 } from "@/features/support";
 
-const API_BASE = process.env.BLINK_API_BASE_URL ?? "https://blink.greenpedal.net";
 
 async function callServer(path: string, body?: unknown): Promise<{ error: string | null }> {
   if (!(await hasStaffRole("super_admin", "support_admin"))) {
@@ -27,7 +27,7 @@ async function callServer(path: string, body?: unknown): Promise<{ error: string
   if (!session?.access_token) return { error: "No session" };
 
   try {
-    const res = await fetch(`${API_BASE}${path}`, {
+    const res = await fetchBlinkApi(path, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -3,13 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { hasStaffRole } from "@/lib/auth/staff";
+import { fetchBlinkApi } from "@/lib/blink-api-base";
 
 // The customer email inbox is server-authoritative: SMTP send + IMAP intake live
 // in blink-server (they need mailbox secrets and can't run in the browser). These
 // actions proxy to its staff-gated /email routes, forwarding the operator's
 // Supabase JWT — same pattern as the support live-chat actions. The dashboard
 // sees new rows via Supabase Realtime, so a successful call needs no return body.
-const API_BASE = process.env.BLINK_API_BASE_URL ?? "https://blink.greenpedal.net";
 
 async function callServer(path: string, body?: unknown): Promise<{ error: string | null }> {
   if (!(await hasStaffRole("super_admin", "support_admin"))) {
@@ -22,7 +22,7 @@ async function callServer(path: string, body?: unknown): Promise<{ error: string
   if (!session?.access_token) return { error: "No session" };
 
   try {
-    const res = await fetch(`${API_BASE}${path}`, {
+    const res = await fetchBlinkApi(path, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
