@@ -30,11 +30,13 @@ export function Overview({
         <CashFlowChart t={t} cash={cash} days={days} />
         <Card>
           <ChartHead title={t("cfg.title")} description={t("cfg.desc")} />
-          <ConfigRow k={t("cfg.deposit_agent")} v={t("cfg.free")} first />
-          <ConfigRow k={t("cfg.deposit_card")} v="1%" />
-          <ConfigRow k={t("cfg.withdrawal")} v="50 DA" />
-          <ConfigRow k={t("cfg.commission")} v="2%" />
-          <ConfigRow k={t("cfg.trip_tax")} v="5%" />
+          {/* blink-server's rules: transactions/{deposit,withdrawal}.ts, lib/agent-finance.ts, lib/cash-jobs.ts */}
+          <ConfigRow k={t("cfg.deposit_agent")} v="2%" first />
+          <ConfigRow k={t("cfg.withdrawal")} v="2%" />
+          <ConfigRow k={t("cfg.platform_share")} v="20%" />
+          <ConfigRow k={t("cfg.agent_tax")} v="1%" />
+          <ConfigRow k={t("cfg.dues_fee")} v="0.2%" />
+          <ConfigRow k={t("cfg.trip_commission")} v="15%" />
           <ConfigRow k={t("cfg.pin")} v={<span className="text-success">{t("cfg.enforced")}</span>} />
         </Card>
       </div>

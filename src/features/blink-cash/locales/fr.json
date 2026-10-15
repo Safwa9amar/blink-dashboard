@@ -39,14 +39,14 @@
     "cfg": {
       "title": "Portefeuille et frais",
       "desc": "Configuration Blink Cash",
-      "deposit_agent": "Frais dépôt · agent",
-      "deposit_card": "Frais dépôt · carte",
-      "withdrawal": "Frais de retrait",
-      "commission": "Commission agent",
-      "trip_tax": "Taxe trajet (livreur)",
+      "deposit_agent": "Frais de dépôt agent (payés par le livreur)",
+      "withdrawal": "Frais de retrait agent (payés par le livreur)",
       "pin": "PIN requis",
-      "free": "Gratuit",
-      "enforced": "Appliqué"
+      "enforced": "Appliqué",
+      "platform_share": "Part de Blink sur chaque frais agent",
+      "agent_tax": "Impôt retenu sur la part de l'agent",
+      "dues_fee": "Frais de paiement des dettes agent",
+      "trip_commission": "Commission Blink sur les courses"
     },
     "latest": {
       "title": "Activité récente",

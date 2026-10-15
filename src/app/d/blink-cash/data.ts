@@ -2,7 +2,7 @@ import { cache } from "react";
 import type { StaffRole } from "@/lib/auth/access";
 import { requirePathAccess } from "@/lib/auth/staff";
 import { blinkApi } from "@/lib/blink-api";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import {
   summarizeAgentDues,
   summarizeBlinkCash,
@@ -24,12 +24,14 @@ const SECTION = "/blink-cash";
 export const getTransactions = cache(
   async (): Promise<{ rows: BlinkTransaction[] | null; error?: string }> => {
     await requirePathAccess(SECTION);
-    const supabase = await createClient();
+    // Service role: `transactions` RLS only shows a user their own rows, so the
+    // operator's client would see an empty ledger.
+    const supabase = await createAdminClient();
     const { data, error } = await supabase
       .from("transactions")
       .select("*")
       .order("created_at", { ascending: false })
-      .limit(50);
+      .limit(200);
     return { rows: (data as BlinkTransaction[] | null) ?? null, error: error?.message };
   }
 );

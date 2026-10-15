@@ -39,14 +39,14 @@
     "cfg": {
       "title": "Wallet & fees",
       "desc": "Blink Cash configuration",
-      "deposit_agent": "Deposit fee · agent",
-      "deposit_card": "Deposit fee · card",
-      "withdrawal": "Withdrawal fee",
-      "commission": "Agent commission",
-      "trip_tax": "Trip tax (rider)",
+      "deposit_agent": "Agent deposit fee (paid by rider)",
+      "withdrawal": "Agent withdrawal fee (paid by rider)",
       "pin": "PIN required",
-      "free": "Free",
-      "enforced": "Enforced"
+      "enforced": "Enforced",
+      "platform_share": "Blink share of each agent fee",
+      "agent_tax": "Tax withheld on the agent's share",
+      "dues_fee": "Agent dues payment fee",
+      "trip_commission": "Blink commission on rider trips"
     },
     "latest": {
       "title": "Latest activity",
