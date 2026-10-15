@@ -10,7 +10,7 @@ function Stars({ score }: { score: number }) {
   return (
     <span className="inline-flex gap-0.5 shrink-0">
       {[1, 2, 3, 4, 5].map((i) => (
-        <DashIcon key={i} name="star" className={`w-3.5 h-3.5 ${i <= score ? "text-warning" : "text-border"}`} />
+        <DashIcon key={i} name="star" className={`w-3.5 h-3.5 ${i <= score ? "text-warning fill-current" : "text-border"}`} />
       ))}
     </span>
   );
@@ -59,6 +59,7 @@ export function CsatTab({ t, stats }: { t: TFn; stats: CsatStats }) {
             max={5}
             colors={[CHART.primary]}
             height={170}
+            seriesNames={[t("csa.trend_series")]}
           />
         </Card>
         <Card title={t("csa.distribution")} description={t("csa.distribution_desc")}>
