@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Button, LivePill } from "@/components/ui";
 import { useSupportStore, rowToChat } from "@/features/support";
 import { LiveInbox } from "./live-inbox";
@@ -13,9 +14,14 @@ type View = "live" | "history";
 // the panes below between the live inbox and the read-only resolved History —
 // no longer a separate top-level tab.
 export function InboxTab({ t }: { t: TFn }) {
-  const [view, setView] = useState<View>("live");
+  const [picked, setPicked] = useState<View | null>(null);
   const conversations = useSupportStore((s) => s.conversations);
   const historyConversations = useSupportStore((s) => s.historyConversations);
+  // A link to a resolved chat (Tickets / SLA "Open in Inbox") opens History on it.
+  const linked = useSearchParams().get("c");
+  const linkedInHistory =
+    !!linked && historyConversations.some((c) => c.id === linked) && !conversations.some((c) => c.id === linked);
+  const view: View = picked ?? (linkedInHistory ? "history" : "live");
   const liveChats = conversations.map(rowToChat);
   const live = liveChats.filter((c) => c.status !== "idle").length;
   const waiting = liveChats.filter((c) => c.status === "waiting").length;
@@ -39,7 +45,7 @@ export function InboxTab({ t }: { t: TFn }) {
           variant={view === "history" ? "primary" : "secondary"}
           size="sm"
           icon={view === "live" ? "clock" : "chat"}
-          onClick={() => setView((v) => (v === "live" ? "history" : "live"))}
+          onClick={() => setPicked(view === "live" ? "history" : "live")}
         >
           {view === "live" ? t("inb.view_history") : t("inb.view_live")}
         </Button>

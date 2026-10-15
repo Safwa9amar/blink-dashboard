@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import { Card, Avatar, Badge } from "@/components/ui";
 import { ROLE_VARIANT } from "../data";
 import { useSupportStore, rowToChat, rowToMessage } from "@/features/support";
@@ -18,10 +19,11 @@ export function HistoryInbox({ t }: { t: TFn }) {
   const historyConversations = useSupportStore((s) => s.historyConversations);
   const messagesByConversation = useSupportStore((s) => s.messagesByConversation);
   const chats = historyConversations.map(rowToChat);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  // `?c=<id>` (Tickets / SLA "Open in Inbox") preselects that resolved chat.
+  const [selectedId, setSelectedId] = useState<string | null>(useSearchParams().get("c"));
 
   // Default the active selection to the first resolved chat until one is picked.
-  const activeId = selectedId ?? chats[0]?.id ?? null;
+  const activeId = (selectedId && chats.some((c) => c.id === selectedId) ? selectedId : null) ?? chats[0]?.id ?? null;
 
   // Load the selected thread's messages (RLS-scoped browser read). Resolved
   // threads don't change, so no realtime subscription is needed here.
