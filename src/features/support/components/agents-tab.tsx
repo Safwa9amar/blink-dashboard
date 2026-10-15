@@ -1,78 +1,134 @@
 "use client";
 
-import { useState } from "react";
-import { StatGrid, StatCard, Card, DataTable, Badge, NameCell, Toggle, DashIcon, type Column } from "@/components/ui";
-import { AGENTS, type Agent } from "../data";
+import { useEffect, useState } from "react";
+import { useLocale } from "next-intl";
+import { Card, DataTable, Badge, NameCell, DashIcon, EmptyState, StatCard, type Column } from "@/components/ui";
+import { formatDay } from "@/features/promotions";
+import { formatMinutes } from "../metrics";
+import { isOnline, type AgentRow } from "../csat-agents";
 import type { TFn } from "../types";
 
-const DOT: Record<string, string> = { online: "#22C55E", away: "#FAAD14", offline: "#9BA1A6" };
+const DOT = { online: "#22C55E", offline: "#9BA1A6" } as const;
 
-export function AgentsTab({ t }: { t: TFn }) {
-  const [available, setAvailable] = useState(true);
+export function AgentsTab({
+  t,
+  agents,
+  generatedAt,
+  migrationPending = false,
+}: {
+  t: TFn;
+  agents: AgentRow[];
+  /** Server read time; the initial render uses it so SSR and hydration agree. */
+  generatedAt: string;
+  migrationPending?: boolean;
+}) {
+  const locale = useLocale();
+  // Relative "last active" times depend on the clock, so they only appear after mount.
+  const [now, setNow] = useState<number | null>(null);
+  useEffect(() => {
+    const tick = () => setNow(Date.now());
+    tick();
+    const id = setInterval(tick, 60000);
+    return () => clearInterval(id);
+  }, []);
+  const clock = now ?? new Date(generatedAt).getTime();
+  const units = { m: t("agt.u_m"), h: t("agt.u_h"), d: t("agt.u_d") };
 
-  const columns: Column<Agent>[] = [
+  const lastActive = (iso: string | null) => {
+    if (!iso) return t("agt.never");
+    if (now == null) return formatDay(iso, locale);
+    const mins = Math.max(0, Math.round((now - new Date(iso).getTime()) / 60000));
+    const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+    if (mins < 60) return rtf.format(-mins, "minute");
+    if (mins < 60 * 24) return rtf.format(-Math.round(mins / 60), "hour");
+    return rtf.format(-Math.round(mins / 1440), "day");
+  };
+
+  const columns: Column<AgentRow>[] = [
     { key: "name", label: t("agt.agent"), render: (r) => <NameCell name={r.name} /> },
-    { key: "team", label: t("agt.team"), render: (r) => <Badge variant="default">{r.team}</Badge> },
+    {
+      key: "staffRole",
+      label: t("agt.role"),
+      render: (r) => <Badge variant="default">{t(`agt.role_${r.staffRole}`)}</Badge>,
+    },
     {
       key: "status",
       label: t("col.status"),
-      render: (r) => (
-        <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold capitalize" style={{ color: DOT[r.status] }}>
-          <span className="w-2 h-2 rounded-full" style={{ background: DOT[r.status] }} />
-          {t(`agt.st_${r.status}`)}
-        </span>
-      ),
-    },
-    {
-      key: "load",
-      label: t("agt.load"),
-      render: (r) => (
-        <span className="inline-flex items-center gap-2">
-          <span className="w-16 h-1.5 rounded-full bg-muted overflow-hidden inline-block">
-            <span
-              className="h-full rounded-full inline-block"
-              style={{ width: `${(r.load / r.cap) * 100}%`, background: r.load >= r.cap ? "#EF4444" : "#EE335F" }}
-            />
+      sortable: false,
+      render: (r) => {
+        const on = isOnline(r.lastActiveAt, clock);
+        return (
+          <span className="inline-flex flex-col">
+            <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold" style={{ color: DOT[on ? "online" : "offline"] }}>
+              <span className="w-2 h-2 rounded-full" style={{ background: DOT[on ? "online" : "offline"] }} />
+              {t(on ? "agt.st_online" : "agt.st_offline")}
+            </span>
+            {!on && <span className="text-[11.5px] text-subtext">{t("agt.last_active", { when: lastActive(r.lastActiveAt) })}</span>}
           </span>
-          <span className="text-[12px] text-subtext tabular-nums">{r.load}/{r.cap}</span>
+        );
+      },
+    },
+    { key: "openAssigned", label: t("agt.open"), render: (r) => <span className="font-mono text-text">{r.openAssigned}</span> },
+    {
+      key: "resolved30",
+      label: t("agt.resolved"),
+      render: (r) => (
+        <span className="font-mono text-text">
+          {r.resolved7} <span className="text-subtext">/ {r.resolved30}</span>
         </span>
       ),
     },
     {
-      key: "csat",
-      label: t("agt.csat"),
-      render: (r) => (
-        <span className="inline-flex items-center gap-1 font-semibold text-text">
-          <DashIcon name="star" className="w-3.5 h-3.5 text-warning" />
-          {r.csat.toFixed(1)}
-        </span>
-      ),
+      key: "medianFirstResponse",
+      label: t("agt.frt"),
+      render: (r) => <span className="text-subtext tabular-nums">{r.medianFirstResponse != null ? formatMinutes(r.medianFirstResponse, units) : "—"}</span>,
     },
-    { key: "frt", label: t("agt.frt"), tdClass: "text-subtext tabular-nums" },
-    { key: "resolved", label: t("agt.resolved"), render: (r) => <span className="font-mono text-text">{r.resolved}</span> },
+    {
+      key: "csatAvg",
+      label: t("agt.csat"),
+      render: (r) =>
+        r.csatAvg != null ? (
+          <span className="inline-flex items-center gap-1 font-semibold text-text">
+            <DashIcon name="star" className="w-3.5 h-3.5 text-warning" />
+            {r.csatAvg.toLocaleString(locale, { maximumFractionDigits: 1, minimumFractionDigits: 1 })}
+            <span className="text-[11px] text-subtext font-normal">({r.csatCount})</span>
+          </span>
+        ) : (
+          <span className="text-subtext">—</span>
+        ),
+    },
   ];
 
-  const online = AGENTS.filter((a) => a.status === "online").length;
+  const online = agents.filter((a) => isOnline(a.lastActiveAt, clock)).length;
+  const open = agents.reduce((s, a) => s + a.openAssigned, 0);
+  const res7 = agents.reduce((s, a) => s + a.resolved7, 0);
+  const rated = agents.filter((a) => a.csatAvg != null);
+  const ratedN = rated.reduce((s, a) => s + a.csatCount, 0);
+  const teamCsat = ratedN ? rated.reduce((s, a) => s + (a.csatAvg as number) * a.csatCount, 0) / ratedN : null;
+
+  if (migrationPending && agents.length === 0) {
+    return (
+      <Card>
+        <EmptyState title={t("mac.migration_title")} description={t("mac.migration")} />
+      </Card>
+    );
+  }
 
   return (
     <>
-      <Card className="mb-5 flex items-center gap-3.5" bodyClassName="">
-        <span className="w-2.5 h-2.5 rounded-full" style={{ background: available ? "#22C55E" : "#9BA1A6" }} />
-        <div className="flex-1">
-          <b className="block text-sm font-bold text-text">{t("agt.you_label")}</b>
-          <span className="text-[12.5px] text-subtext">{t(available ? "agt.you_on" : "agt.you_off")}</span>
-        </div>
-        <Toggle on={available} onClick={() => setAvailable((v) => !v)} />
-      </Card>
-
-      <StatGrid cols={4}>
-        <StatCard label={t("agt.online")} value={online} variant="success" icon="users" change={t("agt.online_chg")} />
-        <StatCard label={t("agt.queue_load")} value="68%" variant="warning" icon="activity" change={t("agt.queue_load_chg")} />
-        <StatCard label={t("agt.team_csat")} value="4.5" variant="primary" icon="star" change={t("agt.team_csat_chg")} />
-        <StatCard label={t("agt.avg_frt")} value="2.2m" variant="info" icon="clock" change={t("agt.avg_frt_chg")} />
-      </StatGrid>
-
-      <DataTable columns={columns} data={AGENTS} keyField="name" empty={t("agt.empty")} />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+        <StatCard label={t("agt.online")} value={online} variant="success" icon="users" change={t("agt.online_chg", { n: agents.length })} />
+        <StatCard label={t("agt.open_total")} value={open} variant="warning" icon="activity" change={t("agt.open_total_chg")} />
+        <StatCard label={t("agt.resolved_7")} value={res7} variant="info" icon="check" change={t("agt.resolved_7_chg")} />
+        <StatCard
+          label={t("agt.team_csat")}
+          value={teamCsat != null ? teamCsat.toLocaleString(locale, { maximumFractionDigits: 1, minimumFractionDigits: 1 }) : "—"}
+          variant="primary"
+          icon="star"
+          change={t("agt.team_csat_chg")}
+        />
+      </div>
+      <DataTable columns={columns} data={agents} keyField="id" empty={t("agt.empty")} />
     </>
   );
 }

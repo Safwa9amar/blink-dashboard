@@ -56,16 +56,6 @@ export interface Agent {
   resolved: number;
 }
 
-// A single CSAT survey response.
-export interface CsatResponse {
-  who: string;
-  score: number;
-  comment: string;
-  agent: string;
-  cat: string;
-  time: string;
-}
-
 // An SLA policy mapping a priority to first-response / resolution targets.
 export interface SlaPolicy {
   name: string;

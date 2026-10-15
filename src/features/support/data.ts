@@ -5,13 +5,11 @@ import type {
   Ticket,
   Article,
   Message,
-  Chat,
   Agent,
-  CsatResponse,
   SlaPolicy,
   Rule,
 } from "./types";
-export type { Ticket, Article, Message, Chat, Agent, CsatResponse, SlaPolicy, Rule } from "./types";
+export type { Ticket, Article, Message, Chat, Agent, SlaPolicy, Rule } from "./types";
 
 export const PRIO: Record<string, string> = {
   urgent: "#EF4444",
@@ -160,46 +158,7 @@ export const CHANNEL_COLOR: Record<string, string> = {
   Web: "#3B82F6",
   Email: "#FAAD14",
 };
-export const CHATS: Chat[] = [
-  { id: "CH-1", who: "Lina Cherif", role: "customer", channel: "In-app", preview: "My order never arrived…", unread: 2, wait: "0:42", status: "active" },
-  { id: "CH-2", who: "Omar Ziani", role: "customer", channel: "WhatsApp", preview: "Rider asked for cash on a prepaid order", unread: 1, wait: "1:18", status: "waiting" },
-  { id: "CH-3", who: "Yacine Haddad", role: "rider", channel: "In-app", preview: "When will my payout land?", unread: 0, wait: "3:05", status: "waiting" },
-  { id: "CH-4", who: "Superette El Baraka", role: "agent", channel: "Web", preview: "QR scanner stopped working", unread: 0, wait: "—", status: "idle" },
-  { id: "CH-5", who: "Nadia Boudiaf", role: "customer", channel: "WhatsApp", preview: "Thanks, that fixed it! 🙌", unread: 0, wait: "—", status: "idle" },
-];
-export const CHAT_THREAD: Message[] = [
-  { from: "customer", who: "Lina Cherif", text: "Hi, my order never arrived but the app says delivered.", time: "0:42" },
-  { from: "agent", who: "You", text: "Hi Lina! Let me pull up the order right now.", time: "0:30" },
-  { from: "customer", who: "Lina Cherif", text: "Order #BL-88421, thank you 🙏", time: "0:12" },
-];
-
-// ── CSAT / satisfaction ───────────────────────────────────────────────────
-// Star distribution — index 0 = 5★ … index 4 = 1★.
-export const CSAT_DIST = [
-  { stars: 5, count: 1840, pct: 72 },
-  { stars: 4, count: 410, pct: 16 },
-  { stars: 3, count: 153, pct: 6 },
-  { stars: 2, count: 89, pct: 3 },
-  { stars: 1, count: 76, pct: 3 },
-];
-export const CSAT_TREND: ColumnDatum[] = [
-  { label: "W1", values: [4.3] },
-  { label: "W2", values: [4.4] },
-  { label: "W3", values: [4.5] },
-  { label: "W4", values: [4.4] },
-  { label: "W5", values: [4.6] },
-  { label: "W6", values: [4.6] },
-];
-export const CSAT_RESPONSES: CsatResponse[] = [
-  { who: "Lina Cherif", score: 5, comment: "Super fast, got my refund in minutes!", agent: "Sara Mansouri", cat: "Refund", time: "12m ago" },
-  { who: "Omar Ziani", score: 2, comment: "Took three messages to get an answer.", agent: "Karim Bensaid", cat: "Payment", time: "1h ago" },
-  { who: "Yacine Haddad", score: 5, comment: "Agent explained the payout clearly. Thanks!", agent: "Sara Mansouri", cat: "Earnings", time: "2h ago" },
-  { who: "Nadia Boudiaf", score: 4, comment: "Resolved but I had to repeat my issue.", agent: "Mehdi Larbi", cat: "Order", time: "3h ago" },
-  { who: "Sofiane Brahimi", score: 1, comment: "Issue still not fixed after a day.", agent: "Karim Bensaid", cat: "Technical", time: "5h ago" },
-];
-
 // ── Agents / team roster ──────────────────────────────────────────────────
-export const AGENT_STATUS: Record<string, Variant> = { online: "success", away: "warning", offline: "default" };
 export const AGENTS: Agent[] = [
   { name: "Sara Mansouri", team: "Tier 1", status: "online", load: 6, cap: 8, csat: 4.8, frt: "1.4m", resolved: 38 },
   { name: "Karim Bensaid", team: "Payments", status: "online", load: 8, cap: 8, csat: 4.1, frt: "3.2m", resolved: 24 },

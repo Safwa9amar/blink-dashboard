@@ -9,8 +9,6 @@ import {
   InboxTab,
   KbTab,
   CreateArticle,
-  CsatTab,
-  AgentsTab,
   SlaTab,
   useKbStore,
   type SupportArticleType,
@@ -23,8 +21,6 @@ type Tab =
   | "inbox"
   | "kb"
   | "create"
-  | "csat"
-  | "agents"
   | "sla";
 
 export default function SupportClient({ tab }: { tab: Tab }) {
@@ -69,10 +65,6 @@ export default function SupportClient({ tab }: { tab: Tab }) {
         />
       );
     }
-    case "csat":
-      return <CsatTab t={t} />;
-    case "agents":
-      return <AgentsTab t={t} />;
     case "sla":
       return <SlaTab t={t} />;
     default:
