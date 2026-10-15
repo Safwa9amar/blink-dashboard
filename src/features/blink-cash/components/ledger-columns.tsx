@@ -1,8 +1,15 @@
+import { useLocale } from "next-intl";
 import { Badge, DashIcon, type Column } from "@/components/ui";
+import { formatDay } from "@/features/promotions";
 import { TX_TYPE_ICON, TX_METHOD_ICON, TX_STATUS_VARIANT, type BlinkTransaction } from "../data";
 import type { TFn } from "../types";
 
 const money = (n: number) => Number(n ?? 0).toLocaleString();
+
+// Day-first, Algiers time, same on server and client (toLocaleDateString() gave US month/day).
+function LedgerDay({ iso }: { iso: string }) {
+  return <span className="text-subtext">{formatDay(iso, useLocale())}</span>;
+}
 
 export function ledgerColumns(t: TFn): Column<BlinkTransaction>[] {
   return [
@@ -84,7 +91,7 @@ export function ledgerColumns(t: TFn): Column<BlinkTransaction>[] {
     {
       key: "created_at",
       label: t("col.when"),
-      render: (r) => <span className="text-subtext">{new Date(r.created_at).toLocaleDateString()}</span>,
+      render: (r) => <LedgerDay iso={r.created_at} />,
     },
   ];
 }
