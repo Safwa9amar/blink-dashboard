@@ -448,14 +448,14 @@
       "acct_number": "Account number",
       "acct_holder": "Holder",
       "add_account": "Add account",
-      "err_pct": "Enter a percentage from 0 to 50.",
+      "err_pct": "Enter a percentage from 0 to 20.",
       "err_amount": "Enter a valid amount.",
       "err_max_lt_min": "The maximum must be at least the minimum.",
       "err_month_lt_day": "The monthly limit can't be below the daily one.",
       "err_expiry": "Enter whole minutes, 1 to 1440.",
       "err_quick": "Enter positive whole numbers, separated by commas.",
       "err_accounts": "Every account needs a label, number and holder (and at least one when electronic is on).",
-      "err_methods": "Each method needs a unique id (letters, digits, - or _) and a label."
+      "err_methods": "Each method needs a unique id (lowercase letters, digits, - or _, up to 32) and a label."
     },
     "audit": {
       "col_actor": "Staff",

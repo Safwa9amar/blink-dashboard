@@ -18,8 +18,17 @@ export const KNOWN_ERROR_CODES = [
   "forbidden",
 ] as const;
 
+// The staff API's own names for codes that share a message here.
+const ALIASES: Record<string, string> = {
+  adjust_limit_exceeded: "adjust_limit",
+  invalid_settings: "invalid",
+  invalid_offer: "invalid",
+  invalid_amount: "invalid",
+};
+
 export function knownErrorCode(code: string | null | undefined): string | null {
-  return code && (KNOWN_ERROR_CODES as readonly string[]).includes(code) ? code : null;
+  const c = code ? (ALIASES[code] ?? code) : null;
+  return c && (KNOWN_ERROR_CODES as readonly string[]).includes(c) ? c : null;
 }
 
 /** Postgres / PostgREST "table or column missing" — the migration isn't applied yet. */

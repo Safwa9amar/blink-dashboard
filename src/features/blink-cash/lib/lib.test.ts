@@ -148,6 +148,8 @@ describe("errors", () => {
   it("knows server codes", () => {
     expect(knownErrorCode("insufficient_funds")).toBe("insufficient_funds");
     expect(knownErrorCode("weird")).toBeNull();
+    expect(knownErrorCode("adjust_limit_exceeded")).toBe("adjust_limit");
+    expect(knownErrorCode("invalid_settings")).toBe("invalid");
     expect(knownErrorCode(undefined)).toBeNull();
   });
   it("detects a missing table or column", () => {

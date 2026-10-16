@@ -146,7 +146,7 @@ export function validateSettings(f: SettingsForm): { ok: true; payload: Settings
   const errors: SettingsErrors = {};
   const pct = (k: "deposit_fee_pct" | "withdrawal_fee_pct") => {
     const n = parseNum(f[k]);
-    if (!(n >= 0 && n <= 50)) errors[k] = "err_pct";
+    if (!(n >= 0 && n <= 20)) errors[k] = "err_pct";
     return Math.round((n / 100) * 1e6) / 1e6;
   };
   const money = (k: keyof SettingsForm, allowZero = true) => {
@@ -187,7 +187,7 @@ export function validateSettings(f: SettingsForm): { ok: true; payload: Settings
 
   const ids = f.dues_payment_methods.map((m) => m.id.trim());
   if (
-    f.dues_payment_methods.some((m) => !m.id.trim() || !m.label.trim() || !/^[a-z0-9_-]+$/i.test(m.id.trim())) ||
+    f.dues_payment_methods.some((m) => !m.id.trim() || !m.label.trim() || !/^[a-z0-9_-]{1,32}$/.test(m.id.trim())) ||
     new Set(ids).size !== ids.length
   )
     errors.dues_payment_methods = "err_methods";

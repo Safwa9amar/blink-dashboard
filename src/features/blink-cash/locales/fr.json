@@ -448,14 +448,14 @@
       "acct_number": "Numéro de compte",
       "acct_holder": "Titulaire",
       "add_account": "Ajouter un compte",
-      "err_pct": "Saisissez un pourcentage de 0 à 50.",
+      "err_pct": "Saisissez un pourcentage entre 0 et 20.",
       "err_amount": "Saisissez un montant valide.",
       "err_max_lt_min": "Le maximum doit être au moins égal au minimum.",
       "err_month_lt_day": "Le plafond mensuel ne peut pas être inférieur au quotidien.",
       "err_expiry": "Saisissez des minutes entières, de 1 à 1440.",
       "err_quick": "Saisissez des entiers positifs séparés par des virgules.",
       "err_accounts": "Chaque compte exige un libellé, un numéro et un titulaire (et au moins un si l'électronique est activé).",
-      "err_methods": "Chaque mode exige un id unique (lettres, chiffres, - ou _) et un libellé."
+      "err_methods": "Chaque mode exige un id unique (minuscules, chiffres, - ou _, 32 max.) et un libellé."
     },
     "audit": {
       "col_actor": "Équipe",
