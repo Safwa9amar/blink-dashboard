@@ -13,11 +13,11 @@ import { fetchBlinkApi } from "@/lib/blink-api-base";
 // Base URLs (Render primary → spare, BLINK_API_BASE_URL override) live in blink-api-base.ts.
 export { BLINK_API_BASE } from "@/lib/blink-api-base";
 
-export type BlinkApiMethod = "GET" | "POST" | "PATCH" | "DELETE";
+export type BlinkApiMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 export type BlinkApiResult<T> =
   | { ok: true; status: number; data: T }
-  | { ok: false; status: number; error: string };
+  | { ok: false; status: number; error: string; /** blink-server's machine-readable `code`, when it sent one. */ code?: string };
 
 export async function blinkApi<T = unknown>(
   path: string,
@@ -43,11 +43,13 @@ export async function blinkApi<T = unknown>(
     });
     const json = (await res.json().catch(() => null)) as unknown;
     if (!res.ok) {
-      const error = (json as { error?: unknown } | null)?.error;
+      const body = json as { error?: unknown; code?: unknown } | null;
+      const error = body?.error;
       return {
         ok: false,
         status: res.status,
         error: typeof error === "string" ? error : `Request failed (${res.status})`,
+        ...(typeof body?.code === "string" ? { code: body.code } : {}),
       };
     }
     return { ok: true, status: res.status, data: json as T };

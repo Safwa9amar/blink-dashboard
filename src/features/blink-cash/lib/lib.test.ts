@@ -155,6 +155,8 @@ describe("errors", () => {
     expect(isMissingSchema({ code: "PGRST205" })).toBe(true);
     expect(isMissingSchema({ message: 'column "x" does not exist' })).toBe(true);
     expect(isMissingSchema({ code: "23505", message: "dup" })).toBe(false);
+    expect(isMissingSchema({ code: "22P02", message: 'invalid input value for enum transaction_status: "review"' })).toBe(true);
+    expect(isMissingSchema({ code: "22P02", message: "invalid input syntax for type uuid" })).toBe(false);
     expect(isMissingSchema(null)).toBe(false);
   });
 });
@@ -243,5 +245,39 @@ describe("attention", () => {
     const items = attentionItems({ reviewCount: 2, pendingAgentPayments: 0, pendingMerchantPayments: 1, agentsNearLimit: 0, driftCount: null, frozenWallets: 3 });
     expect(items.map((i) => i.key)).toEqual(["review", "merchant_payments", "frozen"]);
     expect(attentionItems({ reviewCount: 0, pendingAgentPayments: 0, pendingMerchantPayments: 0, agentsNearLimit: 0, driftCount: 4, frozenWallets: 0 })[0].key).toBe("drift");
+  });
+});
+
+import { normalizeReconciliation } from "./reconciliation";
+describe("reconciliation", () => {
+  it("accepts the likely shape and derives diff/drift", () => {
+    const r = normalizeReconciliation({
+      mismatches: [{ user_id: "u1", ledger_balance: "1000", derived_balance: 900 }],
+      totals: { circulation: 5000, held: 200, wallets: 3 },
+    });
+    expect(r.mismatches[0]).toMatchObject({ userId: "u1", ledger: 1000, derived: 900, diff: 100 });
+    expect(r).toMatchObject({ circulation: 5000, held: 200, wallets: 3, drift: 1 });
+  });
+  it("throws on an unrelated payload", () => {
+    expect(() => normalizeReconciliation({ error: "x" })).toThrow();
+  });
+});
+
+import { formatDateTime, safeHttpUrl, shortId, signedDA } from "./format";
+describe("format", () => {
+  it("formats Algiers date-time and tolerates bad input", () => {
+    expect(formatDateTime("2026-10-16T13:05:00Z", "fr")).toContain("14:05");
+    expect(formatDateTime(null, "en")).toBe("—");
+    expect(formatDateTime("nope", "en")).toBe("—");
+  });
+  it("signs amounts", () => {
+    expect(signedDA(1500)).toBe("+1,500 DA");
+    expect(signedDA(-300.5)).toBe("−300.5 DA");
+  });
+  it("only allows http(s) links", () => {
+    expect(safeHttpUrl("https://x.dz/r.png")).toBe("https://x.dz/r.png");
+    expect(safeHttpUrl("javascript:alert(1)")).toBeNull();
+    expect(safeHttpUrl("")).toBeNull();
+    expect(shortId("12345678-aaaa")).toBe("12345678");
   });
 });

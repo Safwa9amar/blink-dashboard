@@ -11,13 +11,40 @@ export interface BlinkTransaction {
   amount: number;
   fees: number;
   total: number;
-  status: "completed" | "cancelled" | "pending";
+  status: "completed" | "cancelled" | "pending" | "review" | "reversed";
   method: "electronic" | "agent" | null;
   offer_title: string | null;
   offer_detail: string | null;
   rating: number | null;
   feedback: string | null;
   created_at: string;
+  // Full Blink Cash columns (migration 20261016120000). Absent until it is applied.
+  pending_id?: string | null;
+  shop_id?: string | null;
+  expires_at?: string | null;
+  completed_at?: string | null;
+  cancelled_at?: string | null;
+  cancel_reason?: string | null;
+  cancelled_by?: string | null;
+  reviewed_by?: string | null;
+  reviewed_at?: string | null;
+  reference?: string | null;
+  receipt_url?: string | null;
+  payout_account?: { type?: string; number?: string; holder?: string } | null;
+  client_ref?: string | null;
+  reversed_by?: string | null;
+  reversed_at?: string | null;
+  reversal_reason?: string | null;
+  offer_id?: string | null;
+  bonus_amount?: number | null;
+  staff_note?: string | null;
+}
+
+/** A transaction with the people on it resolved to names (ledger list, review queue). */
+export interface LedgerRow extends BlinkTransaction {
+  userName: string | null;
+  userPhone: string | null;
+  agentName: string | null;
 }
 
 // Merchant dues — the commission Blink takes on a store's delivered orders, minus
@@ -139,6 +166,8 @@ export interface AgentDueRow {
   lastPaymentAt: string | null;
   rating: number | null;
   ratingsCount: number;
+  /** Per-agent cash limit from agent_profiles.credit_limit (null = use the settings default). */
+  creditLimit?: number | null;
 }
 
 export interface AgentDuesPayment {

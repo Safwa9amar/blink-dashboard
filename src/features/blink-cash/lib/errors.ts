@@ -26,5 +26,7 @@ export function knownErrorCode(code: string | null | undefined): string | null {
 export function isMissingSchema(e: { code?: string; message?: string } | null | undefined): boolean {
   if (!e) return false;
   if (e.code && ["42703", "42P01", "PGRST204", "PGRST205"].includes(e.code)) return true;
+  // A filter on a not-yet-added enum value (transaction_status 'review' / 'reversed').
+  if (e.code === "22P02" && /enum/i.test(e.message ?? "")) return true;
   return /does not exist|schema cache/i.test(e.message ?? "");
 }
