@@ -1,0 +1,30 @@
+// Server error codes surfaced by the staff API (spec §1 / §5 / §7) that have a
+// translated message under `blink_cash.err.<code>`.
+export const KNOWN_ERROR_CODES = [
+  "insufficient_funds",
+  "wallet_frozen",
+  "not_pending",
+  "not_in_review",
+  "not_completed",
+  "expired",
+  "wrong_agent",
+  "not_found",
+  "adjust_limit",
+  "negative_balance",
+  "already_frozen",
+  "not_frozen",
+  "agent_limit_reached",
+  "invalid",
+  "forbidden",
+] as const;
+
+export function knownErrorCode(code: string | null | undefined): string | null {
+  return code && (KNOWN_ERROR_CODES as readonly string[]).includes(code) ? code : null;
+}
+
+/** Postgres / PostgREST "table or column missing" — the migration isn't applied yet. */
+export function isMissingSchema(e: { code?: string; message?: string } | null | undefined): boolean {
+  if (!e) return false;
+  if (e.code && ["42703", "42P01", "PGRST204", "PGRST205"].includes(e.code)) return true;
+  return /does not exist|schema cache/i.test(e.message ?? "");
+}
