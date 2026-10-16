@@ -1,8 +1,9 @@
+import Link from "next/link";
 import { useLocale } from "next-intl";
 import { Badge, DashIcon, type Column } from "@/components/ui";
 import { formatDay } from "@/features/promotions";
-import { TX_TYPE_ICON, TX_METHOD_ICON, TX_STATUS_VARIANT, type BlinkTransaction } from "../data";
-import type { TFn } from "../types";
+import { TX_TYPE_ICON, TX_METHOD_ICON, TX_STATUS_VARIANT } from "../data";
+import type { LedgerRow, TFn } from "../types";
 
 const money = (n: number) => Number(n ?? 0).toLocaleString();
 
@@ -11,12 +12,41 @@ function LedgerDay({ iso }: { iso: string }) {
   return <span className="text-subtext">{formatDay(iso, useLocale())}</span>;
 }
 
-export function ledgerColumns(t: TFn): Column<BlinkTransaction>[] {
+export function ledgerColumns(t: TFn): Column<LedgerRow>[] {
   return [
     {
       key: "id",
       label: t("col.txn"),
-      render: (r) => <span className="font-mono text-primary font-semibold">{r.id.slice(0, 8)}</span>,
+      render: (r) => (
+        <Link href={`/blink-cash/ledger/${r.id}`} className="font-mono text-primary font-semibold hover:underline">
+          {r.id.slice(0, 8)}
+        </Link>
+      ),
+    },
+    {
+      key: "userName",
+      label: t("col.account"),
+      render: (r) => (
+        <div className="min-w-[120px]">
+          <p className="text-text" dir="auto">
+            {r.userName ?? "—"}
+          </p>
+          {r.userPhone && (
+            <p className="text-xs text-subtext" dir="ltr">
+              {r.userPhone}
+            </p>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: "agentName",
+      label: t("col.agent"),
+      render: (r) => (
+        <span className="text-subtext" dir="auto">
+          {r.agentName ?? "—"}
+        </span>
+      ),
     },
     {
       key: "type",

@@ -15,7 +15,10 @@ import {
   type Exposure,
 } from "../data";
 import type { TFn } from "../types";
+import { capacityLevel, capacityPercent, capacityRatio, effectiveLimit } from "../lib/capacity";
 import { RemindButton } from "./remind-button";
+import { EditLimitButton, PendingPaymentActions, RecordPaymentButton, type PayMethod } from "./payments";
+import { MigrationNotice } from "./ops-shared";
 
 type Filter = "all" | "owing" | "credit" | "high";
 
@@ -72,7 +75,22 @@ function Kpi({ label, value, change, color }: { label: string; value: string | n
 }
 
 /** Agent cash dues — what each agent owes Blink, from blink-server. */
-export function AgentDues({ t, summary, error }: { t: TFn; summary: AgentDuesSummary | null; error?: string }) {
+export function AgentDues({
+  t,
+  summary,
+  error,
+  defaultLimit = null,
+  methods = [],
+  migrationPending = false,
+}: {
+  t: TFn;
+  summary: AgentDuesSummary | null;
+  error?: string;
+  /** blink_cash_settings.agent_credit_limit — used when an agent has no limit of its own. */
+  defaultLimit?: number | null;
+  methods?: PayMethod[];
+  migrationPending?: boolean;
+}) {
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const [now, setNow] = useState<number | null>(null);
@@ -193,6 +211,44 @@ export function AgentDues({ t, summary, error }: { t: TFn; summary: AgentDuesSum
         ),
     },
     {
+      key: "creditLimit",
+      label: t("agents.col.limit"),
+      render: (r) => {
+        const limit = effectiveLimit(r.creditLimit, defaultLimit);
+        return (
+          <div className="whitespace-nowrap">
+            <p className="font-mono text-text">{limit === null ? "—" : da(limit)}</p>
+            <p className="text-xs text-subtext">
+              {r.creditLimit == null ? t("agents.limit_default") : t("agents.limit_custom")} ·{" "}
+              <EditLimitButton t={t} agentId={r.id} name={r.name} current={r.creditLimit ?? null} fallback={defaultLimit} />
+            </p>
+          </div>
+        );
+      },
+    },
+    {
+      key: "capacity",
+      label: t("agents.col.capacity"),
+      render: (r) => {
+        const ratio = capacityRatio(r.owed, effectiveLimit(r.creditLimit, defaultLimit));
+        const level = capacityLevel(ratio);
+        const color = level === "full" ? "bg-danger" : level === "warn" ? "bg-warning" : "bg-success";
+        const pct = capacityPercent(ratio);
+        return ratio === null ? (
+          <span className="text-subtext">—</span>
+        ) : (
+          <div className="min-w-[110px]" title={t(`agents.capacity_${level}`)}>
+            <div className="h-2 rounded-full bg-muted overflow-hidden" role="progressbar" aria-valuenow={Math.min(100, pct ?? 0)} aria-valuemin={0} aria-valuemax={100}>
+              <div className={`h-full ${color}`} style={{ width: `${Math.min(100, pct ?? 0)}%` }} />
+            </div>
+            <p className={`text-xs mt-1 tabular-nums ${level === "ok" ? "text-subtext" : level === "warn" ? "text-warning" : "text-danger"}`}>
+              {pct}%
+            </p>
+          </div>
+        );
+      },
+    },
+    {
       key: "exposureRank",
       label: t("agents.col.exposure"),
       render: (r) => <Badge variant={EXPOSURE_VARIANT[r.exposure]}>{t(`agents.exposure.${r.exposure}`)}</Badge>,
@@ -222,7 +278,12 @@ export function AgentDues({ t, summary, error }: { t: TFn; summary: AgentDuesSum
       key: "act",
       label: "",
       sortable: false,
-      render: (r) => (r.owed > 0 ? <RemindButton t={t} id={r.id} remind={remindAgentDues} /> : null),
+      render: (r) => (
+        <div className="flex flex-col items-start gap-1.5">
+          <RecordPaymentButton t={t} kind="agent" partyId={r.id} partyName={r.name} methods={methods} suggested={r.owed} />
+          {r.owed > 0 ? <RemindButton t={t} id={r.id} remind={remindAgentDues} /> : null}
+        </div>
+      ),
     },
   ];
 
@@ -257,10 +318,17 @@ export function AgentDues({ t, summary, error }: { t: TFn; summary: AgentDuesSum
       label: t("col.status"),
       render: (r) => <Badge variant={TX_STATUS_VARIANT[r.status] ?? "default"}>{t(`tx_status.${r.status}`)}</Badge>,
     },
+    {
+      key: "act",
+      label: "",
+      sortable: false,
+      render: (r) => (r.status === "pending" ? <PendingPaymentActions t={t} kind="agent" id={r.id} /> : null),
+    },
   ];
 
   return (
     <>
+      {migrationPending && <MigrationNotice t={t} />}
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 mb-6">
         <Kpi label={t("agents.kpi_agents")} value={summary.agents.length} change={t("agents.kpi_agents_chg")} color="text-primary" />
         <Kpi label={t("agents.kpi_owing")} value={summary.agentsOwing} change={t("agents.kpi_owing_chg")} color="text-warning" />
