@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { Badge, Button, Card, EmptyState } from "@/components/ui";
 import { updateDefault } from "@/app/d/pricing/action";
-import { formToValue, formatValueLines, valueToForm, type FeeForm } from "../format";
+import { fieldDefs, formToValue, formatValueLines, valueToForm, type FeeForm } from "../format";
 import type { Fee, FeeGroup, TFn } from "../types";
 import { FeeValueFields } from "./fee-value-fields";
 
@@ -41,17 +41,21 @@ function FeeRow({ fee, canEdit }: { fee: Fee; canEdit: boolean }) {
   const t = useTranslations("pricing");
   const router = useRouter();
   const [editing, setEditing] = useState(false);
-  const [message, setMessage] = useState<{ text: string; stale?: boolean } | null>(null);
+  const [message, setMessage] = useState<{
+    text: string;
+    stale?: boolean;
+  } | null>(null);
   const [pending, start] = useTransition();
+  const fields = useMemo(() => fieldDefs(fee), [fee]);
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<FeeForm>({ defaultValues: valueToForm(fee.key, fee.value) });
+  } = useForm<FeeForm>({ defaultValues: valueToForm(fields, fee.value) });
 
   const submit = handleSubmit((form) => {
-    const value = formToValue(fee.key, form);
+    const value = formToValue(fields, form);
     if (!value) return;
     setMessage(null);
     start(async () => {
@@ -86,7 +90,11 @@ function FeeRow({ fee, canEdit }: { fee: Fee; canEdit: boolean }) {
           <div className="mt-2 flex flex-wrap items-center gap-2">
             {fee.active_overrides > 0 ? (
               <Link href={`/pricing/overrides?key=${fee.key}&status=active`}>
-                <Badge variant="primary">{t("defaults.active_overrides", { count: fee.active_overrides })}</Badge>
+                <Badge variant="primary">
+                  {t("defaults.active_overrides", {
+                    count: fee.active_overrides,
+                  })}
+                </Badge>
               </Link>
             ) : (
               <span className="text-xs text-subtext">{t("defaults.no_overrides")}</span>
@@ -102,7 +110,7 @@ function FeeRow({ fee, canEdit }: { fee: Fee; canEdit: boolean }) {
 
       {editing && (
         <form onSubmit={submit} className="mt-4 space-y-4">
-          <FeeValueFields feeKey={fee.key} register={register as never} errors={errors as never} disabled={pending} />
+          <FeeValueFields fields={fields} register={register as never} errors={errors as never} disabled={pending} />
           {message && <p className="text-sm text-danger">{message.text}</p>}
           <div className="flex items-center gap-2">
             <Button type="submit" size="sm" loading={pending}>
@@ -114,7 +122,7 @@ function FeeRow({ fee, canEdit }: { fee: Fee; canEdit: boolean }) {
               size="sm"
               disabled={pending}
               onClick={() => {
-                reset(valueToForm(fee.key, fee.value));
+                reset(valueToForm(fields, fee.value));
                 setMessage(null);
                 setEditing(false);
               }}

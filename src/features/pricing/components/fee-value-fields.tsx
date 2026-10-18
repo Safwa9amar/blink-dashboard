@@ -3,19 +3,19 @@
 import type { RegisterOptions, UseFormRegisterReturn } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { fInput } from "@/components/ui";
-import { KEY_FIELDS, type FieldDef } from "../format";
-import type { PricingKey } from "../types";
+import type { FieldDef } from "../format";
 
 // Unit-aware inputs for one fee value. Rates are typed as percent, amounts in DA; the
 // parent converts with formToValue(). Fare objects render as one small group per vehicle.
 export function FeeValueFields({
-  feeKey,
+  fields,
   register,
   prefix = "",
   errors,
   disabled,
 }: {
-  feeKey: PricingKey;
+  /** Input definitions from the server catalog (see fieldDefs). */
+  fields: FieldDef[];
   /** Form `register` (any form shape); field names are `${prefix}${field.name}`. */
   register: (name: never, options?: RegisterOptions<never, never>) => UseFormRegisterReturn;
   prefix?: string;
@@ -23,7 +23,6 @@ export function FeeValueFields({
   disabled?: boolean;
 }) {
   const t = useTranslations("pricing");
-  const fields = KEY_FIELDS[feeKey];
   const groups: { vehicle?: "bicycle" | "motorcycle"; fields: FieldDef[] }[] = [];
   for (const f of fields) {
     const last = groups[groups.length - 1];
@@ -52,24 +51,33 @@ export function FeeValueFields({
                   <input
                     type="number"
                     inputMode="decimal"
-                    step="any"
+                    step={f.step}
                     disabled={disabled}
                     className={`${fInput} pe-12 disabled:opacity-60`}
-                    {...register(`${prefix}${f.name}` as never, {
-                      required: t("errors.number"),
-                      validate: (v: unknown) => {
-                        const n = Number(String(v).replace(",", "."));
-                        if (!Number.isFinite(n)) return t("errors.number");
-                        if (n < f.min || n > f.max) return t("errors.range", { min: f.min, max: f.max });
-                        return true;
-                      },
-                    } as never)}
+                    {...register(
+                      `${prefix}${f.name}` as never,
+                      {
+                        required: t("errors.number"),
+                        validate: (v: unknown) => {
+                          const n = Number(String(v).replace(",", "."));
+                          if (!Number.isFinite(n)) return t("errors.number");
+                          if (n < f.min || n > f.max)
+                            return t("errors.range", {
+                              min: f.min,
+                              max: f.max,
+                            });
+                          return true;
+                        },
+                      } as never,
+                    )}
                   />
                   <span className="pointer-events-none absolute end-3 top-1/2 -translate-y-1/2 text-xs text-subtext">
                     {unitLabel(f)}
                   </span>
                 </span>
-                {errors?.[f.name] && <span className="block text-[11.5px] text-danger mt-1">{errors[f.name]?.message as string}</span>}
+                {errors?.[f.name] && (
+                  <span className="block text-[11.5px] text-danger mt-1">{errors[f.name]?.message as string}</span>
+                )}
               </label>
             ))}
           </div>

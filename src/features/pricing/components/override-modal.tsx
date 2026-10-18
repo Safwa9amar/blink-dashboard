@@ -2,12 +2,21 @@
 
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { useLocale, useTranslations } from "next-intl";
 import { Button, FormRow, Modal, fInput } from "@/components/ui";
 import { createOverride, previewPricing, updateOverride } from "@/app/d/pricing/action";
-import { exampleLine, formToValue, formatValueInline, valueToForm, type EffectiveMap, type FeeForm } from "../format";
-import type { Fee, Override, PartnerHit, PartnerKind, PricingKey, TFn } from "../types";
+import {
+  SAMPLE,
+  exampleLine,
+  fieldDefs,
+  formMatchesValue,
+  formToValue,
+  formatValueInline,
+  valueToForm,
+  type FeeForm,
+} from "../format";
+import type { Fee, FeeValue, Override, PartnerHit, PartnerKind, PreviewExamples, PricingKey, TFn } from "../types";
 import { WILAYA_OPTIONS } from "../wilayas";
 import { FeeValueFields } from "./fee-value-fields";
 import { PartnerPicker } from "./partner-picker";
@@ -35,7 +44,11 @@ export interface OverridePreset {
 
 const partnerOf = (o: Override | null | undefined): PartnerHit | null =>
   o && (o.merchant_id || o.agent_id)
-    ? { id: (o.merchant_id ?? o.agent_id) as string, name: o.partner_name ?? "", sub: "" }
+    ? {
+        id: (o.merchant_id ?? o.agent_id) as string,
+        name: o.partner_name ?? "",
+        sub: "",
+      }
     : null;
 
 export function OverrideModal({
@@ -74,70 +87,110 @@ export function OverrideModal({
     starts_at: toInputDate(override?.starts_at),
     ends_at: toInputDate(override?.ends_at),
     note: override?.note ?? "",
-    value: valueToForm(startKey, override?.value ?? fees.find((f) => f.key === startKey)?.value),
+    value: valueToForm(
+      fieldDefs(fees.find((f) => f.key === startKey)),
+      override?.value ?? fees.find((f) => f.key === startKey)?.value,
+    ),
   });
 
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     reset,
     getValues,
     formState: { errors },
   } = useForm<FormShape>({ defaultValues: initial() });
 
-  const key = watch("key");
-  const service = watch("service");
-  const wilaya = watch("wilaya_code");
-  const liveValue = watch("value");
+  const key = useWatch({ control, name: "key" });
+  const service = useWatch({ control, name: "service" });
+  const wilaya = useWatch({ control, name: "wilaya_code" });
+  const liveValue = useWatch({ control, name: "value" });
   const fee = fees.find((f) => f.key === key);
+  const fields = useMemo(() => fieldDefs(fee), [fee]);
   const partnerKind: PartnerKind | null = fee?.scopes.merchant ? "merchant" : fee?.scopes.agent ? "agent" : null;
 
   const [partner, setPartner] = useState<PartnerHit | null>(partnerOf(override) ?? preset?.partner ?? null);
-  const [error, setError] = useState<{ text: string; conflictId?: string } | null>(null);
-  const [effective, setEffective] = useState<EffectiveMap>({});
+  const [error, setError] = useState<{
+    text: string;
+    conflictId?: string;
+  } | null>(null);
+  const [effective, setEffective] = useState<Partial<Record<PricingKey, FeeValue>>>({});
+  const [preview, setPreview] = useState<{
+    id: string;
+    before?: PreviewExamples;
+    after?: PreviewExamples;
+  } | null>(null);
   const [pending, start] = useTransition();
   const touched = useRef(false);
 
   // Reset whenever the modal opens for another target.
   useEffect(() => {
     if (!open) return;
+    /* eslint-disable react-hooks/set-state-in-effect */
     reset(initial());
     setPartner(partnerOf(override) ?? preset?.partner ?? null);
     setError(null);
     touched.current = false;
+    /* eslint-enable react-hooks/set-state-in-effect */
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, override, preset, initialKey]);
 
-  // Effective values at the chosen scope: pre-fill the value (create mode, until the
-  // user types) and feed the example line.
+  // Scope context shared by the effective-values lookup and the example preview.
   const partnerId = partner?.id;
-  useEffect(() => {
-    if (!open) return;
-    const ctx = {
+  const ctx = useMemo(
+    () => ({
       ...(service ? { service } : {}),
       ...(wilaya ? { wilaya_code: wilaya } : {}),
       ...(partnerId && partnerKind ? { [`${partnerKind}_id`]: partnerId } : {}),
-    };
+    }),
+    [service, wilaya, partnerId, partnerKind],
+  );
+
+  // Effective values at the chosen scope: pre-fill the value (create mode, until the user types).
+  useEffect(() => {
+    if (!open) return;
     let alive = true;
     previewPricing(ctx).then((res) => {
       if (!alive || !res.ok) return;
-      const map: EffectiveMap = {};
+      const map: Partial<Record<PricingKey, FeeValue>> = {};
       res.data.values.forEach((v) => (map[v.key] = v.value));
       setEffective(map);
-      if (!editing && !touched.current && map[key]) reset({ ...getValues(), value: valueToForm(key, map[key]) });
+      if (!editing && !touched.current && map[key]) reset({ ...getValues(), value: valueToForm(fields, map[key]) });
     });
     return () => {
       alive = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, key, service, wilaya, partnerId, partnerKind, editing]);
+  }, [open, key, ctx, editing]);
+
+  // Before -> after example from the server (debounced while typing).
+  const candidate = useMemo(() => formToValue(fields, liveValue ?? {}), [fields, liveValue]);
+  const previewId = JSON.stringify([key, ctx, candidate]);
+  useEffect(() => {
+    if (!open || !candidate) return;
+    let alive = true;
+    const timer = setTimeout(() => {
+      previewPricing(ctx, { km: SAMPLE.km, amount: SAMPLE.amount }, { key, value: candidate }).then((res) => {
+        if (!alive) return;
+        setPreview(res.ok ? { id: previewId, before: res.data.examples, after: res.data.candidate_examples } : null);
+      });
+    }, 400);
+    return () => {
+      alive = false;
+      clearTimeout(timer);
+    };
+  }, [open, ctx, key, candidate, previewId]);
 
   const example = useMemo(() => {
-    const v = formToValue(key, liveValue ?? {});
-    return v ? exampleLine(key, v, effective, tf) : null;
+    if (!candidate) return null;
+    const fresh = preview?.id === previewId ? preview : null;
+    const served = exampleLine(key, service, fresh?.before, fresh?.after, tf);
+    if (served) return served;
+    const before = effective[key] ?? fee?.value;
+    return before ? `${formatValueInline(key, before, tf)} → ${formatValueInline(key, candidate, tf)}` : null;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, liveValue, effective]);
+  }, [key, service, preview, previewId, candidate, effective, fee]);
 
   const scopeLabel = [
     service && t(`services.${service}`),
@@ -150,29 +203,49 @@ export function OverrideModal({
   const needsPartner = !editing && !!partnerKind && !partner && !!preset;
 
   const submit = handleSubmit((form) => {
-    const value = formToValue(key, form.value);
+    const value = formToValue(fields, form.value);
     if (!value || needsPartner) return;
-    const starts = fromInputDate(form.starts_at);
-    const ends = fromInputDate(form.ends_at);
-    if (starts && ends && ends <= starts) {
+    const startsChanged = !editing || form.starts_at !== toInputDate(override!.starts_at);
+    const endsChanged = !editing || form.ends_at !== toInputDate(override!.ends_at);
+    const starts = startsChanged ? fromInputDate(form.starts_at) : (override!.starts_at ?? null);
+    const ends = endsChanged ? fromInputDate(form.ends_at) : (override!.ends_at ?? null);
+    if (starts && ends && new Date(ends).getTime() <= new Date(starts).getTime()) {
       setError({ text: t("modal.window_invalid") });
       return;
     }
     setError(null);
     const note = form.note.trim() || null;
     start(async () => {
-      const res = editing
-        ? await updateOverride(override!.id, { value, starts_at: starts, ends_at: ends, note })
-        : await createOverride({
-            key,
-            ...(form.service ? { service: form.service } : {}),
-            ...(form.wilaya_code ? { wilaya_code: form.wilaya_code } : {}),
-            ...(partner && partnerKind ? { [`${partnerKind}_id`]: partner.id } : {}),
-            value,
-            starts_at: starts,
-            ends_at: ends,
-            note,
-          });
+      let res;
+      if (editing) {
+        // Only send what actually changed: a note-only edit must not rewrite the schedule.
+        const patch: {
+          value?: FeeValue;
+          starts_at?: string | null;
+          ends_at?: string | null;
+          note?: string | null;
+        } = {};
+        if (!formMatchesValue(fields, form.value, override!.value)) patch.value = value;
+        if (startsChanged) patch.starts_at = starts;
+        if (endsChanged) patch.ends_at = ends;
+        if (note !== (override!.note ?? null)) patch.note = note;
+        if (!Object.keys(patch).length) {
+          onClose();
+          return;
+        }
+        res = await updateOverride(override!.id, patch);
+      } else {
+        res = await createOverride({
+          key,
+          ...(form.service ? { service: form.service } : {}),
+          ...(form.wilaya_code ? { wilaya_code: form.wilaya_code } : {}),
+          ...(partner && partnerKind ? { [`${partnerKind}_id`]: partner.id } : {}),
+          value,
+          starts_at: starts,
+          ends_at: ends,
+          note,
+        });
+      }
       if (!res.ok) {
         setError({ text: res.error, conflictId: res.conflictId });
         return;
@@ -189,7 +262,10 @@ export function OverrideModal({
       key: next,
       service: "",
       wilaya_code: "",
-      value: valueToForm(next, effective[next] ?? fees.find((f) => f.key === next)?.value),
+      value: valueToForm(
+        fieldDefs(fees.find((f) => f.key === next)),
+        effective[next] ?? fees.find((f) => f.key === next)?.value,
+      ),
     });
     if (!preset) setPartner(null);
   };
@@ -206,7 +282,10 @@ export function OverrideModal({
           <select
             className={fInput}
             disabled={editing}
-            {...register("key", { onChange: (e) => onKeyChange(e.target.value as PricingKey) })}
+            // eslint-disable-next-line react-hooks/refs
+            {...register("key", {
+              onChange: (e) => onKeyChange(e.target.value as PricingKey),
+            })}
           >
             {(editing ? fees : selectable).map((f) => (
               <option key={f.key} value={f.key}>
@@ -249,7 +328,12 @@ export function OverrideModal({
               {partnerKind && (
                 <div className="sm:col-span-2">
                   <span className="block text-[12px] text-subtext mb-1">{t(`modal.${partnerKind}`)}</span>
-                  <PartnerPicker kind={partnerKind} value={partner} onChange={setPartner} disabled={editing || !!preset} />
+                  <PartnerPicker
+                    kind={partnerKind}
+                    value={partner}
+                    onChange={setPartner}
+                    disabled={editing || !!preset}
+                  />
                 </div>
               )}
               {!fee.scopes.service && !fee.scopes.wilaya && !partnerKind && (
@@ -262,7 +346,7 @@ export function OverrideModal({
             <div className="mb-3" onChangeCapture={() => (touched.current = true)}>
               <FeeValueFields
                 key={key}
-                feeKey={key}
+                fields={fields}
                 register={register as never}
                 prefix="value."
                 errors={errors.value as Record<string, { message?: string }> | undefined}
@@ -275,7 +359,9 @@ export function OverrideModal({
               </p>
             ) : (
               <p className="text-[12px] text-subtext mb-5">
-                {t("modal.current_default", { value: formatValueInline(key, fee.value, tf) })}
+                {t("modal.current_default", {
+                  value: formatValueInline(key, fee.value, tf),
+                })}
               </p>
             )}
           </>

@@ -16,6 +16,7 @@ import type {
   PartnerKind,
   PreviewContext,
   PreviewResult,
+  PreviewSample,
   PricingKey,
 } from "@/features/pricing";
 import { PRICING_KEYS } from "@/features/pricing";
@@ -100,11 +101,12 @@ export async function archiveOverride(id: string): Promise<ActionResult<Override
 
 export async function previewPricing(
   context: PreviewContext,
-  sample?: { km?: number; stops?: number; amount?: number }
+  sample?: PreviewSample,
+  candidate?: { key: PricingKey; value: FeeValue }
 ): Promise<ActionResult<PreviewResult>> {
   const res = await blinkApi<PreviewResult>("/pricing/admin/preview", {
     method: "POST",
-    body: { context, ...(sample ? { sample } : {}) },
+    body: { context, ...(sample ? { sample } : {}), ...(candidate ? { candidate } : {}) },
     roles: PRICING_READ_ROLES,
   });
   if (!res.ok) return fail(res);

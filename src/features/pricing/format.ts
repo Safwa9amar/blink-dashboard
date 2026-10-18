@@ -1,6 +1,6 @@
-import type { FareTier, Fee, FeeValue, PricingKey, TFn } from "./types";
+import type { FareTier, Fee, FeeField, FeeValue, PreviewExamples, PricingKey, TFn } from "./types";
 
-// ---- field definitions per fee key -------------------------------------------------
+// ---- field definitions (driven by the server catalog: `fee.fields`) ---------------------
 
 export type FieldUnit = "pct" | "da" | "km" | "x";
 
@@ -10,51 +10,49 @@ export interface FieldDef {
   /** Path into the value object. */
   path: string[];
   unit: FieldUnit;
-  /** Display-unit bounds (percent for rates, DA, km, ×). */
+  /** Display-unit bounds/step (percent for rates, DA, km, ×). */
   min: number;
   max: number;
-  /** i18n key under `pricing.fields.*`. */
+  step: number;
+  /** i18n key under `pricing.fields.*` (last path segment). */
   label: string;
   /** Group heading key under `pricing.vehicle.*` (fare tiers). */
   vehicle?: "bicycle" | "motorcycle";
 }
 
-const tier = (vehicle: "bicycle" | "motorcycle"): FieldDef[] => [
-  { name: `${vehicle}_base`, path: [vehicle, "base"], unit: "da", min: 0, max: 100000, label: "base", vehicle },
-  { name: `${vehicle}_included_km`, path: [vehicle, "included_km"], unit: "km", min: 0, max: 100, label: "included_km", vehicle },
-  { name: `${vehicle}_per_km`, path: [vehicle, "per_km"], unit: "da", min: 0, max: 10000, label: "per_km", vehicle },
-  { name: `${vehicle}_max_km`, path: [vehicle, "max_km"], unit: "km", min: 1, max: 500, label: "max_km", vehicle },
-];
-
-const rate = (max: number): FieldDef[] => [
-  { name: "rate", path: ["rate"], unit: "pct", min: 0, max: max * 100, label: "rate" },
-];
-
-export const KEY_FIELDS: Record<PricingKey, FieldDef[]> = {
-  service_fee: [{ name: "amount", path: ["amount"], unit: "da", min: 0, max: 10000, label: "amount" }],
-  courier_fare: [
-    ...tier("bicycle"),
-    ...tier("motorcycle"),
-    { name: "extra_stop_fee", path: ["extra_stop_fee"], unit: "da", min: 0, max: 10000, label: "extra_stop_fee" },
-  ],
-  ride_fare: tier("motorcycle"),
-  fare_multiplier: [{ name: "multiplier", path: ["multiplier"], unit: "x", min: 0.5, max: 2, label: "multiplier" }],
-  rider_commission_rate: rate(0.5),
-  merchant_commission_rate: rate(0.5),
-  blink_cash_fee_rate: rate(0.1),
-  agent_platform_share: rate(1),
-  rider_cancel_penalty: [{ name: "amount", path: ["amount"], unit: "da", min: 0, max: 5000, label: "amount" }],
-  stamp_duty_rate: rate(0.2),
-  agent_tax_rate: rate(0.2),
-  dues_payment_fee_rate: rate(0.05),
-};
-
-// ---- rate <-> percent, form <-> value ----------------------------------------------
-
 /** 0.05 -> 5 (kills float noise like 0.07 * 100 = 7.000000000000001). */
 export const rateToPct = (rate: number) => Number((rate * 100).toFixed(4));
-/** 5 -> 0.05 */
-export const pctToRate = (pct: number) => Number((pct / 100).toFixed(6));
+/** 5 -> 0.05 (server rates are 4-decimal fractions). */
+export const pctToRate = (pct: number) => Number((pct / 100).toFixed(4));
+
+const UNIT_MAP: Record<FeeField["unit"], FieldUnit> = {
+  da: "da",
+  rate: "pct",
+  km: "km",
+  multiplier: "x",
+};
+
+/** Input definitions for a fee, from the server's field list (bounds, step, unit). */
+export function fieldDefs(fee: Fee | undefined | null): FieldDef[] {
+  return (fee?.fields ?? []).map((f) => {
+    const path = f.path.split(".");
+    const unit = UNIT_MAP[f.unit] ?? "da";
+    const pct = unit === "pct";
+    const head = path[0];
+    return {
+      name: path.join("_"),
+      path,
+      unit,
+      min: pct ? rateToPct(f.min) : f.min,
+      max: pct ? rateToPct(f.max) : f.max,
+      step: pct ? Number((f.step * 100).toFixed(4)) : f.step,
+      label: path[path.length - 1],
+      vehicle: path.length > 1 && (head === "bicycle" || head === "motorcycle") ? head : undefined,
+    };
+  });
+}
+
+// ---- rate <-> percent, form <-> value ----------------------------------------------
 
 function getPath(obj: unknown, path: string[]): number | undefined {
   let cur: unknown = obj;
@@ -67,9 +65,9 @@ function getPath(obj: unknown, path: string[]): number | undefined {
 
 export type FeeForm = Record<string, string>;
 
-export function valueToForm(key: PricingKey, value: FeeValue | null | undefined): FeeForm {
+export function valueToForm(fields: FieldDef[], value: FeeValue | null | undefined): FeeForm {
   const form: FeeForm = {};
-  for (const f of KEY_FIELDS[key]) {
+  for (const f of fields) {
     const n = getPath(value, f.path);
     form[f.name] = n === undefined ? "" : String(f.unit === "pct" ? rateToPct(n) : n);
   }
@@ -77,9 +75,10 @@ export function valueToForm(key: PricingKey, value: FeeValue | null | undefined)
 }
 
 /** Form strings -> API value (rates back to fractions). Null when any field is not a number. */
-export function formToValue(key: PricingKey, form: FeeForm): FeeValue | null {
+export function formToValue(fields: FieldDef[], form: FeeForm): FeeValue | null {
   const out: Record<string, unknown> = {};
-  for (const f of KEY_FIELDS[key]) {
+  if (!fields.length) return null;
+  for (const f of fields) {
     const raw = (form[f.name] ?? "").trim().replace(",", ".");
     const n = Number(raw);
     if (raw === "" || !Number.isFinite(n)) return null;
@@ -91,6 +90,12 @@ export function formToValue(key: PricingKey, form: FeeForm): FeeValue | null {
     });
   }
   return out as FeeValue;
+}
+
+/** True when the form holds the same numbers as `value` (field by field). */
+export function formMatchesValue(fields: FieldDef[], form: FeeForm, value: FeeValue | null | undefined): boolean {
+  const cur = valueToForm(fields, value);
+  return fields.every((f) => Number((form[f.name] ?? "").replace(",", ".")) === Number(cur[f.name]));
 }
 
 // ---- display -----------------------------------------------------------------------
@@ -146,79 +151,40 @@ export function formatValueShort(key: PricingKey, value: FeeValue | null | undef
   return formatValueLines(key, value, t)[0];
 }
 
-// ---- fare math for the live example ------------------------------------------------
+// ---- server-computed examples ----------------------------------------------------
 
-const ROUND_STEP = 10;
-
-/** base + per-km beyond the included distance (capped at max_km), rounded to 10 DA. */
-export function fareFor(tierCfg: FareTier, km: number, multiplier = 1): number {
-  const billable = Math.max(0, Math.min(km, tierCfg.max_km) - tierCfg.included_km);
-  const raw = (tierCfg.base + billable * tierCfg.per_km) * multiplier;
-  return Math.round(raw / ROUND_STEP) * ROUND_STEP;
-}
-
-export const SAMPLE_KM = 5;
-export const SAMPLE_AMOUNT = 1000;
-
-export type EffectiveMap = Partial<Record<PricingKey, FeeValue>>;
+export const SAMPLE = { km: 5, amount: 1000 } as const;
 
 /**
- * "moto 5 km: 330 → 360 Da" — recomputes a sample from the effective values at a scope
- * (`current`) against the same values with `key` replaced by `next`. Null when the fee has
- * no meaningful sample (the caller then shows nothing extra).
+ * "Courier moto 5 km: 330 Da → 360 Da" built from the server preview (`examples` before,
+ * `candidate_examples` after) — no pricing math here. Falls back to the plain value change
+ * for fees without an example (commissions, penalty, taxes).
  */
-export function exampleLine(key: PricingKey, next: FeeValue, current: EffectiveMap, t: TFn): string | null {
-  const cur = (k: PricingKey) => current[k];
-  const mult = (m?: FeeValue) => (m as FeeValueMultiplier | undefined)?.multiplier ?? 1;
-  const motoFare = (courier: FeeValue | undefined, m: FeeValue | undefined) => {
-    const c = courier as { motorcycle?: FareTier } | undefined;
-    return c?.motorcycle ? fareFor(c.motorcycle, SAMPLE_KM, mult(m)) : null;
-  };
-  const line = (label: string, a: string, b: string) => `${label}: ${a} → ${b}`;
-
-  if (key === "courier_fare") {
-    const a = motoFare(cur("courier_fare"), cur("fare_multiplier"));
-    const b = motoFare(next, cur("fare_multiplier"));
-    if (a == null || b == null) return null;
-    return line(t("example.courier_moto", { km: SAMPLE_KM }), formatDa(a, t), formatDa(b, t));
-  }
-  if (key === "ride_fare") {
-    const r = (v?: FeeValue) => (v as { motorcycle?: FareTier } | undefined)?.motorcycle;
-    const ra = r(cur("ride_fare"));
-    const rb = r(next);
-    if (!ra || !rb) return null;
+export function exampleLine(
+  key: PricingKey,
+  service: string,
+  before: PreviewExamples | undefined,
+  after: PreviewExamples | undefined,
+  t: TFn,
+): string | null {
+  const line = (label: string, a: number, b: number) => `${label}: ${formatDa(a, t)} → ${formatDa(b, t)}`;
+  const ride = key === "ride_fare" || (key === "fare_multiplier" && service === "ride");
+  if (ride && before?.ride_fare && after?.ride_fare)
+    return line(t("example.ride_moto", { km: SAMPLE.km }), before.ride_fare.motorcycle, after.ride_fare.motorcycle);
+  if ((key === "courier_fare" || key === "fare_multiplier") && before?.courier_fare && after?.courier_fare)
     return line(
-      t("example.ride_moto", { km: SAMPLE_KM }),
-      formatDa(fareFor(ra, SAMPLE_KM, mult(cur("fare_multiplier"))), t),
-      formatDa(fareFor(rb, SAMPLE_KM, mult(cur("fare_multiplier"))), t)
+      t("example.courier_moto", { km: SAMPLE.km }),
+      before.courier_fare.motorcycle,
+      after.courier_fare.motorcycle,
     );
-  }
-  if (key === "fare_multiplier") {
-    const a = motoFare(cur("courier_fare"), cur("fare_multiplier"));
-    const b = motoFare(cur("courier_fare"), next);
-    if (a == null || b == null) return null;
-    return line(t("example.courier_moto", { km: SAMPLE_KM }), formatDa(a, t), formatDa(b, t));
-  }
-  if (key === "blink_cash_fee_rate") {
-    const r = (v?: FeeValue) => (v as { rate?: number } | undefined)?.rate ?? 0;
+  if (key === "blink_cash_fee_rate" && before?.blink_cash_fee && after?.blink_cash_fee)
     return line(
-      t("example.cash_fee", { amount: formatDa(SAMPLE_AMOUNT, t) }),
-      formatDa(SAMPLE_AMOUNT * r(cur(key)), t),
-      formatDa(SAMPLE_AMOUNT * r(next), t)
+      t("example.cash_fee", { amount: formatDa(SAMPLE.amount, t) }),
+      before.blink_cash_fee.fees,
+      after.blink_cash_fee.fees,
     );
-  }
-  if (key === "rider_commission_rate" || key === "merchant_commission_rate") {
-    const r = (v?: FeeValue) => (v as { rate?: number } | undefined)?.rate ?? 0;
-    return line(
-      t("example.commission", { amount: formatDa(SAMPLE_AMOUNT, t) }),
-      formatDa(SAMPLE_AMOUNT * r(cur(key)), t),
-      formatDa(SAMPLE_AMOUNT * r(next), t)
-    );
-  }
   return null;
 }
-
-type FeeValueMultiplier = { multiplier: number };
 
 export function feeByKey(fees: Fee[]): Map<PricingKey, Fee> {
   return new Map(fees.map((f) => [f.key, f]));

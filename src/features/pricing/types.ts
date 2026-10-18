@@ -27,7 +27,11 @@ export interface FareTier {
 
 export interface FeeValueMap {
   service_fee: { amount: number };
-  courier_fare: { bicycle: FareTier; motorcycle: FareTier; extra_stop_fee: number };
+  courier_fare: {
+    bicycle: FareTier;
+    motorcycle: FareTier;
+    extra_stop_fee: number;
+  };
   ride_fare: { motorcycle: FareTier };
   fare_multiplier: { multiplier: number };
   rider_commission_rate: { rate: number };
@@ -42,7 +46,21 @@ export interface FeeValueMap {
 /** A fee value — shape depends on the key (see FeeValueMap). */
 export type FeeValue = FeeValueMap[PricingKey];
 
-export type Scopes = { service: string[] | null; wilaya: boolean; merchant: boolean; agent: boolean };
+export type Scopes = {
+  service: string[] | null;
+  wilaya: boolean;
+  merchant: boolean;
+  agent: boolean;
+};
+
+export type FeeField = {
+  /** Dotted path into the value, e.g. "amount", "bicycle.base". */
+  path: string;
+  unit: "da" | "rate" | "km" | "multiplier";
+  min: number;
+  max: number;
+  step: number;
+};
 
 export type Fee = {
   key: PricingKey;
@@ -50,6 +68,7 @@ export type Fee = {
   scopes: Scopes;
   value: FeeValue;
   seed: FeeValue;
+  fields: FeeField[];
   updated_at: string | null;
   updated_by: string | null;
   active_overrides: number;
@@ -101,10 +120,27 @@ export type PreviewValue = {
   key: PricingKey;
   value: FeeValue;
   override_id: string | null;
-  scope: { service?: string | null; wilaya_code?: string | null; merchant_id?: string | null; agent_id?: string | null } | null;
+  scope: {
+    service?: string | null;
+    wilaya_code?: string | null;
+    merchant_id?: string | null;
+    agent_id?: string | null;
+  } | null;
 };
 
-export type PreviewResult = { values: PreviewValue[]; examples: Record<string, unknown> };
+export type PreviewSample = { km?: number; stops?: number; amount?: number };
+
+export type PreviewExamples = {
+  courier_fare?: { bicycle: number; motorcycle: number };
+  ride_fare?: { motorcycle: number };
+  blink_cash_fee?: { type: string; amount: number; fees: number };
+};
+
+export type PreviewResult = {
+  values: PreviewValue[];
+  examples: PreviewExamples;
+  candidate_examples?: PreviewExamples;
+};
 
 export type OverrideInput = {
   key: PricingKey;
