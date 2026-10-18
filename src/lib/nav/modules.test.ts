@@ -14,10 +14,10 @@ describe("MODULES", () => {
   it("every create action has a route", () => {
     for (const a of CREATE_ACTIONS) expect(existsSync(routeFile(a.href)), a.href).toBe(true);
   });
-  it("has 37 pages, no duplicates", () => {
+  it("has 38 pages, no duplicates", () => {
     const hrefs = MODULES.flatMap((m) => m.pages.map((p) => p.href));
-    expect(hrefs).toHaveLength(37);
-    expect(new Set(hrefs).size).toBe(37);
+    expect(hrefs).toHaveLength(38);
+    expect(new Set(hrefs).size).toBe(38);
   });
   it.each(["en", "fr", "ar"])("labels exist in %s", (l) => {
     const msg = locale(l);
@@ -111,6 +111,14 @@ describe("visibleModules", () => {
     expect(partners("commerce_admin")).toEqual(["/merchants", "/merchants/verification"]);
     expect(partners("finance_admin")).toEqual([]);
     expect(partners("support_admin")).toEqual([]);
+  });
+  it("Pricing & Fees: finance edits it, ops and commerce see it read-only", () => {
+    const finance = (r: (typeof STAFF_ROLES)[number]) =>
+      visibleModules(r).find((m) => m.key === "finance")?.pages.map((p) => p.href) ?? [];
+    expect(finance("finance_admin")).toEqual(["/blink-cash", "/pricing"]);
+    expect(finance("ops_admin")).toEqual(["/pricing"]);
+    expect(finance("commerce_admin")).toEqual(["/pricing"]);
+    expect(finance("support_admin")).toEqual([]);
   });
   it("filters pages inside a module", () => {
     const support = visibleModules("ops_admin").find((m) => m.key === "support")!;
