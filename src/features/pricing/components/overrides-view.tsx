@@ -1,17 +1,19 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { Badge, Button, DataTable, Modal, fInput, type Column } from "@/components/ui";
+import { Badge, Button, DataTable, EmptyState, FilterPills, Modal, Segmented, fInput, type Column } from "@/components/ui";
 import { archiveOverride } from "@/app/d/pricing/action";
+import { STATUS_FILTERS, filterByStatus, statusCounts, type StatusFilter } from "../cockpit";
 import { formatValueInline, formatValueShort } from "../format";
 import { PRICING_KEYS, type Fee, type Override, type OverrideStatus, type TFn } from "../types";
 import { WILAYA_OPTIONS } from "../wilayas";
-import { OverrideModal } from "./override-modal";
+import { ExtendMenu } from "./extend-menu";
+import { OverrideCalendar } from "./override-calendar";
+import { OverrideWizard } from "./override-wizard";
 import { ScopeChips } from "./scope-chips";
 
-const STATUSES: OverrideStatus[] = ["active", "scheduled", "ended", "archived"];
 export const STATUS_VARIANT: Record<OverrideStatus, "success" | "info" | "default" | "danger"> = {
   active: "success",
   scheduled: "info",
@@ -38,12 +40,14 @@ export function OverridesView({
   canEdit,
   error,
   highlight,
+  nowIso,
 }: {
   overrides: Override[];
   fees: Fee[];
   canEdit: boolean;
   error?: string;
   highlight?: string;
+  nowIso: string;
 }) {
   const t = useTranslations("pricing");
   const tf = t as unknown as TFn;
@@ -51,11 +55,16 @@ export function OverridesView({
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
+  const now = useMemo(() => new Date(nowIso), [nowIso]);
   const [editing, setEditing] = useState<Override | null>(null);
   const [creating, setCreating] = useState(false);
   const [archiving, setArchiving] = useState<Override | null>(null);
   const [archiveError, setArchiveError] = useState<string | null>(null);
   const [pending, start] = useTransition();
+
+  const rawStatus = params.get("status") as StatusFilter | null;
+  const status: StatusFilter = rawStatus && STATUS_FILTERS.includes(rawStatus) ? rawStatus : "all";
+  const view = params.get("view") === "calendar" ? "calendar" : "table";
 
   const setParam = (name: string, value: string) => {
     const next = new URLSearchParams(params.toString());
@@ -64,6 +73,10 @@ export function OverridesView({
     next.delete("highlight");
     router.replace(`${pathname}${next.size ? `?${next}` : ""}`);
   };
+
+  const counts = useMemo(() => statusCounts(overrides, now), [overrides, now]);
+  const visible = useMemo(() => filterByStatus(overrides, status, now), [overrides, status, now]);
+  const rows = highlight ? [...visible].sort((a, b) => Number(b.id === highlight) - Number(a.id === highlight)) : visible;
 
   const partnerFilter = params.get("merchant_id") || params.get("agent_id");
   const partnerName = overrides.find((o) => o.merchant_id === partnerFilter || o.agent_id === partnerFilter)?.partner_name;
@@ -105,7 +118,14 @@ export function OverridesView({
     {
       key: "status",
       label: t("overrides.col.status"),
-      render: (o) => <Badge variant={STATUS_VARIANT[o.status]}>{t(`status.${o.status}`)}</Badge>,
+      render: (o) => (
+        <div className="flex flex-wrap gap-1">
+          <Badge variant={STATUS_VARIANT[o.status]}>{t(`status.${o.status}`)}</Badge>
+          {o.status === "active" && filterByStatus([o], "ending_soon", now).length > 0 && (
+            <Badge variant="warning">{t(`status.ending_soon`)}</Badge>
+          )}
+        </div>
+      ),
     },
     {
       key: "note",
@@ -121,28 +141,22 @@ export function OverridesView({
             sortable: false,
             render: (o: Override) =>
               o.status === "active" || o.status === "scheduled" ? (
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => setEditing(o)}
-                    title={t("actions.edit")}
-                    className="p-1.5 rounded-lg hover:bg-card-hover text-subtext hover:text-text cursor-pointer"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
-                    </svg>
-                  </button>
-                  <button
+                <div className="flex items-center gap-1.5 justify-end">
+                  <Button variant="secondary" size="xs" icon="pencil" onClick={() => setEditing(o)}>
+                    {t("actions.edit")}
+                  </Button>
+                  <ExtendMenu override={o} />
+                  <Button
+                    variant="ghost"
+                    size="xs"
                     onClick={() => {
                       setArchiveError(null);
                       setArchiving(o);
                     }}
-                    title={t("actions.archive")}
-                    className="p-1.5 rounded-lg hover:bg-card-hover text-subtext hover:text-danger cursor-pointer"
+                    className="hover:!text-danger"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m6 4.125l2.25 2.25m0 0l2.25 2.25M12 13.875l2.25-2.25M12 13.875l-2.25 2.25M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-                    </svg>
-                  </button>
+                    {t("actions.archive")}
+                  </Button>
                 </div>
               ) : null,
           } as Column<Override>,
@@ -161,18 +175,20 @@ export function OverridesView({
     </select>
   );
 
-  const rows = highlight ? [...overrides].sort((a, b) => Number(b.id === highlight) - Number(a.id === highlight)) : overrides;
-
   return (
     <div>
+      <FilterPills
+        options={STATUS_FILTERS.map((s) => [s, `${t(`status.${s}`)} ${counts[s]}`] as [StatusFilter, string])}
+        value={status}
+        onChange={(v) => setParam("status", v === "all" ? "" : v)}
+      />
       <div className="flex flex-wrap items-center gap-3 mb-4">
         {sel("key", params.get("key"), PRICING_KEYS.map((k) => ({ value: k, label: t(`fees.${k}.name`) })), t("overrides.filter.all_fees"))}
-        {sel("status", params.get("status"), STATUSES.map((s) => ({ value: s, label: t(`status.${s}`) })), t("overrides.filter.all_statuses"))}
         {sel(
           "wilaya_code",
           params.get("wilaya_code"),
           WILAYA_OPTIONS.map((w) => ({ value: w.code, label: `${w.code} · ${locale === "ar" ? w.name_ar : w.name}` })),
-          t("overrides.filter.all_wilayas")
+          t("overrides.filter.all_wilayas"),
         )}
         {partnerFilter && (
           <button
@@ -188,6 +204,14 @@ export function OverridesView({
           </button>
         )}
         <div className="flex-1" />
+        <Segmented
+          options={[
+            ["table", t("overrides.view.table")],
+            ["calendar", t("overrides.view.calendar")],
+          ]}
+          value={view}
+          onChange={(v) => setParam("view", v === "table" ? "" : v)}
+        />
         {canEdit && (
           <Button size="sm" icon="plus" onClick={() => setCreating(true)}>
             {t("overrides.new")}
@@ -197,18 +221,31 @@ export function OverridesView({
 
       {highlight && rows[0]?.id === highlight && <p className="text-xs text-primary mb-2">{t("overrides.highlighted")}</p>}
 
-      <DataTable columns={columns} data={rows} error={error} emptyMessage={t("overrides.empty")} />
+      {error ? (
+        <p className="text-sm text-danger">{error}</p>
+      ) : rows.length === 0 ? (
+        <EmptyState
+          title={t("overrides.empty")}
+          description={t("overrides.empty_hint")}
+          actionLabel={canEdit ? t("overrides.new") : undefined}
+          onAction={canEdit ? () => setCreating(true) : undefined}
+        />
+      ) : view === "calendar" ? (
+        <OverrideCalendar overrides={rows} nowIso={nowIso} onSelect={canEdit ? setEditing : undefined} />
+      ) : (
+        <DataTable columns={columns} data={rows} emptyMessage={t("overrides.empty")} />
+      )}
 
       {canEdit && (
         <>
-          <OverrideModal
+          <OverrideWizard
             open={creating}
             onClose={() => setCreating(false)}
             fees={fees}
             initialKey={(params.get("key") as Override["key"]) || undefined}
             onSaved={() => router.refresh()}
           />
-          <OverrideModal
+          <OverrideWizard
             open={!!editing}
             onClose={() => setEditing(null)}
             fees={fees}

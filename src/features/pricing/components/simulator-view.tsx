@@ -1,0 +1,278 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { useForm, useWatch } from "react-hook-form";
+import { useLocale, useTranslations } from "next-intl";
+import { Badge, Card, Segmented, Skeleton, fInput } from "@/components/ui";
+import { simulatePricing } from "@/app/d/pricing/action";
+import { fromInputDate } from "../cockpit";
+import { formatDa, formatValueInline } from "../format";
+import type { PartnerHit, SimParty, SimScenario, SimulateBody, SimulateResult, TFn } from "../types";
+import { WILAYA_OPTIONS } from "../wilayas";
+import { PartnerPicker } from "./partner-picker";
+import { ScopeChips } from "./scope-chips";
+
+const SCENARIOS: SimScenario[] = ["store", "courier", "ride", "deposit", "withdrawal"];
+const PARTY_BAR: Record<SimParty, string> = {
+  merchant: "bg-success",
+  rider: "bg-info",
+  agent: "bg-warning",
+  blink: "bg-primary",
+  tax: "bg-subtext",
+};
+
+interface SimForm {
+  wilaya_code: string;
+  at: string;
+  subtotal: string;
+  delivery_fee: string;
+  vehicle: "motorcycle" | "bicycle";
+  km: string;
+  stops: string;
+  amount: string;
+}
+
+const numOrUndef = (s: string) => {
+  const n = Number(s.trim().replace(",", "."));
+  return s.trim() !== "" && Number.isFinite(n) ? n : undefined;
+};
+
+export function SimulatorView({ initialScenario = "store" }: { initialScenario?: SimScenario }) {
+  const t = useTranslations("pricing");
+  const tf = t as unknown as TFn;
+  const locale = useLocale();
+  const { register, control, setValue } = useForm<SimForm>({
+    defaultValues: { wilaya_code: "", at: "", subtotal: "", delivery_fee: "", vehicle: "motorcycle", km: "", stops: "", amount: "" },
+  });
+  const f = useWatch({ control });
+  const [scenario, setScenario] = useState<SimScenario>(initialScenario);
+  const [merchant, setMerchant] = useState<PartnerHit | null>(null);
+  const [agent, setAgent] = useState<PartnerHit | null>(null);
+  const [result, setResult] = useState<SimulateResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const seq = useRef(0);
+
+  // Debounced server call; only the latest response is shown.
+  const bodyKey = JSON.stringify([scenario, f, merchant?.id, agent?.id]);
+  useEffect(() => {
+    const id = ++seq.current;
+    const body: SimulateBody = {
+      scenario,
+      context: {
+        ...(f.wilaya_code ? { wilaya_code: f.wilaya_code } : {}),
+        ...(scenario === "store" && merchant ? { merchant_id: merchant.id } : {}),
+        ...((scenario === "deposit" || scenario === "withdrawal") && agent ? { agent_id: agent.id } : {}),
+        ...(f.at ? { at: fromInputDate(f.at) ?? undefined } : {}),
+      },
+      inputs: {
+        ...(scenario === "store"
+          ? { subtotal: numOrUndef(f.subtotal ?? ""), delivery_fee: numOrUndef(f.delivery_fee ?? "") }
+          : {}),
+        ...(scenario === "courier" || scenario === "ride" ? { km: numOrUndef(f.km ?? "") } : {}),
+        ...(scenario === "courier" ? { stops: numOrUndef(f.stops ?? ""), vehicle: f.vehicle } : {}),
+        ...(scenario === "deposit" || scenario === "withdrawal" ? { amount: numOrUndef(f.amount ?? "") } : {}),
+      },
+    };
+    const timer = setTimeout(async () => {
+      setLoading(true);
+      const res = await simulatePricing(body);
+      if (id !== seq.current) return;
+      setLoading(false);
+      if (!res.ok) {
+        setError(res.error);
+        return;
+      }
+      setError(null);
+      setResult(res.data);
+    }, 350);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bodyKey]);
+
+  const label = (text: string, children: React.ReactNode) => (
+    <label className="block">
+      <span className="block text-[12px] text-subtext mb-1">{text}</span>
+      {children}
+    </label>
+  );
+  const numInput = (name: keyof SimForm, ph: string) => (
+    <input type="number" inputMode="decimal" min={0} className={fInput} placeholder={ph} {...register(name)} />
+  );
+
+  const payerKey = scenario === "deposit" ? "rider_pays" : scenario === "withdrawal" ? "rider_receives" : "customer_pays";
+  const lines = (result?.lines ?? []).filter((l) => l.amount !== 0);
+  const total = lines.reduce((s, l) => s + Math.abs(l.amount), 0);
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-6 items-start">
+      <Card title={t("simulator.inputs")} description={t("simulator.inputs_desc")}>
+        <Segmented
+          options={SCENARIOS.map((s) => [s, t(`simulator.scenario.${s}`)] as [SimScenario, string])}
+          value={scenario}
+          onChange={(v) => {
+            setScenario(v);
+            setResult(null);
+          }}
+          className="flex-wrap mb-4"
+        />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {label(
+            t("modal.wilaya"),
+            <select className={fInput} {...register("wilaya_code")}>
+              <option value="">{t("simulator.any_wilaya")}</option>
+              {WILAYA_OPTIONS.map((w) => (
+                <option key={w.code} value={w.code}>
+                  {w.code} · {locale === "ar" ? w.name_ar : w.name}
+                </option>
+              ))}
+            </select>,
+          )}
+          {label(t("simulator.date"), <input type="datetime-local" className={fInput} {...register("at")} />)}
+          {scenario === "store" && (
+            <>
+              {label(t("simulator.subtotal"), numInput("subtotal", "2000"))}
+              {label(t("simulator.delivery_fee"), numInput("delivery_fee", "200"))}
+              <div className="sm:col-span-2">
+                <span className="block text-[12px] text-subtext mb-1">{t("modal.merchant")}</span>
+                <PartnerPicker kind="merchant" value={merchant} onChange={setMerchant} />
+              </div>
+            </>
+          )}
+          {scenario === "courier" && (
+            <>
+              <div>
+                <span className="block text-[12px] text-subtext mb-1">{t("simulator.vehicle")}</span>
+                <Segmented
+                  options={[
+                    ["motorcycle", t("vehicle.motorcycle")],
+                    ["bicycle", t("vehicle.bicycle")],
+                  ]}
+                  value={f.vehicle ?? "motorcycle"}
+                  onChange={(v) => setValue("vehicle", v)}
+                />
+              </div>
+              {label(t("simulator.km"), numInput("km", "5"))}
+              {label(t("simulator.stops"), numInput("stops", "1"))}
+            </>
+          )}
+          {scenario === "ride" && label(t("simulator.km"), numInput("km", "5"))}
+          {(scenario === "deposit" || scenario === "withdrawal") && (
+            <>
+              {label(t("simulator.amount"), numInput("amount", "1000"))}
+              <div className="sm:col-span-2">
+                <span className="block text-[12px] text-subtext mb-1">{t("modal.agent")}</span>
+                <PartnerPicker kind="agent" value={agent} onChange={setAgent} />
+              </div>
+            </>
+          )}
+          <p className="text-[11.5px] text-subtext sm:col-span-2">{t("modal.tz_hint")}</p>
+        </div>
+      </Card>
+
+      <div className="space-y-4 min-w-0">
+        {error && <p className="text-sm text-danger">{error}</p>}
+        {!result && loading && !error && (
+          <Card>
+            <Skeleton className="h-4 w-28 mb-3" />
+            <Skeleton className="h-10 w-48 mb-5" />
+            <Skeleton className="h-4 w-full mb-4" />
+            <Skeleton className="h-4 w-2/3" />
+          </Card>
+        )}
+        {result && (
+          <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
+            {result.unavailable ? (
+              <Card>
+                <p className="text-sm font-semibold text-warning">{t(`simulator.unavailable.${result.unavailable}`)}</p>
+              </Card>
+            ) : (
+              <Card>
+                <p className="text-xs font-medium text-subtext uppercase tracking-wide">{t(`simulator.${payerKey}`)}</p>
+                <p className="text-4xl font-bold text-text tabular-nums mt-1 mb-5">{formatDa(result.payer_total, tf)}</p>
+                {total > 0 && (
+                  <>
+                    <p className="text-[12px] font-bold text-text mb-2">
+                      {scenario === "deposit" || scenario === "withdrawal" ? t("simulator.fee_split") : t("simulator.split")}
+                    </p>
+                    <div className="flex h-3 w-full overflow-hidden rounded-full bg-muted">
+                      {lines.map((l, i) => (
+                        <div
+                          key={`${l.label}-${i}`}
+                          className={PARTY_BAR[l.party]}
+                          style={{ width: `${(Math.abs(l.amount) / total) * 100}%` }}
+                          title={`${t(`simulator.lines.${l.label}`)}: ${formatDa(l.amount, tf)}`}
+                        />
+                      ))}
+                    </div>
+                    <ul className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5">
+                      {lines.map((l, i) => (
+                        <li key={`${l.label}-${i}`} className="flex items-center justify-between gap-2 text-[13px]">
+                          <span className="inline-flex items-center gap-2 min-w-0">
+                            <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${PARTY_BAR[l.party]}`} />
+                            <span className="text-subtext truncate">
+                              {t(`simulator.party.${l.party}`)} · {t(`simulator.lines.${l.label}`)}
+                            </span>
+                          </span>
+                          <span className="font-semibold text-text tabular-nums shrink-0">{formatDa(l.amount, tf)}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+              </Card>
+            )}
+
+            {result.values.length > 0 && (
+              <details className="rounded-xl border border-border bg-card mt-4 group">
+                <summary className="cursor-pointer px-4 py-3 text-[13px] font-semibold text-text list-none flex items-center justify-between">
+                  {t("simulator.values_used", { count: result.values.length })}
+                  <span className="text-subtext text-xs group-open:rotate-180 transition-transform">▾</span>
+                </summary>
+                <div className="px-4 pb-3 overflow-x-auto">
+                  <table className="w-full text-[13px]">
+                    <thead>
+                      <tr className="text-start text-subtext text-xs">
+                        <th className="text-start font-medium py-1.5">{t("overrides.col.fee")}</th>
+                        <th className="text-start font-medium py-1.5">{t("overrides.col.value")}</th>
+                        <th className="text-start font-medium py-1.5">{t("preview.col.source")}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {result.values.map((v) => (
+                        <tr key={v.key} className="border-t border-border align-top">
+                          <td className="py-2 pe-3 font-semibold text-text">{t(`fees.${v.key}.name`)}</td>
+                          <td className="py-2 pe-3 text-text">{formatValueInline(v.key, v.value, tf)}</td>
+                          <td className="py-2">
+                            {v.override_id ? (
+                              <Link
+                                href={`/pricing/overrides?key=${v.key}&highlight=${v.override_id}`}
+                                className="inline-flex flex-wrap items-center gap-1.5"
+                              >
+                                <Badge variant="primary">{t("preview.override")}</Badge>
+                                {v.scope && (
+                                  <ScopeChips
+                                    service={v.scope.service}
+                                    wilaya_code={v.scope.wilaya_code}
+                                    partner={v.scope.merchant_id || v.scope.agent_id ? t("partner.generic") : null}
+                                  />
+                                )}
+                              </Link>
+                            ) : (
+                              <Badge>{t("preview.default")}</Badge>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </details>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

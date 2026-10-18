@@ -1,13 +1,16 @@
-import type { Metadata } from "next";
-import { pageMeta } from "@/lib/dash-metadata";
-import { getPricingAccess } from "../data";
-import Client from "./client";
+import { redirect } from "next/navigation";
 
-export function generateMetadata(): Promise<Metadata> {
-  return pageMeta("pricing", undefined, "tabs.preview");
-}
-
-export default async function PricingPreviewPage() {
-  await getPricingAccess();
-  return <Client />;
+// The old Preview tab is now the Simulator; keep its query string.
+export default async function PricingPreviewRedirect({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const sp = await searchParams;
+  const qs = new URLSearchParams();
+  for (const [k, v] of Object.entries(sp)) {
+    if (Array.isArray(v)) v.forEach((x) => qs.append(k, x));
+    else if (v !== undefined) qs.set(k, v);
+  }
+  redirect(`/pricing/simulator${qs.size ? `?${qs}` : ""}`);
 }

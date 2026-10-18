@@ -33,9 +33,9 @@ export async function getOverrides(filters: OverrideFilters): Promise<Loaded<Ove
   return { data: res.data.overrides };
 }
 
-export async function getHistory(key?: string): Promise<Loaded<Change[]>> {
+export async function getHistory(key?: string, limit = 100): Promise<Loaded<Change[]>> {
   await requirePathAccess(SECTION);
-  const qs = new URLSearchParams({ limit: "100" });
+  const qs = new URLSearchParams({ limit: String(limit) });
   if (key) qs.set("key", key);
   const res = await blinkApi<{ changes: Change[] }>(`/pricing/admin/history?${qs}`, { roles: PRICING_READ_ROLES });
   if (!res.ok) return { data: [], error: await blinkApiErrorMessage(NS, res) };

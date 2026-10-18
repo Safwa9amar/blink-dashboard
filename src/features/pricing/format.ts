@@ -1,4 +1,4 @@
-import type { FareTier, Fee, FeeField, FeeValue, PreviewExamples, PricingKey, TFn } from "./types";
+import type { FareTier, Fee, FeeExample, FeeField, FeeValue, PricingKey, TFn } from "./types";
 
 // ---- field definitions (driven by the server catalog: `fee.fields`) ---------------------
 
@@ -131,7 +131,7 @@ export function formatValueLines(key: PricingKey, value: FeeValue | null | undef
     case "ride_fare":
       return v.motorcycle ? [fareLine("motorcycle", v.motorcycle, t)] : ["—"];
     case "fare_multiplier":
-      return [`× ${num(v.multiplier as unknown as number)}`];
+      return [`×${num(v.multiplier as unknown as number)}`];
     default:
       return [formatPct(v.rate as unknown as number)];
   }
@@ -153,37 +153,34 @@ export function formatValueShort(key: PricingKey, value: FeeValue | null | undef
 
 // ---- server-computed examples ----------------------------------------------------
 
-export const SAMPLE = { km: 5, amount: 1000 } as const;
-
 /**
- * "Courier moto 5 km: 330 Da → 360 Da" built from the server preview (`examples` before,
- * `candidate_examples` after) — no pricing math here. Falls back to the plain value change
- * for fees without an example (commissions, penalty, taxes).
+ * One i18n sentence per fee for a server-built `FeeExample` ("5 km by moto → 330 Da").
+ * Pure formatting: every number comes from the server.
  */
-export function exampleLine(
-  key: PricingKey,
-  service: string,
-  before: PreviewExamples | undefined,
-  after: PreviewExamples | undefined,
-  t: TFn,
-): string | null {
-  const line = (label: string, a: number, b: number) => `${label}: ${formatDa(a, t)} → ${formatDa(b, t)}`;
-  const ride = key === "ride_fare" || (key === "fare_multiplier" && service === "ride");
-  if (ride && before?.ride_fare && after?.ride_fare)
-    return line(t("example.ride_moto", { km: SAMPLE.km }), before.ride_fare.motorcycle, after.ride_fare.motorcycle);
-  if ((key === "courier_fare" || key === "fare_multiplier") && before?.courier_fare && after?.courier_fare)
-    return line(
-      t("example.courier_moto", { km: SAMPLE.km }),
-      before.courier_fare.motorcycle,
-      after.courier_fare.motorcycle,
-    );
-  if (key === "blink_cash_fee_rate" && before?.blink_cash_fee && after?.blink_cash_fee)
-    return line(
-      t("example.cash_fee", { amount: formatDa(SAMPLE.amount, t) }),
-      before.blink_cash_fee.fees,
-      after.blink_cash_fee.fees,
-    );
-  return null;
+export function exampleSentence(key: PricingKey, ex: FeeExample | null | undefined, t: TFn): string | null {
+  if (!ex) return null;
+  const output = formatDa(ex.output, t);
+  const input = "input" in ex ? formatDa(ex.input, t) : "";
+  switch (ex.kind) {
+    case "trip_km":
+      return t(`examples.${key}`, { km: num(ex.km), vehicle: t(`vehicle_short.${ex.vehicle}`), output });
+    case "multiplier":
+      return t(`examples.${key}`, { km: num(ex.input), output });
+    case "per_checkout":
+    case "amount":
+      return t(`examples.${key}`, { output });
+    default:
+      return t(`examples.${key}`, { input, output });
+  }
+}
+
+/** Big headline for a fee card: "5%", "1.5 Da", "×1.00"; null for the courier tariff card. */
+export function bigValue(key: PricingKey, value: FeeValue | null | undefined, t: TFn): string {
+  if (!value) return "—";
+  const v = value as unknown as Record<string, FareTier & number>;
+  if (key === "fare_multiplier") return `×${Number(v.multiplier).toFixed(2)}`;
+  if (key === "ride_fare") return formatDa(v.motorcycle.base, t);
+  return formatValueLines(key, value, t)[0];
 }
 
 export function feeByKey(fees: Fee[]): Map<PricingKey, Fee> {

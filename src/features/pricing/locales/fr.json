@@ -3,10 +3,10 @@
     "title": "Tarifs et frais",
     "description": "Tous les prix Blink et taux partenaires, avec dérogations ciblées et datées",
     "tabs": {
-      "defaults": "Par défaut",
       "overrides": "Dérogations",
       "history": "Historique",
-      "preview": "Aperçu"
+      "overview": "Vue d'ensemble",
+      "simulator": "Simulateur"
     },
     "groups": {
       "customer": "Prix clients",
@@ -88,10 +88,8 @@
       "fare": "{base} + {perKm}/km au-delà de {included} km (max {max} km)"
     },
     "example": {
-      "courier_moto": "Coursier moto {km} km",
-      "ride_moto": "Course moto {km} km",
-      "cash_fee": "Frais Blink Cash sur {amount}",
-      "commission": "Commission sur {amount}"
+      "before": "Actuel",
+      "after": "Après"
     },
     "actions": {
       "edit": "Modifier",
@@ -105,7 +103,9 @@
       "active": "Active",
       "scheduled": "Planifiée",
       "ended": "Terminée",
-      "archived": "Archivée"
+      "archived": "Archivée",
+      "all": "Toutes",
+      "ending_soon": "Bientôt terminée"
     },
     "services": {
       "merchant": "Commandes marchand",
@@ -140,23 +140,23 @@
       "highlighted": "La dérogation en conflit est affichée en premier",
       "filter": {
         "all_fees": "Tous les frais",
-        "all_statuses": "Tous les statuts",
         "all_wilayas": "Toutes les wilayas",
         "partner": "Partenaire"
-      }
+      },
+      "today": "Aujourd'hui",
+      "view": {
+        "table": "Tableau",
+        "calendar": "Calendrier"
+      },
+      "empty_hint": "Modifiez les filtres ou créez une dérogation."
     },
     "modal": {
-      "create_title": "Nouvelle dérogation",
-      "edit_title": "Modifier la dérogation",
-      "fee": "Frais",
-      "scope": "Portée",
       "service": "Service",
       "any": "Tout service",
       "wilaya": "Wilaya",
       "any_wilaya": "Toute wilaya",
       "merchant": "Marchand",
       "agent": "Agent",
-      "no_scopes": "Ces frais n'ont pas de portée : modifiables uniquement par défaut.",
       "value": "Valeur",
       "value_hint": "Pré-remplie avec la valeur actuellement en vigueur pour cette portée.",
       "current_default": "Valeur par défaut actuelle : {value}",
@@ -165,7 +165,6 @@
       "tz_hint": "Heures d'Algérie (Africa/Algiers).",
       "note": "Note",
       "note_placeholder": "Pourquoi cet accord existe",
-      "window_invalid": "La fin doit être après le début.",
       "see_conflict": "Voir la dérogation en conflit"
     },
     "archive": {
@@ -186,25 +185,22 @@
         "update_override": "Dérogation modifiée",
         "archive_override": "Dérogation archivée"
       },
-      "empty": "Aucun changement"
+      "empty": "Aucun changement",
+      "all_actors": "Toutes les personnes",
+      "open_override": "Ouvrir la dérogation",
+      "load_more": "Charger plus"
     },
     "preview": {
       "col": {
         "source": "Source"
       },
       "override": "Dérogation",
-      "default": "Par défaut",
-      "partner": "Marchand / agent",
-      "context": "Contexte",
-      "context_desc": "Choisissez un contexte pour voir la valeur en vigueur de chaque frais.",
-      "no_service": "Aucun service",
-      "no_wilaya": "Aucune wilaya",
-      "date": "Date et heure (facultatif)",
-      "run": "Aperçu"
+      "default": "Par défaut"
     },
     "partner": {
       "search_merchant": "Chercher un marchand (nom, e-mail, téléphone)",
-      "search_agent": "Chercher un agent (nom, e-mail, téléphone)"
+      "search_agent": "Chercher un agent (nom, e-mail, téléphone)",
+      "generic": "Partenaire"
     },
     "deals": {
       "title": "Accords tarifaires",
@@ -224,6 +220,135 @@
       "overlap": "Une autre dérogation de même portée chevauche cette période.",
       "number": "Saisissez un nombre",
       "range": "Entre {min} et {max}"
+    },
+    "header": {
+      "simulate": "Simuler une commande",
+      "new_override": "Nouvelle dérogation"
+    },
+    "edit": {
+      "title": "Modifier la valeur par défaut"
+    },
+    "vehicle_short": {
+      "motorcycle": "moto",
+      "bicycle": "vélo"
+    },
+    "examples": {
+      "service_fee": "{output} par paiement",
+      "courier_fare": "{km} km en {vehicle} : {output}",
+      "ride_fare": "{km} km en {vehicle} : {output}",
+      "fare_multiplier": "Une course de {km} km coûte {output}",
+      "rider_commission_rate": "Sur une course de {input}, Blink garde {output}",
+      "merchant_commission_rate": "Sur {input} de ventes, Blink garde {output}",
+      "blink_cash_fee_rate": "Sur {input} déplacés, les frais sont de {output}",
+      "agent_platform_share": "Sur des frais de {input}, l'agent garde {output}",
+      "rider_cancel_penalty": "Une annulation coûte {output} au livreur",
+      "stamp_duty_rate": "Sur {input} de ventes, le timbre est de {output}",
+      "agent_tax_rate": "Sur {input} de part agent, {output} sont retenus",
+      "dues_payment_fee_rate": "Payer {input} de dus coûte {output}"
+    },
+    "extend": {
+      "label": "Prolonger",
+      "days": "+{count} jours",
+      "pick": "Ou choisir une date de fin",
+      "apply": "Prolonger jusqu'à cette date"
+    },
+    "tariff": {
+      "moto_first": "Moto, {km} premiers km",
+      "per_km": "Par km ensuite",
+      "bike_first": "Vélo, {km} premiers km",
+      "extra_stop": "Dépose en plus",
+      "ride_sub": "+ {perKm}/km après {included} km"
+    },
+    "overview": {
+      "empty": "Aucun frais chargé",
+      "kpi": {
+        "active": "Dérogations actives",
+        "active_sub": "dans {count, plural, one {# wilaya} other {# wilayas}}",
+        "partners": "Accords partenaires",
+        "partners_sub": "{merchants} marchands · {agents} agents",
+        "ending": "Se termine sous 7 jours",
+        "last": "Dernier changement",
+        "none": "Aucun changement"
+      },
+      "ending": {
+        "title": "Bientôt terminées",
+        "line": "{fee} {value} · {scope} se termine {days, plural, =0 {aujourd'hui} =1 {demain} other {dans # jours}} ({date}). Ensuite on revient à {back}."
+      }
+    },
+    "wizard": {
+      "create_title": "Nouvelle dérogation",
+      "edit_title": "Modifier la dérogation",
+      "step": "Étape {n} sur 3",
+      "steps": {
+        "1": "Quoi",
+        "2": "Qui et où",
+        "3": "Valeur et dates"
+      },
+      "current": "Actuel {value}",
+      "none": "Aucun frais ne peut être dérogé.",
+      "scope_hint": "Choisissez où s'applique la dérogation. Au moins un critère est requis.",
+      "scope_required": "Choisissez au moins un service, une wilaya ou un partenaire.",
+      "scope_locked": "La portée d'une dérogation existante ne peut pas changer.",
+      "when": "Quand",
+      "always": "Toujours",
+      "range": "Du – au",
+      "window_invalid": "La fin doit être après le début.",
+      "back": "Retour",
+      "next": "Suivant",
+      "summary": {
+        "main": "Pour {subject}, {fee} sera de {after} au lieu de {before}{when}.",
+        "window_both": " du {from} au {until}",
+        "window_from": " à partir du {from}",
+        "window_until": " jusqu'au {until}",
+        "reverts": "Ensuite on revient à {before}.",
+        "notify": "Ils reçoivent une notification maintenant."
+      }
+    },
+    "simulator": {
+      "inputs": "Commande",
+      "inputs_desc": "Choisissez un scénario. Le serveur calcule tous les chiffres.",
+      "scenario": {
+        "store": "Commande boutique",
+        "courier": "Coursier",
+        "ride": "Course",
+        "deposit": "Dépôt Blink Cash",
+        "withdrawal": "Retrait Blink Cash"
+      },
+      "any_wilaya": "Toute wilaya",
+      "date": "Date et heure (par défaut maintenant)",
+      "subtotal": "Sous-total (Da)",
+      "delivery_fee": "Frais de livraison (Da)",
+      "vehicle": "Véhicule",
+      "km": "Distance (km)",
+      "stops": "Déposes",
+      "amount": "Montant (Da)",
+      "customer_pays": "Le client paie",
+      "rider_pays": "Le livreur paie",
+      "rider_receives": "Le livreur reçoit",
+      "split": "Qui reçoit quoi",
+      "fee_split": "Où vont les frais",
+      "party": {
+        "merchant": "Marchand",
+        "rider": "Livreur",
+        "agent": "Agent",
+        "blink": "Blink",
+        "tax": "Taxe"
+      },
+      "lines": {
+        "merchant_keeps": "Garde",
+        "rider_keeps": "Garde",
+        "agent_keeps": "Garde",
+        "service_fee": "Frais de service",
+        "merchant_commission": "Commission",
+        "rider_commission": "Commission",
+        "platform_share": "Part plateforme",
+        "stamp_duty": "Droit de timbre",
+        "agent_tax": "Retenue à la source"
+      },
+      "values_used": "Valeurs utilisées ({count})",
+      "unavailable": {
+        "too_far": "Cette distance dépasse le maximum du service : aucun prix."
+      }
     }
   }
 }

@@ -3,10 +3,10 @@
     "title": "Pricing & Fees",
     "description": "Every Blink price and partner rate, with scoped and dated overrides",
     "tabs": {
-      "defaults": "Defaults",
       "overrides": "Overrides",
       "history": "History",
-      "preview": "Preview"
+      "overview": "Overview",
+      "simulator": "Simulator"
     },
     "groups": {
       "customer": "Customer prices",
@@ -88,10 +88,8 @@
       "fare": "{base} + {perKm}/km beyond {included} km (max {max} km)"
     },
     "example": {
-      "courier_moto": "Courier moto {km} km",
-      "ride_moto": "Ride moto {km} km",
-      "cash_fee": "Blink Cash fee on {amount}",
-      "commission": "Commission on {amount}"
+      "before": "Now",
+      "after": "After"
     },
     "actions": {
       "edit": "Edit",
@@ -105,7 +103,9 @@
       "active": "Active",
       "scheduled": "Scheduled",
       "ended": "Ended",
-      "archived": "Archived"
+      "archived": "Archived",
+      "all": "All",
+      "ending_soon": "Ending soon"
     },
     "services": {
       "merchant": "Merchant orders",
@@ -140,23 +140,23 @@
       "highlighted": "Showing the conflicting override first",
       "filter": {
         "all_fees": "All fees",
-        "all_statuses": "All statuses",
         "all_wilayas": "All wilayas",
         "partner": "Partner"
-      }
+      },
+      "today": "Today",
+      "view": {
+        "table": "Table",
+        "calendar": "Calendar"
+      },
+      "empty_hint": "Change the filters or create an override."
     },
     "modal": {
-      "create_title": "New override",
-      "edit_title": "Edit override",
-      "fee": "Fee",
-      "scope": "Scope",
       "service": "Service",
       "any": "Any service",
       "wilaya": "Wilaya",
       "any_wilaya": "Any wilaya",
       "merchant": "Merchant",
       "agent": "Agent",
-      "no_scopes": "This fee has no scopes: it can only be changed in Defaults.",
       "value": "Value",
       "value_hint": "Pre-filled with the value currently in effect for this scope.",
       "current_default": "Current default: {value}",
@@ -165,7 +165,6 @@
       "tz_hint": "Times are in Algeria time (Africa/Algiers).",
       "note": "Note",
       "note_placeholder": "Why this deal exists",
-      "window_invalid": "The end must be after the start.",
       "see_conflict": "See the conflicting override"
     },
     "archive": {
@@ -186,25 +185,22 @@
         "update_override": "Override updated",
         "archive_override": "Override archived"
       },
-      "empty": "No changes yet"
+      "empty": "No changes yet",
+      "all_actors": "All people",
+      "open_override": "Open override",
+      "load_more": "Load more"
     },
     "preview": {
       "col": {
         "source": "Source"
       },
       "override": "Override",
-      "default": "Default",
-      "partner": "Merchant / agent",
-      "context": "Context",
-      "context_desc": "Pick a context to see the value in effect for every fee.",
-      "no_service": "No service",
-      "no_wilaya": "No wilaya",
-      "date": "Date and time (optional)",
-      "run": "Preview"
+      "default": "Default"
     },
     "partner": {
       "search_merchant": "Search a merchant by name, email or phone",
-      "search_agent": "Search an agent by name, email or phone"
+      "search_agent": "Search an agent by name, email or phone",
+      "generic": "Partner"
     },
     "deals": {
       "title": "Pricing deals",
@@ -224,6 +220,135 @@
       "overlap": "Another override with the same scope overlaps this period.",
       "number": "Enter a number",
       "range": "Between {min} and {max}"
+    },
+    "header": {
+      "simulate": "Simulate an order",
+      "new_override": "New override"
+    },
+    "edit": {
+      "title": "Edit default"
+    },
+    "vehicle_short": {
+      "motorcycle": "moto",
+      "bicycle": "bike"
+    },
+    "examples": {
+      "service_fee": "{output} per checkout",
+      "courier_fare": "{km} km by {vehicle}: {output}",
+      "ride_fare": "{km} km by {vehicle}: {output}",
+      "fare_multiplier": "A {km} km ride costs {output}",
+      "rider_commission_rate": "On a {input} fare, Blink keeps {output}",
+      "merchant_commission_rate": "On {input} of sales, Blink keeps {output}",
+      "blink_cash_fee_rate": "On {input} moved, the fee is {output}",
+      "agent_platform_share": "Of a {input} fee, the agent keeps {output}",
+      "rider_cancel_penalty": "A cancellation costs the rider {output}",
+      "stamp_duty_rate": "On {input} of sales, stamp duty is {output}",
+      "agent_tax_rate": "On {input} of agent share, {output} is withheld",
+      "dues_payment_fee_rate": "Paying {input} of dues costs {output}"
+    },
+    "extend": {
+      "label": "Extend",
+      "days": "+{count} days",
+      "pick": "Or pick an end date",
+      "apply": "Extend to this date"
+    },
+    "tariff": {
+      "moto_first": "Moto, first {km} km",
+      "per_km": "Per km after",
+      "bike_first": "Bicycle, first {km} km",
+      "extra_stop": "Extra drop-off",
+      "ride_sub": "+ {perKm}/km after {included} km"
+    },
+    "overview": {
+      "empty": "No fees loaded",
+      "kpi": {
+        "active": "Active overrides",
+        "active_sub": "across {count, plural, one {# wilaya} other {# wilayas}}",
+        "partners": "Partner deals",
+        "partners_sub": "{merchants} merchants · {agents} agents",
+        "ending": "Ending in 7 days",
+        "last": "Last change",
+        "none": "No changes yet"
+      },
+      "ending": {
+        "title": "Ending soon",
+        "line": "{fee} {value} · {scope} ends {days, plural, =0 {today} =1 {tomorrow} other {in # days}} ({date}). After that it goes back to {back}."
+      }
+    },
+    "wizard": {
+      "create_title": "New override",
+      "edit_title": "Edit override",
+      "step": "Step {n} of 3",
+      "steps": {
+        "1": "What",
+        "2": "Who and where",
+        "3": "Value and dates"
+      },
+      "current": "Now {value}",
+      "none": "No fee can be overridden.",
+      "scope_hint": "Pick where this override applies. At least one is required.",
+      "scope_required": "Pick at least a service, a wilaya or a partner.",
+      "scope_locked": "The scope cannot change on an existing override.",
+      "when": "When",
+      "always": "Always",
+      "range": "From – to",
+      "window_invalid": "The end must be after the start.",
+      "back": "Back",
+      "next": "Next",
+      "summary": {
+        "main": "For {subject}, {fee} will be {after} instead of {before}{when}.",
+        "window_both": " from {from} to {until}",
+        "window_from": " from {from}",
+        "window_until": " until {until}",
+        "reverts": "Then it goes back to {before}.",
+        "notify": "They get a notification now."
+      }
+    },
+    "simulator": {
+      "inputs": "Order",
+      "inputs_desc": "Pick a scenario. The server computes every number.",
+      "scenario": {
+        "store": "Store order",
+        "courier": "Courier",
+        "ride": "Ride",
+        "deposit": "Blink Cash deposit",
+        "withdrawal": "Blink Cash withdrawal"
+      },
+      "any_wilaya": "Any wilaya",
+      "date": "Date and time (default now)",
+      "subtotal": "Subtotal (Da)",
+      "delivery_fee": "Delivery fee (Da)",
+      "vehicle": "Vehicle",
+      "km": "Distance (km)",
+      "stops": "Drop-offs",
+      "amount": "Amount (Da)",
+      "customer_pays": "Customer pays",
+      "rider_pays": "Rider pays",
+      "rider_receives": "Rider receives",
+      "split": "Who gets what",
+      "fee_split": "Where the fee goes",
+      "party": {
+        "merchant": "Merchant",
+        "rider": "Rider",
+        "agent": "Agent",
+        "blink": "Blink",
+        "tax": "Tax"
+      },
+      "lines": {
+        "merchant_keeps": "Keeps",
+        "rider_keeps": "Keeps",
+        "agent_keeps": "Keeps",
+        "service_fee": "Service fee",
+        "merchant_commission": "Commission",
+        "rider_commission": "Commission",
+        "platform_share": "Platform share",
+        "stamp_duty": "Stamp duty",
+        "agent_tax": "Withholding tax"
+      },
+      "values_used": "Values used ({count})",
+      "unavailable": {
+        "too_far": "This distance is beyond the maximum for this service, so there is no price."
+      }
     }
   }
 }

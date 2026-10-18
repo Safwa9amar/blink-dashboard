@@ -8,6 +8,7 @@ export default function PricingOverridesClient(props: {
   canEdit: boolean;
   error?: string;
   highlight?: string;
+  nowIso: string;
 }) {
   return <OverridesView {...props} />;
 }

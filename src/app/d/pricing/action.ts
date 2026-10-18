@@ -17,6 +17,8 @@ import type {
   PreviewContext,
   PreviewResult,
   PreviewSample,
+  SimulateBody,
+  SimulateResult,
   PricingKey,
 } from "@/features/pricing";
 import { PRICING_KEYS } from "@/features/pricing";
@@ -27,7 +29,7 @@ import { PRICING_READ_ROLES, PRICING_WRITE_ROLES } from "./roles";
 const NS = "pricing";
 const ID_RE = /^[0-9a-f-]{36}$/i;
 
-async function fail(res: Extract<BlinkApiResult<unknown>, { ok: false }>): Promise<{ ok: false; error: string; stale?: boolean; conflictId?: string }> {
+async function fail(res: Extract<BlinkApiResult<unknown>, { ok: false }>): Promise<{ ok: false; error: string; stale?: boolean; conflictId?: string; status?: number }> {
   if (res.status === 409) {
     const t = await getTranslations(`${NS}.errors`);
     if (res.error === "stale") {
@@ -39,7 +41,7 @@ async function fail(res: Extract<BlinkApiResult<unknown>, { ok: false }>): Promi
       return { ok: false, error: t("overlap"), conflictId: typeof id === "string" ? id : undefined };
     }
   }
-  return { ok: false, error: await blinkApiErrorMessage(NS, res) };
+  return { ok: false, error: await blinkApiErrorMessage(NS, res), status: res.status };
 }
 
 const done = () => revalidatePath("/d/pricing", "layout");
@@ -155,4 +157,15 @@ export async function searchPartners(kind: PartnerKind, query: string): Promise<
     name: [u.first_name, u.last_name].filter(Boolean).join(" ") || u.email || (u.id as string),
     sub: u.email || u.phone_number || "",
   }));
+}
+
+/** "What does this order cost and who earns what?" — all numbers come from the server. */
+export async function simulatePricing(body: SimulateBody): Promise<ActionResult<SimulateResult>> {
+  const res = await blinkApi<SimulateResult>("/pricing/admin/simulate", {
+    method: "POST",
+    body,
+    roles: PRICING_READ_ROLES,
+  });
+  if (!res.ok) return fail(res);
+  return { ok: true, data: res.data };
 }

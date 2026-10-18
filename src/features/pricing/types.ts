@@ -72,7 +72,22 @@ export type Fee = {
   updated_at: string | null;
   updated_by: string | null;
   active_overrides: number;
+  /** Server-computed worked example for the default value (never computed in the dashboard). */
+  example?: FeeExample | null;
 };
+
+export type FeeVehicle = "motorcycle" | "bicycle";
+
+/** Worked example built by blink-server (`src/lib/pricing/examples.ts`). */
+export type FeeExample =
+  | { kind: "per_checkout"; output: number }
+  | { kind: "trip_km"; vehicle: FeeVehicle; km: number; output: number }
+  | { kind: "multiplier"; input: number; output: number }
+  | { kind: "rate_on_amount"; input: number; output: number }
+  | { kind: "agent_split"; input: number; output: number }
+  | { kind: "amount"; output: number };
+
+export type CandidateExample = { key: PricingKey; before: FeeExample | null; after: FeeExample | null };
 
 export type OverrideStatus = "active" | "scheduled" | "ended" | "archived";
 
@@ -138,8 +153,43 @@ export type PreviewExamples = {
 
 export type PreviewResult = {
   values: PreviewValue[];
-  examples: PreviewExamples;
+  examples?: PreviewExamples;
   candidate_examples?: PreviewExamples;
+  candidate_example?: CandidateExample;
+};
+
+export type SimScenario = "store" | "courier" | "ride" | "deposit" | "withdrawal";
+export type SimParty = "merchant" | "rider" | "agent" | "blink" | "tax";
+export type SimLabel =
+  | "merchant_keeps"
+  | "rider_keeps"
+  | "agent_keeps"
+  | "service_fee"
+  | "merchant_commission"
+  | "rider_commission"
+  | "platform_share"
+  | "stamp_duty"
+  | "agent_tax";
+
+export type SimulateBody = {
+  scenario: SimScenario;
+  context?: { wilaya_code?: string; merchant_id?: string; agent_id?: string; store_id?: string; at?: string };
+  inputs?: {
+    subtotal?: number;
+    delivery_fee?: number;
+    km?: number;
+    stops?: number;
+    vehicle?: FeeVehicle;
+    amount?: number;
+  };
+};
+
+export type SimulateResult = {
+  scenario: SimScenario;
+  payer_total: number;
+  lines: { party: SimParty; label: SimLabel; amount: number }[];
+  values: PreviewValue[];
+  unavailable: null | "too_far";
 };
 
 export type OverrideInput = {
@@ -168,6 +218,6 @@ export type PartnerHit = { id: string; name: string; sub: string };
 /** Result of a pricing server action. */
 export type ActionResult<T = undefined> =
   | ({ ok: true } & (T extends undefined ? object : { data: T }))
-  | { ok: false; error: string; stale?: boolean; conflictId?: string };
+  | { ok: false; error: string; stale?: boolean; conflictId?: string; status?: number };
 
 export type TFn = (key: string, values?: Record<string, string | number>) => string;

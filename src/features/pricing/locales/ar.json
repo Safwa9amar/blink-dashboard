@@ -3,10 +3,10 @@
     "title": "التسعير والرسوم",
     "description": "كل أسعار بلينك ونسب الشركاء، مع استثناءات محددة النطاق والتاريخ",
     "tabs": {
-      "defaults": "الافتراضي",
       "overrides": "الاستثناءات",
       "history": "السجل",
-      "preview": "معاينة"
+      "overview": "نظرة عامة",
+      "simulator": "المحاكي"
     },
     "groups": {
       "customer": "أسعار الزبائن",
@@ -88,10 +88,8 @@
       "fare": "{base} + {perKm}/كلم بعد {included} كلم (الأقصى {max} كلم)"
     },
     "example": {
-      "courier_moto": "توصيل بدراجة نارية {km} كلم",
-      "ride_moto": "رحلة بدراجة نارية {km} كلم",
-      "cash_fee": "رسوم بلينك كاش على {amount}",
-      "commission": "العمولة على {amount}"
+      "before": "الآن",
+      "after": "بعد التعديل"
     },
     "actions": {
       "edit": "تعديل",
@@ -105,7 +103,9 @@
       "active": "نشط",
       "scheduled": "مجدول",
       "ended": "منتهي",
-      "archived": "مؤرشف"
+      "archived": "مؤرشف",
+      "all": "الكل",
+      "ending_soon": "تنتهي قريبًا"
     },
     "services": {
       "merchant": "طلبات التجار",
@@ -140,23 +140,23 @@
       "highlighted": "الاستثناء المتعارض معروض أولاً",
       "filter": {
         "all_fees": "كل الرسوم",
-        "all_statuses": "كل الحالات",
         "all_wilayas": "كل الولايات",
         "partner": "الشريك"
-      }
+      },
+      "today": "اليوم",
+      "view": {
+        "table": "جدول",
+        "calendar": "تقويم"
+      },
+      "empty_hint": "غيّر المرشحات أو أنشئ استثناءً."
     },
     "modal": {
-      "create_title": "استثناء جديد",
-      "edit_title": "تعديل الاستثناء",
-      "fee": "الرسوم",
-      "scope": "النطاق",
       "service": "الخدمة",
       "any": "أي خدمة",
       "wilaya": "الولاية",
       "any_wilaya": "أي ولاية",
       "merchant": "التاجر",
       "agent": "الوكيل",
-      "no_scopes": "لا نطاقات لهذه الرسوم: تُعدَّل من الافتراضي فقط.",
       "value": "القيمة",
       "value_hint": "معبأة بالقيمة السارية حالياً لهذا النطاق.",
       "current_default": "الافتراضي الحالي: {value}",
@@ -165,7 +165,6 @@
       "tz_hint": "التوقيت بتوقيت الجزائر (Africa/Algiers).",
       "note": "ملاحظة",
       "note_placeholder": "سبب هذا الاتفاق",
-      "window_invalid": "يجب أن تكون النهاية بعد البداية.",
       "see_conflict": "عرض الاستثناء المتعارض"
     },
     "archive": {
@@ -186,25 +185,22 @@
         "update_override": "تعديل استثناء",
         "archive_override": "أرشفة استثناء"
       },
-      "empty": "لا تغييرات بعد"
+      "empty": "لا تغييرات بعد",
+      "all_actors": "كل الأشخاص",
+      "open_override": "فتح الاستثناء",
+      "load_more": "تحميل المزيد"
     },
     "preview": {
       "col": {
         "source": "المصدر"
       },
       "override": "استثناء",
-      "default": "افتراضي",
-      "partner": "تاجر / وكيل",
-      "context": "السياق",
-      "context_desc": "اختر سياقاً لعرض القيمة السارية لكل رسوم.",
-      "no_service": "بدون خدمة",
-      "no_wilaya": "بدون ولاية",
-      "date": "التاريخ والوقت (اختياري)",
-      "run": "معاينة"
+      "default": "افتراضي"
     },
     "partner": {
       "search_merchant": "ابحث عن تاجر بالاسم أو البريد أو الهاتف",
-      "search_agent": "ابحث عن وكيل بالاسم أو البريد أو الهاتف"
+      "search_agent": "ابحث عن وكيل بالاسم أو البريد أو الهاتف",
+      "generic": "شريك"
     },
     "deals": {
       "title": "اتفاقيات التسعير",
@@ -224,6 +220,135 @@
       "overlap": "استثناء آخر بنفس النطاق يتداخل مع هذه الفترة.",
       "number": "أدخل رقماً",
       "range": "بين {min} و{max}"
+    },
+    "header": {
+      "simulate": "محاكاة طلب",
+      "new_override": "استثناء جديد"
+    },
+    "edit": {
+      "title": "تعديل القيمة الافتراضية"
+    },
+    "vehicle_short": {
+      "motorcycle": "دراجة نارية",
+      "bicycle": "دراجة هوائية"
+    },
+    "examples": {
+      "service_fee": "{output} لكل عملية دفع",
+      "courier_fare": "{km} كلم بواسطة {vehicle}: {output}",
+      "ride_fare": "{km} كلم بواسطة {vehicle}: {output}",
+      "fare_multiplier": "رحلة {km} كلم تكلّف {output}",
+      "rider_commission_rate": "من أجرة {input}، تحتفظ بلينك بـ {output}",
+      "merchant_commission_rate": "من مبيعات {input}، تحتفظ بلينك بـ {output}",
+      "blink_cash_fee_rate": "عند تحويل {input}، الرسوم {output}",
+      "agent_platform_share": "من رسوم {input}، يحتفظ الوكيل بـ {output}",
+      "rider_cancel_penalty": "الإلغاء يكلّف السائق {output}",
+      "stamp_duty_rate": "من مبيعات {input}، رسم الطابع {output}",
+      "agent_tax_rate": "من حصة وكيل {input}، يُقتطع {output}",
+      "dues_payment_fee_rate": "دفع مستحقات {input} يكلّف {output}"
+    },
+    "extend": {
+      "label": "تمديد",
+      "days": "+{count} يومًا",
+      "pick": "أو اختر تاريخ نهاية",
+      "apply": "التمديد حتى هذا التاريخ"
+    },
+    "tariff": {
+      "moto_first": "دراجة نارية، أول {km} كلم",
+      "per_km": "لكل كلم بعدها",
+      "bike_first": "دراجة هوائية، أول {km} كلم",
+      "extra_stop": "نقطة تسليم إضافية",
+      "ride_sub": "+ {perKm}/كلم بعد {included} كلم"
+    },
+    "overview": {
+      "empty": "لا توجد رسوم",
+      "kpi": {
+        "active": "الاستثناءات النشطة",
+        "active_sub": "عبر {count, plural, =0 {# ولاية} one {# ولاية} two {# ولايتين} few {# ولايات} many {# ولاية} other {# ولاية}}",
+        "partners": "اتفاقيات الشركاء",
+        "partners_sub": "{merchants} تجار · {agents} وكلاء",
+        "ending": "تنتهي خلال 7 أيام",
+        "last": "آخر تغيير",
+        "none": "لا تغييرات بعد"
+      },
+      "ending": {
+        "title": "تنتهي قريبًا",
+        "line": "{fee} {value} · {scope} ينتهي {days, plural, =0 {اليوم} =1 {غدًا} =2 {بعد يومين} few {بعد # أيام} other {بعد # يومًا}} ({date}). بعدها يعود إلى {back}."
+      }
+    },
+    "wizard": {
+      "create_title": "استثناء جديد",
+      "edit_title": "تعديل الاستثناء",
+      "step": "الخطوة {n} من 3",
+      "steps": {
+        "1": "ماذا",
+        "2": "لمن وأين",
+        "3": "القيمة والتواريخ"
+      },
+      "current": "الآن {value}",
+      "none": "لا يمكن استثناء أي رسوم.",
+      "scope_hint": "اختر أين ينطبق هذا الاستثناء. يلزم اختيار واحد على الأقل.",
+      "scope_required": "اختر خدمة أو ولاية أو شريكًا على الأقل.",
+      "scope_locked": "لا يمكن تغيير نطاق استثناء موجود.",
+      "when": "متى",
+      "always": "دائمًا",
+      "range": "من – إلى",
+      "window_invalid": "يجب أن تكون النهاية بعد البداية.",
+      "back": "رجوع",
+      "next": "التالي",
+      "summary": {
+        "main": "بالنسبة إلى {subject}، ستكون {fee} {after} بدل {before}{when}.",
+        "window_both": " من {from} إلى {until}",
+        "window_from": " ابتداءً من {from}",
+        "window_until": " حتى {until}",
+        "reverts": "ثم تعود إلى {before}.",
+        "notify": "سيصلهم إشعار الآن."
+      }
+    },
+    "simulator": {
+      "inputs": "الطلب",
+      "inputs_desc": "اختر سيناريو. الخادم يحسب كل الأرقام.",
+      "scenario": {
+        "store": "طلب متجر",
+        "courier": "توصيل",
+        "ride": "رحلة",
+        "deposit": "إيداع بلينك كاش",
+        "withdrawal": "سحب بلينك كاش"
+      },
+      "any_wilaya": "أي ولاية",
+      "date": "التاريخ والوقت (افتراضيًا الآن)",
+      "subtotal": "المجموع الفرعي (دج)",
+      "delivery_fee": "رسوم التوصيل (دج)",
+      "vehicle": "المركبة",
+      "km": "المسافة (كلم)",
+      "stops": "نقاط التسليم",
+      "amount": "المبلغ (دج)",
+      "customer_pays": "يدفع الزبون",
+      "rider_pays": "يدفع السائق",
+      "rider_receives": "يستلم السائق",
+      "split": "من يحصل على ماذا",
+      "fee_split": "أين تذهب الرسوم",
+      "party": {
+        "merchant": "التاجر",
+        "rider": "السائق",
+        "agent": "الوكيل",
+        "blink": "بلينك",
+        "tax": "ضريبة"
+      },
+      "lines": {
+        "merchant_keeps": "يحتفظ بـ",
+        "rider_keeps": "يحتفظ بـ",
+        "agent_keeps": "يحتفظ بـ",
+        "service_fee": "رسوم الخدمة",
+        "merchant_commission": "عمولة",
+        "rider_commission": "عمولة",
+        "platform_share": "حصة المنصة",
+        "stamp_duty": "رسم الطابع",
+        "agent_tax": "ضريبة الاقتطاع"
+      },
+      "values_used": "القيم المستخدمة ({count})",
+      "unavailable": {
+        "too_far": "هذه المسافة أكبر من الحد الأقصى للخدمة، لذلك لا يوجد سعر."
+      }
     }
   }
 }

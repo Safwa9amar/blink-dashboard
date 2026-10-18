@@ -17,7 +17,6 @@ export default async function PricingOverridesPage({ searchParams }: { searchPar
     getCatalog(),
     getOverrides({
       key: one(sp.key),
-      status: one(sp.status),
       wilaya_code: one(sp.wilaya_code),
       merchant_id: one(sp.merchant_id),
       agent_id: one(sp.agent_id),
@@ -30,6 +29,7 @@ export default async function PricingOverridesPage({ searchParams }: { searchPar
       canEdit={canEdit}
       error={list.error ?? catalog.error}
       highlight={one(sp.highlight)}
+      nowIso={new Date().toISOString()}
     />
   );
 }

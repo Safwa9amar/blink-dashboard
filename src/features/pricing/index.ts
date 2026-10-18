@@ -1,8 +1,10 @@
 export * from "./types";
 export * from "./format";
+export * from "./cockpit";
 export { WILAYA_OPTIONS, wilayaLabel } from "./wilayas";
-export { DefaultsBoard } from "./components/defaults-board";
+export { OverviewView } from "./components/overview-view";
 export { OverridesView } from "./components/overrides-view";
 export { HistoryView } from "./components/history-view";
-export { PreviewView } from "./components/preview-view";
+export { SimulatorView } from "./components/simulator-view";
+export { PricingHeaderActions } from "./components/header-actions";
 export { PricingDealsCard } from "./components/deals-card";

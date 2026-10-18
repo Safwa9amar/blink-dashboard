@@ -6,7 +6,7 @@ import { Badge, Button } from "@/components/ui";
 import { listPartnerOverrides, loadCatalog } from "@/app/d/pricing/action";
 import { formatValueShort } from "../format";
 import type { Fee, Override, PartnerKind, TFn } from "../types";
-import { OverrideModal } from "./override-modal";
+import { OverrideWizard } from "./override-wizard";
 import { ScopeChips } from "./scope-chips";
 import { STATUS_VARIANT, formatWindow } from "./overrides-view";
 
@@ -93,7 +93,7 @@ export function PricingDealsCard({
         </ul>
       )}
       {fees && (
-        <OverrideModal
+        <OverrideWizard
           open={open}
           onClose={() => setOpen(false)}
           fees={fees}
