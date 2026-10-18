@@ -16,16 +16,6 @@
       "currency_symbol": "Currency Symbol",
       "default_language": "Default Language"
     },
-    "fees": {
-      "title": "Fees & Commission",
-      "description": "Configure delivery fees, service charges, and commission rates",
-      "delivery_fee": "Base Delivery Fee",
-      "service_fee_pct": "Service Fee (%)",
-      "commission_pct": "Rider Commission (%)",
-      "min_order": "Minimum Order Amount",
-      "free_delivery_threshold": "Free Delivery Threshold",
-      "agent_commission_pct": "Agent Commission (%)"
-    },
     "notifications_settings": {
       "title": "Notifications",
       "description": "Configure email and push notification preferences",

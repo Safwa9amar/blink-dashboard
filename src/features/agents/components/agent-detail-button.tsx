@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { Avatar, Badge, Modal, btnSecondary, type Variant } from "@/components/ui";
+import { PricingDealsCard } from "@/features/pricing";
 import { OpeningHours } from "@/features/verification";
 import type { Agent, ShopReviewStatus } from "../types";
 
@@ -112,6 +113,8 @@ export function AgentDetailModal({ agent, open, onClose }: { agent: Agent; open:
           ))
         )}
       </div>
+
+      <PricingDealsCard kind="agent" partnerId={agent.id} partnerName={name} />
 
       <div className="flex justify-between items-center gap-3 mt-4">
         <button

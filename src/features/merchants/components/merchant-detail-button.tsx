@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Avatar } from "@/components/ui";
+import { PricingDealsCard } from "@/features/pricing";
 import type { Merchant } from "../types";
 
 export function MerchantDetailButton({ merchant }: { merchant: Merchant }) {
@@ -43,7 +44,7 @@ function MerchantDetailModal({ merchant, onClose }: { merchant: Merchant; onClos
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 w-full max-w-md shadow-xl">
+      <div className="relative bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-xl">
         <div className="flex items-center gap-4 mb-6">
           <Avatar name={name} />
           <div className="min-w-0">
@@ -62,6 +63,8 @@ function MerchantDetailModal({ merchant, onClose }: { merchant: Merchant; onClos
             </div>
           ))}
         </dl>
+
+        <PricingDealsCard kind="merchant" partnerId={merchant.id} partnerName={name} />
 
         <div className="flex justify-end mt-6">
           <button

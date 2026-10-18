@@ -1,0 +1,229 @@
+{
+  "pricing": {
+    "title": "Tarifs et frais",
+    "description": "Tous les prix Blink et taux partenaires, avec dérogations ciblées et datées",
+    "tabs": {
+      "defaults": "Par défaut",
+      "overrides": "Dérogations",
+      "history": "Historique",
+      "preview": "Aperçu"
+    },
+    "groups": {
+      "customer": "Prix clients",
+      "customer_desc": "Ce que paient les clients",
+      "partner": "Gains partenaires",
+      "partner_desc": "Commissions, parts et pénalités des livreurs, marchands et agents",
+      "tax": "Taxes et traitement",
+      "tax_desc": "Droit de timbre, retenue et frais de paiement"
+    },
+    "fees": {
+      "service_fee": {
+        "name": "Frais de service",
+        "desc": "Montant fixe par paiement sur les commandes magasin et shopper"
+      },
+      "courier_fare": {
+        "name": "Tarif coursier",
+        "desc": "Prix de livraison par véhicule : base, km inclus, prix par km, km max"
+      },
+      "ride_fare": {
+        "name": "Tarif course",
+        "desc": "Prix de la course : base, km inclus, prix par km, km max"
+      },
+      "fare_multiplier": {
+        "name": "Multiplicateur de tarif",
+        "desc": "Majoration ou remise manuelle sur les tarifs coursier et course"
+      },
+      "rider_commission_rate": {
+        "name": "Commission livreur",
+        "desc": "Part du tarif conservée par Blink sur chaque trajet"
+      },
+      "merchant_commission_rate": {
+        "name": "Commission marchand",
+        "desc": "Part des ventes livrées conservée par Blink"
+      },
+      "blink_cash_fee_rate": {
+        "name": "Frais Blink Cash",
+        "desc": "Frais payés par le livreur sur dépôts et retraits"
+      },
+      "agent_platform_share": {
+        "name": "Part plateforme agent",
+        "desc": "Part de chaque frais Blink Cash qui revient à Blink"
+      },
+      "rider_cancel_penalty": {
+        "name": "Pénalité d'annulation livreur",
+        "desc": "Montant facturé quand un livreur annule une mission acceptée"
+      },
+      "stamp_duty_rate": {
+        "name": "Droit de timbre",
+        "desc": "Taux appliqué aux ventes des marchands"
+      },
+      "agent_tax_rate": {
+        "name": "Retenue fiscale agent",
+        "desc": "Retenue sur la part de l'agent"
+      },
+      "dues_payment_fee_rate": {
+        "name": "Frais de paiement des dus",
+        "desc": "Frais sur les paiements de dus des marchands et agents"
+      }
+    },
+    "fields": {
+      "base": "Tarif de base",
+      "included_km": "Km inclus",
+      "per_km": "Par km au-delà",
+      "max_km": "Km max",
+      "extra_stop_fee": "Arrêt supplémentaire",
+      "amount": "Montant",
+      "multiplier": "Multiplicateur",
+      "rate": "Taux"
+    },
+    "vehicle": {
+      "bicycle": "Vélo",
+      "motorcycle": "Moto"
+    },
+    "units": {
+      "da": "Da",
+      "km": "km"
+    },
+    "fmt": {
+      "fare": "{base} + {perKm}/km au-delà de {included} km (max {max} km)"
+    },
+    "example": {
+      "courier_moto": "Coursier moto {km} km",
+      "ride_moto": "Course moto {km} km",
+      "cash_fee": "Frais Blink Cash sur {amount}",
+      "commission": "Commission sur {amount}"
+    },
+    "actions": {
+      "edit": "Modifier",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "create": "Créer",
+      "archive": "Archiver",
+      "change": "Changer"
+    },
+    "status": {
+      "active": "Active",
+      "scheduled": "Planifiée",
+      "ended": "Terminée",
+      "archived": "Archivée"
+    },
+    "services": {
+      "merchant": "Commandes marchand",
+      "shopper": "Commandes shopper",
+      "courier": "Coursier",
+      "ride": "Course",
+      "deposit": "Dépôt",
+      "withdrawal": "Retrait"
+    },
+    "scope": {
+      "everywhere": "Partout"
+    },
+    "defaults": {
+      "empty": "Aucun frais chargé",
+      "active_overrides": "{count} dérogations actives",
+      "no_overrides": "Aucune dérogation active"
+    },
+    "overrides": {
+      "col": {
+        "fee": "Frais",
+        "scope": "Portée",
+        "value": "Valeur",
+        "window": "Période",
+        "status": "Statut",
+        "note": "Note"
+      },
+      "always": "Toujours",
+      "from": "À partir du {date}",
+      "until": "Jusqu'au {date}",
+      "new": "Nouvelle dérogation",
+      "empty": "Aucune dérogation",
+      "highlighted": "La dérogation en conflit est affichée en premier",
+      "filter": {
+        "all_fees": "Tous les frais",
+        "all_statuses": "Tous les statuts",
+        "all_wilayas": "Toutes les wilayas",
+        "partner": "Partenaire"
+      }
+    },
+    "modal": {
+      "create_title": "Nouvelle dérogation",
+      "edit_title": "Modifier la dérogation",
+      "fee": "Frais",
+      "scope": "Portée",
+      "service": "Service",
+      "any": "Tout service",
+      "wilaya": "Wilaya",
+      "any_wilaya": "Toute wilaya",
+      "merchant": "Marchand",
+      "agent": "Agent",
+      "no_scopes": "Ces frais n'ont pas de portée : modifiables uniquement par défaut.",
+      "value": "Valeur",
+      "value_hint": "Pré-remplie avec la valeur actuellement en vigueur pour cette portée.",
+      "current_default": "Valeur par défaut actuelle : {value}",
+      "starts_at": "Début (facultatif)",
+      "ends_at": "Fin (facultatif)",
+      "tz_hint": "Heures d'Algérie (Africa/Algiers).",
+      "note": "Note",
+      "note_placeholder": "Pourquoi cet accord existe",
+      "window_invalid": "La fin doit être après le début.",
+      "see_conflict": "Voir la dérogation en conflit"
+    },
+    "archive": {
+      "title": "Archiver la dérogation",
+      "body": "Archiver cette dérogation « {fee} » ? La valeur par défaut s'applique de nouveau immédiatement."
+    },
+    "history": {
+      "col": {
+        "when": "Quand",
+        "actor": "Qui",
+        "fee": "Frais",
+        "action": "Action",
+        "change": "Changement"
+      },
+      "action": {
+        "update_default": "Valeur par défaut modifiée",
+        "create_override": "Dérogation créée",
+        "update_override": "Dérogation modifiée",
+        "archive_override": "Dérogation archivée"
+      },
+      "empty": "Aucun changement"
+    },
+    "preview": {
+      "col": {
+        "source": "Source"
+      },
+      "override": "Dérogation",
+      "default": "Par défaut",
+      "partner": "Marchand / agent",
+      "context": "Contexte",
+      "context_desc": "Choisissez un contexte pour voir la valeur en vigueur de chaque frais.",
+      "no_service": "Aucun service",
+      "no_wilaya": "Aucune wilaya",
+      "date": "Date et heure (facultatif)",
+      "run": "Aperçu"
+    },
+    "partner": {
+      "search_merchant": "Chercher un marchand (nom, e-mail, téléphone)",
+      "search_agent": "Chercher un agent (nom, e-mail, téléphone)"
+    },
+    "deals": {
+      "title": "Accords tarifaires",
+      "new": "Nouvel accord",
+      "empty": "Aucun accord tarifaire pour ce partenaire"
+    },
+    "errors": {
+      "network": "Serveur injoignable",
+      "session": "Session expirée, reconnectez-vous",
+      "forbidden": "Action non autorisée",
+      "not_found": "Introuvable",
+      "invalid": "Valeur invalide : {detail}",
+      "conflict": "Modifié pendant votre édition",
+      "throttled": "Trop de requêtes, réessayez bientôt",
+      "generic": "Une erreur est survenue : {detail}",
+      "stale": "Ces frais ont été modifiés entre-temps. La page est actualisée, vérifiez et réessayez.",
+      "overlap": "Une autre dérogation de même portée chevauche cette période.",
+      "number": "Saisissez un nombre",
+      "range": "Entre {min} et {max}"
+    }
+  }
+}

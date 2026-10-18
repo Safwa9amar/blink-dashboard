@@ -79,7 +79,12 @@ export const MODULES: readonly NavModule[] = [
       { key: "deep_links", href: "/deep-links", icon: "link" },
     ],
   },
-  { key: "finance", icon: "wallet", pages: [{ key: "blink_cash", href: "/blink-cash", icon: "wallet", attention: ["duesOutstanding"] }] },
+  {
+    key: "finance", icon: "wallet", pages: [
+      { key: "blink_cash", href: "/blink-cash", icon: "wallet", attention: ["duesOutstanding"] },
+      { key: "pricing_config", href: "/pricing", icon: "tag" },
+    ],
+  },
   { key: "people", icon: "shield", pages: [{ key: "access", href: "/access", icon: "lock" }] },
   { key: "analytics", icon: "trending", pages: [] },
   {

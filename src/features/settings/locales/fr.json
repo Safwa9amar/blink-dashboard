@@ -16,16 +16,6 @@
       "currency_symbol": "Symbole de Devise",
       "default_language": "Langue par Défaut"
     },
-    "fees": {
-      "title": "Frais & Commission",
-      "description": "Configurer les frais de livraison, frais de service et taux de commission",
-      "delivery_fee": "Frais de Livraison de Base",
-      "service_fee_pct": "Frais de Service (%)",
-      "commission_pct": "Commission Livreur (%)",
-      "min_order": "Montant Minimum de Commande",
-      "free_delivery_threshold": "Seuil de Livraison Gratuite",
-      "agent_commission_pct": "Commission Agent (%)"
-    },
     "notifications_settings": {
       "title": "Notifications",
       "description": "Configurer les préférences d'email et de notifications push",

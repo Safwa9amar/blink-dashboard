@@ -16,16 +16,6 @@
       "currency_symbol": "رمز العملة",
       "default_language": "اللغة الافتراضية"
     },
-    "fees": {
-      "title": "الرسوم والعمولات",
-      "description": "إعداد رسوم التوصيل ورسوم الخدمة ومعدلات العمولة",
-      "delivery_fee": "رسوم التوصيل الأساسية",
-      "service_fee_pct": "رسوم الخدمة (%)",
-      "commission_pct": "عمولة السائق (%)",
-      "min_order": "الحد الأدنى للطلب",
-      "free_delivery_threshold": "حد التوصيل المجاني",
-      "agent_commission_pct": "عمولة الوكيل (%)"
-    },
     "notifications_settings": {
       "title": "الإشعارات",
       "description": "إعداد تفضيلات البريد الإلكتروني والإشعارات",

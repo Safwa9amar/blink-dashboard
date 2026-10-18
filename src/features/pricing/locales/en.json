@@ -1,0 +1,229 @@
+{
+  "pricing": {
+    "title": "Pricing & Fees",
+    "description": "Every Blink price and partner rate, with scoped and dated overrides",
+    "tabs": {
+      "defaults": "Defaults",
+      "overrides": "Overrides",
+      "history": "History",
+      "preview": "Preview"
+    },
+    "groups": {
+      "customer": "Customer prices",
+      "customer_desc": "What customers pay",
+      "partner": "Partner earnings",
+      "partner_desc": "Commissions, shares and penalties for riders, merchants and agents",
+      "tax": "Taxes & processing",
+      "tax_desc": "Stamp duty, withholding and payment fees"
+    },
+    "fees": {
+      "service_fee": {
+        "name": "Service fee",
+        "desc": "Flat amount charged once per checkout on store and shopper orders"
+      },
+      "courier_fare": {
+        "name": "Courier fare",
+        "desc": "Delivery price per vehicle: base, included km, price per km, max km"
+      },
+      "ride_fare": {
+        "name": "Ride fare",
+        "desc": "Ride price: base, included km, price per km, max km"
+      },
+      "fare_multiplier": {
+        "name": "Fare multiplier",
+        "desc": "Manual surge or discount applied to courier and ride fares"
+      },
+      "rider_commission_rate": {
+        "name": "Rider commission",
+        "desc": "Share of the fare Blink keeps from each trip"
+      },
+      "merchant_commission_rate": {
+        "name": "Merchant commission",
+        "desc": "Share of delivered sales Blink keeps"
+      },
+      "blink_cash_fee_rate": {
+        "name": "Blink Cash fee",
+        "desc": "Fee the rider pays on deposits and withdrawals"
+      },
+      "agent_platform_share": {
+        "name": "Agent platform share",
+        "desc": "Share of each Blink Cash fee that goes to Blink"
+      },
+      "rider_cancel_penalty": {
+        "name": "Rider cancel penalty",
+        "desc": "Amount charged when a rider cancels an accepted job"
+      },
+      "stamp_duty_rate": {
+        "name": "Stamp duty",
+        "desc": "Rate applied to merchant sales"
+      },
+      "agent_tax_rate": {
+        "name": "Agent withholding tax",
+        "desc": "Withheld from the agent's share"
+      },
+      "dues_payment_fee_rate": {
+        "name": "Dues payment fee",
+        "desc": "Fee on merchant and agent dues payments"
+      }
+    },
+    "fields": {
+      "base": "Base fare",
+      "included_km": "Included km",
+      "per_km": "Per km after",
+      "max_km": "Max km",
+      "extra_stop_fee": "Extra stop fee",
+      "amount": "Amount",
+      "multiplier": "Multiplier",
+      "rate": "Rate"
+    },
+    "vehicle": {
+      "bicycle": "Bicycle",
+      "motorcycle": "Motorcycle"
+    },
+    "units": {
+      "da": "Da",
+      "km": "km"
+    },
+    "fmt": {
+      "fare": "{base} + {perKm}/km beyond {included} km (max {max} km)"
+    },
+    "example": {
+      "courier_moto": "Courier moto {km} km",
+      "ride_moto": "Ride moto {km} km",
+      "cash_fee": "Blink Cash fee on {amount}",
+      "commission": "Commission on {amount}"
+    },
+    "actions": {
+      "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel",
+      "create": "Create",
+      "archive": "Archive",
+      "change": "Change"
+    },
+    "status": {
+      "active": "Active",
+      "scheduled": "Scheduled",
+      "ended": "Ended",
+      "archived": "Archived"
+    },
+    "services": {
+      "merchant": "Merchant orders",
+      "shopper": "Shopper orders",
+      "courier": "Courier",
+      "ride": "Ride",
+      "deposit": "Deposit",
+      "withdrawal": "Withdrawal"
+    },
+    "scope": {
+      "everywhere": "Everywhere"
+    },
+    "defaults": {
+      "empty": "No fees loaded",
+      "active_overrides": "{count} active overrides",
+      "no_overrides": "No active overrides"
+    },
+    "overrides": {
+      "col": {
+        "fee": "Fee",
+        "scope": "Scope",
+        "value": "Value",
+        "window": "Window",
+        "status": "Status",
+        "note": "Note"
+      },
+      "always": "Always",
+      "from": "From {date}",
+      "until": "Until {date}",
+      "new": "New override",
+      "empty": "No overrides match",
+      "highlighted": "Showing the conflicting override first",
+      "filter": {
+        "all_fees": "All fees",
+        "all_statuses": "All statuses",
+        "all_wilayas": "All wilayas",
+        "partner": "Partner"
+      }
+    },
+    "modal": {
+      "create_title": "New override",
+      "edit_title": "Edit override",
+      "fee": "Fee",
+      "scope": "Scope",
+      "service": "Service",
+      "any": "Any service",
+      "wilaya": "Wilaya",
+      "any_wilaya": "Any wilaya",
+      "merchant": "Merchant",
+      "agent": "Agent",
+      "no_scopes": "This fee has no scopes: it can only be changed in Defaults.",
+      "value": "Value",
+      "value_hint": "Pre-filled with the value currently in effect for this scope.",
+      "current_default": "Current default: {value}",
+      "starts_at": "Starts (optional)",
+      "ends_at": "Ends (optional)",
+      "tz_hint": "Times are in Algeria time (Africa/Algiers).",
+      "note": "Note",
+      "note_placeholder": "Why this deal exists",
+      "window_invalid": "The end must be after the start.",
+      "see_conflict": "See the conflicting override"
+    },
+    "archive": {
+      "title": "Archive override",
+      "body": "Archive this {fee} override? The default value applies again right away."
+    },
+    "history": {
+      "col": {
+        "when": "When",
+        "actor": "Who",
+        "fee": "Fee",
+        "action": "Action",
+        "change": "Change"
+      },
+      "action": {
+        "update_default": "Default updated",
+        "create_override": "Override created",
+        "update_override": "Override updated",
+        "archive_override": "Override archived"
+      },
+      "empty": "No changes yet"
+    },
+    "preview": {
+      "col": {
+        "source": "Source"
+      },
+      "override": "Override",
+      "default": "Default",
+      "partner": "Merchant / agent",
+      "context": "Context",
+      "context_desc": "Pick a context to see the value in effect for every fee.",
+      "no_service": "No service",
+      "no_wilaya": "No wilaya",
+      "date": "Date and time (optional)",
+      "run": "Preview"
+    },
+    "partner": {
+      "search_merchant": "Search a merchant by name, email or phone",
+      "search_agent": "Search an agent by name, email or phone"
+    },
+    "deals": {
+      "title": "Pricing deals",
+      "new": "New deal",
+      "empty": "No pricing deals for this partner"
+    },
+    "errors": {
+      "network": "Could not reach the server",
+      "session": "Your session expired, sign in again",
+      "forbidden": "You are not allowed to do this",
+      "not_found": "Not found",
+      "invalid": "Invalid value: {detail}",
+      "conflict": "This changed while you were editing",
+      "throttled": "Too many requests, try again shortly",
+      "generic": "Something went wrong: {detail}",
+      "stale": "Someone changed this fee meanwhile. The page was refreshed, review and retry.",
+      "overlap": "Another override with the same scope overlaps this period.",
+      "number": "Enter a number",
+      "range": "Between {min} and {max}"
+    }
+  }
+}

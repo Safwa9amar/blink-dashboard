@@ -1,11 +1,6 @@
-import type { Metadata } from "next";
-import { pageMeta } from "@/lib/dash-metadata";
-import { FeesSettings } from "@/features/settings";
+import { redirect } from "next/navigation";
 
-export function generateMetadata(): Promise<Metadata> {
-  return pageMeta("settings", undefined, "fees.title");
-}
-
-export default function Page() {
-  return <FeesSettings />;
+// The mock Fees & Commission tab moved to the real pricing module.
+export default function SettingsFeesPage() {
+  redirect("/pricing");
 }

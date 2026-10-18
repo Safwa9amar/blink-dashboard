@@ -1,5 +1,4 @@
 export { GeneralSettings } from "./components/general-settings";
-export { FeesSettings } from "./components/fees-settings";
 export { NewsSettings } from "./components/news-settings";
 export { NotificationsSettings } from "./components/notifications-settings";
 export { SecuritySettings } from "./components/security-settings";
