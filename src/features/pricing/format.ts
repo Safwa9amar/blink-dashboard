@@ -165,7 +165,7 @@ export function exampleSentence(key: PricingKey, ex: FeeExample | null | undefin
     case "trip_km":
       return t(`examples.${key}`, { km: num(ex.km), vehicle: t(`vehicle_short.${ex.vehicle}`), output });
     case "multiplier":
-      return t(`examples.${key}`, { km: num(ex.input), output });
+      return t(`examples.${key}`, { km: num(ex.km), input, output });
     case "per_checkout":
     case "amount":
       return t(`examples.${key}`, { output });

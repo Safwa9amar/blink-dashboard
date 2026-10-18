@@ -149,6 +149,8 @@ export type SummaryParts = {
   key: PricingKey;
   before: string;
   after: string;
+  /** Value that applies once the override is gone (what "then it goes back to" names). */
+  revertTo: string;
   /** Window variant to pick the sentence from. */
   window: "none" | "from" | "until" | "both";
   from: string | null;
@@ -169,6 +171,8 @@ export function summaryParts(input: {
   scope: SummaryScope;
   before: string;
   after: string;
+  /** Defaults to `before`; edit mode passes the fee's default. */
+  revertTo?: string;
   window: { starts_at: string | null; ends_at: string | null };
   now: Date;
 }): SummaryParts {
@@ -183,6 +187,7 @@ export function summaryParts(input: {
     key: fee.key,
     before,
     after,
+    revertTo: input.revertTo ?? before,
     window: win,
     from,
     until,

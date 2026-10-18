@@ -11,6 +11,7 @@ import {
   summaryParts,
   toInputDate,
 } from "./cockpit";
+import { exampleSentence } from "./format";
 import type { Override } from "./types";
 
 const NOW = new Date("2026-10-18T10:00:00+01:00");
@@ -159,6 +160,11 @@ describe("summaryParts", () => {
     expect(p.notify).toBe(false);
     expect(p.who.wilaya).toBe("16");
   });
+  it("reverts to `before` unless a revert value is given (edit mode passes the default)", () => {
+    const w = { starts_at: null, ends_at: "2026-11-01T00:00:00+01:00" };
+    expect(summaryParts({ ...base, scope: {}, window: w }).revertTo).toBe("5%");
+    expect(summaryParts({ ...base, scope: {}, window: w, revertTo: "7%" }).revertTo).toBe("7%");
+  });
   it("supports from-only and until-only", () => {
     expect(
       summaryParts({ ...base, scope: {}, window: { starts_at: "2026-11-01T00:00:00+01:00", ends_at: null } }).window,
@@ -166,5 +172,15 @@ describe("summaryParts", () => {
     expect(summaryParts({ ...base, scope: {}, window: { starts_at: null, ends_at: "2026-11-01T00:00:00+01:00" } }).window).toBe(
       "until",
     );
+  });
+});
+
+describe("exampleSentence (multiplier)", () => {
+  it("uses the server's km and both fares", () => {
+    const t = (k: string, v?: Record<string, string | number>) => `${k}|${JSON.stringify(v)}`;
+    const out = exampleSentence("fare_multiplier", { kind: "multiplier", km: 5, input: 280, output: 340 }, t);
+    expect(out).toContain('"km":"5"');
+    expect(out).toContain("280");
+    expect(out).toContain("340");
   });
 });

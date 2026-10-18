@@ -219,7 +219,8 @@
       "stale": "Someone changed this fee meanwhile. The page was refreshed, review and retry.",
       "overlap": "Another override with the same scope overlaps this period.",
       "number": "Enter a number",
-      "range": "Between {min} and {max}"
+      "range": "Between {min} and {max}",
+      "stale_modal": "This fee was changed by someone else — the latest value is loaded; review and save again."
     },
     "header": {
       "simulate": "Simulate an order",
@@ -236,7 +237,7 @@
       "service_fee": "{output} per checkout",
       "courier_fare": "{km} km by {vehicle}: {output}",
       "ride_fare": "{km} km by {vehicle}: {output}",
-      "fare_multiplier": "A {km} km ride costs {output}",
+      "fare_multiplier": "A {km} km ride: {input} → {output}",
       "rider_commission_rate": "On a {input} fare, Blink keeps {output}",
       "merchant_commission_rate": "On {input} of sales, Blink keeps {output}",
       "blink_cash_fee_rate": "On {input} moved, the fee is {output}",
@@ -248,9 +249,10 @@
     },
     "extend": {
       "label": "Extend",
-      "days": "+{count} days",
+      "days": "+{count, plural, one {# day} other {# days}}",
       "pick": "Or pick an end date",
-      "apply": "Extend to this date"
+      "apply": "Extend to this date",
+      "later": "Pick a date after the current end"
     },
     "tariff": {
       "moto_first": "Moto, first {km} km",
@@ -272,7 +274,7 @@
       },
       "ending": {
         "title": "Ending soon",
-        "line": "{fee} {value} · {scope} ends {days, plural, =0 {today} =1 {tomorrow} other {in # days}} ({date}). After that it goes back to {back}."
+        "line": "{fee} {value} · {scope} ends {days, plural, =0 {today} =1 {tomorrow} other {in # days}} ({date}). After that it goes back to the default ({back})."
       }
     },
     "wizard": {
@@ -348,7 +350,10 @@
       "values_used": "Values used ({count})",
       "unavailable": {
         "too_far": "This distance is beyond the maximum for this service, so there is no price."
-      }
+      },
+      "store": "Store",
+      "store_none": "No specific store",
+      "delivery_fee_store": "Store's delivery fee"
     }
   }
 }

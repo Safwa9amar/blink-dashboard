@@ -222,6 +222,8 @@ function Body({
           },
           before: formatValueShort(fee.key, effective[fee.key] ?? fee.value, tf),
           after: formatValueShort(fee.key, candidate, tf),
+          // Editing: `before` includes this override itself; once it is gone the default applies.
+          revertTo: editing ? formatValueShort(fee.key, fee.value, tf) : undefined,
           window: windowIso,
           now,
         })
@@ -266,7 +268,7 @@ function Body({
       }
       if (!res.ok) {
         // A scope rejection belongs to step 2; value / window problems stay on step 3.
-        if (!editing && res.status === 400 && /scope|wilaya|merchant|agent|service|partner/i.test(res.error)) {
+        if (!editing && res.status === 400 && res.code === "scope") {
           setScopeError(res.error);
           setStep(2);
           return;
@@ -507,7 +509,7 @@ function summarySentence(p: SummaryParts, t: TFn, locale: string): string {
       before: p.before,
       when,
     }),
-    p.reverts ? t("wizard.summary.reverts", { before: p.before }) : "",
+    p.reverts ? t("wizard.summary.reverts", { before: p.revertTo }) : "",
     p.notify ? t("wizard.summary.notify") : "",
   ]
     .filter(Boolean)

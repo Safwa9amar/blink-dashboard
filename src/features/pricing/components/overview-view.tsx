@@ -7,7 +7,7 @@ import { Badge, Button, EmptyState, StatCard, StatGrid } from "@/components/ui";
 import { endingSoon, overviewKpis } from "../cockpit";
 import { bigValue, formatDa, formatValueShort } from "../format";
 import { fmtDay, intlLocale, overrideShort, scopeShort } from "../labels";
-import type { Change, Fee, FeeGroup, Override, TFn } from "../types";
+import type { Change, Fee, FeeGroup, Override, PricingKey, TFn } from "../types";
 import { ExtendMenu } from "./extend-menu";
 import { FeeEditModal } from "./fee-edit-modal";
 import { FeeExampleLine } from "./fee-example";
@@ -48,11 +48,13 @@ export function OverviewView({
   const tf = t as unknown as TFn;
   const locale = useLocale();
   const now = useMemo(() => new Date(nowIso), [nowIso]);
-  const [editing, setEditing] = useState<Fee | null>(null);
+  const [editingKey, setEditingKey] = useState<PricingKey | null>(null);
 
   const kpis = useMemo(() => overviewKpis(overrides, now), [overrides, now]);
   const soon = useMemo(() => endingSoon(overrides, now), [overrides, now]);
   const feeOf = (key: string) => fees.find((f) => f.key === key);
+  // Derived from the current `fees` prop so a refresh after a stale save hands the modal the fresh `updated_at`.
+  const editing = editingKey ? (feeOf(editingKey) ?? null) : null;
 
   if (error) return <p className="text-sm text-danger">{error}</p>;
   if (!fees.length) return <EmptyState title={t("overview.empty")} />;
@@ -98,7 +100,7 @@ export function OverviewView({
                   <p className="text-[13px] text-text">
                     {t("overview.ending.line", {
                       fee: t(`fees.${o.key}.name`),
-                      value: bigValue(o.key, o.value, tf),
+                      value: formatValueShort(o.key, o.value, tf),
                       scope: scopeShort(o, locale, tf),
                       days: daysLeft,
                       date: fmtDay(o.ends_at!, locale),
@@ -130,7 +132,7 @@ export function OverviewView({
                   compact={g === "tax"}
                   overrides={overrides.filter((o) => o.key === fee.key && o.status === "active")}
                   canEdit={canEdit}
-                  onEdit={() => setEditing(fee)}
+                  onEdit={() => setEditingKey(fee.key)}
                 />
               ))}
             </div>
@@ -138,7 +140,7 @@ export function OverviewView({
         );
       })}
 
-      {canEdit && <FeeEditModal fee={editing} onClose={() => setEditing(null)} />}
+      {canEdit && <FeeEditModal fee={editing} onClose={() => setEditingKey(null)} />}
     </div>
   );
 }

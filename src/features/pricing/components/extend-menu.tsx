@@ -1,12 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, useTransition } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button, fInput } from "@/components/ui";
 import { updateOverride } from "@/app/d/pricing/action";
 import { addDays, endOfDayIso } from "../cockpit";
 import type { Override } from "../types";
+
+const PANEL_H = 230;
 
 // Extend = PATCH the override with only `ends_at`. +7 / +30 days from the current end, or a picked date.
 export function ExtendMenu({
@@ -24,13 +27,46 @@ export function ExtendMenu({
   const [date, setDate] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
-  const ref = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState<{ top?: number; bottom?: number; left?: number; right?: number } | null>(null);
+
+  // The panel is portaled to <body> (the table's overflow-x-auto would clip it), so position it
+  // from the trigger: flip up near the viewport bottom, align to the trigger's end edge (RTL-aware).
+  const place = useCallback(() => {
+    const el = triggerRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const rtl = getComputedStyle(el).direction === "rtl";
+    const flip = window.innerHeight - r.bottom < PANEL_H && r.top > window.innerHeight - r.bottom;
+    setPos({
+      ...(flip ? { bottom: window.innerHeight - r.top + 4 } : { top: r.bottom + 4 }),
+      ...(rtl ? { left: Math.max(8, r.left) } : { right: Math.max(8, window.innerWidth - r.right) }),
+    });
+  }, []);
+
+  useLayoutEffect(() => {
+    if (open) place();
+  }, [open, place]);
 
   useEffect(() => {
     if (!open) return;
-    const onDoc = (e: MouseEvent) => !ref.current?.contains(e.target as Node) && setOpen(false);
+    const close = () => setOpen(false);
+    const onDoc = (e: MouseEvent) => {
+      const n = e.target as Node;
+      if (!triggerRef.current?.contains(n) && !panelRef.current?.contains(n)) close();
+    };
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
     document.addEventListener("mousedown", onDoc);
-    return () => document.removeEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onKey);
+    window.addEventListener("scroll", close, true);
+    window.addEventListener("resize", close);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onKey);
+      window.removeEventListener("scroll", close, true);
+      window.removeEventListener("resize", close);
+    };
   }, [open]);
 
   if (!override.ends_at) return null;
@@ -46,15 +82,24 @@ export function ExtendMenu({
     });
   };
 
-  const pick = date && endOfDayIso(date) > override.ends_at ? endOfDayIso(date) : null;
+  // Compare instants, not ISO strings (offsets / fractional seconds differ).
+  const pickedIso = date ? endOfDayIso(date) : null;
+  const pickLater = !!pickedIso && Date.parse(pickedIso) > Date.parse(override.ends_at);
+  const pick = pickLater ? pickedIso : null;
 
   return (
-    <div className="relative inline-block" ref={ref}>
+    <div className="inline-block" ref={triggerRef}>
       <Button type="button" variant="secondary" size={size} loading={pending} icon="clock" onClick={() => setOpen((v) => !v)}>
         {t("extend.label")}
       </Button>
-      {open && (
-        <div className="absolute z-30 mt-1 end-0 w-56 rounded-xl border border-border bg-card shadow-lg p-1.5">
+      {open &&
+        pos &&
+        createPortal(
+        <div
+          ref={panelRef}
+          style={{ position: "fixed", ...pos }}
+          className="z-[1000] w-56 rounded-xl border border-border bg-card shadow-lg p-1.5"
+        >
           {[7, 30].map((d) => (
             <button
               key={d}
@@ -69,12 +114,14 @@ export function ExtendMenu({
           <div className="px-3 py-2 border-t border-border mt-1">
             <p className="text-[12px] text-subtext mb-1">{t("extend.pick")}</p>
             <input type="date" className={fInput} value={date} onChange={(e) => setDate(e.target.value)} />
+            {date && !pickLater && <p className="mt-1 text-[12px] text-danger">{t("extend.later")}</p>}
             <Button type="button" size="xs" className="mt-2 w-full" disabled={!pick} loading={pending} onClick={() => pick && apply(pick)}>
               {t("extend.apply")}
             </Button>
           </div>
           {error && <p className="px-3 pb-2 text-[12px] text-danger">{error}</p>}
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );

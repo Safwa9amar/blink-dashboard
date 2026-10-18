@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useForm, useWatch } from "react-hook-form";
 import { useLocale, useTranslations } from "next-intl";
 import { Badge, Card, Segmented, Skeleton, fInput } from "@/components/ui";
-import { simulatePricing } from "@/app/d/pricing/action";
+import { listMerchantStores, simulatePricing, type StoreHit } from "@/app/d/pricing/action";
 import { fromInputDate } from "../cockpit";
 import { formatDa, formatValueInline } from "../format";
 import type { PartnerHit, SimParty, SimScenario, SimulateBody, SimulateResult, TFn } from "../types";
@@ -24,6 +24,7 @@ const PARTY_BAR: Record<SimParty, string> = {
 
 interface SimForm {
   wilaya_code: string;
+  store_id: string;
   at: string;
   subtotal: string;
   delivery_fee: string;
@@ -43,26 +44,42 @@ export function SimulatorView({ initialScenario = "store" }: { initialScenario?:
   const tf = t as unknown as TFn;
   const locale = useLocale();
   const { register, control, setValue } = useForm<SimForm>({
-    defaultValues: { wilaya_code: "", at: "", subtotal: "", delivery_fee: "", vehicle: "motorcycle", km: "", stops: "", amount: "" },
+    defaultValues: { wilaya_code: "", store_id: "", at: "", subtotal: "", delivery_fee: "", vehicle: "motorcycle", km: "", stops: "", amount: "" },
   });
   const f = useWatch({ control });
   const [scenario, setScenario] = useState<SimScenario>(initialScenario);
   const [merchant, setMerchant] = useState<PartnerHit | null>(null);
+  const [stores, setStores] = useState<{ merchantId: string; list: StoreHit[] } | null>(null);
   const [agent, setAgent] = useState<PartnerHit | null>(null);
   const [result, setResult] = useState<SimulateResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const seq = useRef(0);
 
+  // A picked merchant's stores feed the store select.
+  useEffect(() => {
+    if (!merchant) return;
+    let alive = true;
+    listMerchantStores(merchant.id).then((list) => alive && setStores({ merchantId: merchant.id, list }));
+    return () => {
+      alive = false;
+    };
+  }, [merchant]);
+  const storeList = merchant && stores?.merchantId === merchant.id ? stores.list : [];
+  const storeId = scenario === "store" && merchant && storeList.some((x) => x.id === f.store_id) ? f.store_id : "";
+
   // Debounced server call; only the latest response is shown.
-  const bodyKey = JSON.stringify([scenario, f, merchant?.id, agent?.id]);
+  const bodyKey = JSON.stringify([scenario, f, storeId, merchant?.id, agent?.id]);
   useEffect(() => {
     const id = ++seq.current;
+    // Any change to the scenario or an input invalidates the previous failure.
+    setError(null);
     const body: SimulateBody = {
       scenario,
       context: {
         ...(f.wilaya_code ? { wilaya_code: f.wilaya_code } : {}),
         ...(scenario === "store" && merchant ? { merchant_id: merchant.id } : {}),
+        ...(storeId ? { store_id: storeId } : {}),
         ...((scenario === "deposit" || scenario === "withdrawal") && agent ? { agent_id: agent.id } : {}),
         ...(f.at ? { at: fromInputDate(f.at) ?? undefined } : {}),
       },
@@ -82,9 +99,9 @@ export function SimulatorView({ initialScenario = "store" }: { initialScenario?:
       setLoading(false);
       if (!res.ok) {
         setError(res.error);
+        setResult(null);
         return;
       }
-      setError(null);
       setResult(res.data);
     }, 350);
     return () => clearTimeout(timer);
@@ -133,11 +150,27 @@ export function SimulatorView({ initialScenario = "store" }: { initialScenario?:
           {scenario === "store" && (
             <>
               {label(t("simulator.subtotal"), numInput("subtotal", "2000"))}
-              {label(t("simulator.delivery_fee"), numInput("delivery_fee", "200"))}
+              {label(t("simulator.delivery_fee"), numInput("delivery_fee", storeId ? t("simulator.delivery_fee_store") : "200"))}
               <div className="sm:col-span-2">
                 <span className="block text-[12px] text-subtext mb-1">{t("modal.merchant")}</span>
-                <PartnerPicker kind="merchant" value={merchant} onChange={setMerchant} />
+                <PartnerPicker kind="merchant" value={merchant} onChange={(m) => {
+                    setMerchant(m);
+                    setValue("store_id", "");
+                  }}
+                />
               </div>
+              {merchant &&
+                label(
+                  t("simulator.store"),
+                  <select className={fInput} {...register("store_id")}>
+                    <option value="">{t("simulator.store_none")}</option>
+                    {storeList.map((st) => (
+                      <option key={st.id} value={st.id}>
+                        {st.city ? `${st.name} · ${st.city}` : st.name}
+                      </option>
+                    ))}
+                  </select>,
+                )}
             </>
           )}
           {scenario === "courier" && (

@@ -17,7 +17,7 @@ export function FeeEditModal({ fee, onClose }: { fee: Fee | null; onClose: () =>
   const t = useTranslations("pricing");
   return (
     <Modal open={!!fee} onClose={onClose} title={fee ? t("edit.title") : ""} widthClassName="max-w-xl">
-      {fee && <Body key={`${fee.key}:${fee.updated_at}`} fee={fee} onClose={onClose} />}
+      {fee && <Body key={fee.key} fee={fee} onClose={onClose} />}
     </Modal>
   );
 }
@@ -66,8 +66,13 @@ function Body({ fee, onClose }: { fee: Fee; onClose: () => void }) {
     start(async () => {
       const res = await updateDefault(fee.key, value, fee.updated_at);
       if (!res.ok) {
+        // Stale: refresh so `fee` carries the new updated_at, but keep what the user typed.
+        if (res.stale) {
+          setMessage(t("errors.stale_modal"));
+          router.refresh();
+          return;
+        }
         setMessage(res.error);
-        if (res.stale) router.refresh();
         return;
       }
       router.refresh();

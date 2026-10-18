@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { calendarLayout, type CalendarBar, type CalendarTone } from "../cockpit";
-import { bigValue } from "../format";
+import { formatValueShort } from "../format";
 import { intlLocale, scopeShort } from "../labels";
 import type { Override, TFn } from "../types";
 import { useMemo } from "react";
@@ -53,6 +53,7 @@ export function OverrideCalendar({
           {layout.bars.map((b) => {
             const o = b.override;
             const tone = TONE[b.tone];
+            const clickable = !!onSelect && (o.status === "active" || o.status === "scheduled");
             return (
               <div key={o.id} className="flex items-center border-t border-border">
                 <div className="w-40 sm:w-52 shrink-0 pe-3 py-2 min-w-0">
@@ -63,14 +64,14 @@ export function OverrideCalendar({
                   <button
                     type="button"
                     onClick={() => onSelect?.(o)}
-                    disabled={!onSelect}
-                    title={`${bigValue(o.key, o.value, tf)} · ${t(`status.${o.status}`)}`}
+                    disabled={!clickable}
+                    title={`${formatValueShort(o.key, o.value, tf)} · ${t(`status.${o.status}`)}`}
                     style={barStyle(b)}
                     className={`absolute top-1.5 h-6 px-2 flex items-center text-[11px] font-semibold overflow-hidden whitespace-nowrap ${
                       b.openEnd ? tone.fade : tone.solid
-                    } ${b.openStart ? "rounded-e-md" : b.openEnd ? "rounded-s-md" : "rounded-md"} ${onSelect ? "cursor-pointer" : "cursor-default"}`}
+                    } ${b.openStart ? "rounded-e-md" : b.openEnd ? "rounded-s-md" : "rounded-md"} ${clickable ? "cursor-pointer" : "cursor-default"}`}
                   >
-                    {bigValue(o.key, o.value, tf)}
+                    {formatValueShort(o.key, o.value, tf)}
                   </button>
                 </div>
               </div>

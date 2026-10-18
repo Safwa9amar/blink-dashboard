@@ -82,7 +82,7 @@ export type FeeVehicle = "motorcycle" | "bicycle";
 export type FeeExample =
   | { kind: "per_checkout"; output: number }
   | { kind: "trip_km"; vehicle: FeeVehicle; km: number; output: number }
-  | { kind: "multiplier"; input: number; output: number }
+  | { kind: "multiplier"; km: number; input: number; output: number }
   | { kind: "rate_on_amount"; input: number; output: number }
   | { kind: "agent_split"; input: number; output: number }
   | { kind: "amount"; output: number };
@@ -218,6 +218,6 @@ export type PartnerHit = { id: string; name: string; sub: string };
 /** Result of a pricing server action. */
 export type ActionResult<T = undefined> =
   | ({ ok: true } & (T extends undefined ? object : { data: T }))
-  | { ok: false; error: string; stale?: boolean; conflictId?: string; status?: number };
+  | { ok: false; error: string; stale?: boolean; conflictId?: string; status?: number; code?: string };
 
 export type TFn = (key: string, values?: Record<string, string | number>) => string;

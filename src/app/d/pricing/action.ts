@@ -29,7 +29,7 @@ import { PRICING_READ_ROLES, PRICING_WRITE_ROLES } from "./roles";
 const NS = "pricing";
 const ID_RE = /^[0-9a-f-]{36}$/i;
 
-async function fail(res: Extract<BlinkApiResult<unknown>, { ok: false }>): Promise<{ ok: false; error: string; stale?: boolean; conflictId?: string; status?: number }> {
+async function fail(res: Extract<BlinkApiResult<unknown>, { ok: false }>): Promise<{ ok: false; error: string; stale?: boolean; conflictId?: string; status?: number; code?: string }> {
   if (res.status === 409) {
     const t = await getTranslations(`${NS}.errors`);
     if (res.error === "stale") {
@@ -41,7 +41,13 @@ async function fail(res: Extract<BlinkApiResult<unknown>, { ok: false }>): Promi
       return { ok: false, error: t("overlap"), conflictId: typeof id === "string" ? id : undefined };
     }
   }
-  return { ok: false, error: await blinkApiErrorMessage(NS, res), status: res.status };
+  const code = (res.body as { code?: unknown } | null | undefined)?.code;
+  return {
+    ok: false,
+    error: await blinkApiErrorMessage(NS, res),
+    status: res.status,
+    ...(typeof code === "string" ? { code } : {}),
+  };
 }
 
 const done = () => revalidatePath("/d/pricing", "layout");
@@ -168,4 +174,23 @@ export async function simulatePricing(body: SimulateBody): Promise<ActionResult<
   });
   if (!res.ok) return fail(res);
   return { ok: true, data: res.data };
+}
+
+export type StoreHit = { id: string; name: string; city: string };
+
+/** A merchant's stores (name + city) for the simulator's store select. */
+export async function listMerchantStores(merchantId: string): Promise<StoreHit[]> {
+  if (!ID_RE.test(merchantId) || !(await hasStaffRole(...PRICING_READ_ROLES))) return [];
+  const supabase = await createAdminClient();
+  const { data } = await supabase
+    .from("stores")
+    .select("id, name, city")
+    .eq("owner_id", merchantId)
+    .order("name", { ascending: true })
+    .limit(50);
+  return ((data ?? []) as { id: string; name: string | null; city: string | null }[]).map((s) => ({
+    id: s.id,
+    name: s.name ?? s.id,
+    city: s.city ?? "",
+  }));
 }

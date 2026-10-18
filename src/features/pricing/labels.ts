@@ -1,4 +1,4 @@
-import { bigValue } from "./format";
+import { formatValueShort } from "./format";
 import type { Override, TFn } from "./types";
 import { WILAYA_OPTIONS } from "./wilayas";
 
@@ -37,7 +37,7 @@ export function scopeShort(o: Pick<Override, "service" | "wilaya_code" | "mercha
 
 /** "Alger ×1.2 until 21 Oct" — the one-line form of a single override on a fee card. */
 export function overrideShort(o: Override, locale: string, t: TFn): string {
-  const value = bigValue(o.key, o.value, t);
+  const value = formatValueShort(o.key, o.value, t);
   const until = o.ends_at ? ` ${t("overrides.until", { date: fmtDay(o.ends_at, locale) })}` : "";
   return `${scopeShort(o, locale, t)} ${value}${until}`;
 }

@@ -219,7 +219,8 @@
       "stale": "تم تغيير هذه الرسوم في الأثناء. حُدِّثت الصفحة، راجع وأعد المحاولة.",
       "overlap": "استثناء آخر بنفس النطاق يتداخل مع هذه الفترة.",
       "number": "أدخل رقماً",
-      "range": "بين {min} و{max}"
+      "range": "بين {min} و{max}",
+      "stale_modal": "تم تعديل هذه الرسوم من قبل شخص آخر — تم تحميل آخر قيمة؛ راجع ثم احفظ مجددًا."
     },
     "header": {
       "simulate": "محاكاة طلب",
@@ -236,7 +237,7 @@
       "service_fee": "{output} لكل عملية دفع",
       "courier_fare": "{km} كلم بواسطة {vehicle}: {output}",
       "ride_fare": "{km} كلم بواسطة {vehicle}: {output}",
-      "fare_multiplier": "رحلة {km} كلم تكلّف {output}",
+      "fare_multiplier": "رحلة {km} كلم: {input} ← {output}",
       "rider_commission_rate": "من أجرة {input}، تحتفظ بلينك بـ {output}",
       "merchant_commission_rate": "من مبيعات {input}، تحتفظ بلينك بـ {output}",
       "blink_cash_fee_rate": "عند تحويل {input}، الرسوم {output}",
@@ -248,9 +249,10 @@
     },
     "extend": {
       "label": "تمديد",
-      "days": "+{count} يومًا",
+      "days": "{count, plural, one {+يوم واحد} two {+يومان} few {+# أيام} many {+# يومًا} other {+# يوم}}",
       "pick": "أو اختر تاريخ نهاية",
-      "apply": "التمديد حتى هذا التاريخ"
+      "apply": "التمديد حتى هذا التاريخ",
+      "later": "اختر تاريخًا بعد نهاية الفترة الحالية"
     },
     "tariff": {
       "moto_first": "دراجة نارية، أول {km} كلم",
@@ -272,7 +274,7 @@
       },
       "ending": {
         "title": "تنتهي قريبًا",
-        "line": "{fee} {value} · {scope} ينتهي {days, plural, =0 {اليوم} =1 {غدًا} =2 {بعد يومين} few {بعد # أيام} other {بعد # يومًا}} ({date}). بعدها يعود إلى {back}."
+        "line": "{fee} {value} · {scope} ينتهي {days, plural, =0 {اليوم} =1 {غدًا} =2 {بعد يومين} few {بعد # أيام} other {بعد # يومًا}} ({date}). بعدها يعود إلى القيمة الافتراضية ({back})."
       }
     },
     "wizard": {
@@ -348,7 +350,10 @@
       "values_used": "القيم المستخدمة ({count})",
       "unavailable": {
         "too_far": "هذه المسافة أكبر من الحد الأقصى للخدمة، لذلك لا يوجد سعر."
-      }
+      },
+      "store": "المتجر",
+      "store_none": "بدون متجر محدد",
+      "delivery_fee_store": "رسوم توصيل المتجر"
     }
   }
 }

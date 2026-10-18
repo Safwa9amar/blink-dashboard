@@ -219,7 +219,8 @@
       "stale": "Ces frais ont été modifiés entre-temps. La page est actualisée, vérifiez et réessayez.",
       "overlap": "Une autre dérogation de même portée chevauche cette période.",
       "number": "Saisissez un nombre",
-      "range": "Entre {min} et {max}"
+      "range": "Entre {min} et {max}",
+      "stale_modal": "Ce tarif a été modifié par quelqu'un d'autre — la dernière valeur est chargée ; vérifiez et enregistrez à nouveau."
     },
     "header": {
       "simulate": "Simuler une commande",
@@ -236,7 +237,7 @@
       "service_fee": "{output} par paiement",
       "courier_fare": "{km} km en {vehicle} : {output}",
       "ride_fare": "{km} km en {vehicle} : {output}",
-      "fare_multiplier": "Une course de {km} km coûte {output}",
+      "fare_multiplier": "Une course de {km} km : {input} → {output}",
       "rider_commission_rate": "Sur une course de {input}, Blink garde {output}",
       "merchant_commission_rate": "Sur {input} de ventes, Blink garde {output}",
       "blink_cash_fee_rate": "Sur {input} déplacés, les frais sont de {output}",
@@ -248,9 +249,10 @@
     },
     "extend": {
       "label": "Prolonger",
-      "days": "+{count} jours",
+      "days": "+{count, plural, one {# jour} other {# jours}}",
       "pick": "Ou choisir une date de fin",
-      "apply": "Prolonger jusqu'à cette date"
+      "apply": "Prolonger jusqu'à cette date",
+      "later": "Choisissez une date postérieure à la fin actuelle"
     },
     "tariff": {
       "moto_first": "Moto, {km} premiers km",
@@ -272,7 +274,7 @@
       },
       "ending": {
         "title": "Bientôt terminées",
-        "line": "{fee} {value} · {scope} se termine {days, plural, =0 {aujourd'hui} =1 {demain} other {dans # jours}} ({date}). Ensuite on revient à {back}."
+        "line": "{fee} {value} · {scope} se termine {days, plural, =0 {aujourd'hui} =1 {demain} other {dans # jours}} ({date}). Ensuite on revient à la valeur par défaut ({back})."
       }
     },
     "wizard": {
@@ -348,7 +350,10 @@
       "values_used": "Valeurs utilisées ({count})",
       "unavailable": {
         "too_far": "Cette distance dépasse le maximum du service : aucun prix."
-      }
+      },
+      "store": "Magasin",
+      "store_none": "Aucun magasin précis",
+      "delivery_fee_store": "Frais de livraison du magasin"
     }
   }
 }
