@@ -17,7 +17,15 @@ export type BlinkApiMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 export type BlinkApiResult<T> =
   | { ok: true; status: number; data: T }
-  | { ok: false; status: number; error: string; /** Parsed error body (e.g. `conflict_id` on a 409). */ body?: unknown };
+  | {
+      ok: false;
+      status: number;
+      error: string;
+      /** blink-server's machine-readable `code`, when it sent one. */
+      code?: string;
+      /** Parsed error body (e.g. `conflict_id` on a 409). */
+      body?: unknown;
+    };
 
 export async function blinkApi<T = unknown>(
   path: string,
@@ -43,12 +51,14 @@ export async function blinkApi<T = unknown>(
     });
     const json = (await res.json().catch(() => null)) as unknown;
     if (!res.ok) {
-      const error = (json as { error?: unknown } | null)?.error;
+      const body = json as { error?: unknown; code?: unknown } | null;
+      const error = body?.error;
       return {
         ok: false,
         status: res.status,
         error: typeof error === "string" ? error : `Request failed (${res.status})`,
         body: json,
+        ...(typeof body?.code === "string" ? { code: body.code } : {}),
       };
     }
     return { ok: true, status: res.status, data: json as T };

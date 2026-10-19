@@ -27,6 +27,7 @@ export type {
   CashDaily,
   CashDays,
   DuesHeadline,
+  LedgerRow,
   Exposure,
   MerchantDue,
   MerchantDuesPayment,
@@ -52,6 +53,8 @@ export const TX_STATUS_VARIANT: Record<string, Variant> = {
   completed: "success",
   pending: "warning",
   cancelled: "danger",
+  review: "info",
+  reversed: "default",
 };
 
 // ── Merchant dues (from blink-server) ────────────────────────────────────────

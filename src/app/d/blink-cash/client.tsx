@@ -3,22 +3,26 @@
 import { useTranslations } from "next-intl";
 import {
   Overview,
-  Ledger,
   Dues,
   AgentDues,
   type AgentDuesSummary,
-  type BlinkTransaction,
   type CashDays,
   type DuesHeadline,
+  type LedgerRow,
   type MerchantDuesSummary,
   type SummaryResult,
 } from "@/features/blink-cash";
+import type { AttentionItem } from "@/features/blink-cash/lib/attention";
+import type { BlinkCashSettings } from "@/features/blink-cash/lib/settings";
+import type { OpsCounts } from "@/features/blink-cash/ops-types";
+import type { PayMethod } from "@/features/blink-cash/components/payments";
 
-type Tab = "overview" | "ledger" | "dues" | "agents";
+type Tab = "overview" | "dues" | "agents";
 
 interface BlinkCashClientProps {
   tab: Tab;
-  transactions?: BlinkTransaction[] | null;
+  /** Overview: the latest ledger rows (with names). */
+  latest?: LedgerRow[];
   error?: string;
   /** Dues tab: merchant dues from blink-server, or the reason they couldn't load. */
   dues?: MerchantDuesSummary | null;
@@ -28,32 +32,49 @@ interface BlinkCashClientProps {
   /** Overview: the Blink Cash report for `days`, streamed. */
   cash?: Promise<SummaryResult>;
   days?: CashDays;
+  counts?: Promise<OpsCounts>;
+  attention?: Promise<AttentionItem[] | null>;
+  settings?: BlinkCashSettings | null;
+  settingsPending?: boolean;
   /** Agents tab: agent dues from blink-server, or why they couldn't load. */
   agents?: AgentDuesSummary | null;
   agentsError?: string;
+  agentDefaultLimit?: number | null;
+  limitsPending?: boolean;
+  /** Dues payment methods from blink_cash_settings (the "Record payment" choices). */
+  methods?: PayMethod[];
 }
 
-export default function BlinkCashClient({
-  tab,
-  transactions,
-  error,
-  dues,
-  duesError,
-  duesHeadline,
-  cash,
-  days = 30,
-  agents,
-  agentsError,
-}: BlinkCashClientProps) {
+export default function BlinkCashClient(p: BlinkCashClientProps) {
   const t = useTranslations("blink_cash");
-  switch (tab) {
-    case "ledger":
-      return <Ledger t={t} txns={transactions ?? null} error={error} />;
+  switch (p.tab) {
     case "dues":
-      return <Dues t={t} summary={dues ?? null} error={duesError} />;
+      return <Dues t={t} summary={p.dues ?? null} error={p.duesError} methods={p.methods} />;
     case "agents":
-      return <AgentDues t={t} summary={agents ?? null} error={agentsError} />;
+      return (
+        <AgentDues
+          t={t}
+          summary={p.agents ?? null}
+          error={p.agentsError}
+          defaultLimit={p.agentDefaultLimit ?? null}
+          methods={p.methods}
+          migrationPending={p.limitsPending}
+        />
+      );
     default:
-      return <Overview t={t} txns={transactions ?? null} error={error} dues={duesHeadline} cash={cash} days={days} />;
+      return (
+        <Overview
+          t={t}
+          latest={p.latest ?? []}
+          error={p.error}
+          dues={p.duesHeadline}
+          cash={p.cash}
+          days={p.days ?? 30}
+          counts={p.counts ?? Promise.resolve({ pendingOps: null, review: null, frozen: null, pendingAgentPayments: null, pendingMerchantPayments: null })}
+          attention={p.attention ?? Promise.resolve(null)}
+          settings={p.settings ?? null}
+          settingsPending={p.settingsPending}
+        />
+      );
   }
 }

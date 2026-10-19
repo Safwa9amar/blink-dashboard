@@ -14,12 +14,23 @@ import {
 import type { TFn } from "../types";
 import { remindMerchantDues } from "@/app/d/blink-cash/action";
 import { RemindButton } from "./remind-button";
+import { PendingPaymentActions, RecordPaymentButton, type PayMethod } from "./payments";
 
 /**
  * Merchant dues — what each store owes Blink in commission, from blink-server.
  * Agent dues are out of scope here (no source yet), so nothing is shown for them.
  */
-export function Dues({ t, summary, error }: { t: TFn; summary: MerchantDuesSummary | null; error?: string }) {
+export function Dues({
+  t,
+  summary,
+  error,
+  methods = [],
+}: {
+  t: TFn;
+  summary: MerchantDuesSummary | null;
+  error?: string;
+  methods?: PayMethod[];
+}) {
   const [q, setQ] = useState("");
   const locale = useLocale();
   // Algiers' calendar — a fixed zone so the server render and the browser hydrate the same day.
@@ -108,7 +119,12 @@ export function Dues({ t, summary, error }: { t: TFn; summary: MerchantDuesSumma
       key: "act",
       label: "",
       sortable: false,
-      render: (r) => <RemindButton t={t} id={r.store_id} remind={remindMerchantDues} />,
+      render: (r) => (
+        <div className="flex flex-col items-start gap-1.5">
+          <RecordPaymentButton t={t} kind="merchant" partyId={r.store_id} partyName={r.store_name} methods={methods} suggested={r.outstanding} />
+          <RemindButton t={t} id={r.store_id} remind={remindMerchantDues} />
+        </div>
+      ),
     },
   ];
 
@@ -137,6 +153,12 @@ export function Dues({ t, summary, error }: { t: TFn; summary: MerchantDuesSumma
       render: (r) => (
         <Badge variant={TX_STATUS_VARIANT[r.status] ?? "default"}>{t(`tx_status.${r.status}`)}</Badge>
       ),
+    },
+    {
+      key: "act",
+      label: "",
+      sortable: false,
+      render: (r) => (r.status === "pending" ? <PendingPaymentActions t={t} kind="merchant" id={r.id} /> : null),
     },
   ];
 
