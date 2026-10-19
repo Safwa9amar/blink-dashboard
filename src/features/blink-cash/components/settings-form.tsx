@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import Link from "next/link";
 import { Button, Card, Toggle } from "@/components/ui";
 import { fInput } from "@/components/ui/primitives";
 import { saveSettings } from "@/app/d/blink-cash/ops-action";
@@ -86,10 +87,12 @@ export function SettingsFormView({
       {migrationPending && <MigrationNotice t={t} />}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
         <Card title={t("settings.fees")} description={t("settings.fees_desc")}>
-          <div className="grid grid-cols-2 gap-3">
-            {num("deposit_fee_pct", t("settings.deposit_fee"), "%")}
-            {num("withdrawal_fee_pct", t("settings.withdrawal_fee"), "%")}
-          </div>
+          {/* The fee charged is Pricing & Fees' blink_cash_fee_rate (blink-server
+              quotes and charges it); the stored rates here pass through unchanged. */}
+          <p className="text-[12.5px] text-subtext mb-3">{t("settings.fees_in_pricing")}</p>
+          <Link href="/pricing" className="text-[12.5px] font-semibold text-primary hover:underline">
+            {t("settings.open_pricing")}
+          </Link>
         </Card>
         <Card title={t("settings.limits")} description={t("settings.limits_desc")}>
           <div className="grid grid-cols-2 gap-3">

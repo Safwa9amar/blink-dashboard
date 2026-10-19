@@ -59,7 +59,8 @@
       "on": "Activé",
       "electronic": "Paiements électroniques",
       "edit": "Modifier dans Paramètres",
-      "unavailable": "Impossible de charger les paramètres."
+      "unavailable": "Impossible de charger les paramètres.",
+      "fee_in_pricing": "Défini dans Tarifs et frais"
     },
     "latest": {
       "title": "Activité récente",
@@ -455,7 +456,9 @@
       "err_expiry": "Saisissez des minutes entières, de 1 à 1440.",
       "err_quick": "Saisissez des entiers positifs séparés par des virgules.",
       "err_accounts": "Chaque compte exige un libellé, un numéro et un titulaire (et au moins un si l'électronique est activé).",
-      "err_methods": "Chaque mode exige un id unique (minuscules, chiffres, - ou _, 32 max.) et un libellé."
+      "err_methods": "Chaque mode exige un id unique (minuscules, chiffres, - ou _, 32 max.) et un libellé.",
+      "fees_in_pricing": "Les frais de dépôt et de retrait viennent de Tarifs et frais (taux de frais Blink Cash, par wilaya) : c'est le taux annoncé et facturé aux livreurs.",
+      "open_pricing": "Ouvrir Tarifs et frais"
     },
     "audit": {
       "col_actor": "Équipe",

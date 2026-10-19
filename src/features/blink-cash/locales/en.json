@@ -59,7 +59,8 @@
       "on": "On",
       "electronic": "Electronic payments",
       "edit": "Edit in Settings",
-      "unavailable": "Settings couldn't be loaded."
+      "unavailable": "Settings couldn't be loaded.",
+      "fee_in_pricing": "Set in Pricing & Fees"
     },
     "latest": {
       "title": "Latest activity",
@@ -455,7 +456,9 @@
       "err_expiry": "Enter whole minutes, 1 to 1440.",
       "err_quick": "Enter positive whole numbers, separated by commas.",
       "err_accounts": "Every account needs a label, number and holder (and at least one when electronic is on).",
-      "err_methods": "Each method needs a unique id (lowercase letters, digits, - or _, up to 32) and a label."
+      "err_methods": "Each method needs a unique id (lowercase letters, digits, - or _, up to 32) and a label.",
+      "fees_in_pricing": "Deposit and withdrawal fees come from Pricing & Fees (Blink Cash fee rate, per wilaya): the rate riders are quoted and charged.",
+      "open_pricing": "Open Pricing & Fees"
     },
     "audit": {
       "col_actor": "Staff",

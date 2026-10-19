@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Suspense, use } from "react";
 import { Badge, Card, ChartHead, DataTable, Skeleton, StatCard } from "@/components/ui";
 import { type AttentionItem } from "../lib/attention";
-import { ratePct, type BlinkCashSettings } from "../lib/settings";
+import { type BlinkCashSettings } from "../lib/settings";
 import type { OpsCounts } from "../ops-types";
 import { BCStats } from "./bc-stats";
 import { CashFlowChart } from "./cash-flow-chart";
@@ -50,8 +50,9 @@ function FeeCard({ t, settings, migrationPending }: { t: TFn; settings: BlinkCas
       <ChartHead title={t("cfg.title")} description={t("cfg.desc")} />
       {settings ? (
         <>
-          <ConfigRow k={t("cfg.deposit_fee")} v={ratePct(settings.deposit_fee_rate)} first />
-          <ConfigRow k={t("cfg.withdrawal_fee")} v={ratePct(settings.withdrawal_fee_rate)} />
+          {/* Charged at Pricing & Fees' blink_cash_fee_rate, not these stored rates. */}
+          <ConfigRow k={t("cfg.deposit_fee")} v={t("cfg.fee_in_pricing")} first />
+          <ConfigRow k={t("cfg.withdrawal_fee")} v={t("cfg.fee_in_pricing")} />
           <ConfigRow k={t("cfg.min_max")} v={`${formatDA(settings.min_amount)} – ${formatDA(settings.max_amount)}`} />
           <ConfigRow k={t("cfg.daily")} v={`${formatDA(settings.daily_deposit_limit)} / ${formatDA(settings.daily_withdrawal_limit)}`} />
           <ConfigRow k={t("cfg.monthly")} v={`${formatDA(settings.monthly_deposit_limit)} / ${formatDA(settings.monthly_withdrawal_limit)}`} />
