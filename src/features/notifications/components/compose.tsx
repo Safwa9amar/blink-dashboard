@@ -117,7 +117,7 @@ export function Compose({
   const dlRoutes = useDeepLinksStore((s) => s.routes);
   const [lang, setLang] = useState<Lang>("en");
 
-  const { register, handleSubmit, watch, setValue, setError, formState: { errors } } = useForm<ComposeForm>({
+  const { register, handleSubmit, watch, setValue, setError, clearErrors, formState: { errors } } = useForm<ComposeForm>({
     defaultValues: {
       chans: ["push"],
       ntype: initialDraft?.type ?? "promo",
@@ -341,8 +341,13 @@ export function Compose({
 
   const c = NTYPES[ntype];
 
-  const submit = (status: "draft" | "scheduled" | "sent") =>
-    handleSubmit(async (data) => {
+  // The checks below set errors by hand on fields the form doesn't register (title,
+  // link), which react-hook-form never clears by itself — and handleSubmit won't call
+  // the handler while any error is set. So every attempt starts clean. (Named: a bare
+  // clearErrors() only clears through a re-render, too late for this submit.)
+  const submit = (status: "draft" | "scheduled" | "sent") => (e?: React.BaseSyntheticEvent) => {
+    clearErrors(["title", "link", "schedAt"]);
+    return handleSubmit(async (data) => {
       const finalTitle = data.title.en || data.title.fr || data.title.ar;
       if (status !== "draft" && !finalTitle) {
         setError("title.en", { type: "required", message: t("c.title_required") });
@@ -438,7 +443,8 @@ export function Compose({
         date: status === "sent" ? td("send_now") : "—",
       });
       onCancel();
-    });
+    })(e);
+  };
 
   const langFilled = { en: !!title.en, fr: !!title.fr, ar: !!title.ar };
 
@@ -500,7 +506,10 @@ export function Compose({
                   className="w-full rounded-xl border border-border bg-background px-4 py-2.5 pe-11 text-[15px] font-semibold text-text outline-none transition-colors focus:border-primary placeholder:font-normal placeholder:text-subtext/60"
                   dir={dirFor(lang)}
                   value={title[lang]}
-                  onChange={(e) => setValue(`title.${lang}`, e.target.value, { shouldDirty: true, shouldValidate: true })}
+                  onChange={(e) => {
+                    setValue(`title.${lang}`, e.target.value, { shouldDirty: true });
+                    if (errors.title) clearErrors("title");
+                  }}
                   placeholder={t("c.title_ph")}
                 />
                 <EnhanceButton
@@ -673,7 +682,10 @@ export function Compose({
             <FormRow label={t("c.deeplink")} className="!mb-0">
               <DeepLinkField
                 value={link}
-                onChange={(v) => setValue("link", v, { shouldDirty: true })}
+                onChange={(v) => {
+                  setValue("link", v, { shouldDirty: true });
+                  if (errors.link) clearErrors("link");
+                }}
                 audienceRoles={roles}
                 error={errors.link?.message}
               />
