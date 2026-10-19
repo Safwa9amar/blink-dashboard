@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import { DashIcon } from "@/components/ui";
-import { NotificationBell } from "@/features/notifications";
+import { NotificationBell } from "@/features/inbox";
 import type { StaffRole } from "@/lib/auth/access";
 import { LanguageSwitcher } from "../language-switcher";
 import { ThemeSwitcher } from "../theme-switcher";

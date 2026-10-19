@@ -1,0 +1,90 @@
+{
+  "inbox": {
+    "title": "Inbox",
+    "description": "What's happening across Blink — sign-ups, partners, reviews, support and alerts, live.",
+    "bell": "Notifications",
+    "bell_unread": "Notifications, {count} unread",
+    "mark_all_read": "Mark all read",
+    "view_all": "Open inbox",
+    "empty": "You're all caught up.",
+    "empty_unread": "No unread notifications.",
+    "empty_filtered": "Nothing here yet.",
+    "error": "Couldn't load notifications.",
+    "retry": "Retry",
+    "live": "Live",
+    "connecting": "Reconnecting…",
+    "load_more": "Load more",
+    "loading": "Loading…",
+    "unread_dot": "Unread",
+    "someone": "Someone",
+    "filter": {
+      "all": "All",
+      "unread": "Unread"
+    },
+    "categories": {
+      "all": "Everything",
+      "customers": "Customers",
+      "partners": "Partners",
+      "catalog": "Catalog",
+      "operations": "Operations",
+      "support": "Support",
+      "finance": "Finance",
+      "marketing": "Marketing",
+      "system": "System"
+    },
+    "kinds": {
+      "user": {
+        "signup": "{count, plural, =1 {{name} signed up} other {# new sign-ups}}"
+      },
+      "rider": {
+        "joined": "{count, plural, =1 {New rider: {name}} other {# new riders joined}}",
+        "documents": "{name} uploaded documents to review"
+      },
+      "merchant": {
+        "joined": "{count, plural, =1 {New merchant: {name}} other {# new merchants joined}}",
+        "review": "{store} is waiting for store review"
+      },
+      "agent": {
+        "joined": "{count, plural, =1 {New agent: {name}} other {# new agents joined}}",
+        "documents": "{name} uploaded register documents to review",
+        "shop_review": "Shop “{shop}” is waiting for review"
+      },
+      "product": {
+        "review": "{count, plural, =1 {“{product}” from {store} is waiting for review} other {# products from {store} are waiting for review}}"
+      },
+      "price": {
+        "suggestion": "{count, plural, =1 {{store} suggested a new price for “{product}”} other {{store} suggested # new prices}}"
+      },
+      "pack": {
+        "review": "{count, plural, =1 {Pack “{pack}” from {store} is waiting for review} other {# packs from {store} are waiting for review}}"
+      },
+      "order": {
+        "canceled": "{count, plural, =1 {Order canceled · {store}} other {# orders canceled}}",
+        "rejected": "{count, plural, =1 {{store} rejected an order} other {{store} rejected # orders}}",
+        "low_rating": "{rating}★ rating for {store}"
+      },
+      "trip": {
+        "review": "Trip {trip} needs review"
+      },
+      "support": {
+        "waiting": "{name} is waiting for a support agent"
+      },
+      "email": {
+        "inbound": "{count, plural, =1 {New email from {name}} other {# new emails from {name}}}"
+      },
+      "deletion": {
+        "requested": "{name} asked to delete {scope, select, role {their {role, select, rider {rider} merchant {merchant} agent {agent} other {customer}} role} other {their account}}"
+      },
+      "dues": {
+        "paid": "{store} paid {amount} in dues"
+      },
+      "alert": {
+        "fired": "{count, plural, =1 {Alert: {rule}} other {Alert: {rule} · fired # times}}"
+      },
+      "campaign": {
+        "sent": "Campaign “{title}” reached {recipients, number} people",
+        "failed": "Campaign “{title}” failed to send"
+      }
+    }
+  }
+}

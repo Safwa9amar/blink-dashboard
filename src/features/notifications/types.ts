@@ -76,16 +76,6 @@ export interface Segment {
   count: number;
 }
 
-export interface InboxItem {
-  id: string;
-  type: string;
-  title: string;
-  message: string;
-  time: string;
-  read: boolean;
-  link?: string;
-}
-
 export interface ComposeDraft {
   type?: string;
   title?: string;

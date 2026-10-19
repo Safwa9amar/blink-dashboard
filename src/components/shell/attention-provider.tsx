@@ -1,45 +1,53 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import type { AttentionCounts } from "@/lib/nav/modules";
 import { refreshAttention } from "@/lib/shell/actions";
 
 const AttentionContext = createContext<AttentionCounts>({});
+const AttentionRefreshContext = createContext<() => Promise<void>>(async () => {});
 
 const REFRESH_MS = 60_000;
 
 // Holds the "needs attention" counts. Seeded by the server layout, then refreshed every
-// 60s through the `refreshAttention` server action while the tab is visible. A failed
+// 60s through the `refreshAttention` server action while the tab is visible, and on
+// demand (the inbox calls `useAttentionRefresh()` when a live event arrives). A failed
 // refresh keeps the previous counts.
 export function AttentionProvider({ initial, children }: { initial: AttentionCounts; children: React.ReactNode }) {
   const [counts, setCounts] = useState<AttentionCounts>(initial);
 
-  useEffect(() => {
-    let cancelled = false;
-    const refresh = async () => {
-      if (document.visibilityState !== "visible") return;
-      try {
-        const next = await refreshAttention();
-        if (!cancelled) setCounts(next);
-      } catch {
-        /* keep the last known counts */
-      }
-    };
-    const id = window.setInterval(refresh, REFRESH_MS);
-    const onVisible = () => {
-      if (document.visibilityState === "visible") void refresh();
-    };
-    document.addEventListener("visibilitychange", onVisible);
-    return () => {
-      cancelled = true;
-      window.clearInterval(id);
-      document.removeEventListener("visibilitychange", onVisible);
-    };
+  const refresh = useCallback(async () => {
+    try {
+      setCounts(await refreshAttention());
+    } catch {
+      /* keep the last known counts */
+    }
   }, []);
 
-  return <AttentionContext.Provider value={counts}>{children}</AttentionContext.Provider>;
+  useEffect(() => {
+    const tick = () => {
+      if (document.visibilityState === "visible") void refresh();
+    };
+    const id = window.setInterval(tick, REFRESH_MS);
+    document.addEventListener("visibilitychange", tick);
+    return () => {
+      window.clearInterval(id);
+      document.removeEventListener("visibilitychange", tick);
+    };
+  }, [refresh]);
+
+  return (
+    <AttentionRefreshContext.Provider value={refresh}>
+      <AttentionContext.Provider value={counts}>{children}</AttentionContext.Provider>
+    </AttentionRefreshContext.Provider>
+  );
 }
 
 export function useAttention(): AttentionCounts {
   return useContext(AttentionContext);
+}
+
+/** Re-fetches the attention counts now (e.g. when a live inbox event arrives). */
+export function useAttentionRefresh(): () => Promise<void> {
+  return useContext(AttentionRefreshContext);
 }

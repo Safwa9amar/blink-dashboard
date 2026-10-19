@@ -16,6 +16,12 @@ import { canAccessPath, defaultPathFor, isStaffRole, type StaffRole } from "./ac
 // column exists, a real row with a null/invalid `staff_role` correctly resolves to null
 // (no dashboard access) and this stub becomes a no-op.
 export async function getCurrentStaffRole(): Promise<StaffRole | null> {
+  return (await getCurrentStaff())?.role ?? null;
+}
+
+// The current viewer's user id + dashboard role, or null if they aren't staff. For
+// server code that also needs the id (e.g. per-staff inbox read state).
+export async function getCurrentStaff(): Promise<{ id: string; role: StaffRole } | null> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -30,12 +36,12 @@ export async function getCurrentStaffRole(): Promise<StaffRole | null> {
 
   if (error) {
     // 42703 = undefined_column → migration hasn't run. Don't lock anyone out yet.
-    if (error.code === "42703") return "super_admin";
+    if (error.code === "42703") return { id: user.id, role: "super_admin" };
     return null;
   }
 
   const value = (data as { staff_role?: unknown } | null)?.staff_role ?? null;
-  return isStaffRole(value) ? value : null;
+  return isStaffRole(value) ? { id: user.id, role: value } : null;
 }
 
 // Mutation guard for server actions (which have no pathname to gate on). Returns true

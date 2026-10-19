@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { hasStaffRole } from "@/lib/auth/staff";
+import { blinkApi } from "@/lib/blink-api";
 import type { ScheduledNotification } from "@/features/notifications";
 
 // Broadcasting a campaign writes ONE shared notification content row plus a
@@ -13,8 +14,10 @@ import type { ScheduledNotification } from "@/features/notifications";
 // to each recipient's registered devices. Mirrors blink-server's
 // broadcastNotification + push helper (shared-content + per-user archive model,
 // migration 00019); the dashboard stays self-contained (Supabase + a public Expo
-// POST) rather than calling the blink-server API. Email/SMS channels are not
-// delivered yet — the row + push are the supported paths.
+// POST) rather than calling the blink-server API — except SMS: blink-server owns
+// the SMS gateway (SMS Gate, the OTP phone), so the "sms" channel asks it to text
+// the notification's recipients (POST /notifications/admin/{id}/sms). Email is
+// not delivered yet.
 
 type Lang = "en" | "fr" | "ar";
 type LangMap = Record<Lang, string>;
@@ -32,13 +35,50 @@ export interface SendCampaignInput {
   channels: string[]; // includes "push" / "inapp" / "email" / "sms"
   link?: string; // deep-link routePath → notifications.href
   userId?: string; // when set, deliver ONLY to this user (ignores `roles`)
+  smsLang?: Lang; // language of the SMS text when channels has "sms"
+}
+
+/** Why SMS can't go out. `blocked` on a result = nothing was sent at all. */
+export type SmsProblem =
+  | { code: "not_configured" }
+  | { code: "over_limit"; max: number; count: number }
+  | { code: "no_phones" }
+  | { code: "failed"; detail: string };
+
+export interface SmsOutcome {
+  queued: number; // numbers the gateway accepted
+  noPhone: number; // recipients without a usable phone
+  failed: number; // numbers the gateway refused
 }
 
 export interface SendCampaignResult {
   error: string | null;
   recipients: number;
   pushed: number;
+  /** SMS problem found before sending: nothing was sent. */
+  blocked?: SmsProblem;
+  /** SMS result once in-app/push went out (null when SMS wasn't selected). */
+  sms?: SmsOutcome | null;
+  /** In-app/push went out but SMS didn't. */
+  smsProblem?: SmsProblem | null;
 }
+
+// blink-server's SMS endpoints allow the same roles as sending.
+const SMS_ROLES = ["super_admin", "ops_admin"] as const;
+
+/** Can `phones` numbers be texted? Checked before anything is sent. */
+async function smsPreflight(phones: number): Promise<SmsProblem | null> {
+  if (phones === 0) return { code: "no_phones" };
+  const st = await blinkApi<{ configured: boolean; max: number }>("/notifications/admin/sms/status", { roles: SMS_ROLES });
+  if (!st.ok) return { code: "failed", detail: st.error };
+  if (!st.data.configured) return { code: "not_configured" };
+  if (phones > st.data.max) return { code: "over_limit", max: st.data.max, count: phones };
+  return null;
+}
+
+const SMS_LANGS: readonly Lang[] = ["en", "fr", "ar"];
+const smsLangOf = (input: SendCampaignInput): Lang =>
+  input.smsLang && SMS_LANGS.includes(input.smsLang) ? input.smsLang : "en";
 
 const ROLE_LABEL_TO_ENUM: Record<string, string> = {
   Customer: "customer",
@@ -144,6 +184,19 @@ export interface ScheduleCampaignInput extends SendCampaignInput {
 export interface ScheduleCampaignResult {
   error: string | null;
   id: string | null;
+  /** SMS problem found now: nothing was queued. */
+  blocked?: SmsProblem;
+}
+
+/** Users the cron would text now: holders of a targeted role with a phone (same lookup as its broadcast). */
+async function phonesInRoles(roles: string[]): Promise<number> {
+  const supabase = await createAdminClient();
+  const { count } = await supabase
+    .from("users")
+    .select("id", { count: "exact", head: true })
+    .overlaps("granted_roles", roles)
+    .not("phone_number", "is", null);
+  return count ?? 0;
 }
 
 // Queue a broadcast to fire later. Unlike sendCampaign (which delivers
@@ -170,6 +223,12 @@ export async function scheduleCampaign(
   const descEn = input.message.en || input.message.fr || input.message.ar || "";
   if (!titleEn) return { error: "A title is required.", id: null };
 
+  const sms = input.channels.includes("sms");
+  if (sms) {
+    const blocked = await smsPreflight(await phonesInRoles(roles));
+    if (blocked) return { error: null, id: null, blocked };
+  }
+
   const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("scheduled_notifications")
@@ -183,6 +242,8 @@ export async function scheduleCampaign(
       content_ar: copyFor(input.title.ar, input.message.ar),
       target_roles: roles,
       channels: input.channels,
+      // Only SMS rows set it (the column came with the SMS channel).
+      ...(sms ? { sms_lang: smsLangOf(input) } : {}),
       scheduled_at: when.toISOString(),
     })
     .select("id")
@@ -296,6 +357,7 @@ export async function updateScheduled(
   const descEn = input.message.en || input.message.fr || input.message.ar || "";
   if (!titleEn) return { error: "A title is required." };
 
+  const sms = input.channels.includes("sms");
   const supabase = await createAdminClient();
   const { error } = await supabase
     .from("scheduled_notifications")
@@ -309,6 +371,8 @@ export async function updateScheduled(
       content_ar: copyFor(input.title.ar, input.message.ar),
       target_roles: roles,
       channels: input.channels,
+      // Keep the stored SMS language unless this edit picked one.
+      ...(sms && input.smsLang ? { sms_lang: smsLangOf(input) } : {}),
       scheduled_at: when.toISOString(),
     })
     .eq("id", id)
@@ -344,8 +408,8 @@ export async function sendCampaign(
 
   // Recipients: a single specific user, or everyone in the target roles.
   const { data: users, error: usersErr } = input.userId
-    ? await supabase.from("users").select("id, role").eq("id", input.userId)
-    : await supabase.from("users").select("id, role").in("role", roles);
+    ? await supabase.from("users").select("id, role, phone_number").eq("id", input.userId)
+    : await supabase.from("users").select("id, role, phone_number").in("role", roles);
   if (usersErr) return { error: usersErr.message, recipients: 0, pushed: 0 };
   if (!users || users.length === 0) {
     return {
@@ -353,6 +417,13 @@ export async function sendCampaign(
       recipients: 0,
       pushed: 0,
     };
+  }
+
+  // SMS: refuse up front (nothing sent) when it can't go out to this audience.
+  const sms = input.channels.includes("sms");
+  if (sms) {
+    const blocked = await smsPreflight(users.filter((u) => !!u.phone_number).length);
+    if (blocked) return { error: null, recipients: 0, pushed: 0, blocked };
   }
 
   // The audience stamped on the shared content row: the picked user's role for a
@@ -416,8 +487,23 @@ export async function sendCampaign(
     );
   }
 
+  // SMS last: blink-server texts this notification's recipients.
+  let smsOut: SmsOutcome | null = null;
+  let smsProblem: SmsProblem | null = null;
+  if (sms) {
+    const res = await blinkApi<{ queued: number; no_phone: number; failed: number }>(
+      `/notifications/admin/${notif.id}/sms`,
+      { method: "POST", body: { lang: smsLangOf(input) }, roles: SMS_ROLES }
+    );
+    if (res.ok) smsOut = { queued: res.data.queued, noPhone: res.data.no_phone, failed: res.data.failed };
+    else {
+      const code = (res.body as { code?: string; max?: number } | undefined)?.code;
+      smsProblem = code === "sms_not_configured" ? { code: "not_configured" } : { code: "failed", detail: res.error };
+    }
+  }
+
   revalidatePath("/d/notifications");
-  return { error: null, recipients: recipientRows.length, pushed };
+  return { error: null, recipients: recipientRows.length, pushed, sms: smsOut, smsProblem };
 }
 
 // Fan out an Expo push to every registered device of the recipients. Best-effort:
