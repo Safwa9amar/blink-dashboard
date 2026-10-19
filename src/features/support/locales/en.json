@@ -279,7 +279,7 @@
       "save": "Save",
       "saved": "Saved",
       "system_prompt": "System prompt",
-      "system_prompt_hint": "The bot's full instructions. Keep the '{{role}}', '{{lang}}' and '{{kb}}' placeholders — the server replaces them with the user's role, language and the knowledge base. Leave blank to use the built-in default.",
+      "system_prompt_hint": "The bot's full instructions. Keep the '{{role}}', '{{lang}}' and '{{kb}}' placeholders — the server replaces them with the user's role, language and knowledge base content: the most relevant excerpts when knowledge retrieval is on, or all published articles when it's off. Leave blank to use the built-in default.",
       "system_prompt_ph": "Leave blank to use the built-in default prompt…"
     },
     "tk": {
@@ -329,6 +329,67 @@
       "err_not_authorized": "You are not allowed to do this.",
       "err_invalid": "Invalid values.",
       "err_migration_pending": "Run the support desk migration first."
+    },
+    "rag": {
+      "title": "Knowledge retrieval (RAG)",
+      "desc": "Choose how the bot reads the knowledge base.",
+      "enabled": "Enabled",
+      "enabled_hint": "When off, the bot gets the whole knowledge base in every message. When on, it gets only the most relevant excerpts, so it's cheaper, faster, and more accurate as the knowledge base grows.",
+      "provider": "Embedding provider",
+      "model": "Embedding model",
+      "model_hint": "Changing the embedding model re-embeds the whole knowledge base in the background.",
+      "model_ph": "Provider default",
+      "top_k": "Top K",
+      "top_k_hint": "Excerpts per message (1–20)",
+      "min_score": "Minimum similarity",
+      "min_score_hint": "0 to 1",
+      "save": "Save",
+      "saved": "Saved",
+      "migration_pending": "Migration pending: the retrieval columns don't exist in the database yet. Showing defaults; saving will fail until the migration is applied.",
+      "unavailable": "Retrieval service unavailable. The server may not be deployed yet.",
+      "loading": "Loading…",
+      "never": "Never",
+      "already_syncing": "A sync is already running.",
+      "status": {
+        "title": "Index status",
+        "desc": "How much of the knowledge base is searchable.",
+        "articles": "Articles indexed",
+        "chunks": "Chunks",
+        "stale": "Stale articles",
+        "syncing": "Syncing",
+        "last_synced": "Last synced",
+        "last_error": "Last error",
+        "sync": "Sync changes",
+        "rebuild": "Rebuild all"
+      },
+      "test": {
+        "title": "Test retrieval",
+        "desc": "See which excerpts the bot would receive for a question.",
+        "question": "Question",
+        "question_ph": "e.g. How do I add a new store?",
+        "role": "Role",
+        "locale": "Preferred language",
+        "locale_hint": "Used as the preferred language when choosing which version of each article to show.",
+        "search": "Search",
+        "mode": "Mode",
+        "empty": "No excerpts matched.",
+        "score": "Score",
+        "similarity": "Similarity",
+        "keyword": "Keyword rank",
+        "more": "Show more",
+        "less": "Show less",
+        "roles": {
+          "customer": "Customer",
+          "rider": "Rider",
+          "merchant": "Merchant",
+          "agent": "Agent"
+        },
+        "modes": {
+          "hybrid": "Hybrid",
+          "keyword": "Keyword only (fallback)",
+          "empty": "Empty"
+        }
+      }
     }
   }
 }

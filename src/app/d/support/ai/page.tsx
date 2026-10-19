@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/dash-metadata";
 import { getAiServerSettings } from "@/app/d/blink-server/ai-server-data";
-import { AiTab } from "@/features/support";
+import { getRagConfig } from "@/app/d/support/rag-data";
+import { AiTab, RagPanel } from "@/features/support";
 
 export function generateMetadata(): Promise<Metadata> {
   return pageMeta("support", undefined, "tab_ai");
@@ -14,7 +15,9 @@ export function generateMetadata(): Promise<Metadata> {
 export default async function Page() {
   const { settings, error } = await getAiServerSettings();
   const activeModel = settings.providers[settings.active.provider]?.model ?? null;
+  const rag = await getRagConfig();
   return (
+    <div className="flex flex-col gap-6">
     <AiTab
       initial={{
         bot_enabled: settings.active.bot_enabled,
@@ -25,5 +28,7 @@ export default async function Page() {
       }}
       loadError={error}
     />
+    <RagPanel initial={rag.config} migrationPending={rag.migrationPending} loadError={rag.error} />
+    </div>
   );
 }

@@ -279,7 +279,7 @@
       "save": "Enregistrer",
       "saved": "Enregistré",
       "system_prompt": "Prompt système",
-      "system_prompt_hint": "Les instructions complètes du bot. Conservez les marqueurs '{{role}}', '{{lang}}' et '{{kb}}' — le serveur les remplace par le rôle, la langue de l'utilisateur et la base de connaissances. Laissez vide pour utiliser le prompt par défaut.",
+      "system_prompt_hint": "Les instructions complètes du bot. Conservez les marqueurs '{{role}}', '{{lang}}' et '{{kb}}' — le serveur les remplace par le rôle et la langue de l'utilisateur et par la base de connaissances : les extraits les plus pertinents si la recherche est activée, ou tous les articles publiés sinon. Laissez vide pour utiliser le prompt par défaut.",
       "system_prompt_ph": "Laissez vide pour utiliser le prompt par défaut…"
     },
     "tk": {
@@ -329,6 +329,67 @@
       "err_not_authorized": "Vous n'avez pas le droit de faire cela.",
       "err_invalid": "Valeurs invalides.",
       "err_migration_pending": "Exécutez d'abord la migration du support desk."
+    },
+    "rag": {
+      "title": "Recherche dans la base de connaissances (RAG)",
+      "desc": "Choisissez comment le bot lit la base de connaissances.",
+      "enabled": "Activé",
+      "enabled_hint": "Désactivé, le bot reçoit toute la base de connaissances à chaque message. Activé, il ne reçoit que les extraits les plus pertinents : c'est moins cher, plus rapide et plus précis à mesure que la base grandit.",
+      "provider": "Fournisseur d'embeddings",
+      "model": "Modèle d'embeddings",
+      "model_hint": "Changer le modèle d'embeddings recalcule toute la base de connaissances en arrière-plan.",
+      "model_ph": "Défaut du fournisseur",
+      "top_k": "Top K",
+      "top_k_hint": "Extraits par message (1–20)",
+      "min_score": "Similarité minimale",
+      "min_score_hint": "0 à 1",
+      "save": "Enregistrer",
+      "saved": "Enregistré",
+      "migration_pending": "Migration en attente : les colonnes de recherche n'existent pas encore en base. Valeurs par défaut affichées ; l'enregistrement échouera tant que la migration n'est pas appliquée.",
+      "unavailable": "Service de recherche indisponible. Le serveur n'est peut-être pas encore déployé.",
+      "loading": "Chargement…",
+      "never": "Jamais",
+      "already_syncing": "Une synchronisation est déjà en cours.",
+      "status": {
+        "title": "État de l'index",
+        "desc": "Part de la base de connaissances consultable.",
+        "articles": "Articles indexés",
+        "chunks": "Fragments",
+        "stale": "Articles obsolètes",
+        "syncing": "Synchronisation",
+        "last_synced": "Dernière synchro",
+        "last_error": "Dernière erreur",
+        "sync": "Synchroniser les changements",
+        "rebuild": "Tout reconstruire"
+      },
+      "test": {
+        "title": "Tester la recherche",
+        "desc": "Voyez quels extraits le bot recevrait pour une question.",
+        "question": "Question",
+        "question_ph": "ex. Comment ajouter un nouveau magasin ?",
+        "role": "Rôle",
+        "locale": "Langue préférée",
+        "locale_hint": "Langue privilégiée pour choisir la version de chaque article à afficher.",
+        "search": "Rechercher",
+        "mode": "Mode",
+        "empty": "Aucun extrait correspondant.",
+        "score": "Score",
+        "similarity": "Similarité",
+        "keyword": "Rang mot-clé",
+        "more": "Voir plus",
+        "less": "Voir moins",
+        "roles": {
+          "customer": "Client",
+          "rider": "Livreur",
+          "merchant": "Commerçant",
+          "agent": "Agent"
+        },
+        "modes": {
+          "hybrid": "Hybride",
+          "keyword": "Mots-clés seulement (repli)",
+          "empty": "Vide"
+        }
+      }
     }
   }
 }

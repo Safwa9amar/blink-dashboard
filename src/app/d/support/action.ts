@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getRagConfig } from "./rag-data";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { hasStaffRole } from "@/lib/auth/staff";
@@ -15,6 +16,36 @@ import type {
   SupportCategoryRow,
 } from "@/features/support";
 
+
+// Best-effort incremental KB reindex after an article write. Never fails or delays
+// the save for more than ~2s; the server also self-heals staleness.
+async function kickReindex(): Promise<void> {
+  try {
+    // Skip while RAG is off (or unreadable / migration pending): no paid embedding calls.
+    const rag = await getRagConfig();
+    if (rag.error || rag.migrationPending || !rag.config.rag_enabled) return;
+    const supabase = await createClient();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session?.access_token) return;
+    await Promise.race([
+      fetchBlinkApi("/ai/kb/reindex", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ full: false }),
+        timeoutMs: 2000,
+        cache: "no-store",
+      }).catch(() => null),
+      new Promise((resolve) => setTimeout(resolve, 2000)),
+    ]);
+  } catch {
+    /* swallow */
+  }
+}
 
 async function callServer(path: string, body?: unknown): Promise<{ error: string | null }> {
   if (!(await hasStaffRole("super_admin", "support_admin"))) {
@@ -78,6 +109,7 @@ export async function createKbArticle(payload: SupportArticleInsert): Promise<Ar
     .single();
   if (error) return { error: error.message, row: null };
   revalidatePath("/d/support");
+  await kickReindex();
   return { error: null, row: data as SupportArticleRow };
 }
 
@@ -97,6 +129,7 @@ export async function updateKbArticle(
     .single();
   if (error) return { error: error.message, row: null };
   revalidatePath("/d/support");
+  await kickReindex();
   return { error: null, row: data as SupportArticleRow };
 }
 
@@ -117,6 +150,7 @@ export async function deleteKbArticle(id: string): Promise<{ error: string | nul
   const { error } = await supabase.from("support_articles").delete().eq("id", id);
   if (error) return { error: error.message };
   revalidatePath("/d/support");
+  await kickReindex();
   return { error: null };
 }
 

@@ -14,3 +14,5 @@ export * from "./store";
 export { useKbStore } from "./kb-store";
 export { normalizeSupportDraft } from "./ai";
 export type { SupportDraft, SupportDraftRequest } from "./ai";
+export * from "./rag";
+export { RagPanel } from "./components/rag-panel";
