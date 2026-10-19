@@ -1,22 +1,29 @@
 "use client";
 
+import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Modal, Badge } from "@/components/ui";
 import { PACK_STATUS, type Pack } from "../types";
 import { formatDa, formatDate } from "../rows";
 import { PackDecision } from "./pack-decision";
+import { PackManage } from "./pack-manage";
 import { PackThumb } from "./pack-thumb";
+
+const ignore = () => {};
 
 /** One pack: contents with live prices, pricing summary, review note and staff actions. */
 export function PackDetailModal({ pack, onClose }: { pack: Pack | null; onClose: () => void }) {
   const t = useTranslations("packs");
   const locale = useLocale();
+  // While an archive / delete confirmation is open on top, Escape and the backdrop
+  // only close that confirmation.
+  const [confirming, setConfirming] = useState(false);
   if (!pack) return null;
 
   const deliveryFee = pack.freeDelivery ? 0 : pack.storeDeliveryFee;
 
   return (
-    <Modal open onClose={onClose} title={pack.name} widthClassName="max-w-xl">
+    <Modal open onClose={confirming ? ignore : onClose} title={pack.name} widthClassName="max-w-xl">
       <div className="space-y-4 max-h-[75vh] overflow-y-auto pe-1">
         {/* Header info */}
         <div className="flex items-center gap-3">
@@ -161,6 +168,7 @@ export function PackDetailModal({ pack, onClose }: { pack: Pack | null; onClose:
         {pack.status === "active" && (
           <PackDecision packId={pack.id} expectedUpdatedAt={pack.updatedAt} mode="deactivate" onDone={onClose} />
         )}
+        <PackManage pack={pack} onDone={onClose} onConfirmChange={setConfirming} />
       </div>
     </Modal>
   );

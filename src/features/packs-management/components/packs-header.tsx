@@ -1,17 +1,31 @@
-import type { ReactNode } from "react";
-import { getTranslations } from "next-intl/server";
-import { PageHeader, StatGrid, StatCard, SubNav } from "@/components/ui";
-import { getPackCounts } from "./data";
+"use client";
 
-// The counts loader gates on the section (the pages' loaders gate again themselves).
-export default async function PacksManagementLayout({ children }: { children: ReactNode }) {
-  const t = await getTranslations("packs");
-  const { total, freeDeliveryActive, byStatus } = await getPackCounts();
+import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { DashIcon, PageHeader, StatCard, StatGrid, SubNav, btnPrimary } from "@/components/ui";
+import type { PackCounts } from "../types";
+
+/**
+ * The list tabs' chrome: title + "New pack", headline stats (exact counts) and the
+ * Under review / All tabs. The editor pages (/new, /[id]) have their own header.
+ */
+export function PacksHeader({ counts }: { counts: PackCounts }) {
+  const t = useTranslations("packs");
+  const { total, freeDeliveryActive, byStatus } = counts;
   const review = byStatus.under_review;
 
   return (
-    <div>
-      <PageHeader title={t("title")} description={t("description")} />
+    <>
+      <PageHeader
+        title={t("title")}
+        description={t("description")}
+        actions={
+          <Link href="/packs-management/new" className={btnPrimary}>
+            <DashIcon name="plus" className="w-4 h-4" />
+            {t("new_pack")}
+          </Link>
+        }
+      />
 
       <StatGrid cols={4}>
         <StatCard label={t("stats.reviewing")} value={review} icon="clock" variant="warning" change={t("stats.reviewing_desc")} />
@@ -26,7 +40,6 @@ export default async function PacksManagementLayout({ children }: { children: Re
           { href: "/packs-management/all", label: t("tab_all"), icon: "gift", count: total ? String(total) : undefined },
         ]}
       />
-      {children}
-    </div>
+    </>
   );
 }

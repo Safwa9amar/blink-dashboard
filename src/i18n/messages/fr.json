@@ -306,7 +306,8 @@
       "news": "Article d'actualité",
       "notification": "Notification push",
       "library_product": "Produit du catalogue",
-      "help_article": "Article d'aide"
+      "help_article": "Article d'aide",
+      "pack": "Pack"
     },
     "topbar": {
       "search_placeholder": "Rechercher commandes, personnes, boutiques…",

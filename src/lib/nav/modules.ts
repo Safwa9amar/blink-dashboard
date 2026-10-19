@@ -107,6 +107,7 @@ export const CREATE_ACTIONS: readonly CreateAction[] = [
   { key: "notification", href: "/notifications/compose", icon: "bell" },
   { key: "library_product", href: "/library/products/new", icon: "package" },
   { key: "help_article", href: "/support/articles/new", icon: "doc" },
+  { key: "pack", href: "/packs-management/new", icon: "gift" },
 ];
 
 function matches(pathname: string, href: string): boolean {

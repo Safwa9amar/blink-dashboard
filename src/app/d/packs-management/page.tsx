@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/dash-metadata";
-import { getPacks } from "./data";
+import { getPackCounts, getPacks } from "./data";
 import Client from "./client";
 
 export function generateMetadata(): Promise<Metadata> {
@@ -8,8 +8,8 @@ export function generateMetadata(): Promise<Metadata> {
 }
 
 // Under review tab — free-delivery packs wait here until staff approve them,
-// oldest first so nobody waits longest.
+// oldest first so nobody waits longest. Both loaders gate on the section.
 export default async function PacksReviewPage() {
-  const { packs, total, error } = await getPacks("under_review");
-  return <Client view="review" packs={packs} total={total} error={error} />;
+  const [{ packs, total, error }, counts] = await Promise.all([getPacks("under_review"), getPackCounts()]);
+  return <Client view="review" packs={packs} total={total} counts={counts} error={error} />;
 }

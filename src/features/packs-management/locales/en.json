@@ -1,7 +1,7 @@
 {
   "packs": {
     "title": "Packs Management",
-    "description": "Approve free-delivery packs and keep an eye on every merchant pack",
+    "description": "Review free-delivery packs, and create or manage any store's packs",
 
     "tab_review": "Under Review",
     "tab_all": "All Packs",
@@ -20,6 +20,8 @@
     "showing_oldest": "Showing the oldest {shown} of {total} — decide these to see the rest.",
     "showing_latest": "Showing the latest {shown} of {total}.",
     "pct_off": "{pct}% off",
+    "new_pack": "New Pack",
+    "edit": "Edit",
 
     "stats": {
       "reviewing": "Under Review",
@@ -65,7 +67,7 @@
       "pack_price": "Pack price",
       "delivery": "Delivery fee",
       "total": "Customer pays",
-      "free_delivery_hint": "Approving lets this pack go live with free delivery. Blink covers the delivery fee.",
+      "free_delivery_hint": "Approving lets this pack go live with free delivery. The merchant covers the delivery fee.",
       "reviewed_at": "Free delivery approved {date}",
       "review_note": "Staff note"
     },
@@ -112,6 +114,165 @@
       "review": "No packs waiting for review. All caught up!",
       "none": "No packs yet.",
       "filtered": "No packs match your filters."
+    },
+
+    "manage": {
+      "title": "Manage",
+      "edit": "Edit Pack",
+      "activate": "Activate",
+      "archive": "Archive",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "archive_title": "Archive this pack?",
+      "archive_body": "Customers stop seeing “{name}” right away. It stays in the merchant's archived packs, and you can activate it again later.",
+      "archive_confirm": "Archive Pack",
+      "delete_title": "Delete this pack?",
+      "delete_body": "“{name}” is removed for good, for the merchant too. Past orders keep their copy of it, and the merchant is notified. This can't be undone.",
+      "delete_confirm": "Delete for Good",
+      "conflict": "This pack changed since you opened it, so nothing was done. The list has been refreshed — open the pack again to see the latest version."
+    },
+
+    "editor": {
+      "new_title": "New Pack",
+      "edit_title": "Edit Pack",
+      "new_subtitle": "Bundle products of one store. Packs made by Blink skip review, and the merchant is notified.",
+      "edit_subtitle": "Changes apply as soon as you save, and the merchant is notified.",
+      "back": "Back to packs",
+      "cancel": "Cancel",
+      "create": "Create Pack",
+      "save": "Save Changes",
+      "reload": "Reload Latest Version",
+      "no_changes": "No changes yet.",
+      "load_failed": "This pack couldn't be loaded. ({detail})",
+
+      "store": {
+        "title": "Store",
+        "description": "A pack holds products of one store only.",
+        "search": "Search stores or owners",
+        "none": "No store matches your search.",
+        "no_stores": "No stores yet.",
+        "more": "Showing {shown} of {total} — refine the search to see the rest.",
+        "change": "Change Store",
+        "change_clears": "Picking another store removes the items you added.",
+        "fixed": "A pack's store can't change.",
+        "delivery_fee": "Delivery fee {fee}",
+        "not_live": "This store isn't live, so customers won't see its packs until it is.",
+        "status": {
+          "active": "Active",
+          "inactive": "Inactive",
+          "under_review": "Under Review"
+        }
+      },
+
+      "items": {
+        "title": "Items",
+        "description": "1 to 30 products of this store, each with a quantity. Buy X Get Y adds free units on top.",
+        "pick_store": "Pick a store to start adding products.",
+        "empty": "No items yet — add products from the list below.",
+        "add_title": "Add Products",
+        "search": "Search this store's products",
+        "add": "Add",
+        "added": "Added",
+        "loading": "Loading products…",
+        "none": "No product matches your search.",
+        "no_products": "This store has no products yet.",
+        "more": "Showing {shown} of {total} — refine the search to see the rest.",
+        "limit_reached": "A pack holds up to 30 products.",
+        "remove": "Remove {name}",
+        "unknown_product": "Unknown product",
+        "quantity_of": "Quantity of {name}",
+        "promo": "Buy X Get Y",
+        "promo_of": "Buy X Get Y on {name}",
+        "buy": "Buy",
+        "get": "Get free",
+        "buy_of": "Units to buy of {name}",
+        "get_of": "Free units of {name}",
+        "decrease": "Decrease",
+        "increase": "Increase"
+      },
+
+      "details": {
+        "title": "Details",
+        "name": "Name",
+        "name_ph": "e.g. Breakfast Box",
+        "description": "Description",
+        "description_ph": "What's inside and why it's a good deal (optional)",
+        "image": "Photo",
+        "image_hint": "Optional — without a photo, the app shows a collage of the products' photos.",
+        "image_rules": "JPG, PNG or WebP, up to 8 MB.",
+        "image_pick_store": "Pick a store first.",
+        "upload": "Upload Photo",
+        "replace": "Replace",
+        "remove": "Remove"
+      },
+
+      "offer": {
+        "title": "Offer",
+        "discount": "Pack discount",
+        "discount_hint": "Taken off the items' total, from 0 to 90%.",
+        "discount_percent": "Discount percent",
+        "free_delivery": "Free delivery",
+        "free_delivery_hint": "The merchant covers the store's {fee} delivery fee on orders of this pack.",
+        "free_delivery_pick_store": "The merchant covers the store's delivery fee on orders of this pack."
+      },
+
+      "status": {
+        "title": "Status",
+        "keep_review": "Under Review",
+        "hint_active": "Live: customers can order it once it's saved.",
+        "hint_inactive": "Switched off: saved, but customers don't see it.",
+        "hint_archived": "Archived: hidden from customers and kept in the merchant's archive.",
+        "hint_under_review": "Left as is, the pack stays in the review queue. Pick a status to settle it here."
+      },
+
+      "summary": {
+        "title": "Summary",
+        "items": "Items",
+        "free_units": "Free units",
+        "original": "Items bought separately",
+        "discount": "Discount ({pct}%)",
+        "price": "Pack price",
+        "delivery": "Delivery fee",
+        "merchant_covers": "Covered by the merchant",
+        "total": "Customer pays",
+        "empty": "Add products to see the price.",
+        "unsellable": "Customers won't see this pack until every item is available and approved — see the flagged items."
+      },
+
+      "validation": {
+        "name_required": "Give the pack a name.",
+        "name_too_long": "Keep the name to 80 characters.",
+        "description_too_long": "Keep the description to 500 characters.",
+        "image_invalid": "The photo link isn't a valid web address.",
+        "items_required": "Add at least one product.",
+        "items_too_many": "A pack holds up to 30 products.",
+        "items_duplicate": "Each product can only appear once.",
+        "items_invalid": "One of the items isn't a valid product.",
+        "items_not_in_store": "Remove the items that are no longer products of this store.",
+        "quantity_range": "Quantity must be a whole number from 1 to 999.",
+        "promo_range": "Buy and get must be whole numbers from 1 to 999.",
+        "discount_range": "The discount must be a whole percent from 0 to 90.",
+        "status_invalid": "Pick a valid status."
+      },
+
+      "errors": {
+        "network": "Couldn't reach Blink Server. Check your connection and try again.",
+        "session": "Your session expired. Sign in again to continue.",
+        "forbidden": "Your staff role isn't allowed to create or edit packs.",
+        "not_found": "This pack no longer exists — it may have been deleted.",
+        "store_not_found": "That store no longer exists. Pick another one.",
+        "invalid": "Blink Server refused this pack. ({detail})",
+        "conflict": "This pack changed since you opened it, so nothing was saved. Reload to get the latest version (your edits here will be lost).",
+        "throttled": "Too many requests. Wait a moment and try again.",
+        "generic": "Something went wrong. ({detail})",
+        "duplicate_items": "Each product can only appear once in a pack.",
+        "invalid_items": "Some items aren't products of this store anymore. Remove them and try again.",
+        "empty": "Nothing to save — no field changed.",
+        "validation": "Some fields need fixing — see the highlighted ones.",
+        "image_type": "Use a JPG, PNG or WebP photo.",
+        "image_size": "That photo is over 8 MB.",
+        "upload_failed": "The photo couldn't be uploaded. ({detail})"
+      }
     }
   }
 }

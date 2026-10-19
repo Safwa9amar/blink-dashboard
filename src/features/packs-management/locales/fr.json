@@ -1,7 +1,7 @@
 {
   "packs": {
     "title": "Gestion des packs",
-    "description": "Approuvez les packs en livraison gratuite et suivez tous les packs des marchands",
+    "description": "Examinez les packs en livraison gratuite, créez et gérez les packs de n'importe quel magasin",
 
     "tab_review": "En révision",
     "tab_all": "Tous les packs",
@@ -20,6 +20,8 @@
     "showing_oldest": "Affichage des {shown} plus anciens sur {total} — traitez-les pour voir la suite.",
     "showing_latest": "Affichage des {shown} plus récents sur {total}.",
     "pct_off": "-{pct} %",
+    "new_pack": "Nouveau pack",
+    "edit": "Modifier",
 
     "stats": {
       "reviewing": "En révision",
@@ -65,7 +67,7 @@
       "pack_price": "Prix du pack",
       "delivery": "Frais de livraison",
       "total": "Le client paie",
-      "free_delivery_hint": "L'approbation met ce pack en ligne avec la livraison gratuite. Blink prend en charge les frais de livraison.",
+      "free_delivery_hint": "L'approbation met ce pack en ligne avec la livraison gratuite. Le marchand prend en charge les frais de livraison.",
       "reviewed_at": "Livraison gratuite approuvée le {date}",
       "review_note": "Note de l'équipe"
     },
@@ -112,6 +114,165 @@
       "review": "Aucun pack en attente de révision. Tout est à jour !",
       "none": "Aucun pack pour le moment.",
       "filtered": "Aucun pack ne correspond à vos filtres."
+    },
+
+    "manage": {
+      "title": "Gérer",
+      "edit": "Modifier le pack",
+      "activate": "Activer",
+      "archive": "Archiver",
+      "delete": "Supprimer",
+      "cancel": "Annuler",
+      "archive_title": "Archiver ce pack ?",
+      "archive_body": "Les clients ne voient plus « {name} » immédiatement. Il reste dans les packs archivés du marchand et vous pourrez le réactiver plus tard.",
+      "archive_confirm": "Archiver le pack",
+      "delete_title": "Supprimer ce pack ?",
+      "delete_body": "« {name} » sera supprimé définitivement, y compris pour le marchand. Les commandes passées en gardent une copie et le marchand est prévenu. Cette action est irréversible.",
+      "delete_confirm": "Supprimer définitivement",
+      "conflict": "Ce pack a changé depuis son ouverture : rien n'a été fait. La liste a été actualisée — rouvrez le pack pour voir sa dernière version."
+    },
+
+    "editor": {
+      "new_title": "Nouveau pack",
+      "edit_title": "Modifier le pack",
+      "new_subtitle": "Regroupez des produits d'un même magasin. Les packs créés par Blink ne passent pas en révision et le marchand est prévenu.",
+      "edit_subtitle": "Les modifications s'appliquent dès l'enregistrement et le marchand est prévenu.",
+      "back": "Retour aux packs",
+      "cancel": "Annuler",
+      "create": "Créer le pack",
+      "save": "Enregistrer",
+      "reload": "Recharger la dernière version",
+      "no_changes": "Aucune modification pour l'instant.",
+      "load_failed": "Impossible de charger ce pack. ({detail})",
+
+      "store": {
+        "title": "Magasin",
+        "description": "Un pack ne contient que des produits d'un seul magasin.",
+        "search": "Rechercher un magasin ou un propriétaire",
+        "none": "Aucun magasin ne correspond à votre recherche.",
+        "no_stores": "Aucun magasin pour le moment.",
+        "more": "Affichage de {shown} sur {total} — affinez la recherche pour voir la suite.",
+        "change": "Changer de magasin",
+        "change_clears": "Choisir un autre magasin retire les articles ajoutés.",
+        "fixed": "Le magasin d'un pack ne peut pas changer.",
+        "delivery_fee": "Frais de livraison {fee}",
+        "not_live": "Ce magasin n'est pas en ligne : les clients ne verront ses packs qu'une fois qu'il le sera.",
+        "status": {
+          "active": "Actif",
+          "inactive": "Inactif",
+          "under_review": "En révision"
+        }
+      },
+
+      "items": {
+        "title": "Articles",
+        "description": "De 1 à 30 produits de ce magasin, chacun avec une quantité. « X achetés, Y offerts » ajoute des unités gratuites en plus.",
+        "pick_store": "Choisissez un magasin pour ajouter des produits.",
+        "empty": "Aucun article pour l'instant — ajoutez des produits depuis la liste ci-dessous.",
+        "add_title": "Ajouter des produits",
+        "search": "Rechercher dans les produits du magasin",
+        "add": "Ajouter",
+        "added": "Ajouté",
+        "loading": "Chargement des produits…",
+        "none": "Aucun produit ne correspond à votre recherche.",
+        "no_products": "Ce magasin n'a encore aucun produit.",
+        "more": "Affichage de {shown} sur {total} — affinez la recherche pour voir la suite.",
+        "limit_reached": "Un pack contient au maximum 30 produits.",
+        "remove": "Retirer {name}",
+        "unknown_product": "Produit inconnu",
+        "quantity_of": "Quantité de {name}",
+        "promo": "X achetés, Y offerts",
+        "promo_of": "X achetés, Y offerts sur {name}",
+        "buy": "Achetés",
+        "get": "Offerts",
+        "buy_of": "Unités à acheter de {name}",
+        "get_of": "Unités offertes de {name}",
+        "decrease": "Diminuer",
+        "increase": "Augmenter"
+      },
+
+      "details": {
+        "title": "Détails",
+        "name": "Nom",
+        "name_ph": "ex. Box petit-déjeuner",
+        "description": "Description",
+        "description_ph": "Ce qu'il contient et pourquoi c'est une bonne affaire (facultatif)",
+        "image": "Photo",
+        "image_hint": "Facultative — sans photo, l'application affiche un montage des photos des produits.",
+        "image_rules": "JPG, PNG ou WebP, 8 Mo maximum.",
+        "image_pick_store": "Choisissez d'abord un magasin.",
+        "upload": "Importer une photo",
+        "replace": "Remplacer",
+        "remove": "Retirer"
+      },
+
+      "offer": {
+        "title": "Offre",
+        "discount": "Remise sur le pack",
+        "discount_hint": "Déduite du total des articles, de 0 à 90 %.",
+        "discount_percent": "Pourcentage de remise",
+        "free_delivery": "Livraison gratuite",
+        "free_delivery_hint": "Le marchand prend en charge les frais de livraison du magasin ({fee}) sur les commandes de ce pack.",
+        "free_delivery_pick_store": "Le marchand prend en charge les frais de livraison du magasin sur les commandes de ce pack."
+      },
+
+      "status": {
+        "title": "Statut",
+        "keep_review": "En révision",
+        "hint_active": "En ligne : les clients peuvent le commander dès l'enregistrement.",
+        "hint_inactive": "Désactivé : enregistré, mais invisible pour les clients.",
+        "hint_archived": "Archivé : invisible pour les clients et conservé dans les archives du marchand.",
+        "hint_under_review": "Sans changement, le pack reste dans la file de révision. Choisissez un statut pour trancher ici."
+      },
+
+      "summary": {
+        "title": "Récapitulatif",
+        "items": "Articles",
+        "free_units": "Unités offertes",
+        "original": "Articles achetés séparément",
+        "discount": "Remise ({pct} %)",
+        "price": "Prix du pack",
+        "delivery": "Frais de livraison",
+        "merchant_covers": "Pris en charge par le marchand",
+        "total": "Le client paie",
+        "empty": "Ajoutez des produits pour voir le prix.",
+        "unsellable": "Les clients ne verront pas ce pack tant que chaque article n'est pas disponible et approuvé — voir les articles signalés."
+      },
+
+      "validation": {
+        "name_required": "Donnez un nom au pack.",
+        "name_too_long": "Le nom ne doit pas dépasser 80 caractères.",
+        "description_too_long": "La description ne doit pas dépasser 500 caractères.",
+        "image_invalid": "Le lien de la photo n'est pas une adresse web valide.",
+        "items_required": "Ajoutez au moins un produit.",
+        "items_too_many": "Un pack contient au maximum 30 produits.",
+        "items_duplicate": "Chaque produit ne peut apparaître qu'une fois.",
+        "items_invalid": "Un des articles n'est pas un produit valide.",
+        "items_not_in_store": "Retirez les articles qui ne sont plus des produits de ce magasin.",
+        "quantity_range": "La quantité doit être un nombre entier entre 1 et 999.",
+        "promo_range": "Les quantités achetées et offertes doivent être des nombres entiers entre 1 et 999.",
+        "discount_range": "La remise doit être un pourcentage entier entre 0 et 90.",
+        "status_invalid": "Choisissez un statut valide."
+      },
+
+      "errors": {
+        "network": "Impossible de joindre Blink Server. Vérifiez votre connexion et réessayez.",
+        "session": "Votre session a expiré. Reconnectez-vous pour continuer.",
+        "forbidden": "Votre rôle ne permet pas de créer ou de modifier des packs.",
+        "not_found": "Ce pack n'existe plus — il a peut-être été supprimé.",
+        "store_not_found": "Ce magasin n'existe plus. Choisissez-en un autre.",
+        "invalid": "Blink Server a refusé ce pack. ({detail})",
+        "conflict": "Ce pack a changé depuis son ouverture : rien n'a été enregistré. Rechargez pour obtenir la dernière version (vos modifications ici seront perdues).",
+        "throttled": "Trop de requêtes. Patientez un instant puis réessayez.",
+        "generic": "Une erreur est survenue. ({detail})",
+        "duplicate_items": "Chaque produit ne peut apparaître qu'une fois dans un pack.",
+        "invalid_items": "Certains articles ne sont plus des produits de ce magasin. Retirez-les puis réessayez.",
+        "empty": "Rien à enregistrer — aucun champ n'a changé.",
+        "validation": "Certains champs sont à corriger — voir ceux mis en évidence.",
+        "image_type": "Utilisez une photo JPG, PNG ou WebP.",
+        "image_size": "Cette photo dépasse 8 Mo.",
+        "upload_failed": "La photo n'a pas pu être importée. ({detail})"
+      }
     }
   }
 }

@@ -1,9 +1,24 @@
-export function Toggle({ on, onClick }: { on: boolean; onClick: () => void }) {
+export function Toggle({
+  on,
+  onClick,
+  label,
+  disabled,
+}: {
+  on: boolean;
+  onClick: () => void;
+  /** Accessible name when no visible <label> points at the switch. */
+  label?: string;
+  disabled?: boolean;
+}) {
   return (
     <button
       type="button"
+      role="switch"
+      aria-checked={on}
+      aria-label={label}
+      disabled={disabled}
       onClick={onClick}
-      className={`w-11 h-[26px] rounded-full relative transition-colors shrink-0 cursor-pointer ${
+      className={`w-11 h-[26px] rounded-full relative transition-colors shrink-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
         on ? "bg-primary" : "bg-border"
       }`}
     >

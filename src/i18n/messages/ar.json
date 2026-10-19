@@ -306,7 +306,8 @@
       "news": "منشور إخباري",
       "notification": "إشعار فوري",
       "library_product": "منتج في المكتبة",
-      "help_article": "مقال مساعدة"
+      "help_article": "مقال مساعدة",
+      "pack": "حزمة"
     },
     "topbar": {
       "search_placeholder": "ابحث في الطلبات والأشخاص والمتاجر…",

@@ -1,11 +1,27 @@
-import type { Pack, PackItem, PackItemIssue, PackItemRow, PackProductRow, PackStatus } from "./types";
+import { freeUnits, pricePack } from "./pricing";
+import type {
+  Pack,
+  PackItem,
+  PackItemIssue,
+  PackItemRow,
+  PackProductOption,
+  PackProductRow,
+  PackStatus,
+  PackStoreOption,
+  ProductIssue,
+} from "./types";
 
-// Pricing mirrors blink-server's src/lib/pack-pricing.ts (what the customer is
-// charged): original = Σ live price × qty, minus the % discount when enabled;
-// buy-X-get-Y free units are given on top and never charged.
+// Pricing lives in pricing.ts (mirror of blink-server's src/lib/pack-pricing.ts),
+// shared with the live editor summary.
 
 type OwnerEmbed = { first_name?: string | null; last_name?: string | null; phone_number?: string | null };
-type StoreEmbed = { id?: string; name?: string | null; delivery_fee?: number | string | null; owner?: unknown };
+type StoreEmbed = {
+  id?: string;
+  name?: string | null;
+  delivery_fee?: number | string | null;
+  status?: string | null;
+  owner?: unknown;
+};
 
 // A to-one embed can come back from PostgREST as a one-element array.
 function one<T extends object>(value: unknown): Partial<T> {
@@ -18,9 +34,10 @@ const num = (v: unknown) => {
   return Number.isFinite(n) ? n : 0;
 };
 
-const round2 = (n: number) => Math.round(n * 100) / 100;
-
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** A Postgres uuid (pack, store and product ids). */
+export const isUuid = (v: unknown): v is string => typeof v === "string" && UUID.test(v);
 
 /** "1,250 Da" — fixed en-US grouping so server and client render the same string. */
 export function formatDa(n: number): string {
@@ -50,12 +67,14 @@ export function packProductIds(rows: Record<string, unknown>[]): string[] {
   return [...ids];
 }
 
-/** Buy-X-get-Y: free units given on top of `quantity`. */
-function freeUnits(item: PackItemRow): number {
-  const buy = num(item.buy_qty);
-  const get = num(item.get_qty);
-  if (!item.qty_promo_enabled || !(buy > 0) || !(get > 0)) return 0;
-  return Math.floor(num(item.quantity) / buy) * get;
+/**
+ * Why customers can't get this product in a pack, or null when it is sellable:
+ * blink-server's loadVisiblePacks() only resolves available, approved products.
+ */
+export function productIssue(product: Pick<PackProductRow, "is_available" | "review_status">): ProductIssue | null {
+  if (product.is_available !== true) return "unavailable";
+  if (product.review_status !== "approved") return product.review_status === "rejected" ? "rejected" : "pending_review";
+  return null;
 }
 
 /**
@@ -67,11 +86,36 @@ function freeUnits(item: PackItemRow): number {
 function itemIssue(item: PackItemRow, product: PackProductRow | undefined, storeId: unknown): PackItemIssue | null {
   if (!product) return "missing";
   if (product.store_id !== storeId) return "other_store";
-  if (product.is_available !== true) return "unavailable";
-  if (product.review_status !== "approved") return product.review_status === "rejected" ? "rejected" : "pending_review";
+  const issue = productIssue(product);
+  if (issue) return issue;
   const quantity = Number(item.quantity);
   if (!Number.isInteger(quantity) || quantity <= 0) return "bad_quantity";
   return null;
+}
+
+/** A `PACK_PRODUCT_SELECT` row as a product-picker option. */
+export function toProductOption(product: PackProductRow): PackProductOption {
+  return {
+    id: product.id,
+    title: product.title || "—",
+    price: num(product.price),
+    image: product.image || product.photos?.[0] || null,
+    unit: product.unit || null,
+    issue: productIssue(product),
+  };
+}
+
+/** A `PACK_STORE_SELECT` row as a store-picker option. */
+export function toStoreOption(row: Record<string, unknown>): PackStoreOption {
+  const owner = one<OwnerEmbed>(row.owner);
+  return {
+    id: row.id as string,
+    name: (row.name as string | null) || "—",
+    deliveryFee: num(row.delivery_fee),
+    status: typeof row.status === "string" ? row.status : "",
+    ownerName: [owner.first_name, owner.last_name].filter(Boolean).join(" ") || null,
+    ownerPhone: owner.phone_number ?? null,
+  };
 }
 
 /** Maps a `PACK_SELECT` row to the view row, resolving items against `products`. */
@@ -81,49 +125,53 @@ export function toPack(row: Record<string, unknown>, products: ReadonlyMap<strin
 
   const items: PackItem[] = itemRows(row).map((item) => {
     const product = products.get(item.product_id);
+    const line = {
+      unitPrice: product ? num(product.price) : 0,
+      quantity: num(item.quantity),
+      qtyPromo: !!item.qty_promo_enabled,
+      buyQty: num(item.buy_qty),
+      getQty: num(item.get_qty),
+    };
     return {
+      ...line,
       productId: item.product_id,
       name: product?.title ?? null,
       image: product?.image || product?.photos?.[0] || null,
       unit: product?.unit ?? null,
-      unitPrice: product ? num(product.price) : 0,
-      quantity: num(item.quantity),
-      freeQty: freeUnits(item),
-      qtyPromo: !!item.qty_promo_enabled,
-      buyQty: num(item.buy_qty),
-      getQty: num(item.get_qty),
+      freeQty: freeUnits(line),
       issue: itemIssue(item, product, row.store_id),
     };
   });
 
-  const pct = num(row.discount_percent);
-  const discountPercent = row.discount_enabled && pct > 0 ? pct : 0;
-  const originalPrice = round2(items.reduce((s, i) => s + i.unitPrice * i.quantity, 0));
-  const savings = discountPercent > 0 ? Math.round((originalPrice * discountPercent) / 100) : 0;
+  const discountPercentRaw = num(row.discount_percent);
+  const pricing = pricePack(items, !!row.discount_enabled, discountPercentRaw);
 
   return {
     id: row.id as string,
     storeId: row.store_id as string,
     storeName: store.name || "—",
     storeDeliveryFee: num(store.delivery_fee),
+    storeStatus: typeof store.status === "string" ? store.status : "",
     merchantName: [owner.first_name, owner.last_name].filter(Boolean).join(" ") || null,
     merchantPhone: owner.phone_number ?? null,
     name: (row.name as string) || "—",
     description: (row.description as string | null) || null,
     image: (row.image as string | null) || null,
     items,
-    discountPercent,
+    discountPercent: pricing.discountPercent,
+    discountEnabled: !!row.discount_enabled,
+    discountPercentRaw,
     freeDelivery: !!row.free_delivery,
     status: row.status as PackStatus,
     reviewNote: (row.review_note as string | null) || null,
     reviewedAt: (row.reviewed_at as string | null) ?? null,
     createdAt: row.created_at as string,
     updatedAt: (row.updated_at as string | null) ?? (row.created_at as string),
-    itemCount: items.reduce((s, i) => s + i.quantity, 0),
-    freeCount: items.reduce((s, i) => s + i.freeQty, 0),
-    originalPrice,
-    savings,
-    price: round2(originalPrice - savings),
+    itemCount: pricing.itemCount,
+    freeCount: pricing.freeCount,
+    originalPrice: pricing.originalPrice,
+    savings: pricing.savings,
+    price: pricing.price,
     sellable: items.length > 0 && items.every((i) => i.issue === null),
   };
 }
