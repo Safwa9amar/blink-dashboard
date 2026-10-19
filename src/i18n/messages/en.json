@@ -180,6 +180,7 @@
   },
   "sidebar": {
     "overview": "Overview",
+    "inbox": "Inbox",
     "users": "All accounts",
     "riders": "Riders",
     "orders": "Orders",

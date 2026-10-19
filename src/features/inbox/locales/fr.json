@@ -1,0 +1,90 @@
+{
+  "inbox": {
+    "title": "Boîte de réception",
+    "description": "Tout ce qui se passe sur Blink — inscriptions, partenaires, validations, support et alertes, en direct.",
+    "bell": "Notifications",
+    "bell_unread": "Notifications, {count} non lues",
+    "mark_all_read": "Tout marquer comme lu",
+    "view_all": "Ouvrir la boîte de réception",
+    "empty": "Vous êtes à jour.",
+    "empty_unread": "Aucune notification non lue.",
+    "empty_filtered": "Rien pour le moment.",
+    "error": "Impossible de charger les notifications.",
+    "retry": "Réessayer",
+    "live": "En direct",
+    "connecting": "Reconnexion…",
+    "load_more": "Charger plus",
+    "loading": "Chargement…",
+    "unread_dot": "Non lue",
+    "someone": "Quelqu’un",
+    "filter": {
+      "all": "Toutes",
+      "unread": "Non lues"
+    },
+    "categories": {
+      "all": "Tout",
+      "customers": "Clients",
+      "partners": "Partenaires",
+      "catalog": "Catalogue",
+      "operations": "Opérations",
+      "support": "Support",
+      "finance": "Finance",
+      "marketing": "Marketing",
+      "system": "Système"
+    },
+    "kinds": {
+      "user": {
+        "signup": "{count, plural, =1 {{name} s’est inscrit} other {# nouvelles inscriptions}}"
+      },
+      "rider": {
+        "joined": "{count, plural, =1 {Nouveau livreur : {name}} other {# nouveaux livreurs}}",
+        "documents": "{name} a envoyé des documents à vérifier"
+      },
+      "merchant": {
+        "joined": "{count, plural, =1 {Nouveau commerçant : {name}} other {# nouveaux commerçants}}",
+        "review": "{store} attend la validation de sa boutique"
+      },
+      "agent": {
+        "joined": "{count, plural, =1 {Nouvel agent : {name}} other {# nouveaux agents}}",
+        "documents": "{name} a envoyé son registre de commerce à vérifier",
+        "shop_review": "Le point « {shop} » attend sa validation"
+      },
+      "product": {
+        "review": "{count, plural, =1 {« {product} » de {store} attend sa validation} other {# produits de {store} attendent leur validation}}"
+      },
+      "price": {
+        "suggestion": "{count, plural, =1 {{store} propose un nouveau prix pour « {product} »} other {{store} propose # nouveaux prix}}"
+      },
+      "pack": {
+        "review": "{count, plural, =1 {Le pack « {pack} » de {store} attend sa validation} other {# packs de {store} attendent leur validation}}"
+      },
+      "order": {
+        "canceled": "{count, plural, =1 {Commande annulée · {store}} other {# commandes annulées}}",
+        "rejected": "{count, plural, =1 {{store} a refusé une commande} other {{store} a refusé # commandes}}",
+        "low_rating": "Note de {rating}★ pour {store}"
+      },
+      "trip": {
+        "review": "La course {trip} doit être examinée"
+      },
+      "support": {
+        "waiting": "{name} attend un agent du support"
+      },
+      "email": {
+        "inbound": "{count, plural, =1 {Nouvel e-mail de {name}} other {# nouveaux e-mails de {name}}}"
+      },
+      "deletion": {
+        "requested": "{name} demande la suppression {scope, select, role {de son rôle {role, select, rider {livreur} merchant {commerçant} agent {agent} other {client}}} other {de son compte}}"
+      },
+      "dues": {
+        "paid": "{store} a réglé {amount} de redevances"
+      },
+      "alert": {
+        "fired": "{count, plural, =1 {Alerte : {rule}} other {Alerte : {rule} · déclenchée # fois}}"
+      },
+      "campaign": {
+        "sent": "La campagne « {title} » a atteint {recipients, number} personnes",
+        "failed": "Échec de l’envoi de la campagne « {title} »"
+      }
+    }
+  }
+}

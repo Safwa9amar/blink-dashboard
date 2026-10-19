@@ -32,7 +32,7 @@ Navigation is a module workspace: an icon rail of modules, a module menu of page
 
 | Module | Pages |
 |---|---|
-| Home | Overview `/` |
+| Home | Overview `/` · Inbox `/inbox` |
 | Operations | Live ops · Orders · Trips · Demand |
 | Customers | Customers · All accounts (`/users`) |
 | Support | Overview · *Conversations:* Live chat · Email · Tickets · *Tools:* Knowledge base · Macros · AI bot · *Performance:* CSAT · SLA & rules · Agents · *Requests:* Deletion requests |
@@ -51,6 +51,7 @@ Navigation is a module workspace: an icon rail of modules, a module menu of page
 | Route           | Supabase query                                               | Mutates?                                                                                       |
 | --------------- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
 | `/` (overview)  | counts of users, rider_profiles, orders, trips, transactions | —                                                                                              |
+| `/inbox` + top-bar bell | `staff_notifications` via the blink-server RPCs `staff_inbox` / `staff_inbox_unread` (service role, filtered to the kinds the role may see) | **yes** — read marks (`staff_inbox_mark_read`, `staff_inbox_mark_all_read`) through [src/lib/shell/actions.ts](src/lib/shell/actions.ts) |
 | `/users`        | `users` table                                                | **yes** — [src/app/d/users/action.ts](src/app/d/users/action.ts) (toggle active, edit, delete) |
 | `/orders`       | `orders` (limit 50)                                          | —                                                                                              |
 | `/riders`       | `rider_profiles` ⨝ `users` (name, phone, `users.wilaya`) ⨝ `vehicles` by `user_id`, newest first, limit 1000 (service role); client-side search + pagination; detail panel shows vehicle specs and gray card / insurance (motorcycles only) | — |
@@ -68,6 +69,8 @@ Navigation is a module workspace: an icon rail of modules, a module menu of page
 **Partners restructure:** verification is split per partner type and lives under its section (`/merchants|riders|agents/verification`; the loaders and actions stay in `src/app/d/verification/` and each gates on its own section, so the review access follows `ROLE_ACCESS` — see `rolesWithAccess`). `/verification` redirects to the first of the three the role can open (else `/`), `/vehicles` → `/riders`, `/vehicles/documents` → `/riders/verification`, `/agent-shops` → `/agents`. Those legacy paths are not in `ROLE_ACCESS` (the shell lets them through via `isRedirectOnlyPath`; the target enforces access). Vehicles (previously a mock store) are now the real `vehicles` table inside Riders. Attention counts: `storesPending`, `ridersPending`, `agentsPending` (src/lib/shell/attention.ts).
 
 `/transactions` is now a **redirect → `/blink-cash`** (no UI of its own). Within Blink Cash, the **Ledger** is real data and the **Dues** tab shows real *merchant* dues from blink-server (`GET /merchant/admin/dues`, "Remind" → `POST /merchant/admin/dues/{store_id}/remind`, see [action.ts](src/app/d/blink-cash/action.ts)); the **Agent Float** tab, the deposits-vs-withdrawals chart, fee config & headline stats stay UI aggregates over mock data.
+
+**Staff inbox (bell + `/inbox`):** blink-server triggers write a row into `staff_notifications` for every app-side event staff should hear about — sign-ups, partners joining or uploading documents, stores / products / price suggestions / packs sent for review, canceled or rejected orders and 1–2★ ratings, trip disputes, customers waiting on support, inbound email, deletion requests, dues paid, fired alerts and scheduled campaigns sent or failed (migration `20261019120000_staff_notifications.sql`; events of one group within an hour fold into one row). The dashboard maps each `kind` to its page in [src/lib/shell/inbox-kinds.ts](src/lib/shell/inbox-kinds.ts), so a role sees only kinds whose page it can open (`canAccessPath`; full access also sees kinds the dashboard doesn't know yet, by their English summary). Copy is `inbox.kinds.<kind>` in [src/features/inbox/locales](src/features/inbox/locales/). Live updates: `InboxProvider` ([src/components/shell/inbox-provider.tsx](src/components/shell/inbox-provider.tsx)) joins the private Realtime topic `staff:notifications` and refetches on each event (polls every 60s if the socket is down); each event also refreshes the attention badges. **Add an event = a trigger in the blink-server migration + an `INBOX_KINDS` entry + its copy in en/fr/ar** (`inbox-kinds.test.ts` checks the three stay in sync).
 
 Staff writes that blink-server owns (it notifies the merchant, applies side effects) go through [src/lib/blink-api.ts](src/lib/blink-api.ts) (`blinkApi(path, { method, body, roles })`, signed with the operator's Supabase token) — server actions and server components only.
 

@@ -131,13 +131,7 @@
     "confirm_delete_campaign": "Supprimer cette campagne ?",
     "confirm_cancel_scheduled": "Annuler cette notification programmée ?",
     "confirm_delete_template": "Supprimer ce modèle ?",
-    "confirm_delete_segment": "Supprimer ce segment ?",
-    "inbox": {
-      "title": "Notifications",
-      "mark_all_read": "Tout marquer comme lu",
-      "empty": "Vous êtes à jour.",
-      "view_all": "Voir toutes les notifications"
-    }
+    "confirm_delete_segment": "Supprimer ce segment ?"
   },
   "notifications": {
     "title": "Notifications",

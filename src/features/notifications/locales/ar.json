@@ -131,13 +131,7 @@
     "confirm_delete_campaign": "حذف هذه الحملة؟",
     "confirm_cancel_scheduled": "إلغاء هذا الإشعار المجدول؟",
     "confirm_delete_template": "حذف هذا القالب؟",
-    "confirm_delete_segment": "حذف هذه الشريحة؟",
-    "inbox": {
-      "title": "الإشعارات",
-      "mark_all_read": "تحديد الكل كمقروء",
-      "empty": "لا جديد لديك.",
-      "view_all": "عرض كل الإشعارات"
-    }
+    "confirm_delete_segment": "حذف هذه الشريحة؟"
   },
   "notifications": {
     "title": "الإشعارات",

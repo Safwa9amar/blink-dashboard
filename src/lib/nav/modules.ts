@@ -22,7 +22,12 @@ export interface NavModule { key: ModuleKey; icon: string; pages: NavPage[] }
 export interface CreateAction { key: string; href: string; icon: string }
 
 export const MODULES: readonly NavModule[] = [
-  { key: "home", icon: "grid", pages: [{ key: "overview", href: "/", icon: "grid" }] },
+  {
+    key: "home", icon: "grid", pages: [
+      { key: "overview", href: "/", icon: "grid" },
+      { key: "inbox", href: "/inbox", icon: "bell" },
+    ],
+  },
   {
     key: "operations", icon: "activity", pages: [
       { key: "live_ops", href: "/live-ops", icon: "activity" },

@@ -131,13 +131,7 @@
     "confirm_delete_campaign": "Delete this campaign?",
     "confirm_cancel_scheduled": "Cancel this scheduled notification?",
     "confirm_delete_template": "Delete this template?",
-    "confirm_delete_segment": "Delete this segment?",
-    "inbox": {
-      "title": "Notifications",
-      "mark_all_read": "Mark all read",
-      "empty": "You’re all caught up.",
-      "view_all": "View all notifications"
-    }
+    "confirm_delete_segment": "Delete this segment?"
   },
   "notifications": {
     "title": "Notifications",

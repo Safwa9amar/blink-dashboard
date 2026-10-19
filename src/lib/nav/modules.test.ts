@@ -14,10 +14,10 @@ describe("MODULES", () => {
   it("every create action has a route", () => {
     for (const a of CREATE_ACTIONS) expect(existsSync(routeFile(a.href)), a.href).toBe(true);
   });
-  it("has 38 pages, no duplicates", () => {
+  it("has 39 pages, no duplicates", () => {
     const hrefs = MODULES.flatMap((m) => m.pages.map((p) => p.href));
-    expect(hrefs).toHaveLength(38);
-    expect(new Set(hrefs).size).toBe(38);
+    expect(hrefs).toHaveLength(39);
+    expect(new Set(hrefs).size).toBe(39);
   });
   it.each(["en", "fr", "ar"])("labels exist in %s", (l) => {
     const msg = locale(l);

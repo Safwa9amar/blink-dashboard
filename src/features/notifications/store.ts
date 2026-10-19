@@ -5,12 +5,10 @@ import {
   SEED_CAMPAIGNS,
   SEED_TEMPLATES,
   SEED_SEGMENTS,
-  SEED_INBOX,
   deriveMetrics,
   type Campaign,
   type Template,
   type Segment,
-  type InboxItem,
 } from "./data";
 import type { ComposeDraft, NewCampaignInput } from "./types";
 
@@ -28,7 +26,6 @@ interface NotificationsState {
   campaigns: Campaign[];
   templates: Template[];
   segments: Segment[];
-  inbox: InboxItem[];
 
   createCampaign: (input: NewCampaignInput) => Campaign;
   deleteCampaign: (id: string) => void;
@@ -39,11 +36,6 @@ interface NotificationsState {
 
   addSegment: (s: Omit<Segment, "id">) => void;
   deleteSegment: (id: string) => void;
-
-  pushInbox: (item: Omit<InboxItem, "id" | "read">) => void;
-  markRead: (id: string) => void;
-  markAllRead: () => void;
-  clearInbox: () => void;
 
   // Transient one-shot handoff from Templates/Campaigns → the /compose route.
   // Set just before navigating, read-and-cleared once when the composer mounts.
@@ -61,7 +53,6 @@ export const useNotificationsStore = create<NotificationsState>()(
       campaigns: SEED_CAMPAIGNS,
       templates: SEED_TEMPLATES,
       segments: SEED_SEGMENTS,
-      inbox: SEED_INBOX,
 
       createCampaign: (input) => {
         const opens = input.status === "sent" ? `${Math.floor(28 + Math.random() * 44)}%` : "—";
@@ -73,15 +64,6 @@ export const useNotificationsStore = create<NotificationsState>()(
           metrics: deriveMetrics(input.reach, opens, input.status),
         };
         set((s) => ({ campaigns: [campaign, ...s.campaigns] }));
-        if (input.status === "sent") {
-          get().pushInbox({
-            type: input.type,
-            title: "Campaign sent",
-            message: `“${campaign.title}” reached ${campaign.reach.toLocaleString()} users.`,
-            time: "now",
-            link: `/notifications/${campaign.id}`,
-          });
-        }
         return campaign;
       },
       deleteCampaign: (id) => set((s) => ({ campaigns: s.campaigns.filter((c) => c.id !== id) })),
@@ -94,11 +76,6 @@ export const useNotificationsStore = create<NotificationsState>()(
       addSegment: (sg) => set((s) => ({ segments: [{ id: uid("seg"), ...sg }, ...s.segments] })),
       deleteSegment: (id) => set((s) => ({ segments: s.segments.filter((sg) => sg.id !== id) })),
 
-      pushInbox: (item) => set((s) => ({ inbox: [{ id: uid("in"), read: false, ...item }, ...s.inbox] })),
-      markRead: (id) => set((s) => ({ inbox: s.inbox.map((i) => (i.id === id ? { ...i, read: true } : i)) })),
-      markAllRead: () => set((s) => ({ inbox: s.inbox.map((i) => ({ ...i, read: true })) })),
-      clearInbox: () => set({ inbox: [] }),
-
       composeDraft: null,
       setComposeDraft: (d) => set({ composeDraft: d }),
       consumeComposeDraft: () => {
@@ -108,7 +85,7 @@ export const useNotificationsStore = create<NotificationsState>()(
       },
 
       reset: () =>
-        set({ campaigns: SEED_CAMPAIGNS, templates: SEED_TEMPLATES, segments: SEED_SEGMENTS, inbox: SEED_INBOX }),
+        set({ campaigns: SEED_CAMPAIGNS, templates: SEED_TEMPLATES, segments: SEED_SEGMENTS }),
     }),
     {
       name: "blink-notifications",
@@ -118,7 +95,6 @@ export const useNotificationsStore = create<NotificationsState>()(
         campaigns: s.campaigns,
         templates: s.templates,
         segments: s.segments,
-        inbox: s.inbox,
       }),
     }
   )
@@ -135,5 +111,3 @@ export function useHydrateNotifications() {
     }
   }, []);
 }
-
-export const selectUnreadCount = (s: NotificationsState) => s.inbox.filter((i) => !i.read).length;

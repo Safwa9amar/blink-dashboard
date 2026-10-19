@@ -2,8 +2,8 @@
 // Notification types are verbatim from the app: types/notifications.ts + getIconConfig().
 import type { Variant } from "@/components/ui";
 
-import type { NType, CampaignStatus, CampaignMetrics, Campaign, Template, Segment, InboxItem } from "./types";
-export type { TFn, NType, CampaignStatus, CampaignMetrics, Campaign, Template, Segment, InboxItem } from "./types";
+import type { NType, CampaignStatus, CampaignMetrics, Campaign, Template, Segment } from "./types";
+export type { TFn, NType, CampaignStatus, CampaignMetrics, Campaign, Template, Segment } from "./types";
 
 export const N_ROLES = ["All", "Customer", "Rider", "Merchant", "Agent"];
 export const N_ROLE_VARIANT: Record<string, Variant> = {
@@ -102,12 +102,6 @@ export const SEED_SEGMENTS: Segment[] = [
   { id: "seg-high", name: "High spenders", description: "Top 12% by lifetime value", count: 29760 },
   { id: "seg-algiers", name: "By city: Algiers", description: "Located in Algiers wilaya", count: 111600 },
   { id: "seg-kyc", name: "Pending KYC", description: "Verification incomplete", count: 1240 },
-];
-
-export const SEED_INBOX: InboxItem[] = [
-  { id: "in-1", type: "promo", title: "Campaign sent", message: "“30% off all rides — weekend!” reached 184,200 users.", time: "2h", read: false, link: "/notifications/weekend-rides-promo" },
-  { id: "in-2", type: "security", title: "New device sign-in detected", message: "Delivered to 248,000 users · 71% open rate.", time: "1d", read: false, link: "/notifications/device-signin" },
-  { id: "in-3", type: "alert", title: "Action needed: verify your store", message: "Merchant alert delivered to 1,820 stores.", time: "2d", read: true, link: "/notifications/verify-store" },
 ];
 
 // reach estimate bases by audience role

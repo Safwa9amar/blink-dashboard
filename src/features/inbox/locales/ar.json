@@ -1,0 +1,90 @@
+{
+  "inbox": {
+    "title": "صندوق الوارد",
+    "description": "كل ما يحدث في Blink — التسجيلات والشركاء والمراجعات والدعم والتنبيهات، مباشرةً.",
+    "bell": "الإشعارات",
+    "bell_unread": "الإشعارات، {count} غير مقروءة",
+    "mark_all_read": "تعليم الكل كمقروء",
+    "view_all": "فتح صندوق الوارد",
+    "empty": "لا جديد، أنت على اطلاع بكل شيء.",
+    "empty_unread": "لا توجد إشعارات غير مقروءة.",
+    "empty_filtered": "لا شيء هنا بعد.",
+    "error": "تعذّر تحميل الإشعارات.",
+    "retry": "إعادة المحاولة",
+    "live": "مباشر",
+    "connecting": "جارٍ إعادة الاتصال…",
+    "load_more": "تحميل المزيد",
+    "loading": "جارٍ التحميل…",
+    "unread_dot": "غير مقروء",
+    "someone": "شخص ما",
+    "filter": {
+      "all": "الكل",
+      "unread": "غير المقروءة"
+    },
+    "categories": {
+      "all": "الكل",
+      "customers": "العملاء",
+      "partners": "الشركاء",
+      "catalog": "الكتالوج",
+      "operations": "العمليات",
+      "support": "الدعم",
+      "finance": "المالية",
+      "marketing": "التسويق",
+      "system": "النظام"
+    },
+    "kinds": {
+      "user": {
+        "signup": "{count, plural, =1 {سجّل {name}} other {# تسجيلات جديدة}}"
+      },
+      "rider": {
+        "joined": "{count, plural, =1 {سائق جديد: {name}} other {انضم # سائقين جدد}}",
+        "documents": "أرسل {name} وثائق للمراجعة"
+      },
+      "merchant": {
+        "joined": "{count, plural, =1 {تاجر جديد: {name}} other {انضم # تجار جدد}}",
+        "review": "متجر {store} بانتظار المراجعة"
+      },
+      "agent": {
+        "joined": "{count, plural, =1 {وكيل جديد: {name}} other {انضم # وكلاء جدد}}",
+        "documents": "أرسل {name} السجل التجاري للمراجعة",
+        "shop_review": "نقطة البيع «{shop}» بانتظار المراجعة"
+      },
+      "product": {
+        "review": "{count, plural, =1 {المنتج «{product}» من {store} بانتظار المراجعة} other {# منتجات من {store} بانتظار المراجعة}}"
+      },
+      "price": {
+        "suggestion": "{count, plural, =1 {اقترح {store} سعرًا جديدًا لـ«{product}»} other {اقترح {store} # أسعار جديدة}}"
+      },
+      "pack": {
+        "review": "{count, plural, =1 {الباقة «{pack}» من {store} بانتظار المراجعة} other {# باقات من {store} بانتظار المراجعة}}"
+      },
+      "order": {
+        "canceled": "{count, plural, =1 {طلب ملغى · {store}} other {# طلبات ملغاة}}",
+        "rejected": "{count, plural, =1 {رفض {store} طلبًا} other {رفض {store} # طلبات}}",
+        "low_rating": "تقييم {rating}★ لـ{store}"
+      },
+      "trip": {
+        "review": "الرحلة {trip} تحتاج إلى مراجعة"
+      },
+      "support": {
+        "waiting": "{name} بانتظار موظف الدعم"
+      },
+      "email": {
+        "inbound": "{count, plural, =1 {بريد جديد من {name}} other {# رسائل بريد جديدة من {name}}}"
+      },
+      "deletion": {
+        "requested": "طلب {name} حذف {scope, select, role {دور {role, select, rider {السائق} merchant {التاجر} agent {الوكيل} other {العميل}}} other {حسابه}}"
+      },
+      "dues": {
+        "paid": "سدّد {store} مستحقات بقيمة {amount}"
+      },
+      "alert": {
+        "fired": "{count, plural, =1 {تنبيه: {rule}} other {تنبيه: {rule} · تكرر # مرات}}"
+      },
+      "campaign": {
+        "sent": "وصلت الحملة «{title}» إلى {recipients, number} شخص",
+        "failed": "فشل إرسال الحملة «{title}»"
+      }
+    }
+  }
+}

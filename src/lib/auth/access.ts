@@ -21,11 +21,13 @@ export type StaffRole = (typeof STAFF_ROLES)[number];
 
 // Which dashboard routes each role may reach. "*" = everything. Routes absent from a
 // role's list are denied for that role (e.g. only `super_admin` reaches `/settings`).
-// "/" (Overview) is granted to every staff role and serves as the safe landing page.
+// "/" (Overview) and "/inbox" (staff notifications) are granted to every staff role;
+// "/" stays first so it is the safe landing page.
 export const ROLE_ACCESS: Record<StaffRole, "*" | readonly string[]> = {
   super_admin: "*",
   ops_admin: [
     "/",
+    "/inbox",
     "/customers",
     "/agents",
     "/orders",
@@ -37,12 +39,12 @@ export const ROLE_ACCESS: Record<StaffRole, "*" | readonly string[]> = {
     "/deletion-requests",
     "/pricing",
   ],
-  finance_admin: ["/", "/blink-cash", "/pricing"],
-  support_admin: ["/", "/notifications", "/news", "/deep-links", "/support", "/email", "/deletion-requests"],
-  commerce_admin: ["/", "/merchants", "/marketplace", "/library", "/promotions", "/coupons", "/merchant-pricing", "/packs-management", "/pricing"],
+  finance_admin: ["/", "/inbox", "/blink-cash", "/pricing"],
+  support_admin: ["/", "/inbox", "/notifications", "/news", "/deep-links", "/support", "/email", "/deletion-requests"],
+  commerce_admin: ["/", "/inbox", "/merchants", "/marketplace", "/library", "/promotions", "/coupons", "/merchant-pricing", "/packs-management", "/pricing"],
   // HR / RH manager — people-facing sections: the customer & merchant rosters,
   // platform users, riders and agents (each with its verification sub-route).
-  hr_admin: ["/", "/customers", "/merchants", "/agents", "/users", "/deletion-requests", "/riders"],
+  hr_admin: ["/", "/inbox", "/customers", "/merchants", "/agents", "/users", "/deletion-requests", "/riders"],
 };
 
 export function isStaffRole(value: unknown): value is StaffRole {

@@ -2,16 +2,18 @@ export const dynamic = "force-dynamic";
 
 import { redirect } from "next/navigation";
 import { DashboardShell } from "@/components/dashboard-shell";
-import { getCurrentStaffRole, mustChangePassword } from "@/lib/auth/staff";
+import { getCurrentStaff, mustChangePassword } from "@/lib/auth/staff";
 import { getAttentionCounts } from "@/lib/shell/attention";
+import { getInboxSnapshot } from "@/lib/shell/inbox";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   // Authoritative dashboard gate: this server layout renders for every /d/* page, so a
   // non-staff (or unauthenticated) viewer never reaches the console. Per-route access is
   // enforced from the resolved role in the shell (nav) and server actions (mutations).
-  const staffRole = await getCurrentStaffRole();
-  if (!staffRole) redirect("/login");
+  const staff = await getCurrentStaff();
+  if (!staff) redirect("/login");
+  const staffRole = staff.role;
   // Temporary password (new account / admin reset): must be replaced before using the console.
   if (await mustChangePassword()) redirect("/login/password");
 
@@ -26,10 +28,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const staffName =
     [person?.first_name, person?.last_name].filter(Boolean).join(" ") || person?.email || user?.email || "";
 
-  const attention = await getAttentionCounts(staffRole);
+  const [attention, inbox] = await Promise.all([getAttentionCounts(staffRole), getInboxSnapshot(staff.id, staffRole)]);
 
   return (
-    <DashboardShell staffRole={staffRole} staffName={staffName} attention={attention}>
+    <DashboardShell staffRole={staffRole} staffName={staffName} attention={attention} inbox={inbox}>
       {children}
     </DashboardShell>
   );
