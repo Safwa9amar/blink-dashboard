@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { MotionScrollbar } from "./motion-scrollbar";
 import { NavigationProgress } from "./navigation-progress";
+import { AssistantChatHead } from "@/features/assistant";
 import { CommandPalette } from "@/features/search";
 import { canAccessPath, defaultPathFor, isRedirectOnlyPath, type StaffRole } from "@/lib/auth/access";
 import type { AttentionCounts } from "@/lib/nav/modules";
@@ -103,6 +104,7 @@ export function DashboardShell({
         </div>
         <MobileDrawer open={drawerOpen} onClose={() => setDrawerPath(null)} staffRole={staffRole} />
         <CommandPalette open={searchOpen} onOpenChange={setSearchOpen} staffRole={staffRole} />
+        <AssistantChatHead staffRole={staffRole} staffName={staffName} />
       </div>
     </AttentionProvider>
   );
