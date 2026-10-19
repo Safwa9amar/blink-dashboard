@@ -2,18 +2,15 @@
   "merchant_pricing": {
     "title": "Revue du catalogue",
     "description": "Approuvez les suggestions de prix et les nouveaux produits des marchands avant leur mise en ligne",
-
     "tab_prices": "Suggestions de prix",
     "tab_products": "Nouveaux produits",
     "tab_history": "Historique",
-
     "all": "Tout",
     "search": "Rechercher par produit, magasin, marchand ou code-barres",
     "review_btn": "Examiner",
     "view": "Voir les détails",
     "showing_oldest": "Affichage des {shown} plus anciens sur {total} — traitez-les pour voir la suite.",
     "showing_latest": "Affichage des {shown} plus récents sur {total}.",
-
     "stats": {
       "prices": "Suggestions de prix",
       "prices_desc": "hors de la tolérance de ±20 %",
@@ -24,7 +21,6 @@
       "rejected": "Refusés par Blink",
       "rejected_desc": "prix et produits refusés par l'équipe"
     },
-
     "col": {
       "product": "Produit",
       "store": "Magasin",
@@ -48,19 +44,16 @@
       "updated": "Mis à jour",
       "actions": "Actions"
     },
-
     "status": {
       "pending": "En attente",
       "accepted": "Prix appliqué",
       "rejected": "Refusé par Blink"
     },
-
     "review_status": {
       "approved": "Approuvé",
       "pending": "En attente",
       "rejected": "Refusé"
     },
-
     "review": {
       "title": "Examiner la suggestion de prix",
       "blink_price": "Prix de référence Blink",
@@ -79,7 +72,6 @@
       "approve": "Approuver",
       "reject": "Refuser"
     },
-
     "product": {
       "title": "Examiner le nouveau produit",
       "no_photos": "Aucune photo envoyée",
@@ -87,7 +79,6 @@
       "from_library": "De la bibliothèque",
       "no_description": "Aucune description."
     },
-
     "history": {
       "price_accepted": "Prix appliqué",
       "price_rejected": "Prix refusé par Blink",
@@ -97,7 +88,6 @@
       "filter_prices": "Prix",
       "filter_products": "Produits"
     },
-
     "errors": {
       "network": "Impossible de joindre Blink Server. Vérifiez votre connexion et réessayez.",
       "session": "Votre session a expiré. Reconnectez-vous pour continuer.",
@@ -108,12 +98,42 @@
       "throttled": "Trop de requêtes. Patientez un instant puis réessayez.",
       "generic": "Une erreur est survenue. ({detail})"
     },
-
     "empty": {
       "prices": "Aucune suggestion de prix en attente. Tout est à jour !",
       "products": "Aucun nouveau produit en attente d'approbation.",
       "history": "Aucune décision pour l'instant.",
-      "filtered": "Aucun résultat pour votre recherche."
+      "filtered": "Aucun résultat pour votre recherche.",
+      "changes": "Aucun changement de prix enregistré."
+    },
+    "tab_changes": "Changements de prix",
+    "changes": {
+      "history_title": "Historique des prix",
+      "history_empty": "Aucun changement de prix enregistré.",
+      "loading": "Chargement…",
+      "blink_moved": "Référence Blink {from} → {to}",
+      "by_none": "Système",
+      "col": {
+        "date": "Date",
+        "price": "Prix",
+        "source": "Source",
+        "by": "Modifié par"
+      },
+      "source": {
+        "created": "Création",
+        "merchant": "Commerçant",
+        "staff": "Équipe Blink",
+        "library": "Bibliothèque",
+        "system": "Système",
+        "baseline": "Prix initial"
+      },
+      "from": "Du",
+      "to": "Au",
+      "clear": "Effacer les filtres",
+      "total": "{total} changements enregistrés",
+      "page_of": "Page {page} sur {pages}",
+      "prev": "Page précédente",
+      "next": "Page suivante",
+      "baseline_hint": "« Prix initial » est le prix en vigueur au début de l’historique — rien d’antérieur n’est connu."
     }
   }
 }

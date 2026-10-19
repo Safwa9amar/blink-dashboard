@@ -1,7 +1,17 @@
 import { cache } from "react";
 import { requirePathAccess } from "@/lib/auth/staff";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { CATALOG_PRODUCT_SELECT, toCatalogProduct, type CatalogProduct } from "@/features/merchant-pricing";
+import { blinkApi } from "@/lib/blink-api";
+import type { StaffRole } from "@/lib/auth/access";
+import {
+  CATALOG_PRODUCT_SELECT,
+  buildPriceChangesQuery,
+  toCatalogProduct,
+  toPriceChangePage,
+  type CatalogProduct,
+  type PriceChangeFilters,
+  type PriceChangePage,
+} from "@/features/merchant-pricing";
 
 // Catalog review reads, with the service-role client (RLS hides other stores'
 // products from a staff session). Every loader gates on the section first, so a
@@ -60,4 +70,26 @@ export async function getCatalogRows(
   const { data, error, count } = await query.limit(LIMIT[view]);
   const rows = ((data ?? []) as Record<string, unknown>[]).map(toCatalogProduct);
   return { rows, total: count ?? rows.length, error: error?.message };
+}
+
+const PRICE_ROLES: readonly StaffRole[] = ["super_admin", "commerce_admin"];
+
+/** The price-change log (blink-server `GET /merchant/admin/price-changes`) for one filter set. */
+export async function getPriceChanges(
+  filters: PriceChangeFilters
+): Promise<{ data: PriceChangePage | null; error?: string }> {
+  await requirePathAccess(SECTION);
+  const res = await blinkApi(`/merchant/admin/price-changes?${buildPriceChangesQuery(filters)}`, {
+    roles: PRICE_ROLES,
+  });
+  if (!res.ok) return { data: null, error: res.error };
+  return { data: toPriceChangePage(res.data) };
+}
+
+/** Stores for the log's store filter. */
+export async function getStoreOptions(): Promise<{ id: string; name: string }[]> {
+  await requirePathAccess(SECTION);
+  const supabase = await createAdminClient();
+  const { data } = await supabase.from("stores").select("id, name").order("name").limit(1000);
+  return ((data ?? []) as { id: string; name: string | null }[]).map((s) => ({ id: s.id, name: s.name || "—" }));
 }

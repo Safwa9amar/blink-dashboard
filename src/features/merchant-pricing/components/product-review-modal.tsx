@@ -9,6 +9,7 @@ import { REVIEW_STATUS, type CatalogProduct } from "../types";
 import { formatDa, formatDate } from "../rows";
 import { ReviewDecision } from "./review-decision";
 import { DetailField as Field } from "./detail-field";
+import { PriceHistory } from "./price-history";
 
 /** Big cover + clickable thumbnail strip over every photo the merchant uploaded. */
 function PhotoGallery({ photos, alt }: { photos: string[]; alt: string }) {
@@ -96,6 +97,8 @@ export function ProductReviewModal({ product, onClose }: { product: CatalogProdu
             {product.description || t("product.no_description")}
           </p>
         </div>
+
+        <PriceHistory productId={product.id} />
 
         {pending ? (
           // The row version on screen travels with the decision: blink-server refuses

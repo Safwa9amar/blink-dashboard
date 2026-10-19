@@ -6,6 +6,12 @@ import type { StaffRole } from "@/lib/auth/access";
 import { hasStaffRole } from "@/lib/auth/staff";
 import { blinkApi } from "@/lib/blink-api";
 import { blinkApiErrorMessage } from "@/lib/blink-api-errors";
+import {
+  MODAL_LIMIT,
+  buildPriceChangesQuery,
+  toPriceChangePage,
+  type PriceChange,
+} from "@/features/merchant-pricing";
 
 // Catalog review decisions go through blink-server (PATCH /merchant/admin/products/{id}/review),
 // never straight to the DB: the server copies an accepted suggested_price into price
@@ -84,4 +90,17 @@ export async function reviewCatalogProduct(
 
   revalidatePath("/d/merchant-pricing", "layout");
   return {};
+}
+
+/** One product's recorded price changes (newest first) for the review modals — read-only. */
+export async function fetchProductPriceChanges(
+  productId: string
+): Promise<{ changes: PriceChange[]; error?: string }> {
+  if (typeof productId !== "string" || !productId || productId.length > 64) return { changes: [] };
+  const res = await blinkApi(
+    `/merchant/admin/price-changes?${buildPriceChangesQuery({ page: 1, productId }, MODAL_LIMIT)}`,
+    { roles: CATALOG_ROLES }
+  );
+  if (!res.ok) return { changes: [], error: await blinkApiErrorMessage(NS, res) };
+  return { changes: toPriceChangePage(res.data).changes };
 }

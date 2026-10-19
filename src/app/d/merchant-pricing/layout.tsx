@@ -30,6 +30,7 @@ export default async function CatalogReviewLayout({ children }: { children: Reac
             count: products ? String(products) : undefined,
           },
           { href: "/merchant-pricing/history", label: t("tab_history"), icon: "clock" },
+          { href: "/merchant-pricing/price-changes", label: t("tab_changes"), icon: "trending" },
         ]}
       />
       {children}

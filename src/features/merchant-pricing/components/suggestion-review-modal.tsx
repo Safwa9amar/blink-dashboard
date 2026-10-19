@@ -9,6 +9,7 @@ import { DeviationBadge } from "./deviation-badge";
 import { ProductThumb } from "./product-thumb";
 import { ReviewDecision } from "./review-decision";
 import { DetailField as Field } from "./detail-field";
+import { PriceHistory } from "./price-history";
 
 /** Price suggestion review: reference vs current vs suggested price, deviation, decision. */
 export function SuggestionReviewModal({ product, onClose }: { product: CatalogProduct | null; onClose: () => void }) {
@@ -20,7 +21,7 @@ export function SuggestionReviewModal({ product, onClose }: { product: CatalogPr
 
   return (
     <Modal open onClose={onClose} title={t("review.title")} widthClassName="max-w-lg">
-      <div className="space-y-4">
+      <div className="space-y-4 max-h-[75vh] overflow-y-auto pe-1">
         <div className="flex items-center gap-3">
           <ProductThumb src={product.photos[0]} className="w-14 h-14" />
           <div className="min-w-0">
@@ -70,6 +71,8 @@ export function SuggestionReviewModal({ product, onClose }: { product: CatalogPr
           </div>
           {over && <p className="text-xs text-danger">{t("review.over_tolerance")}</p>}
         </div>
+
+        <PriceHistory productId={product.id} />
 
         {product.reviewStatus === "pending" && (
           <p role="note" className="text-xs text-warning bg-warning-light rounded-xl p-3">
