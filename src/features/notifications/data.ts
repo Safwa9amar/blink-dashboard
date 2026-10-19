@@ -18,7 +18,7 @@ export const CHANNELS: [string, string, string][] = [
   ["push", "Push", "bell"],
   ["inapp", "In-app", "chat"],
   ["email", "Email", "mail"],
-  ["sms", "SMS", "support"],
+  ["sms", "SMS", "phone"],
 ];
 
 export const SEGMENTS = ["Everyone", "New users (7d)", "Inactive (30d)", "High spenders", "By city: Algiers", "Pending KYC"];

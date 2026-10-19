@@ -25,7 +25,15 @@ import { CHANNELS, NTYPES, NTYPE_KEYS, N_ROLES, REACH_BASE, type TFn } from "../
 import { normalizeNotifDraft, type NotifDraft } from "../ai";
 import { useNotificationsStore } from "../store";
 import type { ComposeDraft } from "../types";
-import { sendCampaign, scheduleCampaign, searchUsers, type UserHit } from "@/app/d/notifications/action";
+import { smsPreview, smsSegments } from "../sms";
+import {
+  sendCampaign,
+  scheduleCampaign,
+  searchUsers,
+  type SmsOutcome,
+  type SmsProblem,
+  type UserHit,
+} from "@/app/d/notifications/action";
 import { parseDraftJSON } from "@/lib/ai/parse";
 import { streamEnhance } from "@/lib/ai/enhance-client";
 import { useAISettingsStore, activeBaseUrl } from "@/features/settings";
@@ -100,6 +108,7 @@ interface ComposeForm {
   link: string;
   when: "now" | "schedule";
   schedAt: string;
+  smsLang: Lang;
 }
 
 export function Compose({
@@ -129,6 +138,7 @@ export function Compose({
       link: "",
       when: "now",
       schedAt: "",
+      smsLang: "en",
     },
   });
 
@@ -141,6 +151,28 @@ export function Compose({
   const seg = watch("seg");
   const when = watch("when");
   const link = watch("link");
+  const smsLang = watch("smsLang");
+
+  // SMS channel: one language for everyone (users have no stored language), from
+  // the languages that have copy; a problem that blocks or follows the send.
+  const smsOn = chans.includes("sms");
+  const smsLangs = (["en", "fr", "ar"] as Lang[]).filter((l) => title[l]?.trim() || msg[l]?.trim());
+  const effSmsLang: Lang = smsLangs.includes(smsLang) ? smsLang : (smsLangs[0] ?? "en");
+  const smsText = smsPreview(title, msg, effSmsLang);
+  const [smsErr, setSmsErr] = useState<string | null>(null);
+  const [sentNotice, setSentNotice] = useState<string | null>(null);
+  const smsProblemText = (p: SmsProblem): string => {
+    switch (p.code) {
+      case "not_configured":
+        return t("c.sms_not_configured");
+      case "over_limit":
+        return t("c.sms_over_limit", { max: p.max, count: p.count });
+      case "no_phones":
+        return t("c.sms_no_phones");
+      default:
+        return t("c.sms_failed", { detail: p.detail });
+    }
+  };
 
   // "Specific user" targeting: a debounced search over the users table + the
   // currently picked recipient.
@@ -318,10 +350,12 @@ export function Compose({
     );
   }
 
-  const toggleChan = (id: string) =>
+  const toggleChan = (id: string) => {
+    setSmsErr(null);
     setValue("chans", chans.includes(id) ? (chans.length > 1 ? chans.filter((x) => x !== id) : chans) : [...chans, id], {
       shouldDirty: true,
     });
+  };
 
   let reach = roles.includes("All") ? REACH_BASE.All : roles.reduce((s, r) => s + (REACH_BASE[r] || 0), 0);
   const segMult: Record<string, number> = {
@@ -347,6 +381,7 @@ export function Compose({
   // clearErrors() only clears through a re-render, too late for this submit.)
   const submit = (status: "draft" | "scheduled" | "sent") => (e?: React.BaseSyntheticEvent) => {
     clearErrors(["title", "link", "schedAt"]);
+    setSmsErr(null);
     return handleSubmit(async (data) => {
       const finalTitle = data.title.en || data.title.fr || data.title.ar;
       if (status !== "draft" && !finalTitle) {
@@ -394,7 +429,12 @@ export function Compose({
           channels: data.chans,
           link: data.link?.trim() || undefined,
           scheduledAt: iso,
+          smsLang: effSmsLang,
         });
+        if (res.blocked) {
+          setSmsErr(smsProblemText(res.blocked));
+          return;
+        }
         if (res.error) {
           setError("schedAt", { message: res.error });
           return;
@@ -407,6 +447,8 @@ export function Compose({
       // (in-app) + an Expo push when the push channel is on. Draft stays a local
       // record only.
       let realReach = status === "draft" ? 0 : reach;
+      let smsOut: SmsOutcome | null = null;
+      let smsProblem: SmsProblem | null = null;
       if (status === "sent") {
         const res = await sendCampaign({
           type: data.ntype,
@@ -416,13 +458,20 @@ export function Compose({
           channels: data.chans,
           link: data.link?.trim() || undefined,
           userId: data.target === "user" ? picked?.id : undefined,
+          smsLang: effSmsLang,
         });
+        if (res.blocked) {
+          setSmsErr(smsProblemText(res.blocked));
+          return;
+        }
         if (res.error) {
           setError("title.en", { message: res.error });
           setLang("en");
           return;
         }
         realReach = res.recipients;
+        smsOut = res.sms ?? null;
+        smsProblem = res.smsProblem ?? null;
       }
 
       createCampaign({
@@ -442,6 +491,15 @@ export function Compose({
         reach: realReach,
         date: status === "sent" ? td("send_now") : "—",
       });
+      // Sent, but SMS didn't fully go out: say so before leaving the composer.
+      if (smsProblem) {
+        setSentNotice(t("c.sms_partial", { recipients: realReach, reason: smsProblemText(smsProblem) }));
+        return;
+      }
+      if (smsOut && smsOut.failed > 0) {
+        setSentNotice(t("c.sms_refused", { recipients: realReach, queued: smsOut.queued, failed: smsOut.failed }));
+        return;
+      }
       onCancel();
     })(e);
   };
@@ -570,6 +628,32 @@ export function Compose({
                   );
                 })}
               </div>
+              {smsOn && (
+                <div className="mt-3 rounded-xl border border-border bg-background p-3.5 space-y-2.5">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-[12.5px] font-semibold text-text">{t("c.sms_lang")}</span>
+                    {smsLangs.length > 1 ? (
+                      <Segmented<Lang>
+                        options={smsLangs.map((l): [Lang, string] => [l, l.toUpperCase()])}
+                        value={effSmsLang}
+                        onChange={(v) => setValue("smsLang", v, { shouldDirty: true })}
+                      />
+                    ) : (
+                      <span className="text-xs font-semibold text-subtext">{effSmsLang.toUpperCase()}</span>
+                    )}
+                  </div>
+                  <p
+                    dir={dirFor(effSmsLang)}
+                    className="whitespace-pre-line rounded-lg bg-card border border-border px-3 py-2 text-[13px] text-text"
+                  >
+                    {smsText}
+                  </p>
+                  <p className="text-[11.5px] text-subtext">
+                    {t("c.sms_count", { chars: [...smsText].length, parts: smsSegments(smsText) })} · {t("c.sms_hint")}
+                  </p>
+                  {smsErr && <p className="text-danger text-xs">{smsErr}</p>}
+                </div>
+              )}
             </FormRow>
             <FormRow label={t("c.target")} hint={t("c.target_hint")}>
               <Segmented
@@ -756,14 +840,25 @@ export function Compose({
                 </div>
               </div>
             </div>
-            <Button
-              type="button"
-              icon="send"
-              onClick={submit(effWhen === "schedule" ? "scheduled" : "sent")}
-              className="w-full mt-4"
-            >
-              {effWhen === "schedule" ? td("schedule") : td("send")}
-            </Button>
+            {sentNotice ? (
+              <>
+                <p className="mt-4 rounded-xl border border-border bg-warning-light px-3 py-2.5 text-[12.5px] text-text">
+                  {sentNotice}
+                </p>
+                <Button type="button" icon="check" onClick={onCancel} className="w-full mt-2.5">
+                  {t("c.done")}
+                </Button>
+              </>
+            ) : (
+              <Button
+                type="button"
+                icon="send"
+                onClick={submit(effWhen === "schedule" ? "scheduled" : "sent")}
+                className="w-full mt-4"
+              >
+                {effWhen === "schedule" ? td("schedule") : td("send")}
+              </Button>
+            )}
             <div className="flex gap-2.5 mt-2.5">
               <Button type="button" variant="secondary" onClick={onCancel} className="flex-1">
                 {td("cancel")}
