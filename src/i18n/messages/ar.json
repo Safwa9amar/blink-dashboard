@@ -212,6 +212,7 @@
     "agents": "الوكلاء",
     "access": "الوصول",
     "blink_server": "خادم Blink",
+    "mcp_access": "وصول MCP",
     "email": "البريد",
     "deletion_requests": "طلبات الحذف",
     "merchant_verification": "التحقق من المتاجر",

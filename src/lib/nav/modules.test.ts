@@ -14,10 +14,10 @@ describe("MODULES", () => {
   it("every create action has a route", () => {
     for (const a of CREATE_ACTIONS) expect(existsSync(routeFile(a.href)), a.href).toBe(true);
   });
-  it("has 38 pages, no duplicates", () => {
+  it("has 39 pages, no duplicates", () => {
     const hrefs = MODULES.flatMap((m) => m.pages.map((p) => p.href));
-    expect(hrefs).toHaveLength(38);
-    expect(new Set(hrefs).size).toBe(38);
+    expect(hrefs).toHaveLength(39);
+    expect(new Set(hrefs).size).toBe(39);
   });
   it.each(["en", "fr", "ar"])("labels exist in %s", (l) => {
     const msg = locale(l);
@@ -98,8 +98,8 @@ describe("visibleModules", () => {
   it("super_admin sees all modules with pages", () => {
     expect(keys("super_admin")).toEqual(["home", "operations", "customers", "support", "partners", "catalog", "marketing", "finance", "people", "system"]);
   });
-  it("finance_admin sees Home and Finance", () => expect(keys("finance_admin")).toEqual(["home", "finance"]));
-  it("support_admin", () => expect(keys("support_admin")).toEqual(["home", "support", "marketing"]));
+  it("finance_admin sees Home and Finance", () => expect(keys("finance_admin")).toEqual(["home", "finance", "system"]));
+  it("support_admin", () => expect(keys("support_admin")).toEqual(["home", "support", "marketing", "system"]));
   it("never shows analytics while it has no pages", () => {
     for (const r of STAFF_ROLES) expect(keys(r)).not.toContain("analytics");
   });

@@ -90,6 +90,7 @@ export const MODULES: readonly NavModule[] = [
   {
     key: "system", icon: "server", pages: [
       { key: "blink_server", href: "/blink-server", icon: "server", attention: ["alertsOpen"] },
+      { key: "mcp_access", href: "/blink-server/mcp", icon: "lock" },
       { key: "settings", href: "/settings", icon: "settings2" },
     ],
   },

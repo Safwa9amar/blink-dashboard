@@ -212,6 +212,7 @@
     "agents": "Agents",
     "access": "Access",
     "blink_server": "Blink Server",
+    "mcp_access": "MCP access",
     "email": "Email",
     "deletion_requests": "Deletion Requests",
     "merchant_verification": "Store verification",
