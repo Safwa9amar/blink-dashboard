@@ -23,6 +23,15 @@ export const LANGS: [Lang, string][] = [
 export const emptyLang = (): Record<Lang, string> => ({ en: "", fr: "", ar: "" });
 export const dirFor = (lang: Lang) => (lang === "ar" ? "rtl" : "ltr");
 
+/**
+ * Arabic-Indic (٠-٩, U+0660) and Extended Arabic-Indic (۰-۹, U+06F0) digits → 0-9,
+ * so numbers typed with an Arabic keyboard parse. Everything else is left as is.
+ */
+export const toAsciiDigits = (s: string) =>
+  s
+    .replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660))
+    .replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 0x06f0));
+
 // Toggle an item in a multi-select list where one entry ("All") is exclusive.
 export function toggleInList(list: string[], item: string, allKey = "All"): string[] {
   if (item === allKey) return [allKey];

@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { Badge, Button, DataTable, FilterPills, SearchBox, type Column } from "@/components/ui";
+import { Badge, Button, DashIcon, DataTable, FilterPills, SearchBox, type Column } from "@/components/ui";
 import {
   PACK_STATUS,
   PACK_STATUS_KEYS,
   PackDetailModal,
   PackThumb,
+  PacksHeader,
   formatDa,
   formatDate as formatDateIn,
   type Pack,
@@ -30,8 +32,8 @@ export default function PacksManagementClient({
   packs: Pack[];
   /** Exact number of packs this tab matches, so a capped list can say so. */
   total: number;
-  /** `all` view: exact per-status counts for the pills (the list may be capped). */
-  counts?: PackCounts;
+  /** Exact per-status counts: headline stats, tab badges and the "All" pills (the list may be capped). */
+  counts: PackCounts;
   error?: string;
 }) {
   const t = useTranslations("packs");
@@ -149,15 +151,24 @@ export default function PacksManagementClient({
       label: t("col.actions"),
       sortable: false,
       render: (r) => (
-        <Button size="xs" variant="secondary" icon="eye" onClick={() => setViewing(r)}>
-          {r.status === "under_review" ? t("review_btn") : t("view")}
-        </Button>
+        <div className="flex items-center gap-1.5 whitespace-nowrap">
+          <Button size="xs" variant="secondary" icon="eye" onClick={() => setViewing(r)}>
+            {r.status === "under_review" ? t("review_btn") : t("view")}
+          </Button>
+          <Link
+            href={`/packs-management/${r.id}`}
+            className="inline-flex items-center gap-1 h-7 px-2.5 rounded-lg text-xs font-semibold text-subtext hover:text-text hover:bg-muted transition-colors"
+          >
+            <DashIcon name="pencil" className="w-3.5 h-3.5" />
+            {t("edit")}
+          </Link>
+        </div>
       ),
     },
   ];
 
   // Pill counts are exact (from the server), not tallies of the capped list.
-  const exactFor = (k: PackStatus | "all") => (k === "all" ? (counts?.total ?? total) : (counts?.byStatus[k] ?? 0));
+  const exactFor = (k: PackStatus | "all") => (k === "all" ? counts.total : counts.byStatus[k]);
   const filterOptions: [PackStatus | "all", string][] = [
     ["all", `${t("all")} (${exactFor("all")})`],
     ...PACK_STATUS_KEYS.map((k) => [k, `${t(`status.${k}`)} (${exactFor(k)})`] as [PackStatus, string]),
@@ -171,6 +182,7 @@ export default function PacksManagementClient({
 
   return (
     <>
+      <PacksHeader counts={counts} />
       <div className="flex items-center gap-3 mb-[18px]">
         <SearchBox placeholder={t("search")} value={q} onChange={setQ} />
       </div>

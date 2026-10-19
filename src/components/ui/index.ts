@@ -26,6 +26,7 @@ export { SearchBox } from "./search-box";
 export { Avatar } from "./avatar";
 export { NameCell } from "./name-cell";
 export { Toggle } from "./toggle";
+export { Stepper } from "./stepper";
 export { LivePill } from "./live-pill";
 export { Segmented } from "./segmented";
 export { RoleChips } from "./role-chips";

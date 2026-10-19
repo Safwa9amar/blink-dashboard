@@ -307,7 +307,8 @@
       "news": "News post",
       "notification": "Push notification",
       "library_product": "Library product",
-      "help_article": "Help article"
+      "help_article": "Help article",
+      "pack": "Pack"
     },
     "topbar": {
       "search_placeholder": "Search orders, people, stores…",
