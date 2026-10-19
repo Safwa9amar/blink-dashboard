@@ -2,18 +2,15 @@
   "merchant_pricing": {
     "title": "Catalog Review",
     "description": "Approve merchant price suggestions and new products before customers see them",
-
     "tab_prices": "Price Suggestions",
     "tab_products": "New Products",
     "tab_history": "History",
-
     "all": "All",
     "search": "Search by product, store, merchant or barcode",
     "review_btn": "Review",
     "view": "View details",
     "showing_oldest": "Showing the oldest {shown} of {total} — decide these to see the rest.",
     "showing_latest": "Showing the latest {shown} of {total}.",
-
     "stats": {
       "prices": "Price Suggestions",
       "prices_desc": "outside the ±20% tolerance",
@@ -24,7 +21,6 @@
       "rejected": "Rejected by Blink",
       "rejected_desc": "prices and products staff declined"
     },
-
     "col": {
       "product": "Product",
       "store": "Store",
@@ -48,19 +44,16 @@
       "updated": "Updated",
       "actions": "Actions"
     },
-
     "status": {
       "pending": "Pending",
       "accepted": "Price applied",
       "rejected": "Rejected by Blink"
     },
-
     "review_status": {
       "approved": "Approved",
       "pending": "Pending",
       "rejected": "Rejected"
     },
-
     "review": {
       "title": "Review Price Suggestion",
       "blink_price": "Blink Reference Price",
@@ -79,7 +72,6 @@
       "approve": "Approve",
       "reject": "Reject"
     },
-
     "product": {
       "title": "Review New Product",
       "no_photos": "No photos uploaded",
@@ -87,7 +79,6 @@
       "from_library": "From library",
       "no_description": "No description."
     },
-
     "history": {
       "price_accepted": "Price applied",
       "price_rejected": "Price rejected by Blink",
@@ -97,7 +88,6 @@
       "filter_prices": "Prices",
       "filter_products": "Products"
     },
-
     "errors": {
       "network": "Couldn't reach Blink Server. Check your connection and try again.",
       "session": "Your session expired. Sign in again to continue.",
@@ -108,12 +98,42 @@
       "throttled": "Too many requests. Wait a moment and try again.",
       "generic": "Something went wrong. ({detail})"
     },
-
     "empty": {
       "prices": "No price suggestions waiting. All caught up!",
       "products": "No new products waiting for approval.",
       "history": "No decisions yet.",
-      "filtered": "Nothing matches your search."
+      "filtered": "Nothing matches your search.",
+      "changes": "No price changes recorded yet."
+    },
+    "tab_changes": "Price Changes",
+    "changes": {
+      "history_title": "Price history",
+      "history_empty": "No recorded price changes yet.",
+      "loading": "Loading…",
+      "blink_moved": "Blink reference {from} → {to}",
+      "by_none": "System",
+      "col": {
+        "date": "Date",
+        "price": "Price",
+        "source": "Source",
+        "by": "Changed by"
+      },
+      "source": {
+        "created": "Created",
+        "merchant": "Merchant",
+        "staff": "Blink staff",
+        "library": "Library",
+        "system": "System",
+        "baseline": "Baseline"
+      },
+      "from": "From",
+      "to": "To",
+      "clear": "Clear filters",
+      "total": "{total} recorded changes",
+      "page_of": "Page {page} of {pages}",
+      "prev": "Previous page",
+      "next": "Next page",
+      "baseline_hint": "“Baseline” is the price on record when history started — nothing earlier is known."
     }
   }
 }

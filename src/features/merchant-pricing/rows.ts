@@ -39,6 +39,18 @@ export function formatDate(iso: string, locale: string): string {
   });
 }
 
+/** Date + time in the UI language, on Algiers' clock (fixed zone: same string on server and client). */
+export function formatDateTime(iso: string, locale: string): string {
+  return new Date(iso).toLocaleString(locale, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Africa/Algiers",
+  });
+}
+
 export const isOverTolerance = (deviation: number | null) =>
   deviation !== null && Math.abs(deviation) > PRICE_TOLERANCE * 100;
 
