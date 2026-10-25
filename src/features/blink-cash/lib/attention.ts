@@ -21,7 +21,7 @@ export interface AttentionItem {
 export function attentionItems(i: AttentionInput): AttentionItem[] {
   const all: AttentionItem[] = [
     { key: "drift", count: i.driftCount ?? 0, href: "/blink-cash/reconciliation", tone: "danger" },
-    { key: "gateway_issues", count: i.gatewayIssues, href: "/blink-cash/payments", tone: "danger" },
+    { key: "gateway_issues", count: i.gatewayIssues, href: "/blink-cash/review", tone: "danger" },
     { key: "review", count: i.reviewCount, href: "/blink-cash/review", tone: "warning" },
     { key: "agent_payments", count: i.pendingAgentPayments, href: "/blink-cash/review", tone: "warning" },
     { key: "merchant_payments", count: i.pendingMerchantPayments, href: "/blink-cash/review", tone: "warning" },

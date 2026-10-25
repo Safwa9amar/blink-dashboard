@@ -11,7 +11,7 @@ import { formatCharge, type TxPayment } from "../lib/gateway";
 import { buildTimeline, txActions, type TxAction } from "../lib/lifecycle";
 import type { StatementEntry } from "../lib/statement";
 import type { TFn } from "../types";
-import { FailureReason, GW_STATUS_VARIANT, RecheckButton } from "./gateway-payments";
+import { FailureReason, GW_STATUS_VARIANT, RecheckButton } from "./online-payments";
 import { ActionDialog, useDialog, type DialogField } from "./ops-shared";
 
 function ActionButton({ t, action, id, reference }: { t: TFn; action: TxAction; id: string; reference: string | null }) {
@@ -49,7 +49,7 @@ function ActionButton({ t, action, id, reference }: { t: TFn; action: TxAction; 
 }
 
 /** The gateway payments behind an online deposit (a retry makes a new one), newest first. */
-function OnlinePayments({ t, locale, userId, payments }: { t: TFn; locale: string; userId: string; payments: TxPayment[] }) {
+function OnlinePayments({ t, locale, payments }: { t: TFn; locale: string; payments: TxPayment[] }) {
   return (
     <Card title={t("tx.online_payment")} description={t("tx.online_payment_desc")} className="mb-5">
       {payments.length === 0 && <p className="text-sm text-subtext">{t("tx.online_none")}</p>}
@@ -81,11 +81,6 @@ function OnlinePayments({ t, locale, userId, payments }: { t: TFn; locale: strin
           {p.status !== "paid" && <RecheckButton t={t} id={p.id} />}
         </div>
       ))}
-      <p className="text-xs mt-3">
-        <Link href={`/blink-cash/payments?user=${userId}`} className="text-primary hover:underline">
-          {t("tx.online_all")}
-        </Link>
-      </p>
     </Card>
   );
 }
@@ -243,7 +238,7 @@ export function TxDetailView({ detail }: { detail: TxDetail }) {
         </Card>
       </div>
 
-      {tx.method === "online" && <OnlinePayments t={t} locale={locale} userId={tx.user_id} payments={payments} />}
+      {tx.method === "online" && <OnlinePayments t={t} locale={locale} payments={payments} />}
 
       <Card title={t("tx.entries")} description={t("tx.entries_desc")}>
         <DataTable columns={entryColumns} data={entries} empty={t("tx.entries_empty")} enablePagination={false} enableSorting={false} />

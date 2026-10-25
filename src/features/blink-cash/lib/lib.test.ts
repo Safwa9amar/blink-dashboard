@@ -251,7 +251,7 @@ describe("attention", () => {
     const gw = attentionItems({ reviewCount: 1, pendingAgentPayments: 0, pendingMerchantPayments: 0, agentsNearLimit: 0, driftCount: 1, frozenWallets: 0, gatewayIssues: 2 });
     expect(gw.map((i) => [i.key, i.count, i.href])).toEqual([
       ["drift", 1, "/blink-cash/reconciliation"],
-      ["gateway_issues", 2, "/blink-cash/payments"],
+      ["gateway_issues", 2, "/blink-cash/review"],
       ["review", 1, "/blink-cash/review"],
     ]);
   });

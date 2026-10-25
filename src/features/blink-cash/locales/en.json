@@ -6,7 +6,6 @@
     "overview": "Overview",
     "tab_ledger": "Ledger",
     "tab_dues": "Merchant dues",
-    "tab_payments": "Payments",
     "agent_float": "Agent Float",
     "stats": {
       "circulation": "Money in wallets",
@@ -246,7 +245,7 @@
       "agents_limit": "{n, plural, one {# agent at 80% or more of their cash limit} other {# agents at 80% or more of their cash limit}}",
       "drift": "{n, plural, one {# wallet where the ledger drifts from the derived balance} other {# wallets where the ledger drifts from the derived balance}}",
       "frozen": "{n, plural, one {# frozen wallet} other {# frozen wallets}}",
-      "gateway_issues": "{n, plural, one {# online payment with an amount mismatch (paid, not credited)} other {# online payments with an amount mismatch (paid, not credited)}}"
+      "gateway_issues": "{n, plural, one {# online payment needs a look} other {# online payments need a look}}"
     },
     "entry_kind": {
       "opening_balance": "Opening balance",
@@ -312,7 +311,6 @@
       "online_payment": "Online payment",
       "online_payment_desc": "The card payment behind this deposit, as the payment provider reports it.",
       "online_none": "No card payment was started for this deposit.",
-      "online_all": "All online payments of this user",
       "payment_outcome": "Online payment: {status}"
     },
     "wallet": {
@@ -346,8 +344,7 @@
       "col_memo": "Details",
       "col_balance": "Balance",
       "by": "by {name}",
-      "not_backfilled": "This wallet has not been backfilled yet — the rider's live balance still comes from the legacy calculation.",
-      "online_payments": "Online payments"
+      "not_backfilled": "This wallet has not been backfilled yet — the rider's live balance still comes from the legacy calculation."
     },
     "wallets": {
       "col_user": "Rider",
@@ -367,7 +364,10 @@
       "col_party": "Party",
       "col_name": "Name",
       "kind_agent": "Agent",
-      "kind_merchant": "Merchant"
+      "kind_merchant": "Merchant",
+      "online": "Online payments",
+      "online_desc": "Card payments that need a look. Re-check asks the provider again: a lapsed checkout is closed (or credited if it was paid after all); an amount mismatch is only credited once the provider reports the right amount.",
+      "online_empty": "No online payment needs a look."
     },
     "pay": {
       "record": "Record payment",
@@ -544,8 +544,6 @@
       }
     },
     "gw": {
-      "count": "{n, plural, one {# payment} other {# payments}}",
-      "empty": "No online payments yet.",
       "configured": "Configured",
       "not_configured": "Not configured",
       "needs_credentials": "Needs bank credentials",
@@ -561,7 +559,6 @@
       "col_user": "User",
       "col_created": "Created",
       "col_paid": "Paid",
-      "col_failure": "Failure reason",
       "provider": {
         "chargily": "Chargily",
         "stripe": "Stripe",
@@ -597,8 +594,13 @@
       },
       "online": "Online",
       "awaiting_payment": "Awaiting online payment",
-      "for_user": "Payments of {name}",
-      "clear_user": "Show everyone"
+      "providers_title": "Online payments",
+      "providers_desc": "Card payment providers. Their keys are set on the server; a provider is on only when its keys are there.",
+      "col_issue": "Issue",
+      "issue": {
+        "amount_mismatch": "Amount mismatch",
+        "lapsed": "Checkout still open"
+      }
     }
   }
 }

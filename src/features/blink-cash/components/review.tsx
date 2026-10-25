@@ -9,6 +9,7 @@ import { formatDA } from "../data";
 import { formatDateTime, safeHttpUrl, shortId } from "../lib/format";
 import type { PendingPayment } from "../ops-types";
 import type { LedgerRow, TFn } from "../types";
+import { OnlinePaymentsReview } from "./online-payments";
 import { DuesMethod, PendingPaymentActions } from "./payments";
 import { ActionDialog, LoadError, MigrationNotice, useDialog } from "./ops-shared";
 
@@ -151,9 +152,12 @@ export function Review({ queue }: { queue: ReviewQueue }) {
           <DataTable columns={txColumns} data={queue.electronic} empty={t("review.electronic_empty")} enablePagination={false} enableSorting={false} />
         </Card>
       </div>
-      <Card title={t("review.payments")} description={t("review.payments_desc")}>
-        <DataTable columns={payColumns} data={queue.payments} empty={t("review.payments_empty")} enablePagination={false} enableSorting={false} />
-      </Card>
+      <div className="mb-7">
+        <Card title={t("review.payments")} description={t("review.payments_desc")}>
+          <DataTable columns={payColumns} data={queue.payments} empty={t("review.payments_empty")} enablePagination={false} enableSorting={false} />
+        </Card>
+      </div>
+      <OnlinePaymentsReview payments={queue.online} />
     </>
   );
 }

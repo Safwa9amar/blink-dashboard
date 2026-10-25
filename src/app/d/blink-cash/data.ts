@@ -13,14 +13,7 @@ import {
   type MerchantDuesSummary,
   type SummaryResult,
 } from "@/features/blink-cash";
-import type { GatewayFilters } from "@/features/blink-cash/lib/filters";
-import {
-  gatewayQuery,
-  normalizePayments,
-  normalizeProviders,
-  type GatewayPayment,
-  type GatewayProvider,
-} from "@/features/blink-cash/lib/gateway";
+import { normalizeProviders, type GatewayProvider } from "@/features/blink-cash/lib/gateway";
 
 // Every loader gates on the section first, so a staff role without /blink-cash
 // never gets ledger or merchant rows in its payload (the layout alone can't
@@ -97,16 +90,7 @@ export const getAgentDues = cache(
   }
 );
 
-// Online gateway payments (Payments tab): blink-server's GET /payments/admin, paged by the server.
-export const getGatewayPayments = cache(
-  async (f: GatewayFilters): Promise<{ payments: GatewayPayment[]; total: number; error?: string }> => {
-    await requirePathAccess(SECTION);
-    const res = await blinkApi(`/payments/admin?${gatewayQuery(f)}`, { roles: DUES_ROLES });
-    if (!res.ok) return { payments: [], total: 0, error: failure(res) };
-    return normalizePayments(res.data);
-  }
-);
-
+// Online payment providers (Settings): which are configured, test / live, webhook URL, EUR rate.
 export const getPaymentProviders = cache(
   async (): Promise<{ providers: GatewayProvider[]; error?: string }> => {
     await requirePathAccess(SECTION);

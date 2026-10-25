@@ -13,7 +13,15 @@ import {
   type LedgerFilters,
   type WalletFilters,
 } from "@/features/blink-cash/lib/filters";
-import { GATEWAY_METHODS, normalizeTxPayments, type TxPayment } from "@/features/blink-cash/lib/gateway";
+import {
+  GATEWAY_METHODS,
+  normalizeReviewPayments,
+  normalizeTxPayments,
+  PAYMENT_COLUMNS,
+  reviewPaymentsFilter,
+  type ReviewPayment,
+  type TxPayment,
+} from "@/features/blink-cash/lib/gateway";
 import { normalizeSettings, type BlinkCashSettings } from "@/features/blink-cash/lib/settings";
 import { normalizeOffer, type Offer } from "@/features/blink-cash/lib/offers";
 import { normalizeReconciliation, type Reconciliation } from "@/features/blink-cash/lib/reconciliation";
@@ -50,13 +58,13 @@ async function countManualPending(sb: Sb, table: string): Promise<number | null>
   return error ? null : (c ?? 0);
 }
 
-/** Online payments the provider reported with a different amount: money that needs a staff look. */
+/** Online payments in the Review queue: an amount mismatch, or a checkout still open past its lifetime. */
 async function countGatewayIssues(sb: Sb): Promise<number | null> {
   const { count: c, error } = await sb
     .from("payments")
     .select("*", { count: "exact", head: true })
-    .eq("failure_reason", "amount_mismatch")
-    .neq("status", "paid");
+    .neq("status", "paid")
+    .or(reviewPaymentsFilter(new Date().toISOString()));
   return error ? null : (c ?? 0);
 }
 
@@ -76,7 +84,8 @@ export const getOpsCounts = cache(async (): Promise<OpsCounts> => {
 });
 
 /** The Review tab badge: everything waiting on a staff decision. */
-export const reviewBadge = (c: OpsCounts) => (c.review ?? 0) + (c.pendingAgentPayments ?? 0) + (c.pendingMerchantPayments ?? 0);
+export const reviewBadge = (c: OpsCounts) =>
+  (c.review ?? 0) + (c.pendingAgentPayments ?? 0) + (c.pendingMerchantPayments ?? 0) + (c.gatewayIssues ?? 0);
 
 // ── settings ─────────────────────────────────────────────────────────────────
 export const getSettings = cache(
@@ -127,7 +136,7 @@ export async function getTxDetail(id: string): Promise<{ detail: TxDetail | null
     t.method === "online"
       ? sb
           .from("payments")
-          .select("id, provider, method, amount, currency, metadata, status, failure_reason, provider_ref, livemode, created_at, paid_at")
+          .select(PAYMENT_COLUMNS)
           .eq("purpose", "wallet_topup")
           .eq("ref_id", id)
           .order("created_at", { ascending: false })
@@ -312,6 +321,8 @@ export async function getWalletStatementAll(sb: Sb, userId: string, cap = 10000)
 export interface ReviewQueue {
   electronic: LedgerRow[];
   payments: PendingPayment[];
+  /** Online (card) payments that need a staff look: amount mismatch, or lapsed but still open. */
+  online: ReviewPayment[];
   migrationPending: boolean;
   error?: string;
 }
@@ -319,17 +330,29 @@ export interface ReviewQueue {
 export async function getReviewQueue(): Promise<ReviewQueue> {
   await requirePathAccess(SECTION);
   const sb = await admin();
-  const [led, ap, mp] = await Promise.all([
+  const [led, ap, mp, op] = await Promise.all([
     queryLedger(sb, { status: "review", q: "" }, [0, 199]),
     sb.from("agent_dues_payments").select("*").eq("status", "pending").or(MANUAL_DUES).order("created_at", { ascending: true }).limit(200),
     sb.from("merchant_dues_payments").select("*").eq("status", "pending").or(MANUAL_DUES).order("created_at", { ascending: true }).limit(200),
+    sb
+      .from("payments")
+      .select(PAYMENT_COLUMNS)
+      .neq("status", "paid")
+      .or(reviewPaymentsFilter(new Date().toISOString()))
+      .order("created_at", { ascending: true })
+      .limit(200),
   ]);
   const agentRows = (ap.data as Raw[] | null) ?? [];
   const merchRows = (mp.data as Raw[] | null) ?? [];
   const storeIds = [...new Set(merchRows.map((r) => str(r.store_id)).filter((x): x is string => !!x))];
   const { data: stores } = storeIds.length ? await sb.from("stores").select("id, name").in("id", storeIds) : { data: [] };
   const storeName = new Map(((stores as Raw[] | null) ?? []).map((s) => [String(s.id), str(s.name)]));
-  const names = await userNames(sb, [...agentRows.map((r) => str(r.agent_id)), ...merchRows.map((r) => str(r.merchant_id))]);
+  const onlineRows = (op.data as Raw[] | null) ?? [];
+  const names = await userNames(sb, [
+    ...agentRows.map((r) => str(r.agent_id)),
+    ...merchRows.map((r) => str(r.merchant_id)),
+    ...onlineRows.map((r) => str(r.user_id)),
+  ]);
 
   const payments: PendingPayment[] = [
     ...agentRows.map((r) => ({
@@ -363,8 +386,9 @@ export async function getReviewQueue(): Promise<ReviewQueue> {
   return {
     electronic: led.rows,
     payments,
+    online: normalizeReviewPayments(onlineRows, names),
     migrationPending: led.migrationPending,
-    error: led.error && !led.migrationPending ? led.error : (ap.error ?? mp.error)?.message,
+    error: led.error && !led.migrationPending ? led.error : (ap.error ?? mp.error ?? op.error)?.message,
   };
 }
 

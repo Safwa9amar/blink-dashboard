@@ -23,10 +23,6 @@ const page = (v: string | string[] | undefined) => {
   const n = Math.floor(Number(first(v)));
   return Number.isFinite(n) && n >= 1 ? Math.min(n, 100_000) : 1;
 };
-const uuid = (v: string | string[] | undefined) => {
-  const s = first(v);
-  return s && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s) ? s.toLowerCase() : undefined;
-};
 const text = (v: string | string[] | undefined) => (first(v) ?? "").trim().slice(0, 80);
 
 /** Strips characters that would break a PostgREST `or=(...)` / `ilike` expression. */
@@ -112,26 +108,3 @@ export const pageRange = (pageNo: number, size = LEDGER_PAGE_SIZE): [number, num
 ];
 
 export const pageCount = (total: number, size = LEDGER_PAGE_SIZE) => Math.max(1, Math.ceil(total / size));
-
-export const GW_STATUSES = ["pending", "paid", "failed", "canceled", "expired"] as const;
-export const GW_PROVIDERS = ["chargily", "stripe", "satim"] as const;
-export const GW_PURPOSES = ["wallet_topup", "agent_dues", "merchant_dues"] as const;
-export const GW_PAGE_SIZE = 25;
-
-export interface GatewayFilters {
-  status?: (typeof GW_STATUSES)[number];
-  provider?: (typeof GW_PROVIDERS)[number];
-  purpose?: (typeof GW_PURPOSES)[number];
-  /** One payer's payments (a user id). */
-  user?: string;
-  page: number;
-}
-export function parseGatewayFilters(sp: SearchParams): GatewayFilters {
-  return {
-    status: pick(sp.status, GW_STATUSES),
-    provider: pick(sp.provider, GW_PROVIDERS),
-    purpose: pick(sp.purpose, GW_PURPOSES),
-    user: uuid(sp.user),
-    page: page(sp.page),
-  };
-}

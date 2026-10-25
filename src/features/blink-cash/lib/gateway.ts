@@ -1,7 +1,6 @@
-// Online payment gateways (Chargily / Stripe / SATIM) as blink-server's staff API returns them
-// (GET /payments/admin, GET /payments/admin/providers). Kept snake_case, like the wire.
-import type { GatewayFilters } from "./filters";
-import { GW_PAGE_SIZE } from "./filters";
+// Online payment gateways (Chargily / Stripe / SATIM): provider status from blink-server's
+// staff API (GET /payments/admin/providers), and `payments` rows read straight from the
+// database (an online deposit's detail, the Review queue). Kept snake_case, like the wire.
 
 /** Method ids paid through a gateway. A dues row with one of these is settled by the gateway, never by staff. */
 export const GATEWAY_METHODS = ["edahabia", "cib", "card"] as const;
@@ -20,27 +19,6 @@ export const KNOWN_FAILURE_REASONS = [
   "canceled",
 ];
 
-export interface GatewayPayment {
-  id: string;
-  purpose: string;
-  /** The deposit (transactions.id) or dues payment the charge settles. */
-  ref_id: string;
-  provider: string;
-  method: string;
-  /** What the card was charged, in `currency` (EUR for Stripe). */
-  amount: number;
-  currency: string;
-  /** The dinars behind a charge in another currency; null when it is DZD. */
-  base_amount: number | null;
-  status: string;
-  failure_reason: string | null;
-  paid_at: string | null;
-  created_at: string;
-  test_mode: boolean;
-  user_id: string;
-  user_name: string | null;
-}
-
 export interface GatewayProvider {
   provider: string;
   configured: boolean;
@@ -54,32 +32,6 @@ export interface GatewayProvider {
 
 type Raw = Record<string, unknown>;
 const str = (v: unknown) => (typeof v === "string" && v ? v : null);
-
-export function normalizePayments(data: unknown): { payments: GatewayPayment[]; total: number } {
-  const body = (data ?? {}) as Raw;
-  const rows = Array.isArray(body.payments) ? (body.payments as Raw[]) : [];
-  const total = Number((body.pagination as Raw | undefined)?.total);
-  return {
-    payments: rows.map((r) => ({
-      id: String(r.id),
-      purpose: String(r.purpose ?? ""),
-      ref_id: String(r.ref_id ?? ""),
-      provider: String(r.provider ?? ""),
-      method: String(r.method ?? ""),
-      amount: Number(r.amount) || 0,
-      currency: String(r.currency ?? "DZD").toUpperCase(),
-      base_amount: r.base_amount == null ? null : Number(r.base_amount),
-      status: String(r.status ?? ""),
-      failure_reason: str(r.failure_reason),
-      paid_at: str(r.paid_at),
-      created_at: String(r.created_at ?? ""),
-      test_mode: r.test_mode === true,
-      user_id: String(r.user_id ?? ""),
-      user_name: str(r.user_name),
-    })),
-    total: Number.isFinite(total) ? total : rows.length,
-  };
-}
 
 export function normalizeProviders(data: unknown): GatewayProvider[] {
   const rows = (data as { providers?: unknown } | null)?.providers;
@@ -95,16 +47,7 @@ export function normalizeProviders(data: unknown): GatewayProvider[] {
   }));
 }
 
-export function gatewayQuery(f: GatewayFilters): string {
-  const p = new URLSearchParams({ page: String(f.page), limit: String(GW_PAGE_SIZE) });
-  if (f.status) p.set("status", f.status);
-  if (f.provider) p.set("provider", f.provider);
-  if (f.purpose) p.set("purpose", f.purpose);
-  if (f.user) p.set("user_id", f.user);
-  return p.toString();
-}
-
-/** A `payments` row read straight from the database (the transaction detail page). */
+/** A `payments` row read straight from the database. */
 export interface TxPayment {
   id: string;
   provider: string;
@@ -121,26 +64,68 @@ export interface TxPayment {
   paid_at: string | null;
 }
 
-export function normalizeTxPayments(rows: unknown): TxPayment[] {
-  if (!Array.isArray(rows)) return [];
-  return (rows as Raw[]).map((r) => {
-    const meta = (r.metadata ?? {}) as Raw;
-    return {
-      id: String(r.id),
-      provider: String(r.provider ?? ""),
-      method: String(r.method ?? ""),
-      amount: Number(r.amount) || 0,
-      currency: String(r.currency ?? "DZD").toUpperCase(),
-      base_amount: meta.base_amount == null ? null : Number(meta.base_amount),
-      status: String(r.status ?? ""),
-      failure_reason: str(r.failure_reason),
-      provider_ref: str(r.provider_ref),
-      test_mode: r.livemode !== true,
-      created_at: String(r.created_at ?? ""),
-      paid_at: str(r.paid_at),
-    };
-  });
+/** The columns TxPayment / ReviewPayment are read from. */
+export const PAYMENT_COLUMNS =
+  "id, user_id, purpose, ref_id, provider, method, amount, currency, metadata, status, failure_reason, provider_ref, livemode, created_at, paid_at, expires_at";
+
+function toTxPayment(r: Raw): TxPayment {
+  const meta = (r.metadata ?? {}) as Raw;
+  return {
+    id: String(r.id),
+    provider: String(r.provider ?? ""),
+    method: String(r.method ?? ""),
+    amount: Number(r.amount) || 0,
+    currency: String(r.currency ?? "DZD").toUpperCase(),
+    base_amount: meta.base_amount == null ? null : Number(meta.base_amount),
+    status: String(r.status ?? ""),
+    failure_reason: str(r.failure_reason),
+    provider_ref: str(r.provider_ref),
+    test_mode: r.livemode !== true,
+    created_at: String(r.created_at ?? ""),
+    paid_at: str(r.paid_at),
+  };
 }
+
+export function normalizeTxPayments(rows: unknown): TxPayment[] {
+  return Array.isArray(rows) ? (rows as Raw[]).map(toTxPayment) : [];
+}
+
+/**
+ * Why a payment is in the Review queue:
+ *  - amount_mismatch: the provider reports another amount, so nothing was credited;
+ *  - lapsed: still pending past its checkout lifetime (the expiry cron closes these;
+ *    Re-check closes it now, or credits it if it was paid after all).
+ */
+export type PaymentIssue = "amount_mismatch" | "lapsed";
+
+export interface ReviewPayment extends TxPayment {
+  user_id: string;
+  userName: string | null;
+  purpose: string;
+  /** The deposit (transactions.id) or dues payment the charge settles. */
+  ref_id: string;
+  issue: PaymentIssue;
+}
+
+/** The PostgREST `or` that selects Review payments (pair it with `status != paid`). */
+export const reviewPaymentsFilter = (nowIso: string) =>
+  `failure_reason.eq.amount_mismatch,and(status.eq.pending,expires_at.lt."${nowIso}")`;
+
+export function normalizeReviewPayments(rows: unknown, names: Map<string, { name: string | null }>): ReviewPayment[] {
+  if (!Array.isArray(rows)) return [];
+  return (rows as Raw[]).map((r) => ({
+    ...toTxPayment(r),
+    user_id: String(r.user_id ?? ""),
+    userName: names.get(String(r.user_id))?.name ?? null,
+    purpose: String(r.purpose ?? ""),
+    ref_id: String(r.ref_id ?? ""),
+    issue: r.failure_reason === "amount_mismatch" ? "amount_mismatch" : "lapsed",
+  }));
+}
+
+/** Where the thing a payment settles lives: the deposit itself, or the dues tab it counts in. */
+export const purposeHref = (p: { purpose: string; ref_id: string }) =>
+  p.purpose === "wallet_topup" ? `/blink-cash/ledger/${p.ref_id}` : p.purpose === "agent_dues" ? "/blink-cash/agents" : "/blink-cash/dues";
 
 /** A charge in its own currency: DZD as "1,020 DA", euros as "4.08 €". */
 export const formatCharge = (amount: number, currency: string, formatDA: (n: number) => string) =>

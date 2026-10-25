@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { Badge, Button, Card, DashIcon, DataTable, StatCard, btnSecondary, type Column } from "@/components/ui";
+import { Badge, Button, Card, DashIcon, DataTable, StatCard, type Column } from "@/components/ui";
 import { adjustWallet, freezeWallet, unfreezeWallet } from "@/app/d/blink-cash/ops-action";
 import { TX_STATUS_VARIANT, formatDA } from "../data";
 import { formatDateTime, shortId, signedDA } from "../lib/format";
@@ -143,10 +143,6 @@ export function WalletDetailView({ detail, transactions, page }: { detail: Walle
         </div>
         <Badge variant={frozen ? "danger" : "success"}>{t(`wallet.status_${wallet.status}`)}</Badge>
         <div className="ms-auto flex flex-wrap gap-2">
-          <Link href={`/blink-cash/payments?user=${wallet.userId}`} className={btnSecondary}>
-            <DashIcon name="link" className="w-4 h-4" />
-            {t("wallet.online_payments")}
-          </Link>
           <ExportLink href={`/blink-cash/export/wallet/${wallet.userId}`} label={t("wallet.export")} />
           <AdjustButton t={t} userId={wallet.userId} />
           <FreezeButtons t={t} userId={wallet.userId} frozen={frozen} />

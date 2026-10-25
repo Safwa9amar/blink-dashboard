@@ -6,7 +6,6 @@
     "overview": "Aperçu",
     "tab_ledger": "Grand livre",
     "tab_dues": "Dus marchands",
-    "tab_payments": "Paiements",
     "agent_float": "Encaisse agent",
     "stats": {
       "circulation": "Argent dans les portefeuilles",
@@ -246,7 +245,7 @@
       "agents_limit": "{n, plural, one {# agent à 80 % ou plus de son plafond} other {# agents à 80 % ou plus de leur plafond}}",
       "drift": "{n, plural, one {# portefeuille dont le grand livre diverge du solde dérivé} other {# portefeuilles dont le grand livre diverge du solde dérivé}}",
       "frozen": "{n, plural, one {# portefeuille gelé} other {# portefeuilles gelés}}",
-      "gateway_issues": "{n, plural, one {# paiement en ligne avec un montant différent (payé, non crédité)} other {# paiements en ligne avec un montant différent (payés, non crédités)}}"
+      "gateway_issues": "{n, plural, one {# paiement en ligne à vérifier} other {# paiements en ligne à vérifier}}"
     },
     "entry_kind": {
       "opening_balance": "Solde d'ouverture",
@@ -312,7 +311,6 @@
       "online_payment": "Paiement en ligne",
       "online_payment_desc": "Le paiement par carte derrière ce dépôt, tel que le prestataire le rapporte.",
       "online_none": "Aucun paiement par carte n'a été lancé pour ce dépôt.",
-      "online_all": "Tous les paiements en ligne de cet utilisateur",
       "payment_outcome": "Paiement en ligne : {status}"
     },
     "wallet": {
@@ -346,8 +344,7 @@
       "col_memo": "Détails",
       "col_balance": "Solde",
       "by": "par {name}",
-      "not_backfilled": "Ce portefeuille n'a pas encore été repris dans le grand livre — le solde en direct du livreur vient encore de l'ancien calcul.",
-      "online_payments": "Paiements en ligne"
+      "not_backfilled": "Ce portefeuille n'a pas encore été repris dans le grand livre — le solde en direct du livreur vient encore de l'ancien calcul."
     },
     "wallets": {
       "col_user": "Livreur",
@@ -367,7 +364,10 @@
       "col_party": "Type",
       "col_name": "Nom",
       "kind_agent": "Agent",
-      "kind_merchant": "Marchand"
+      "kind_merchant": "Marchand",
+      "online": "Paiements en ligne",
+      "online_desc": "Paiements par carte à vérifier. Revérifier interroge à nouveau le prestataire : un paiement expiré est fermé (ou crédité s'il a été payé entre-temps) ; un montant différent n'est crédité que lorsque le prestataire rapporte le bon montant.",
+      "online_empty": "Aucun paiement en ligne à vérifier."
     },
     "pay": {
       "record": "Enregistrer un paiement",
@@ -544,8 +544,6 @@
       }
     },
     "gw": {
-      "count": "{n, plural, one {# paiement} other {# paiements}}",
-      "empty": "Aucun paiement en ligne pour le moment.",
       "configured": "Configuré",
       "not_configured": "Non configuré",
       "needs_credentials": "Identifiants bancaires requis",
@@ -561,7 +559,6 @@
       "col_user": "Utilisateur",
       "col_created": "Créé",
       "col_paid": "Payé",
-      "col_failure": "Motif d'échec",
       "provider": {
         "chargily": "Chargily",
         "stripe": "Stripe",
@@ -597,8 +594,13 @@
       },
       "online": "En ligne",
       "awaiting_payment": "Paiement en ligne en attente",
-      "for_user": "Paiements de {name}",
-      "clear_user": "Voir tout le monde"
+      "providers_title": "Paiements en ligne",
+      "providers_desc": "Prestataires de paiement par carte. Leurs clés sont définies sur le serveur ; un prestataire n'est actif que lorsque ses clés y sont.",
+      "col_issue": "Problème",
+      "issue": {
+        "amount_mismatch": "Montant différent",
+        "lapsed": "Paiement encore ouvert"
+      }
     }
   }
 }
