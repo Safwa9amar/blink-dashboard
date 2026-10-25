@@ -8,7 +8,7 @@ import { INBOX_CATEGORIES, INBOX_KINDS, inboxCategoriesFor, inboxHref, inboxKind
 const SERVER_KINDS = [
   "agent.documents", "agent.joined", "agent.shop_review", "alert.fired", "campaign.failed", "campaign.sent",
   "deletion.requested", "dues.paid", "email.inbound", "merchant.joined", "merchant.review", "order.canceled",
-  "order.low_rating", "order.rejected", "pack.review", "price.suggestion", "product.review", "rider.documents",
+  "order.low_rating", "order.rejected", "pack.review", "payment.amount_mismatch", "payment.unfulfilled", "price.suggestion", "product.review", "rider.documents",
   "rider.joined", "support.waiting", "trip.review", "user.signup",
 ];
 
@@ -22,7 +22,7 @@ const routeFile = (href: string) => join(process.cwd(), "src/app/d", href, "page
 const ARGS = {
   name: "Amina", store: "Pizza Oran", product: "Cola", pack: "Family", shop: "Kiosk", trip: "TR-1",
   rule: "Errors", title: "Promo", subject: "Late", rating: 1, recipients: 1200, role: "rider",
-  scope: "role", amount: "4,500 Da",
+  scope: "role", amount: "4,500 Da", provider: "chargily",
 };
 
 describe("INBOX_KINDS", () => {
@@ -53,10 +53,10 @@ describe("inboxKindsFor", () => {
     expect(inboxKindsFor("super_admin")).toBeNull();
   });
   it("a category narrows even full access", () => {
-    expect(inboxKindsFor("super_admin", "finance")).toEqual(["dues.paid"]);
+    expect(inboxKindsFor("super_admin", "finance")).toEqual(["dues.paid", "payment.amount_mismatch", "payment.unfulfilled"]);
   });
   it("follows the access map", () => {
-    expect(inboxKindsFor("finance_admin")).toEqual(["dues.paid"]);
+    expect(inboxKindsFor("finance_admin")).toEqual(["dues.paid", "payment.amount_mismatch", "payment.unfulfilled"]);
     const ops = inboxKindsFor("ops_admin")!;
     expect(ops).toEqual(expect.arrayContaining(["user.signup", "rider.documents", "agent.shop_review", "order.canceled", "trip.review", "deletion.requested"]));
     expect(ops).not.toContain("merchant.review");

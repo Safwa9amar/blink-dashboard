@@ -6,6 +6,7 @@
     "overview": "Aperçu",
     "tab_ledger": "Grand livre",
     "tab_dues": "Dus marchands",
+    "tab_payments": "Paiements",
     "agent_float": "Encaisse agent",
     "stats": {
       "circulation": "Argent dans les portefeuilles",
@@ -91,7 +92,8 @@
     },
     "method": {
       "agent": "Agent",
-      "electronic": "Carte / en ligne"
+      "electronic": "Virement électronique",
+      "online": "Carte en ligne"
     },
     "tx_status": {
       "completed": "terminé",
@@ -243,7 +245,8 @@
       "merchant_payments": "{n, plural, one {# paiement marchand à confirmer} other {# paiements marchand à confirmer}}",
       "agents_limit": "{n, plural, one {# agent à 80 % ou plus de son plafond} other {# agents à 80 % ou plus de leur plafond}}",
       "drift": "{n, plural, one {# portefeuille dont le grand livre diverge du solde dérivé} other {# portefeuilles dont le grand livre diverge du solde dérivé}}",
-      "frozen": "{n, plural, one {# portefeuille gelé} other {# portefeuilles gelés}}"
+      "frozen": "{n, plural, one {# portefeuille gelé} other {# portefeuilles gelés}}",
+      "gateway_issues": "{n, plural, one {# paiement en ligne avec un montant différent (payé, non crédité)} other {# paiements en ligne avec un montant différent (payés, non crédités)}}"
     },
     "entry_kind": {
       "opening_balance": "Solde d'ouverture",
@@ -305,7 +308,12 @@
       "ev_reversed": "Contre-passée",
       "entries": "Écritures du portefeuille",
       "entries_desc": "Lignes du grand livre passées par cette transaction",
-      "entries_empty": "Aucune écriture liée à cette transaction."
+      "entries_empty": "Aucune écriture liée à cette transaction.",
+      "online_payment": "Paiement en ligne",
+      "online_payment_desc": "Le paiement par carte derrière ce dépôt, tel que le prestataire le rapporte.",
+      "online_none": "Aucun paiement par carte n'a été lancé pour ce dépôt.",
+      "online_all": "Tous les paiements en ligne de cet utilisateur",
+      "payment_outcome": "Paiement en ligne : {status}"
     },
     "wallet": {
       "back": "Portefeuilles",
@@ -338,7 +346,8 @@
       "col_memo": "Détails",
       "col_balance": "Solde",
       "by": "par {name}",
-      "not_backfilled": "Ce portefeuille n'a pas encore été repris dans le grand livre — le solde en direct du livreur vient encore de l'ancien calcul."
+      "not_backfilled": "Ce portefeuille n'a pas encore été repris dans le grand livre — le solde en direct du livreur vient encore de l'ancien calcul.",
+      "online_payments": "Paiements en ligne"
     },
     "wallets": {
       "col_user": "Livreur",
@@ -476,14 +485,15 @@
         "settings_update": "Paramètres modifiés",
         "offer_create": "Offre créée",
         "offer_update": "Offre modifiée",
-        "agent_payment_record": "Paiement agent enregistré",
-        "agent_payment_confirm": "Paiement agent confirmé",
-        "agent_payment_reject": "Paiement agent rejeté",
         "agent_credit_limit": "Plafond agent modifié",
-        "merchant_payment_record": "Paiement marchand enregistré",
-        "merchant_payment_confirm": "Paiement marchand confirmé",
-        "merchant_payment_reject": "Paiement marchand rejeté",
-        "ledger_backfill": "Reprise du grand livre"
+        "ledger_backfill": "Reprise du grand livre",
+        "agent_dues_record": "Paiement agent enregistré",
+        "agent_dues_confirm": "Paiement agent confirmé",
+        "agent_dues_reject": "Paiement agent rejeté",
+        "merchant_dues_record": "Paiement marchand enregistré",
+        "merchant_dues_confirm": "Paiement marchand confirmé",
+        "merchant_dues_reject": "Paiement marchand rejeté",
+        "payment_sync": "Paiement en ligne revérifié"
       }
     },
     "recon": {
@@ -532,6 +542,63 @@
         "throttled": "Trop de demandes — patientez un instant.",
         "generic": "Une erreur s'est produite. ({detail})"
       }
+    },
+    "gw": {
+      "count": "{n, plural, one {# paiement} other {# paiements}}",
+      "empty": "Aucun paiement en ligne pour le moment.",
+      "configured": "Configuré",
+      "not_configured": "Non configuré",
+      "needs_credentials": "Identifiants bancaires requis",
+      "charged_in_eur": "Débité en euros · 1 € = {rate}",
+      "test": "Test",
+      "live": "Production",
+      "webhook": "URL du webhook",
+      "copy": "Copier",
+      "copied": "Copié",
+      "recheck": "Revérifier",
+      "col_provider": "Prestataire",
+      "col_purpose": "Objet",
+      "col_user": "Utilisateur",
+      "col_created": "Créé",
+      "col_paid": "Payé",
+      "col_failure": "Motif d'échec",
+      "provider": {
+        "chargily": "Chargily",
+        "stripe": "Stripe",
+        "satim": "SATIM"
+      },
+      "method": {
+        "edahabia": "EDAHABIA",
+        "cib": "CIB",
+        "card": "Carte"
+      },
+      "purpose": {
+        "wallet_topup": "Recharge du portefeuille",
+        "agent_dues": "Redevances agent",
+        "merchant_dues": "Redevances marchand"
+      },
+      "status": {
+        "pending": "En attente",
+        "paid": "Payé",
+        "failed": "Échoué",
+        "canceled": "Annulé",
+        "expired": "Expiré"
+      },
+      "reason": {
+        "amount_mismatch": "Montant différent",
+        "canceled_by_user": "Annulé par le payeur",
+        "canceled_by_staff": "Annulé par l'équipe",
+        "provider_error": "Le prestataire n'a pas pu ouvrir le paiement",
+        "internal_error": "Le paiement n'a pas pu être enregistré",
+        "async_payment_failed": "La banque l'a refusé après le paiement",
+        "expired": "Paiement expiré",
+        "failed": "Paiement échoué",
+        "canceled": "Annulé chez le prestataire"
+      },
+      "online": "En ligne",
+      "awaiting_payment": "Paiement en ligne en attente",
+      "for_user": "Paiements de {name}",
+      "clear_user": "Voir tout le monde"
     }
   }
 }

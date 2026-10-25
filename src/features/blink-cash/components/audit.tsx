@@ -25,16 +25,18 @@ export const AUDIT_ACTIONS = [
   "settings.update",
   "offer.create",
   "offer.update",
-  "agent.payment_record",
-  "agent.payment_confirm",
-  "agent.payment_reject",
+  // The names blink-server writes (routes/agents|merchant/admin-dues.ts, routes/payments/admin.ts).
+  "agent_dues.record",
+  "agent_dues.confirm",
+  "agent_dues.reject",
   "agent.credit_limit",
-  "merchant.payment_record",
-  "merchant.payment_confirm",
-  "merchant.payment_reject",
+  "merchant_dues.record",
+  "merchant_dues.confirm",
+  "merchant_dues.reject",
+  "payment.sync",
   "ledger.backfill",
 ];
-const TARGETS = ["transaction", "wallet", "settings", "offer", "agent", "merchant_store", "agent_dues_payment", "merchant_dues_payment", "ledger"];
+const TARGETS = ["transaction", "wallet", "settings", "offer", "agent", "merchant_store", "agent_dues_payment", "merchant_dues_payment", "payment", "ledger"];
 
 /** next-intl keys can't contain dots. */
 const actionKey = (a: string) => a.replace(/\./g, "_");

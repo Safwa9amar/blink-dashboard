@@ -161,3 +161,9 @@ export async function setOfferActive(id: string, active: boolean) {
 export async function runLedgerBackfill() {
   return call("POST", "/blink-cash/admin/ledger/backfill", {}, { superOnly: true });
 }
+
+// ── gateway payments ─────────────────────────────────────────────────────────
+// POST /payments/admin/{id}/sync — re-checks the status at the provider (and credits late money).
+export async function recheckPayment(id: string) {
+  return call("POST", `/payments/admin/${enc(id)}/sync`);
+}

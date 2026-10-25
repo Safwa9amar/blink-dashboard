@@ -244,9 +244,16 @@ describe("offers", () => {
 
 describe("attention", () => {
   it("lists only non-zero items", () => {
-    const items = attentionItems({ reviewCount: 2, pendingAgentPayments: 0, pendingMerchantPayments: 1, agentsNearLimit: 0, driftCount: null, frozenWallets: 3 });
+    const items = attentionItems({ reviewCount: 2, pendingAgentPayments: 0, pendingMerchantPayments: 1, agentsNearLimit: 0, driftCount: null, frozenWallets: 3, gatewayIssues: 0 });
     expect(items.map((i) => i.key)).toEqual(["review", "merchant_payments", "frozen"]);
-    expect(attentionItems({ reviewCount: 0, pendingAgentPayments: 0, pendingMerchantPayments: 0, agentsNearLimit: 0, driftCount: 4, frozenWallets: 0 })[0].key).toBe("drift");
+    expect(attentionItems({ reviewCount: 0, pendingAgentPayments: 0, pendingMerchantPayments: 0, agentsNearLimit: 0, driftCount: 4, frozenWallets: 0, gatewayIssues: 0 })[0].key).toBe("drift");
+    // An amount mismatch is money received but not credited: right after drift.
+    const gw = attentionItems({ reviewCount: 1, pendingAgentPayments: 0, pendingMerchantPayments: 0, agentsNearLimit: 0, driftCount: 1, frozenWallets: 0, gatewayIssues: 2 });
+    expect(gw.map((i) => [i.key, i.count, i.href])).toEqual([
+      ["drift", 1, "/blink-cash/reconciliation"],
+      ["gateway_issues", 2, "/blink-cash/payments"],
+      ["review", 1, "/blink-cash/review"],
+    ]);
   });
 });
 

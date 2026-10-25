@@ -84,6 +84,10 @@
       "campaign": {
         "sent": "Campaign “{title}” reached {recipients, number} people",
         "failed": "Campaign “{title}” failed to send"
+      },
+      "payment": {
+        "amount_mismatch": "{provider} payment of {amount} doesn't match the order amount",
+        "unfulfilled": "Paid {provider} payment of {amount} couldn't be applied"
       }
     }
   }

@@ -6,6 +6,7 @@
     "overview": "Overview",
     "tab_ledger": "Ledger",
     "tab_dues": "Merchant dues",
+    "tab_payments": "Payments",
     "agent_float": "Agent Float",
     "stats": {
       "circulation": "Money in wallets",
@@ -91,7 +92,8 @@
     },
     "method": {
       "agent": "Agent",
-      "electronic": "Card / online"
+      "electronic": "Electronic transfer",
+      "online": "Online card"
     },
     "tx_status": {
       "completed": "completed",
@@ -243,7 +245,8 @@
       "merchant_payments": "{n, plural, one {# merchant payment to confirm} other {# merchant payments to confirm}}",
       "agents_limit": "{n, plural, one {# agent at 80% or more of their cash limit} other {# agents at 80% or more of their cash limit}}",
       "drift": "{n, plural, one {# wallet where the ledger drifts from the derived balance} other {# wallets where the ledger drifts from the derived balance}}",
-      "frozen": "{n, plural, one {# frozen wallet} other {# frozen wallets}}"
+      "frozen": "{n, plural, one {# frozen wallet} other {# frozen wallets}}",
+      "gateway_issues": "{n, plural, one {# online payment with an amount mismatch (paid, not credited)} other {# online payments with an amount mismatch (paid, not credited)}}"
     },
     "entry_kind": {
       "opening_balance": "Opening balance",
@@ -305,7 +308,12 @@
       "ev_reversed": "Reversed",
       "entries": "Wallet entries",
       "entries_desc": "Ledger lines this transaction posted",
-      "entries_empty": "No wallet entries linked to this transaction."
+      "entries_empty": "No wallet entries linked to this transaction.",
+      "online_payment": "Online payment",
+      "online_payment_desc": "The card payment behind this deposit, as the payment provider reports it.",
+      "online_none": "No card payment was started for this deposit.",
+      "online_all": "All online payments of this user",
+      "payment_outcome": "Online payment: {status}"
     },
     "wallet": {
       "back": "Wallets",
@@ -338,7 +346,8 @@
       "col_memo": "Details",
       "col_balance": "Balance",
       "by": "by {name}",
-      "not_backfilled": "This wallet has not been backfilled yet — the rider's live balance still comes from the legacy calculation."
+      "not_backfilled": "This wallet has not been backfilled yet — the rider's live balance still comes from the legacy calculation.",
+      "online_payments": "Online payments"
     },
     "wallets": {
       "col_user": "Rider",
@@ -476,14 +485,15 @@
         "settings_update": "Settings updated",
         "offer_create": "Offer created",
         "offer_update": "Offer updated",
-        "agent_payment_record": "Agent payment recorded",
-        "agent_payment_confirm": "Agent payment confirmed",
-        "agent_payment_reject": "Agent payment rejected",
         "agent_credit_limit": "Agent limit changed",
-        "merchant_payment_record": "Merchant payment recorded",
-        "merchant_payment_confirm": "Merchant payment confirmed",
-        "merchant_payment_reject": "Merchant payment rejected",
-        "ledger_backfill": "Ledger backfill"
+        "ledger_backfill": "Ledger backfill",
+        "agent_dues_record": "Agent payment recorded",
+        "agent_dues_confirm": "Agent payment confirmed",
+        "agent_dues_reject": "Agent payment rejected",
+        "merchant_dues_record": "Merchant payment recorded",
+        "merchant_dues_confirm": "Merchant payment confirmed",
+        "merchant_dues_reject": "Merchant payment rejected",
+        "payment_sync": "Online payment re-checked"
       }
     },
     "recon": {
@@ -532,6 +542,63 @@
         "throttled": "Too many requests — wait a moment.",
         "generic": "Something went wrong. ({detail})"
       }
+    },
+    "gw": {
+      "count": "{n, plural, one {# payment} other {# payments}}",
+      "empty": "No online payments yet.",
+      "configured": "Configured",
+      "not_configured": "Not configured",
+      "needs_credentials": "Needs bank credentials",
+      "charged_in_eur": "Charged in euros · 1 € = {rate}",
+      "test": "Test",
+      "live": "Live",
+      "webhook": "Webhook URL",
+      "copy": "Copy",
+      "copied": "Copied",
+      "recheck": "Re-check",
+      "col_provider": "Provider",
+      "col_purpose": "Purpose",
+      "col_user": "User",
+      "col_created": "Created",
+      "col_paid": "Paid",
+      "col_failure": "Failure reason",
+      "provider": {
+        "chargily": "Chargily",
+        "stripe": "Stripe",
+        "satim": "SATIM"
+      },
+      "method": {
+        "edahabia": "EDAHABIA",
+        "cib": "CIB",
+        "card": "Card"
+      },
+      "purpose": {
+        "wallet_topup": "Wallet top-up",
+        "agent_dues": "Agent dues",
+        "merchant_dues": "Merchant dues"
+      },
+      "status": {
+        "pending": "Pending",
+        "paid": "Paid",
+        "failed": "Failed",
+        "canceled": "Canceled",
+        "expired": "Expired"
+      },
+      "reason": {
+        "amount_mismatch": "Amount mismatch",
+        "canceled_by_user": "Cancelled by the payer",
+        "canceled_by_staff": "Cancelled by staff",
+        "provider_error": "The provider couldn't open the checkout",
+        "internal_error": "Couldn't save the checkout",
+        "async_payment_failed": "The bank declined it after checkout",
+        "expired": "Checkout expired",
+        "failed": "Payment failed",
+        "canceled": "Cancelled at the provider"
+      },
+      "online": "Online",
+      "awaiting_payment": "Awaiting online payment",
+      "for_user": "Payments of {name}",
+      "clear_user": "Show everyone"
     }
   }
 }

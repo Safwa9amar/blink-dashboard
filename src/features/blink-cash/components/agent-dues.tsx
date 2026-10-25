@@ -17,7 +17,7 @@ import {
 import type { TFn } from "../types";
 import { capacityLevel, capacityPercent, capacityRatio, effectiveLimit } from "../lib/capacity";
 import { RemindButton } from "./remind-button";
-import { EditLimitButton, PendingPaymentActions, RecordPaymentButton, type PayMethod } from "./payments";
+import { DuesMethod, EditLimitButton, PendingPaymentActions, RecordPaymentButton, type PayMethod } from "./payments";
 import { MigrationNotice } from "./ops-shared";
 
 type Filter = "all" | "owing" | "credit" | "high";
@@ -312,7 +312,7 @@ export function AgentDues({
       label: t("col.fees"),
       render: (r) => <span className="font-mono text-subtext whitespace-nowrap">{r.fees ? da(r.fees) : "—"}</span>,
     },
-    { key: "method", label: t("col.method"), render: (r) => <span className="capitalize text-subtext">{r.method}</span> },
+    { key: "method", label: t("col.method"), render: (r) => <DuesMethod t={t} method={r.method} /> },
     {
       key: "status",
       label: t("col.status"),
@@ -322,7 +322,7 @@ export function AgentDues({
       key: "act",
       label: "",
       sortable: false,
-      render: (r) => (r.status === "pending" ? <PendingPaymentActions t={t} kind="agent" id={r.id} /> : null),
+      render: (r) => (r.status === "pending" ? <PendingPaymentActions t={t} kind="agent" id={r.id} method={r.method} /> : null),
     },
   ];
 

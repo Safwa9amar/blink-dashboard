@@ -84,6 +84,10 @@
       "campaign": {
         "sent": "وصلت الحملة «{title}» إلى {recipients, number} شخص",
         "failed": "فشل إرسال الحملة «{title}»"
+      },
+      "payment": {
+        "amount_mismatch": "مبلغ دفعة {provider} ({amount}) لا يطابق المبلغ المطلوب",
+        "unfulfilled": "دفعة {provider} بقيمة {amount} مدفوعة لكن تعذّر تطبيقها"
       }
     }
   }

@@ -14,7 +14,7 @@ import {
 import type { TFn } from "../types";
 import { remindMerchantDues } from "@/app/d/blink-cash/action";
 import { RemindButton } from "./remind-button";
-import { PendingPaymentActions, RecordPaymentButton, type PayMethod } from "./payments";
+import { DuesMethod, PendingPaymentActions, RecordPaymentButton, type PayMethod } from "./payments";
 
 /**
  * Merchant dues — what each store owes Blink in commission, from blink-server.
@@ -146,7 +146,7 @@ export function Dues({
       label: t("col.fees"),
       render: (r) => <span className="font-mono text-subtext whitespace-nowrap">{r.fees ? da(r.fees) : "—"}</span>,
     },
-    { key: "method", label: t("col.method"), render: (r) => <span className="capitalize text-subtext">{r.method}</span> },
+    { key: "method", label: t("col.method"), render: (r) => <DuesMethod t={t} method={r.method} /> },
     {
       key: "status",
       label: t("col.status"),
@@ -158,7 +158,7 @@ export function Dues({
       key: "act",
       label: "",
       sortable: false,
-      render: (r) => (r.status === "pending" ? <PendingPaymentActions t={t} kind="merchant" id={r.id} /> : null),
+      render: (r) => (r.status === "pending" ? <PendingPaymentActions t={t} kind="merchant" id={r.id} method={r.method} /> : null),
     },
   ];
 

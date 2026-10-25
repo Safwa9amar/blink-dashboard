@@ -9,7 +9,7 @@ import { formatDA } from "../data";
 import { formatDateTime, safeHttpUrl, shortId } from "../lib/format";
 import type { PendingPayment } from "../ops-types";
 import type { LedgerRow, TFn } from "../types";
-import { PendingPaymentActions } from "./payments";
+import { DuesMethod, PendingPaymentActions } from "./payments";
 import { ActionDialog, LoadError, MigrationNotice, useDialog } from "./ops-shared";
 
 function ReviewActions({ t, row }: { t: TFn; row: LedgerRow }) {
@@ -128,7 +128,7 @@ export function Review({ queue }: { queue: ReviewQueue }) {
       ),
     },
     { key: "amount", label: t("col.amount"), render: (p) => <span className="font-mono font-semibold whitespace-nowrap">{formatDA(p.amount)}</span> },
-    { key: "method", label: t("col.method"), render: (p) => <span className="capitalize text-subtext">{p.method}</span> },
+    { key: "method", label: t("col.method"), render: (p) => <DuesMethod t={t} method={p.method} /> },
     {
       key: "reference",
       label: t("tx.reference"),
@@ -139,7 +139,7 @@ export function Review({ queue }: { queue: ReviewQueue }) {
       ),
     },
     { key: "createdAt", label: t("col.when"), render: (p) => <span className="text-subtext whitespace-nowrap">{formatDateTime(p.createdAt, locale)}</span> },
-    { key: "act", label: "", sortable: false, render: (p) => <PendingPaymentActions t={t} kind={p.kind} id={p.id} /> },
+    { key: "act", label: "", sortable: false, render: (p) => <PendingPaymentActions t={t} kind={p.kind} id={p.id} method={p.method} /> },
   ];
 
   return (

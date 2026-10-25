@@ -16,6 +16,13 @@ export default async function BlinkCashLayout({ children }: { children: ReactNod
     { href: "/blink-cash/review", label: t("tab_review"), icon: "eye", count: review > 0 ? String(review) : undefined },
     { href: "/blink-cash/agents", label: t("agent_float"), icon: "store" },
     { href: "/blink-cash/dues", label: t("tab_dues"), icon: "dollar" },
+    // Badge: online payments with an amount mismatch (money received, nothing credited).
+    {
+      href: "/blink-cash/payments",
+      label: t("tab_payments"),
+      icon: "link",
+      count: counts.gatewayIssues ? String(counts.gatewayIssues) : undefined,
+    },
     { href: "/blink-cash/offers", label: t("tab_offers"), icon: "gift" },
     { href: "/blink-cash/settings", label: t("tab_settings"), icon: "cog" },
     { href: "/blink-cash/audit", label: t("tab_audit"), icon: "shield" },

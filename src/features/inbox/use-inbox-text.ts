@@ -10,7 +10,7 @@ import { money } from "./format";
 // renders blank instead of failing the whole message.
 const DEFAULTS: Record<string, string | number> = {
   store: "", product: "", pack: "", shop: "", trip: "", rule: "", title: "", subject: "",
-  rating: 0, recipients: 0, role: "customer", scope: "account", amount: "",
+  rating: 0, recipients: 0, role: "customer", scope: "account", amount: "", provider: "",
 };
 
 const text = (v: unknown): string => (typeof v === "string" ? v.trim() : typeof v === "number" ? String(v) : "");

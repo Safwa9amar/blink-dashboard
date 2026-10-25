@@ -6,6 +6,7 @@
     "overview": "نظرة عامة",
     "tab_ledger": "السجل",
     "tab_dues": "مستحقات التجار",
+    "tab_payments": "المدفوعات",
     "agent_float": "رصيد الوكيل",
     "stats": {
       "circulation": "الأموال في المحافظ",
@@ -91,7 +92,8 @@
     },
     "method": {
       "agent": "وكيل",
-      "electronic": "بطاقة / إلكتروني"
+      "electronic": "تحويل إلكتروني",
+      "online": "بطاقة عبر الإنترنت"
     },
     "tx_status": {
       "completed": "مكتملة",
@@ -243,7 +245,8 @@
       "merchant_payments": "دفعات تجار للتأكيد: {n}",
       "agents_limit": "وكلاء عند 80% أو أكثر من حدّهم النقدي: {n}",
       "drift": "محافظ يختلف فيها السجل عن الرصيد المشتق: {n}",
-      "frozen": "محافظ مجمّدة: {n}"
+      "frozen": "محافظ مجمّدة: {n}",
+      "gateway_issues": "{n, plural, one {دفعة واحدة عبر الإنترنت بمبلغ غير مطابق (مدفوعة، غير مُضافة)} other {# مدفوعات عبر الإنترنت بمبلغ غير مطابق (مدفوعة، غير مُضافة)}}"
     },
     "entry_kind": {
       "opening_balance": "رصيد افتتاحي",
@@ -305,7 +308,12 @@
       "ev_reversed": "عُكس",
       "entries": "قيود المحفظة",
       "entries_desc": "أسطر السجل التي سجّلتها هذه المعاملة",
-      "entries_empty": "لا قيود مرتبطة بهذه المعاملة."
+      "entries_empty": "لا قيود مرتبطة بهذه المعاملة.",
+      "online_payment": "الدفع عبر الإنترنت",
+      "online_payment_desc": "الدفع بالبطاقة الخاص بهذا الإيداع، كما يُبلغ عنه مزوّد الدفع.",
+      "online_none": "لم يبدأ أي دفع بالبطاقة لهذا الإيداع.",
+      "online_all": "كل المدفوعات عبر الإنترنت لهذا المستخدم",
+      "payment_outcome": "الدفع عبر الإنترنت: {status}"
     },
     "wallet": {
       "back": "المحافظ",
@@ -338,7 +346,8 @@
       "col_memo": "التفاصيل",
       "col_balance": "الرصيد",
       "by": "بواسطة {name}",
-      "not_backfilled": "لم يُرحَّل رصيد هذه المحفظة إلى السجل بعد — لا يزال رصيد السائق المباشر يأتي من الحساب القديم."
+      "not_backfilled": "لم يُرحَّل رصيد هذه المحفظة إلى السجل بعد — لا يزال رصيد السائق المباشر يأتي من الحساب القديم.",
+      "online_payments": "المدفوعات عبر الإنترنت"
     },
     "wallets": {
       "col_user": "السائق",
@@ -476,14 +485,15 @@
         "settings_update": "تحديث الإعدادات",
         "offer_create": "إنشاء عرض",
         "offer_update": "تحديث عرض",
-        "agent_payment_record": "تسجيل دفعة وكيل",
-        "agent_payment_confirm": "تأكيد دفعة وكيل",
-        "agent_payment_reject": "رفض دفعة وكيل",
         "agent_credit_limit": "تغيير حد وكيل",
-        "merchant_payment_record": "تسجيل دفعة تاجر",
-        "merchant_payment_confirm": "تأكيد دفعة تاجر",
-        "merchant_payment_reject": "رفض دفعة تاجر",
-        "ledger_backfill": "ترحيل السجل"
+        "ledger_backfill": "ترحيل السجل",
+        "agent_dues_record": "تسجيل دفعة وكيل",
+        "agent_dues_confirm": "تأكيد دفعة وكيل",
+        "agent_dues_reject": "رفض دفعة وكيل",
+        "merchant_dues_record": "تسجيل دفعة تاجر",
+        "merchant_dues_confirm": "تأكيد دفعة تاجر",
+        "merchant_dues_reject": "رفض دفعة تاجر",
+        "payment_sync": "إعادة التحقق من دفعة عبر الإنترنت"
       }
     },
     "recon": {
@@ -532,6 +542,63 @@
         "throttled": "طلبات كثيرة — انتظر قليلًا.",
         "generic": "حدث خطأ ما. ({detail})"
       }
+    },
+    "gw": {
+      "count": "{n, plural, one {# دفعة} other {# دفعات}}",
+      "empty": "لا توجد مدفوعات إلكترونية بعد.",
+      "configured": "مُهيَّأ",
+      "not_configured": "غير مُهيَّأ",
+      "needs_credentials": "يتطلب بيانات اعتماد بنكية",
+      "charged_in_eur": "يُخصم باليورو · 1 € = {rate}",
+      "test": "تجريبي",
+      "live": "فعلي",
+      "webhook": "رابط Webhook",
+      "copy": "نسخ",
+      "copied": "تم النسخ",
+      "recheck": "إعادة التحقق",
+      "col_provider": "المزوّد",
+      "col_purpose": "الغرض",
+      "col_user": "المستخدم",
+      "col_created": "تاريخ الإنشاء",
+      "col_paid": "تاريخ الدفع",
+      "col_failure": "سبب الفشل",
+      "provider": {
+        "chargily": "Chargily",
+        "stripe": "Stripe",
+        "satim": "SATIM"
+      },
+      "method": {
+        "edahabia": "الذهبية",
+        "cib": "CIB",
+        "card": "بطاقة"
+      },
+      "purpose": {
+        "wallet_topup": "شحن المحفظة",
+        "agent_dues": "مستحقات الوكيل",
+        "merchant_dues": "مستحقات التاجر"
+      },
+      "status": {
+        "pending": "قيد الانتظار",
+        "paid": "مدفوعة",
+        "failed": "فشلت",
+        "canceled": "ملغاة",
+        "expired": "منتهية"
+      },
+      "reason": {
+        "amount_mismatch": "المبلغ غير مطابق",
+        "canceled_by_user": "ألغاه الدافع",
+        "canceled_by_staff": "ألغاه الفريق",
+        "provider_error": "تعذّر على مزوّد الدفع فتح صفحة الدفع",
+        "internal_error": "تعذّر حفظ عملية الدفع",
+        "async_payment_failed": "رفضه البنك بعد الدفع",
+        "expired": "انتهت صلاحية صفحة الدفع",
+        "failed": "فشل الدفع",
+        "canceled": "أُلغي لدى مزوّد الدفع"
+      },
+      "online": "عبر الإنترنت",
+      "awaiting_payment": "بانتظار الدفع عبر الإنترنت",
+      "for_user": "مدفوعات {name}",
+      "clear_user": "عرض الجميع"
     }
   }
 }

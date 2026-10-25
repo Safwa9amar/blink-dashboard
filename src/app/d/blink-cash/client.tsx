@@ -70,7 +70,7 @@ export default function BlinkCashClient(p: BlinkCashClientProps) {
           dues={p.duesHeadline}
           cash={p.cash}
           days={p.days ?? 30}
-          counts={p.counts ?? Promise.resolve({ pendingOps: null, review: null, frozen: null, pendingAgentPayments: null, pendingMerchantPayments: null })}
+          counts={p.counts ?? Promise.resolve({ pendingOps: null, review: null, frozen: null, pendingAgentPayments: null, pendingMerchantPayments: null, gatewayIssues: null })}
           attention={p.attention ?? Promise.resolve(null)}
           settings={p.settings ?? null}
           settingsPending={p.settingsPending}

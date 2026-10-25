@@ -51,6 +51,9 @@ export interface OpsCounts {
   pendingOps: number | null;
   review: number | null;
   frozen: number | null;
+  /** Pending dues payments with a manual method (staff confirm them). */
   pendingAgentPayments: number | null;
   pendingMerchantPayments: number | null;
+  /** Online payments with an amount mismatch, not paid out: they need a staff look. */
+  gatewayIssues: number | null;
 }

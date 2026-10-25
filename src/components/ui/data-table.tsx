@@ -43,6 +43,8 @@ interface DataTableProps<T> {
    * href. Buttons, links and form controls inside a row keep their own behaviour. Optional.
    */
   rowHref?: (row: T) => string;
+  /** Extra classes for a row, e.g. to highlight one that needs attention. */
+  rowClassName?: (row: T) => string | undefined;
 }
 
 const INTERACTIVE = "a,button,input,select,textarea,label,summary,[role='button'],[role='link'],[data-row-ignore]";
@@ -60,6 +62,7 @@ export function DataTable<T>({
   enableSorting = true,
   enablePagination = true,
   rowHref,
+  rowClassName,
 }: DataTableProps<T>) {
   const router = useRouter();
   const t = useTranslations("common");
@@ -172,7 +175,7 @@ export function DataTable<T>({
                 return (
                 <tr
                   key={row.id}
-                  className={`text-text hover:bg-card-hover transition-colors ${href ? "cursor-pointer focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary" : ""}`}
+                  className={`text-text hover:bg-card-hover transition-colors ${rowClassName?.(row.original) ?? ""} ${href ? "cursor-pointer focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary" : ""}`}
                   {...(href
                     ? { tabIndex: 0, onClick: (e: MouseEvent<HTMLTableRowElement>) => onRowClick(e, href), onKeyDown: (e: KeyboardEvent<HTMLTableRowElement>) => onRowKeyDown(e, href) }
                     : {})}

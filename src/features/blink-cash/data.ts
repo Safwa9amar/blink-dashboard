@@ -43,10 +43,12 @@ export const TX_TYPE_ICON: Record<BlinkTransaction["type"], string> = {
   deposit: "wallet",
   withdrawal: "bank",
 };
-// deposit_method → icon (agent = cash via shop, electronic = card / online).
+// deposit_method → icon (agent = cash via shop, electronic = transfer reviewed by
+// finance, online = card paid through a payment gateway).
 export const TX_METHOD_ICON: Record<string, string> = {
   agent: "store",
-  electronic: "card",
+  electronic: "bank",
+  online: "card",
 };
 // transaction_status → semantic colour.
 export const TX_STATUS_VARIANT: Record<string, Variant> = {

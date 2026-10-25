@@ -84,6 +84,10 @@
       "campaign": {
         "sent": "La campagne « {title} » a atteint {recipients, number} personnes",
         "failed": "Échec de l’envoi de la campagne « {title} »"
+      },
+      "payment": {
+        "amount_mismatch": "Le paiement {provider} de {amount} ne correspond pas au montant attendu",
+        "unfulfilled": "Le paiement {provider} de {amount} est payé mais n'a pas pu être appliqué"
       }
     }
   }

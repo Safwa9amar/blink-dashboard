@@ -59,6 +59,7 @@ export function LedgerFilterBar({ t, filters }: { t: TFn; filters: LedgerFilters
             <option value="">{t("f.all")}</option>
             <option value="agent">{t("method.agent")}</option>
             <option value="electronic">{t("method.electronic")}</option>
+            <option value="online">{t("method.online")}</option>
           </select>
         </label>
         <label className="flex flex-col gap-1 text-xs font-semibold text-text">

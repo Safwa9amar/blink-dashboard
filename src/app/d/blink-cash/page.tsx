@@ -28,7 +28,8 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
   const cash = getBlinkCashSummary(days);
   const counts = getOpsCounts();
 
-  // "Needs attention": review queue, agents near their limit, drift, payments awaiting confirmation.
+  // "Needs attention": review queue, agents near their limit, drift, payments awaiting
+  // confirmation, online payments with an amount mismatch.
   const attention = Promise.all([counts, getAgentDues(), getAgentLimits(), getReconciliation()]).then(
     ([c, agents, lim, recon]) => {
       const near = agents.summary
@@ -44,6 +45,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
         agentsNearLimit: near,
         driftCount: recon.data?.drift ?? null,
         frozenWallets: c.frozen ?? 0,
+        gatewayIssues: c.gatewayIssues ?? 0,
       });
     }
   );

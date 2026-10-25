@@ -12,7 +12,7 @@ export interface BlinkTransaction {
   fees: number;
   total: number;
   status: "completed" | "cancelled" | "pending" | "review" | "reversed";
-  method: "electronic" | "agent" | null;
+  method: "electronic" | "agent" | "online" | null;
   offer_title: string | null;
   offer_detail: string | null;
   rating: number | null;

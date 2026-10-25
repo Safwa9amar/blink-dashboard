@@ -7,9 +7,11 @@ export interface AttentionInput {
   agentsNearLimit: number;
   driftCount: number | null;
   frozenWallets: number;
+  /** Online payments with an amount mismatch (money received, nothing credited). */
+  gatewayIssues: number;
 }
 export interface AttentionItem {
-  key: "review" | "agent_payments" | "merchant_payments" | "agents_limit" | "drift" | "frozen";
+  key: "review" | "agent_payments" | "merchant_payments" | "agents_limit" | "drift" | "gateway_issues" | "frozen";
   count: number;
   href: string;
   tone: "danger" | "warning" | "info";
@@ -19,6 +21,7 @@ export interface AttentionItem {
 export function attentionItems(i: AttentionInput): AttentionItem[] {
   const all: AttentionItem[] = [
     { key: "drift", count: i.driftCount ?? 0, href: "/blink-cash/reconciliation", tone: "danger" },
+    { key: "gateway_issues", count: i.gatewayIssues, href: "/blink-cash/payments", tone: "danger" },
     { key: "review", count: i.reviewCount, href: "/blink-cash/review", tone: "warning" },
     { key: "agent_payments", count: i.pendingAgentPayments, href: "/blink-cash/review", tone: "warning" },
     { key: "merchant_payments", count: i.pendingMerchantPayments, href: "/blink-cash/review", tone: "warning" },

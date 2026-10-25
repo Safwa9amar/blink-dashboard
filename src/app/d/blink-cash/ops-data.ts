@@ -13,6 +13,7 @@ import {
   type LedgerFilters,
   type WalletFilters,
 } from "@/features/blink-cash/lib/filters";
+import { GATEWAY_METHODS, normalizeTxPayments, type TxPayment } from "@/features/blink-cash/lib/gateway";
 import { normalizeSettings, type BlinkCashSettings } from "@/features/blink-cash/lib/settings";
 import { normalizeOffer, type Offer } from "@/features/blink-cash/lib/offers";
 import { normalizeReconciliation, type Reconciliation } from "@/features/blink-cash/lib/reconciliation";
@@ -36,18 +37,42 @@ async function count(sb: Sb, table: string, eq: [string, string]): Promise<numbe
   return error ? null : (c ?? 0);
 }
 
+/** PostgREST filter: a dues payment staff settle (manual method), not one a payment gateway settles. */
+const MANUAL_DUES = `method.is.null,method.not.in.(${GATEWAY_METHODS.join(",")})`;
+
+/** Pending dues payments waiting on staff (gateway ones complete or lapse by themselves). */
+async function countManualPending(sb: Sb, table: string): Promise<number | null> {
+  const { count: c, error } = await sb
+    .from(table)
+    .select("*", { count: "exact", head: true })
+    .eq("status", "pending")
+    .or(MANUAL_DUES);
+  return error ? null : (c ?? 0);
+}
+
+/** Online payments the provider reported with a different amount: money that needs a staff look. */
+async function countGatewayIssues(sb: Sb): Promise<number | null> {
+  const { count: c, error } = await sb
+    .from("payments")
+    .select("*", { count: "exact", head: true })
+    .eq("failure_reason", "amount_mismatch")
+    .neq("status", "paid");
+  return error ? null : (c ?? 0);
+}
+
 /** Cheap head-count queries; each is null when its table/enum value isn't there yet. */
 export const getOpsCounts = cache(async (): Promise<OpsCounts> => {
   await requirePathAccess(SECTION);
   const sb = await admin();
-  const [pendingOps, review, frozen, pendingAgentPayments, pendingMerchantPayments] = await Promise.all([
+  const [pendingOps, review, frozen, pendingAgentPayments, pendingMerchantPayments, gatewayIssues] = await Promise.all([
     count(sb, "transactions", ["status", "pending"]),
     count(sb, "transactions", ["status", "review"]),
     count(sb, "blink_wallets", ["status", "frozen"]),
-    count(sb, "agent_dues_payments", ["status", "pending"]),
-    count(sb, "merchant_dues_payments", ["status", "pending"]),
+    countManualPending(sb, "agent_dues_payments"),
+    countManualPending(sb, "merchant_dues_payments"),
+    countGatewayIssues(sb),
   ]);
-  return { pendingOps, review, frozen, pendingAgentPayments, pendingMerchantPayments };
+  return { pendingOps, review, frozen, pendingAgentPayments, pendingMerchantPayments, gatewayIssues };
 });
 
 /** The Review tab badge: everything waiting on a staff decision. */
@@ -77,6 +102,8 @@ export interface TxDetail {
   actors: Record<string, string>;
   offerTitle: string | null;
   walletFrozen: boolean | null;
+  /** The gateway payments of an online deposit, newest first (empty for other methods). */
+  payments: TxPayment[];
 }
 
 export async function getTxDetail(id: string): Promise<{ detail: TxDetail | null; migrationPending: boolean; error?: string }> {
@@ -89,7 +116,7 @@ export async function getTxDetail(id: string): Promise<{ detail: TxDetail | null
   const staffIds = [t.reviewed_by, t.cancelled_by, t.reversed_by];
   const names = await userNames(sb, [t.user_id, t.agent_id, ...staffIds]);
 
-  const [entriesRes, holdRes, offerRes] = await Promise.all([
+  const [entriesRes, holdRes, offerRes, paymentsRes] = await Promise.all([
     sb
       .from("blink_wallet_entries")
       .select("id, amount, balance_after, created_at, kind, memo, transaction_id, ref_type, ref_id, actor_id")
@@ -97,6 +124,14 @@ export async function getTxDetail(id: string): Promise<{ detail: TxDetail | null
       .order("created_at", { ascending: true }),
     sb.from("blink_wallet_holds").select("status, amount, created_at, resolved_at").eq("transaction_id", id).maybeSingle(),
     t.offer_id ? sb.from("blink_cash_offers").select("title").eq("id", t.offer_id).maybeSingle() : Promise.resolve({ data: null }),
+    t.method === "online"
+      ? sb
+          .from("payments")
+          .select("id, provider, method, amount, currency, metadata, status, failure_reason, provider_ref, livemode, created_at, paid_at")
+          .eq("purpose", "wallet_topup")
+          .eq("ref_id", id)
+          .order("created_at", { ascending: false })
+      : Promise.resolve({ data: [] }),
   ]);
   const entries = ((entriesRes.data as Raw[] | null) ?? []).map((e) => ({
     id: String(e.id),
@@ -130,6 +165,7 @@ export async function getTxDetail(id: string): Promise<{ detail: TxDetail | null
       actors,
       offerTitle: title ? (str(title.en) ?? str(title.fr) ?? str(title.ar)) : null,
       walletFrozen: w ? (w as Raw).status === "frozen" : null,
+      payments: normalizeTxPayments(paymentsRes.data),
     },
     migrationPending: false,
   };
@@ -285,8 +321,8 @@ export async function getReviewQueue(): Promise<ReviewQueue> {
   const sb = await admin();
   const [led, ap, mp] = await Promise.all([
     queryLedger(sb, { status: "review", q: "" }, [0, 199]),
-    sb.from("agent_dues_payments").select("*").eq("status", "pending").order("created_at", { ascending: true }).limit(200),
-    sb.from("merchant_dues_payments").select("*").eq("status", "pending").order("created_at", { ascending: true }).limit(200),
+    sb.from("agent_dues_payments").select("*").eq("status", "pending").or(MANUAL_DUES).order("created_at", { ascending: true }).limit(200),
+    sb.from("merchant_dues_payments").select("*").eq("status", "pending").or(MANUAL_DUES).order("created_at", { ascending: true }).limit(200),
   ]);
   const agentRows = (ap.data as Raw[] | null) ?? [];
   const merchRows = (mp.data as Raw[] | null) ?? [];

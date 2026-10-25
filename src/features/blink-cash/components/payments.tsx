@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui";
+import { Badge, Button } from "@/components/ui";
 import {
   confirmAgentPayment,
   confirmMerchantPayment,
@@ -10,6 +10,7 @@ import {
   rejectMerchantPayment,
   setAgentCreditLimit,
 } from "@/app/d/blink-cash/ops-action";
+import { isGatewayMethod } from "../lib/gateway";
 import type { TFn } from "../types";
 import { ActionDialog, useDialog } from "./ops-shared";
 
@@ -64,8 +65,28 @@ export function RecordPaymentButton({
   );
 }
 
-/** Confirm / Reject for a payment the app stored as pending. */
-export function PendingPaymentActions({ t, kind, id }: { t: TFn; kind: "agent" | "merchant"; id: string }) {
+/** A dues payment's method: a gateway one (EDAHABIA, CIB, card) reads as its label + "Online". */
+export function DuesMethod({ t, method }: { t: TFn; method: string }) {
+  if (!isGatewayMethod(method)) return <span className="capitalize text-subtext">{method}</span>;
+  return (
+    <span className="inline-flex items-center gap-1.5 text-subtext whitespace-nowrap">
+      {t(`gw.method.${method}`)}
+      <Badge variant="info">{t("gw.online")}</Badge>
+    </span>
+  );
+}
+
+/**
+ * Confirm / Reject for a payment the app stored as pending. A gateway payment
+ * is settled by the gateway (paid, or cancelled when its checkout lapses), so
+ * staff only see that it is waiting; the server refuses to settle it too.
+ */
+export function PendingPaymentActions({ t, kind, id, method }: { t: TFn; kind: "agent" | "merchant"; id: string; method: string }) {
+  if (isGatewayMethod(method)) return <Badge variant="warning">{t("gw.awaiting_payment")}</Badge>;
+  return <ManualPaymentActions t={t} kind={kind} id={id} />;
+}
+
+function ManualPaymentActions({ t, kind, id }: { t: TFn; kind: "agent" | "merchant"; id: string }) {
   const rej = useDialog();
   const ok = useDialog();
   const confirm = kind === "agent" ? confirmAgentPayment : confirmMerchantPayment;

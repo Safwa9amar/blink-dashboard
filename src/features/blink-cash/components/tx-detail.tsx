@@ -7,9 +7,11 @@ import { cancelTransaction, approveTransaction, rejectTransaction, reverseTransa
 import type { TxDetail } from "@/app/d/blink-cash/ops-data";
 import { TX_STATUS_VARIANT, formatDA } from "../data";
 import { formatDateTime, safeHttpUrl, shortId, signedDA } from "../lib/format";
+import { formatCharge, type TxPayment } from "../lib/gateway";
 import { buildTimeline, txActions, type TxAction } from "../lib/lifecycle";
 import type { StatementEntry } from "../lib/statement";
 import type { TFn } from "../types";
+import { FailureReason, GW_STATUS_VARIANT, RecheckButton } from "./gateway-payments";
 import { ActionDialog, useDialog, type DialogField } from "./ops-shared";
 
 function ActionButton({ t, action, id, reference }: { t: TFn; action: TxAction; id: string; reference: string | null }) {
@@ -46,6 +48,48 @@ function ActionButton({ t, action, id, reference }: { t: TFn; action: TxAction; 
   );
 }
 
+/** The gateway payments behind an online deposit (a retry makes a new one), newest first. */
+function OnlinePayments({ t, locale, userId, payments }: { t: TFn; locale: string; userId: string; payments: TxPayment[] }) {
+  return (
+    <Card title={t("tx.online_payment")} description={t("tx.online_payment_desc")} className="mb-5">
+      {payments.length === 0 && <p className="text-sm text-subtext">{t("tx.online_none")}</p>}
+      {payments.map((p) => (
+        <div key={p.id} className="flex flex-wrap items-start justify-between gap-3 py-3 border-t border-border first:border-t-0">
+          <div className="min-w-0 space-y-1">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <Badge variant={GW_STATUS_VARIANT[p.status] ?? "default"}>{t(`gw.status.${p.status}`)}</Badge>
+              {p.test_mode && <Badge variant="warning">{t("gw.test")}</Badge>}
+              <span className="text-[13px] text-text">
+                {t(`gw.provider.${p.provider}`)} · {t(`gw.method.${p.method}`)}
+              </span>
+            </div>
+            <p className="text-[13px] font-mono font-semibold">
+              {formatCharge(p.amount, p.currency, formatDA)}
+              {p.base_amount != null && <span className="font-normal text-subtext"> · {formatDA(p.base_amount)}</span>}
+            </p>
+            <p className="text-xs text-subtext tabular-nums">
+              {formatDateTime(p.created_at, locale)}
+              {p.paid_at && ` · ${t("gw.col_paid")} ${formatDateTime(p.paid_at, locale)}`}
+            </p>
+            {p.provider_ref && (
+              <p className="text-xs font-mono text-subtext break-all" dir="ltr">
+                {p.provider_ref}
+              </p>
+            )}
+            {p.failure_reason && <FailureReason t={t} reason={p.failure_reason} />}
+          </div>
+          {p.status !== "paid" && <RecheckButton t={t} id={p.id} />}
+        </div>
+      ))}
+      <p className="text-xs mt-3">
+        <Link href={`/blink-cash/payments?user=${userId}`} className="text-primary hover:underline">
+          {t("tx.online_all")}
+        </Link>
+      </p>
+    </Card>
+  );
+}
+
 function Row({ k, children }: { k: string; children: React.ReactNode }) {
   return (
     <div className="flex justify-between items-start gap-4 py-2.5 text-[13px] border-t border-border first:border-t-0">
@@ -58,8 +102,13 @@ function Row({ k, children }: { k: string; children: React.ReactNode }) {
 export function TxDetailView({ detail }: { detail: TxDetail }) {
   const t = useTranslations("blink_cash") as unknown as TFn;
   const locale = useLocale();
-  const { tx, entries, hold, actors, offerTitle, walletFrozen } = detail;
+  const { tx, entries, hold, actors, offerTitle, walletFrozen, payments } = detail;
   const actions = txActions(tx.status);
+  // An online deposit closes because its card payment did (failed, expired, cancelled):
+  // say that rather than the deposit's generic cancel reason ("by the rider").
+  const closedPayment = tx.method === "online" && tx.cancel_reason !== "staff" ? payments.find((p) => p.status !== "pending" && p.status !== "paid") : undefined;
+  const cancelText = (reason: string) =>
+    closedPayment ? t("tx.payment_outcome", { status: t(`gw.status.${closedPayment.status}`) }) : t(`cancel_reason.${reason}`);
   const timeline = buildTimeline(tx);
   const receipt = safeHttpUrl(tx.receipt_url);
   const credit = tx.type === "deposit";
@@ -163,7 +212,7 @@ export function TxDetailView({ detail }: { detail: TxDetail }) {
             </Row>
           )}
           {(offerTitle || tx.offer_title) && <Row k={t("col.offer")}><span dir="auto">{offerTitle ?? tx.offer_title}</span></Row>}
-          {tx.cancel_reason && <Row k={t("tx.cancel_reason")}>{t(`cancel_reason.${tx.cancel_reason}`)}</Row>}
+          {tx.cancel_reason && <Row k={t("tx.cancel_reason")}>{cancelText(tx.cancel_reason)}</Row>}
           {tx.reversal_reason && <Row k={t("tx.reversal_reason")}><span dir="auto">{tx.reversal_reason}</span></Row>}
           {tx.staff_note && <Row k={t("tx.staff_note")}><span dir="auto">{tx.staff_note}</span></Row>}
           {hold && (
@@ -185,7 +234,7 @@ export function TxDetailView({ detail }: { detail: TxDetail }) {
                 </p>
                 {e.note && (
                   <p className="text-xs text-text mt-0.5" dir="auto">
-                    {e.key === "cancelled" && ["rider", "agent", "expired", "staff", "rejected"].includes(e.note) ? t(`cancel_reason.${e.note}`) : e.note}
+                    {e.key === "cancelled" && ["rider", "agent", "expired", "staff", "rejected"].includes(e.note) ? cancelText(e.note) : e.note}
                   </p>
                 )}
               </li>
@@ -193,6 +242,8 @@ export function TxDetailView({ detail }: { detail: TxDetail }) {
           </ol>
         </Card>
       </div>
+
+      {tx.method === "online" && <OnlinePayments t={t} locale={locale} userId={tx.user_id} payments={payments} />}
 
       <Card title={t("tx.entries")} description={t("tx.entries_desc")}>
         <DataTable columns={entryColumns} data={entries} empty={t("tx.entries_empty")} enablePagination={false} enableSorting={false} />
