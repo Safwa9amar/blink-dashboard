@@ -37,8 +37,7 @@
       "updating": "Mise à jour...",
       "password_mismatch": "Les mots de passe ne correspondent pas",
       "password_updated": "Mot de passe mis à jour avec succès",
-      "session_timeout": "Expiration de Session (minutes)",
-      "require_2fa": "Exiger l'Authentification à Deux Facteurs"
+      "session_timeout": "Expiration de Session (minutes)"
     },
     "appearance": {
       "title": "Apparence",

@@ -37,8 +37,7 @@
       "updating": "Updating...",
       "password_mismatch": "Passwords do not match",
       "password_updated": "Password updated successfully",
-      "session_timeout": "Session Timeout (minutes)",
-      "require_2fa": "Require Two-Factor Authentication"
+      "session_timeout": "Session Timeout (minutes)"
     },
     "appearance": {
       "title": "Appearance",

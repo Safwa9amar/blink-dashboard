@@ -3,11 +3,16 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui";
-import { SectionCard, InputField, ToggleField } from "./settings-field";
+import { SectionCard, InputField } from "./settings-field";
 import { createClient } from "@/lib/supabase/client";
+import { changeOwnPassword } from "@/app/d/access/action";
+import { TwoFactorCard, PasskeysCard } from "@/features/account-security";
+
+const KNOWN_ERRORS = ["wrong_password", "weak_password", "same_password", "not_signed_in"];
 
 export function SecuritySettings() {
   const ts = useTranslations("settings.security");
+  const tp = useTranslations("accountSecurity.password");
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -16,7 +21,6 @@ export function SecuritySettings() {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [sessionTimeout, setSessionTimeout] = useState("60");
-  const [require2fa, setRequire2fa] = useState(false);
 
   async function handlePasswordChange() {
     setError("");
@@ -28,16 +32,19 @@ export function SecuritySettings() {
     }
 
     setLoading(true);
-    const supabase = createClient();
-    const { error } = await supabase.auth.updateUser({ password: newPassword });
-
-    if (error) {
-      setError(error.message);
-    } else {
-      setSuccess(ts("password_updated"));
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
+    try {
+      const res = await changeOwnPassword({ currentPassword, newPassword });
+      if (res.error) {
+        setError(KNOWN_ERRORS.includes(res.error) ? tp(res.error as never) : tp("change_failed"));
+      } else {
+        await createClient().auth.refreshSession();
+        setSuccess(ts("password_updated"));
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      }
+    } catch {
+      setError(tp("change_failed"));
     }
     setLoading(false);
   }
@@ -64,10 +71,12 @@ export function SecuritySettings() {
         </div>
       </SectionCard>
 
+      <TwoFactorCard />
+      <PasskeysCard />
+
       <SectionCard title={ts("title")} description={ts("description")}>
         <div className="max-w-md space-y-4">
           <InputField label={ts("session_timeout")} value={sessionTimeout} onChange={setSessionTimeout} type="number" />
-          <ToggleField label={ts("require_2fa")} checked={require2fa} onChange={setRequire2fa} />
         </div>
       </SectionCard>
     </div>
