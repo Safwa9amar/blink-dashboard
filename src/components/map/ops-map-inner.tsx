@@ -63,7 +63,7 @@ export default function OpsMapInner({ markers = [], lines = [], circles = [], he
   );
 
   return (
-    <div className={`ops-map relative overflow-hidden rounded-xl border border-border ${dark ? "ops-map-dark" : ""} ${className}`} style={{ height }}>
+    <div className={`ops-map relative isolate overflow-hidden rounded-xl border border-border ${dark ? "ops-map-dark" : ""} ${className}`} style={{ height }}>
       <style>{`.ops-map-dark .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.85) contrast(.9)}.ops-map .leaflet-container{background:var(--muted);font:inherit}`}</style>
       <MapContainer center={ALGIERS} zoom={11} scrollWheelZoom style={{ height: "100%", width: "100%" }}>
         <TileLayer

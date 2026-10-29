@@ -190,7 +190,7 @@ export default function ZonesMapInner(props: ZonesMapProps) {
   const pending = useMemo(() => (props.pending ? geometryToLatLngs(props.pending) : null), [props.pending]);
 
   return (
-    <div className={`ops-map relative overflow-hidden rounded-xl border border-border ${dark ? "ops-map-dark" : ""}`} style={{ height: props.height ?? 560 }}>
+    <div className={`ops-map relative isolate overflow-hidden rounded-xl border border-border ${dark ? "ops-map-dark" : ""}`} style={{ height: props.height ?? 560 }}>
       <style>{`.ops-map-dark .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.85) contrast(.9)}.ops-map .leaflet-container{background:var(--muted);font:inherit}`}</style>
       <MapContainer center={ALGERIA} zoom={5} scrollWheelZoom style={{ height: "100%", width: "100%" }}>
         <TileLayer

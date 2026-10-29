@@ -31,7 +31,7 @@ export default function PointPickerInner({
   const dark = typeof document !== "undefined" && document.documentElement.getAttribute("data-theme") === "dark";
   const center: [number, number] = pickup ? [pickup.lat, pickup.lng] : ALGIERS;
   return (
-    <div className={`ops-map relative overflow-hidden rounded-xl border border-border ${dark ? "ops-map-dark" : ""}`} style={{ height }}>
+    <div className={`ops-map relative isolate overflow-hidden rounded-xl border border-border ${dark ? "ops-map-dark" : ""}`} style={{ height }}>
       <style>{`.ops-map-dark .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.85) contrast(.9)}.ops-map .leaflet-container{background:var(--muted);font:inherit}`}</style>
       <MapContainer center={center} zoom={pickup ? 12 : 6} scrollWheelZoom style={{ height: "100%", width: "100%" }}>
         <TileLayer
