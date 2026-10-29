@@ -170,6 +170,58 @@
         "not_signed_in": "Your session has expired. Sign in again.",
         "generic": "Could not change the password. Try again."
       }
+    },
+    "method_password": "Password",
+    "method_code": "Email code",
+    "show_password": "Show password",
+    "hide_password": "Hide password",
+    "forgot_link": "Forgot password?",
+    "send_code": "Send code",
+    "sending": "Sending…",
+    "code_label": "6-digit code",
+    "code_placeholder": "000000",
+    "code_sent": "If a staff account exists for {email}, we sent a 6-digit code. It expires in 1 hour.",
+    "verify": "Verify code",
+    "verifying": "Verifying…",
+    "resend": "Resend code",
+    "resend_in": "Resend in {seconds}s",
+    "different_email": "Use a different email",
+    "or": "or",
+    "passkey_button": "Sign in with a passkey",
+    "passkey_waiting": "Waiting for your device…",
+    "passkey_hint": "Face ID, Touch ID, Windows Hello or a security key.",
+    "errors": {
+      "invalid_credentials": "Incorrect email or password.",
+      "email_not_confirmed": "This email address hasn't been confirmed yet.",
+      "rate_limited": "Too many attempts. Wait a few minutes and try again.",
+      "code_invalid": "That code is incorrect or has expired. Request a new one.",
+      "suspended": "This account is suspended. Contact a super admin.",
+      "passkey_disabled": "Passkeys aren't turned on yet.",
+      "no_access": "This account doesn't have access to the dashboard.",
+      "link_expired": "That link is invalid or has expired. Request a new one.",
+      "session_expired": "Your session has expired. Sign in again.",
+      "reset_expired": "This reset session has expired. Request a new reset link.",
+      "weak_password": "Use at least 10 characters, with a letter and a digit.",
+      "same_password": "The new password must be different from the current one.",
+      "generic": "Something went wrong. Try again."
+    },
+    "forgot": {
+      "title": "Reset your password",
+      "subtitle": "Enter your work email and we'll send you a reset link.",
+      "send": "Send reset link",
+      "sent": "If a staff account exists for this email, we sent a reset link. It expires in 1 hour.",
+      "or_code": "Or enter the 6-digit code from the email",
+      "back": "Back to sign in"
+    },
+    "reset": {
+      "title": "Choose a new password",
+      "subtitle": "Set a new password for your account.",
+      "new": "New password",
+      "confirm": "Confirm new password",
+      "hint": "At least {min} characters, with a letter and a digit.",
+      "mismatch": "The two passwords do not match.",
+      "submit": "Save password",
+      "saving": "Saving…"
     }
   },
   "language": {

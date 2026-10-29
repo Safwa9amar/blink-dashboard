@@ -170,6 +170,58 @@
         "not_signed_in": "Votre session a expiré. Reconnectez-vous.",
         "generic": "Impossible de changer le mot de passe. Réessayez."
       }
+    },
+    "method_password": "Mot de passe",
+    "method_code": "Code par e-mail",
+    "show_password": "Afficher le mot de passe",
+    "hide_password": "Masquer le mot de passe",
+    "forgot_link": "Mot de passe oublié ?",
+    "send_code": "Envoyer le code",
+    "sending": "Envoi…",
+    "code_label": "Code à 6 chiffres",
+    "code_placeholder": "000000",
+    "code_sent": "Si un compte du personnel existe pour {email}, nous avons envoyé un code à 6 chiffres. Il expire dans 1 heure.",
+    "verify": "Vérifier le code",
+    "verifying": "Vérification…",
+    "resend": "Renvoyer le code",
+    "resend_in": "Renvoyer dans {seconds} s",
+    "different_email": "Utiliser une autre adresse e-mail",
+    "or": "ou",
+    "passkey_button": "Se connecter avec une clé d'accès",
+    "passkey_waiting": "En attente de votre appareil…",
+    "passkey_hint": "Face ID, Touch ID, Windows Hello ou une clé de sécurité.",
+    "errors": {
+      "invalid_credentials": "E-mail ou mot de passe incorrect.",
+      "email_not_confirmed": "Cette adresse e-mail n'a pas encore été confirmée.",
+      "rate_limited": "Trop de tentatives. Patientez quelques minutes puis réessayez.",
+      "code_invalid": "Ce code est incorrect ou a expiré. Demandez-en un nouveau.",
+      "suspended": "Ce compte est suspendu. Contactez un super administrateur.",
+      "passkey_disabled": "Les clés d'accès ne sont pas encore activées.",
+      "no_access": "Ce compte n'a pas accès au tableau de bord.",
+      "link_expired": "Ce lien est invalide ou a expiré. Demandez-en un nouveau.",
+      "session_expired": "Votre session a expiré. Reconnectez-vous.",
+      "reset_expired": "Cette session de réinitialisation a expiré. Demandez un nouveau lien.",
+      "weak_password": "Utilisez au moins 10 caractères, avec une lettre et un chiffre.",
+      "same_password": "Le nouveau mot de passe doit être différent de l'actuel.",
+      "generic": "Une erreur s'est produite. Réessayez."
+    },
+    "forgot": {
+      "title": "Réinitialiser votre mot de passe",
+      "subtitle": "Saisissez votre e-mail professionnel, nous vous enverrons un lien de réinitialisation.",
+      "send": "Envoyer le lien",
+      "sent": "Si un compte du personnel existe pour cet e-mail, nous avons envoyé un lien de réinitialisation. Il expire dans 1 heure.",
+      "or_code": "Ou saisissez le code à 6 chiffres reçu par e-mail",
+      "back": "Retour à la connexion"
+    },
+    "reset": {
+      "title": "Choisir un nouveau mot de passe",
+      "subtitle": "Définissez un nouveau mot de passe pour votre compte.",
+      "new": "Nouveau mot de passe",
+      "confirm": "Confirmer le nouveau mot de passe",
+      "hint": "Au moins {min} caractères, avec une lettre et un chiffre.",
+      "mismatch": "Les deux mots de passe ne correspondent pas.",
+      "submit": "Enregistrer le mot de passe",
+      "saving": "Enregistrement…"
     }
   },
   "language": {
