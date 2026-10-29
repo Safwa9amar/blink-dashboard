@@ -8,7 +8,9 @@ import { formatValueShort } from "../format";
 import type { Fee, Override, TFn, Tier } from "../types";
 import { tierName } from "../zones";
 import { useClassName } from "./vehicle-classes-context";
+import { FeeInfo } from "./fee-about";
 import { FeeEditModal, type TierTarget } from "./fee-edit-modal";
+import { termTags } from "./term";
 
 type Pick = { fee: Fee; target: TierTarget };
 
@@ -53,7 +55,7 @@ export function TiersView({
 
   return (
     <div className="space-y-3">
-      <p className="text-[12.5px] text-subtext">{canEdit ? t("matrix.hint_edit") : t("matrix.hint")}</p>
+      <p className="text-[12.5px] text-subtext">{t.rich(canEdit ? "matrix.hint_edit" : "matrix.hint", termTags)}</p>
       <div className="flex flex-wrap items-center gap-3 text-[12px] text-subtext">
         <span className="inline-flex items-center gap-1.5">
           <span className="w-3 h-3 rounded border border-primary bg-soft-pink" /> {t("matrix.legend_override")}
@@ -63,7 +65,7 @@ export function TiersView({
         </span>
       </div>
       <div className="overflow-x-auto rounded-xl border border-border bg-card">
-        <table className="w-full text-[13px] border-collapse">
+        <table className="w-full text-[13px] border-collapse" aria-label={t("tiers_card.matrix_title")}>
           <thead>
             <tr className="bg-muted/40">
               <th className="text-start font-semibold text-subtext px-4 py-3 min-w-[200px]">{t("overrides.col.fee")}</th>
@@ -85,7 +87,10 @@ export function TiersView({
             {matrix.rows.map((row) => (
               <tr key={row.id} className="border-t border-border align-middle">
                 <td className="px-4 py-2.5">
-                  <span className="block font-semibold text-text">{t(`fees.${row.fee.key}.name`)}</span>
+                  <span className="flex items-center gap-1 font-semibold text-text">
+                    {t(`fees.${row.fee.key}.name`)}
+                    <FeeInfo fee={row.fee} />
+                  </span>
                   {row.service && <Badge variant="info">{t(`services.${row.service}`)}</Badge>}
                 </td>
                 {row.cells.map((cell, i) => {

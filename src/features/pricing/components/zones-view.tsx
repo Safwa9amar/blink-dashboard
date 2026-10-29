@@ -4,7 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { Badge, Button, Card, EmptyState, Modal } from "@/components/ui";
+import { Badge, Button, Card, DashIcon, EmptyState, Modal } from "@/components/ui";
 import { archiveZone, lookupZone, updateZone } from "@/app/d/pricing/action";
 import { canPriceZone, exportZones, formatArea, liveZones, tierColor, tierName, zonePriceFees } from "../zones";
 import type { Fee, Override, Tier, Zone, ZoneGeometry, ZoneLookup } from "../types";
@@ -13,6 +13,7 @@ import { OverrideWizard } from "./override-wizard";
 import { TierManager } from "./tier-manager";
 import { ZoneEditor } from "./zone-editor";
 import { ZoneImportModal } from "./zone-import-modal";
+import { termTags } from "./term";
 import { ZoneLookupCard } from "./zone-lookup";
 import { ZonesMap } from "./zones-map";
 
@@ -136,8 +137,8 @@ export function ZonesView({
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-soft-pink px-4 py-3">
         <p className="text-[13px] text-text">
           {t.rich("zones.banner", {
+            ...termTags,
             tier: tierName(tiers, unzonedTier, locale) || "—",
-            b: (c) => <strong>{c}</strong>,
           })}
         </p>
         <div className="flex items-center gap-3">
@@ -268,7 +269,13 @@ export function ZonesView({
           ) : (
             <Card title={t("zones.list_title")} description={t("zones.list_desc", { count: live.length })}>
               {live.length === 0 ? (
-                <EmptyState title={t("zones.empty")} description={canEdit ? t("zones.empty_hint") : undefined} />
+                <EmptyState
+                  icon={<DashIcon name="map" className="w-10 h-10" />}
+                  title={t("empty.zones_title")}
+                  description={t("empty.zones_body")}
+                  actionLabel={canEdit ? t("empty.zones_import") : undefined}
+                  onAction={canEdit ? () => setImporting(true) : undefined}
+                />
               ) : (
                 <ul className="divide-y divide-border max-h-[420px] overflow-y-auto -mx-1 px-1">
                   {live.map((z) => (

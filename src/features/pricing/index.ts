@@ -18,3 +18,7 @@ export * from "./vehicle-classes";
 export { VehiclesView } from "./components/class-manager";
 export { RiderClassPicker } from "./components/rider-class-picker";
 export { VehicleClassesProvider } from "./components/vehicle-classes-context";
+export { HowPricingWorks } from "./components/how-pricing-works";
+export { TabIntro } from "./components/tab-intro";
+export { Term, termTags } from "./components/term";
+export * from "./help";

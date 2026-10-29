@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Badge, Button, EmptyState, fInput } from "@/components/ui";
+import { Badge, Button, DashIcon, EmptyState, fInput } from "@/components/ui";
 import { formatValueInline } from "../format";
 import { fmtTime, intlLocale } from "../labels";
 import { useClassName } from "./vehicle-classes-context";
@@ -99,7 +99,7 @@ export function HistoryView({ changes, error, limit }: { changes: Change[]; erro
       {error ? (
         <p className="text-sm text-danger">{error}</p>
       ) : shown.length === 0 ? (
-        <EmptyState title={t("history.empty")} />
+        <EmptyState icon={<DashIcon name="clock" className="w-10 h-10" />} title={t("empty.history_title")} description={t("empty.history_body")} />
       ) : (
         <div className="space-y-6">
           {days.map(([day, list]) => (

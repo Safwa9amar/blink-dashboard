@@ -3,7 +3,7 @@
     "title": "Tarifs et frais",
     "description": "Tous les prix Blink et taux partenaires, avec dérogations ciblées et datées",
     "tabs": {
-      "overrides": "Dérogations",
+      "overrides": "Prix personnalisés",
       "history": "Historique",
       "overview": "Vue d'ensemble",
       "simulator": "Simulateur",
@@ -27,71 +27,160 @@
     "fees": {
       "service_fee": {
         "name": "Frais de service",
-        "desc": "Montant fixe par paiement sur les commandes magasin et shopper"
+        "desc": "Montant fixe par paiement sur les commandes magasin et shopper",
+        "what": "Un petit montant fixe ajouté au paiement du client quand il commande dans des magasins ou utilise un shopper.",
+        "who_pays": "Le client.",
+        "who_earns": "Blink.",
+        "applies_to": "Commandes magasin et commandes shopper. Pas les courses, les livraisons coursier ni Blink Cash.",
+        "example": "Un client achète dans 2 magasins en un seul paiement et les frais sont de 1,50 DA. Il paie 1,50 DA une fois, pas 3 DA.",
+        "caution": "Les frais de service sont facturés une seule fois par paiement, même si le panier contient plusieurs magasins."
       },
       "courier_fare": {
         "name": "Tarif coursier",
-        "desc": "Prix de livraison par véhicule : base, km inclus, prix par km, km max"
+        "desc": "Prix de livraison par véhicule : base, km inclus, prix par km, km max",
+        "what": "Le prix pour envoyer un colis : un prix de base, des kilomètres inclus, puis un prix pour chaque km en plus. Chaque classe de véhicule a ses propres prix.",
+        "who_pays": "Le client qui envoie le colis.",
+        "who_earns": "Le livreur, après la commission de Blink.",
+        "applies_to": "Commandes coursier : un colis récupéré à un endroit et livré à un ou plusieurs autres.",
+        "example": "Moto : base 250 DA avec 3 km inclus puis 40 DA par km. Un colis de 5 km coûte 250 + 2 × 40 = 330 DA, avant tout multiplicateur.",
+        "caution": "Les arrêts supplémentaires ajoutent les frais d'arrêt. Une nouvelle classe de véhicule ne s'affiche correctement que dans la dernière version de l'app."
       },
       "ride_fare": {
         "name": "Tarif course",
-        "desc": "Prix de la course : base, km inclus, prix par km, km max"
+        "desc": "Prix de la course : base, km inclus, prix par km, km max",
+        "what": "Le prix d'une course de passager : un prix de base, des kilomètres inclus, puis un prix pour chaque km en plus. Chaque classe de véhicule a ses propres prix.",
+        "who_pays": "Le passager.",
+        "who_earns": "Le livreur, après la commission de Blink.",
+        "applies_to": "Demandes de course.",
+        "example": "Moto : base 200 DA avec 3 km inclus puis 40 DA par km. Une course de 6 km coûte 200 + 3 × 40 = 320 DA, avant tout multiplicateur.",
+        "caution": "Moto Confort nécessite la dernière version de l'app. Gardez-la désactivée dans Véhicules jusqu'à la sortie de la mise à jour."
       },
       "fare_multiplier": {
         "name": "Multiplicateur de tarif",
-        "desc": "Majoration ou remise manuelle sur les tarifs coursier et course"
+        "desc": "Majoration ou remise manuelle sur les tarifs coursier et course",
+        "what": "Un bouton unique qui renchérit ou allège tous les tarifs de son périmètre. ×1,00 ne change rien, ×1,20 ajoute 20 %, ×0,90 retire 10 %.",
+        "who_pays": "Le client.",
+        "who_earns": "Le livreur et Blink, car la commission est une part du tarif.",
+        "applies_to": "Tarifs coursier, tarifs de course et livraison marketplace calculée à la distance.",
+        "example": "Une course de 5 km coûte 320 DA. Avec ×1,20 elle passe à 384 DA, arrondis à 390 DA.",
+        "caution": "Un gros multiplicateur augmente tous les tarifs de son périmètre d'un coup. Vérifiez-le dans le simulateur et utilisez un prix personnalisé daté pour un pic ou une promotion de courte durée."
       },
       "rider_commission_rate": {
         "name": "Commission livreur",
-        "desc": "Part du tarif conservée par Blink sur chaque trajet"
+        "desc": "Part du tarif conservée par Blink sur chaque trajet",
+        "what": "La part du tarif de chaque trajet que Blink conserve. Le livreur reçoit le reste.",
+        "who_pays": "Le livreur, sur son tarif.",
+        "who_earns": "Blink.",
+        "applies_to": "Les trajets de tous les services : magasin, shopper, coursier et course.",
+        "example": "À 15 % sur un tarif de 330 DA, Blink garde 49,50 DA et le livreur reçoit 280,50 DA.",
+        "caution": "Le taux est enregistré sur chaque commande à sa création : le modifier ne réécrit jamais les gains ou dus déjà enregistrés."
       },
       "merchant_commission_rate": {
         "name": "Commission marchand",
-        "desc": "Part des ventes livrées conservée par Blink"
+        "desc": "Part des ventes livrées conservée par Blink",
+        "what": "La part des ventes livrées d'un marchand que Blink conserve.",
+        "who_pays": "Le marchand, sur ses ventes.",
+        "who_earns": "Blink.",
+        "applies_to": "Commandes magasin une fois livrées. Un marchand peut avoir son propre taux.",
+        "example": "À 5 %, 10 000 DA de ventes livrées donnent 500 DA de commission.",
+        "caution": "Le taux est enregistré sur chaque commande à sa création : le modifier ne change jamais les sommes dues passées."
       },
       "blink_cash_fee_rate": {
         "name": "Frais Blink Cash",
-        "desc": "Frais payés par le livreur sur dépôts et retraits"
+        "desc": "Frais payés par le livreur sur dépôts et retraits",
+        "what": "Les frais prélevés sur chaque dépôt ou retrait Blink Cash.",
+        "who_pays": "Le livreur qui dépose ou retire.",
+        "who_earns": "Blink et l'agent qui traite l'opération, selon la part plateforme de l'agent.",
+        "applies_to": "Dépôts et retraits Blink Cash.",
+        "example": "À 2 %, déplacer 5 000 DA coûte 100 DA de frais."
       },
       "agent_platform_share": {
         "name": "Part plateforme agent",
-        "desc": "Part de chaque frais Blink Cash qui revient à Blink"
+        "desc": "Part de chaque frais Blink Cash qui revient à Blink",
+        "what": "La part de chaque frais Blink Cash qui revient à Blink. L'agent garde le reste.",
+        "who_pays": "Elle est prélevée sur les frais Blink Cash, pas ajoutée au livreur.",
+        "who_earns": "Blink reçoit cette part, l'agent reçoit le reste.",
+        "applies_to": "Frais Blink Cash traités par des agents. Un agent peut avoir sa propre part.",
+        "example": "Sur des frais de 100 DA avec une part de 20 %, Blink garde 20 DA et l'agent garde 80 DA."
       },
       "rider_cancel_penalty": {
         "name": "Pénalité d'annulation livreur",
-        "desc": "Montant facturé quand un livreur annule une mission acceptée"
+        "desc": "Montant facturé quand un livreur annule une mission acceptée",
+        "what": "Un montant fixe facturé à un livreur qui annule une course après l'avoir acceptée.",
+        "who_pays": "Le livreur qui annule.",
+        "who_earns": "Blink.",
+        "applies_to": "Courses acceptées de tous les services : magasin, shopper, coursier et course.",
+        "example": "Avec une pénalité de 200 DA, un livreur qui accepte une course puis annule paie 200 DA."
       },
       "stamp_duty_rate": {
         "name": "Droit de timbre",
-        "desc": "Taux appliqué aux ventes des marchands"
+        "desc": "Taux appliqué aux ventes des marchands",
+        "what": "Une taxe prélevée sur les ventes des marchands.",
+        "who_pays": "Le marchand, sur ses ventes.",
+        "who_earns": "L'administration fiscale. Blink la collecte et la reverse.",
+        "applies_to": "Commandes magasin livrées. Une seule valeur pour toute l'Algérie.",
+        "example": "À 1 %, 10 000 DA de ventes donnent 100 DA de droit de timbre."
       },
       "agent_tax_rate": {
         "name": "Retenue fiscale agent",
-        "desc": "Retenue sur la part de l'agent"
+        "desc": "Retenue sur la part de l'agent",
+        "what": "Un impôt retenu sur la part de l'agent dans les frais Blink Cash.",
+        "who_pays": "L'agent, sur sa part.",
+        "who_earns": "L'administration fiscale. Blink le retient et le reverse.",
+        "applies_to": "Frais Blink Cash traités par des agents. Une seule valeur pour toute l'Algérie.",
+        "example": "À 1 %, sur 80 DA de part d'agent, 0,80 DA est retenu."
       },
       "dues_payment_fee_rate": {
         "name": "Frais de paiement des dus",
-        "desc": "Frais sur les paiements de dus des marchands et agents"
+        "desc": "Frais sur les paiements de dus des marchands et agents",
+        "what": "Des frais de traitement facturés quand un marchand ou un agent règle les sommes dues à Blink.",
+        "who_pays": "Le marchand ou l'agent qui règle ses dus.",
+        "who_earns": "Blink.",
+        "applies_to": "Règlements de dus par les marchands et les agents. Une seule valeur pour toute l'Algérie.",
+        "example": "À 0,2 %, régler 50 000 DA de dus coûte 100 DA de frais."
       },
       "fare_formula": {
         "name": "Formule de tarif",
-        "desc": "Facteur routier, vitesses, arrondi, tarif min et max, durée d'arrêt et d'embarquement"
+        "desc": "Facteur routier, vitesses, arrondi, tarif min et max, durée d'arrêt et d'embarquement",
+        "what": "La recette fixe qui transforme une distance en prix : facteur routier, vitesses, arrondi, tarif minimum et maximum, et temps aux arrêts.",
+        "who_pays": "Le client, à travers chaque tarif coursier, course et livraison calculée à la distance.",
+        "applies_to": "Coursier, courses et livraison marketplace en mode distance.",
+        "example": "4 km à vol d'oiseau multipliés par un facteur routier de 1,3 donnent 5,2 km de route. Un tarif de 331 DA est arrondi à 340 DA avec un pas de 10 DA.",
+        "caution": "Modifier la formule change beaucoup de prix à la fois. Testez-la d'abord dans le simulateur."
       },
       "dropoff_surcharge": {
         "name": "Supplément de destination",
-        "desc": "Supplément calculé au lieu de dépose, éventuellement seulement si le niveau change"
+        "desc": "Supplément calculé au lieu de dépose, éventuellement seulement si le niveau change",
+        "what": "Un supplément ajouté quand la livraison est dans un autre type de lieu que le départ, par exemple de la ville vers un village.",
+        "who_pays": "Le client, dans le tarif.",
+        "who_earns": "Partagé entre le livreur et Blink, comme le reste du tarif.",
+        "applies_to": "Coursier, courses et livraison calculée à la distance. Il est lu au lieu de livraison (la dernière livraison pour un coursier).",
+        "example": "Supplément de 100 DA, seulement quand le niveau change : de la ville vers un village, +100 DA ; d'un village vers un autre village, rien en plus."
       },
       "service_area": {
         "name": "Zone de service",
-        "desc": "Active ou coupe Blink pour un lieu ; désactivé, les devis y sont indisponibles"
+        "desc": "Active ou coupe Blink pour un lieu ; désactivé, les devis y sont indisponibles",
+        "what": "Active ou désactive Blink pour un lieu. Désactivé, personne ne peut commander une course ou un coursier depuis cet endroit.",
+        "applies_to": "Demandes de course et de coursier dont le départ est dans le périmètre.",
+        "example": "Désactivez-le pour la zone « Route du désert » : les clients voient que Blink n'est pas disponible et ne peuvent pas commander.",
+        "caution": "Désactivé, il bloque immédiatement les nouvelles commandes. Seule la dernière version de l'app affiche un message clair « hors zone de service » ; les anciennes affichent une erreur générique."
       },
       "zone_defaults": {
         "name": "Niveau hors zone",
-        "desc": "Le niveau des points situés hors de toute zone dessinée"
+        "desc": "Le niveau des points situés hors de toute zone dessinée",
+        "what": "Le niveau utilisé pour tout point en dehors des zones dessinées.",
+        "applies_to": "Chaque prix qui dépend du lieu : coursier, courses et livraison magasin. Réglable pour une wilaya.",
+        "example": "Vous n'avez dessiné que la ville de Tizi Ouzou et le niveau hors zone est Rural. Un village hors de la ville est facturé Rural.",
+        "caution": "Le modifier change le prix de tous les lieux non dessinés de son périmètre."
       },
       "store_delivery": {
         "name": "Livraison marketplace",
-        "desc": "Frais de livraison des commandes en magasin : le tarif propre du marchand, ou calculé à la distance par classe de véhicule, avec un min et un max"
+        "desc": "Frais de livraison des commandes en magasin : le tarif propre du marchand, ou calculé à la distance par classe de véhicule, avec un min et un max",
+        "what": "La façon de décider les frais de livraison d'une commande magasin : les frais propres du magasin (mode marchand) ou un prix selon la distance entre le magasin et le client (mode distance).",
+        "who_pays": "Le client, une fois par magasin de la commande.",
+        "applies_to": "Commandes magasin de la marketplace.",
+        "example": "Mode distance avec base 250 DA, 3 km inclus et 40 DA par km : un magasin à 5 km facture 330 DA. En mode marchand, il facture ses propres frais, par exemple 200 DA.",
+        "caution": "Le mode distance nécessite la dernière version de l'app. Gardez toutes les zones en mode marchand tant que les clients n'ont pas mis à jour."
       }
     },
     "fields": {
@@ -128,7 +217,7 @@
       "motorcycle": "Moto"
     },
     "units": {
-      "da": "Da",
+      "da": "DA",
       "km": "km",
       "kmh": "km/h",
       "min": "min"
@@ -177,12 +266,15 @@
     },
     "scope": {
       "everywhere": "Partout",
-      "zone_generic": "Zone"
+      "zone_generic": "Zone",
+      "until": "jusqu'au {date}",
+      "from": "à partir du {date}",
+      "all_algeria": "Toute l'Algérie"
     },
     "defaults": {
       "empty": "Aucun frais chargé",
-      "active_overrides": "{count} dérogations actives",
-      "no_overrides": "Aucune dérogation active"
+      "active_overrides": "{count} prix personnalisés actifs",
+      "no_overrides": "Aucun prix personnalisé actif"
     },
     "overrides": {
       "col": {
@@ -196,8 +288,8 @@
       "always": "Toujours",
       "from": "À partir du {date}",
       "until": "Jusqu'au {date}",
-      "new": "Nouvelle dérogation",
-      "empty": "Aucune dérogation",
+      "new": "Nouveau prix personnalisé",
+      "empty": "Aucun prix personnalisé ne correspond",
       "highlighted": "La dérogation en conflit est affichée en premier",
       "filter": {
         "all_fees": "Tous les frais",
@@ -211,7 +303,10 @@
         "table": "Tableau",
         "calendar": "Calendrier"
       },
-      "empty_hint": "Modifiez les filtres ou créez une dérogation."
+      "empty_hint": "Modifiez les filtres ou créez un prix personnalisé.",
+      "empty_none_title": "Créer un prix personnalisé",
+      "empty_none_body": "Un prix personnalisé remplace le prix par défaut pour un lieu, un service, un marchand ou un agent, et peut s'arrêter à une date. Utilisez-le pour une ville, une promotion ou un accord spécial.",
+      "empty_none_cta": "Créer un prix personnalisé"
     },
     "modal": {
       "service": "Service",
@@ -233,7 +328,14 @@
       "any_zone": "Toutes les zones",
       "zone_hint": "Une zone implique déjà sa wilaya et son niveau.",
       "tier": "Niveau",
-      "any_tier": "Tous les niveaux"
+      "any_tier": "Tous les niveaux",
+      "service_hint": "Laissez « Tout service » pour les couvrir tous.",
+      "tier_hint": "Un niveau couvre tous les lieux de ce type, par exemple tous les villages.",
+      "wilaya_hint": "Limite le prix à une wilaya. Laissez vide pour toute l'Algérie.",
+      "partner_hint": "Un accord pour ce partenaire seulement. Personne d'autre n'est concerné.",
+      "dates_always_hint": "Sans date de fin : le prix reste jusqu'à ce que quelqu'un le modifie ou l'archive.",
+      "dates_range_hint": "En dehors de ces dates, le prix personnalisé est ignoré et le prix par défaut s'applique.",
+      "note_hint": "Facultatif. Visible dans l'historique : écrivez la raison pour la personne suivante."
     },
     "archive": {
       "title": "Archiver la dérogation",
@@ -279,7 +381,12 @@
         "source": "Source"
       },
       "override": "Dérogation",
-      "default": "Par défaut"
+      "default": "Par défaut",
+      "title": "Ce qui change",
+      "value_before": "Avant",
+      "value_after": "Après",
+      "loading": "Vérification auprès du serveur...",
+      "unchanged": "Rien n'a encore changé."
     },
     "partner": {
       "search_merchant": "Chercher un marchand (nom, e-mail, téléphone)",
@@ -311,11 +418,15 @@
       "zone_in_use": "Cette zone a encore des exceptions actives. Archivez-les ou terminez-les d'abord.",
       "tier_in_use": "Ce niveau est encore utilisé par une zone, une exception active ou le réglage hors zone.",
       "class_in_use": "Cette classe est encore utilisée par des livreurs, des remplacements actifs ou des commandes ouvertes : impossible de l'archiver.",
-      "class_mismatch": "Cette classe correspond à un autre véhicule de base que celui du livreur."
+      "class_mismatch": "Cette classe correspond à un autre véhicule de base que celui du livreur.",
+      "number_named": "Saisissez un nombre pour « {field} ».",
+      "range_named": "« {field} » doit être compris entre {min} et {max} {unit}.",
+      "integer_named": "« {field} » doit être un nombre entier, sans décimales.",
+      "required_named": "Choisissez une valeur pour « {field} »."
     },
     "header": {
       "simulate": "Simuler une commande",
-      "new_override": "Nouvelle dérogation"
+      "new_override": "Nouveau prix personnalisé"
     },
     "edit": {
       "title": "Modifier la valeur par défaut",
@@ -365,7 +476,7 @@
     "overview": {
       "empty": "Aucun frais chargé",
       "kpi": {
-        "active": "Dérogations actives",
+        "active": "Prix personnalisés actifs",
         "active_sub": "dans {count, plural, one {# wilaya} other {# wilayas}}",
         "partners": "Accords partenaires",
         "partners_sub": "{merchants} marchands · {agents} agents",
@@ -379,8 +490,8 @@
       }
     },
     "wizard": {
-      "create_title": "Nouvelle dérogation",
-      "edit_title": "Modifier la dérogation",
+      "create_title": "Nouveau prix personnalisé",
+      "edit_title": "Modifier le prix personnalisé",
       "step": "Étape {n} sur 3",
       "steps": {
         "1": "Quoi",
@@ -494,7 +605,7 @@
     },
     "zones": {
       "unzoned": "Hors zone",
-      "banner": "Les points hors de toute zone sont tarifés comme <b>{tier}</b>.",
+      "banner": "Les points <unzoned>hors de toute zone</unzoned> sont facturés au niveau <b>{tier}</b>.",
       "banner_change": "Modifier",
       "banner_exceptions": "Exceptions par wilaya",
       "unsaved": "{count, plural, one {# forme de zone modifiée} other {# formes de zone modifiées}}, pas encore enregistrée(s)",
@@ -579,13 +690,14 @@
       "archive_title": "Archiver le niveau",
       "archive_body": "Archiver le niveau « {tier} » ? Il disparaît des sélecteurs ; l'historique est conservé.",
       "see_overrides": "Voir ses exceptions",
-      "prices": "Prix"
+      "prices": "Prix",
+      "matrix_title": "Prix par niveau"
     },
     "matrix": {
       "empty": "Rien à comparer pour l'instant",
       "empty_hint": "La matrice nécessite au moins un niveau actif et un tarif pouvant varier selon le niveau.",
-      "hint": "Chaque cellule est la valeur qui s'applique à ce niveau.",
-      "hint_edit": "Chaque cellule est la valeur qui s'applique à ce niveau. Cliquez sur une cellule pour définir ou modifier le prix du niveau.",
+      "hint": "Chaque case est le prix qui s'applique à ce <tier>niveau</tier>.",
+      "hint_edit": "Chaque case est le prix qui s'applique à ce <tier>niveau</tier>. Cliquez sur une case pour fixer ou modifier le prix du niveau. Un prix de niveau est un <override>prix personnalisé</override>.",
       "legend_override": "Prix du niveau",
       "legend_inherited": "Hérité",
       "tier_price": "Prix du niveau",
@@ -705,6 +817,239 @@
       "default": "par défaut",
       "default_option": "Par défaut ({name})",
       "pending_note": "Cette classe est désactivée jusqu'à la mise à jour de l'app."
+    },
+    "intro": {
+      "overview": "Votre poste de pilotage. Voyez chaque prix facturé par Blink et chaque taux qu'il conserve, et cliquez sur un crayon pour en modifier un. Commencez par le guide si vous débutez.",
+      "zones": "Dessinez une <zone>zone</zone> autour de chaque ville et donnez-lui un <tier>niveau</tier>. Tout ce que vous ne dessinez pas est facturé au niveau <unzoned>hors zone</unzoned>. Utilisez cette page pour dire où les prix changent.",
+      "tiers": "Comparez les <tier>niveaux</tier> côte à côte et fixez un prix pour tout un niveau d'un coup, par exemple tous les villages. Utilisez cette page pour changer les prix d'un type de lieu.",
+      "vehicles": "Définissez les <vclass>classes de véhicule</vclass> des livreurs (Vélo, Moto, Moto Confort) et les services de chacune. Utilisez cette page pour activer ou désactiver une classe.",
+      "formula": "Voyez comment une distance devient un prix, étape par étape, et testez-le sur la carte. Utilisez cette page pour comprendre un tarif ou modifier la recette de tous les tarifs.",
+      "overrides": "Un prix personnalisé (une <override>dérogation</override>) remplace le prix par défaut pour un <scope>périmètre</scope> : un lieu, un service, un marchand ou un agent. Utilisez cette page pour ajouter, prolonger ou arrêter des prix spéciaux.",
+      "simulator": "Simulez une commande et voyez exactement ce que paie le client et qui reçoit quoi. Utilisez cette page pour vérifier un prix avant ou après l'avoir modifié.",
+      "history": "Le journal de chaque modification de prix : qui a changé quoi, quand, et de quelle valeur à quelle valeur. Utilisez cette page pour répondre à « pourquoi ce prix a-t-il changé ? »."
+    },
+    "empty": {
+      "zones_title": "Dessinez votre première ville",
+      "zones_body": "Une zone est une forme sur la carte, comme une ville. Tant que vous n'en dessinez pas, chaque lieu est facturé au niveau hors zone. Utilisez l'outil polygone de la carte : cliquez autour de la ville, fermez la forme, puis nommez-la et choisissez son niveau.",
+      "zones_import": "Importer un fichier GeoJSON",
+      "history_title": "Aucune modification de prix pour l'instant",
+      "history_body": "Chaque fois que quelqu'un modifie un prix par défaut, un prix personnalisé, une zone, un niveau ou une classe de véhicule, c'est listé ici avec son nom, l'ancienne et la nouvelle valeur. Rien n'a encore été modifié.",
+      "vehicles_title": "Aucune classe de véhicule",
+      "vehicles_body": "Les classes de véhicule décident quels livreurs peuvent prendre quelles courses et combien coûte chaque trajet. Ajoutez Vélo et Moto pour commencer."
+    },
+    "about": {
+      "title": "À propos de ce réglage",
+      "what": "De quoi s'agit-il",
+      "who_pays": "Qui paie",
+      "who_earns": "Qui gagne",
+      "applies_to": "S'applique à",
+      "varies_by": "Peut différer selon",
+      "varies_none": "Une seule valeur pour tout le pays. Elle ne peut pas être modifiée pour un lieu ou un partenaire.",
+      "varies_dates": "les dates (un prix personnalisé peut commencer et finir un jour précis)",
+      "example": "Exemple",
+      "example_live": "Avec la valeur actuelle",
+      "caution": "Bon à savoir",
+      "info": "À propos de : {fee}",
+      "close": "Fermer"
+    },
+    "varies": {
+      "zone": "la zone",
+      "tier": "le niveau",
+      "wilaya": "la wilaya",
+      "merchant": "le marchand",
+      "agent": "l'agent",
+      "service": "le service",
+      "vehicle_class": "la classe de véhicule",
+      "dates": "les dates"
+    },
+    "fieldHelp": {
+      "base": "Le prix de départ d'un trajet, en DA, avant d'ajouter la distance. Par exemple 250 DA.",
+      "included_km": "Kilomètres couverts par le prix de base, donc sans supplément au km. Par exemple 3 km.",
+      "per_km": "Prix par km après la distance incluse, en DA. Par exemple 40 DA/km.",
+      "per_minute": "Prix facultatif par minute de conduite, en DA. 0 signifie que le temps est gratuit. Par exemple 2 DA/min.",
+      "max_km": "Trajet le plus long accepté, en km. Au-delà, le trajet est trop loin et ne peut pas être commandé. Par exemple 40 km.",
+      "extra_stop_fee": "Ajouté pour chaque livraison après la première sur une commande coursier, en DA. Par exemple 60 DA.",
+      "amount": "Un prix fixe en DA. Par exemple 200 DA.",
+      "rate": "Un pourcentage du montant concerné. Par exemple 5 % de 10 000 DA font 500 DA.",
+      "multiplier": "Multiplie le prix. 1,00 ne change rien, 1,20 ajoute 20 %, 0,90 retire 10 %.",
+      "road_factor": "Les routes sont plus longues qu'une ligne droite. Les km à vol d'oiseau sont multipliés par ce facteur pour obtenir les km parcourus. Par exemple 1,3 transforme 4 km en 5,2 km.",
+      "rounding_step": "Les tarifs sont arrondis à un multiple de ce montant, en DA. Par exemple 10 DA fait passer 331 DA à 340 DA.",
+      "rounding_mode": "Le sens dans lequel un tarif est arrondi au pas.",
+      "min_fare": "Un tarif n'est jamais inférieur à ce montant, en DA. 0 signifie aucun minimum. Par exemple 150 DA.",
+      "max_fare": "Un tarif n'est jamais supérieur à ce montant, en DA. 0 signifie aucun plafond. Par exemple 3 000 DA.",
+      "min_ride_km": "Les courses plus courtes que cette distance à vol d'oiseau sont refusées car trop proches, en km. Par exemple 0,3 km.",
+      "speed_kmh": "Vitesse moyenne utilisée pour estimer le temps de conduite, en km/h. Par exemple 28 km/h pour une moto.",
+      "stop_minutes": "Minutes passées par le coursier à chaque arrêt, utilisées pour les estimations de durée. Par exemple 3 min.",
+      "boarding_minutes": "Minutes que met le passager pour monter, utilisées pour estimer la durée d'une course. Par exemple 2 min.",
+      "only_when_tier_changes": "Activé : facturé seulement si le niveau de la livraison diffère de celui du départ (ville vers village). Désactivé : facturé à chaque trajet.",
+      "enabled": "Activé : les clients peuvent commander ici. Désactivé : les devis indiquent que le lieu est hors zone de service et les commandes sont bloquées.",
+      "unzoned_tier": "Le niveau utilisé pour tout point hors des zones dessinées. En général le type de lieu le moins cher, comme Rural.",
+      "mode": "La façon de décider les frais de livraison. Voir les deux options ci-dessous.",
+      "min_fee": "La livraison n'est jamais moins chère que ce montant, en DA, dans les deux modes. 0 signifie aucun minimum. Par exemple 100 DA.",
+      "max_fee": "La livraison n'est jamais plus chère que ce montant, en DA, dans les deux modes. 0 signifie aucun plafond. Par exemple 600 DA."
+    },
+    "choices_help": {
+      "rounding_mode": {
+        "up": "Arrondit toujours au-dessus. 331 DA devient 340 DA. Ne fait jamais perdre d'argent.",
+        "nearest": "Arrondit au pas le plus proche. 331 DA devient 330 DA, 336 DA devient 340 DA.",
+        "down": "Arrondit toujours en dessous. 339 DA devient 330 DA. Plus avantageux pour le client."
+      },
+      "mode": {
+        "merchant": "Marchand : le client paie les frais de livraison fixés par chaque magasin. Rien ne change.",
+        "distance": "Distance : Blink calcule la livraison selon la distance entre le magasin et le client, avec les tarifs ci-dessous. Nécessite la dernière version de l'app."
+      }
+    },
+    "glossary": {
+      "label": "Que signifie {term} ?",
+      "tier": {
+        "label": "Niveau",
+        "def": "Un type de lieu : ville, bourg ou village. On peut fixer les prix pour tout un niveau d'un coup."
+      },
+      "zone": {
+        "label": "Zone",
+        "def": "Une forme dessinée sur la carte, comme une ville. Chaque zone a un niveau, et tout point à l'intérieur est facturé à ce niveau."
+      },
+      "unzoned": {
+        "label": "Hors zone",
+        "def": "Tout point en dehors des zones dessinées. Il est facturé au niveau hors zone, en général Rural."
+      },
+      "override": {
+        "label": "Prix personnalisé (dérogation)",
+        "def": "Un prix qui remplace le prix par défaut pour un périmètre, et qui peut commencer et finir à une date. On parle aussi de dérogation."
+      },
+      "scope": {
+        "label": "Périmètre",
+        "def": "L'endroit où s'applique un prix personnalisé : une zone, un niveau, une wilaya, un service, un marchand ou un agent. Sans périmètre, c'est partout."
+      },
+      "multiplier": {
+        "label": "Multiplicateur",
+        "def": "Un nombre qui ajuste les tarifs. ×1,00 ne change rien, ×1,20 rend les tarifs 20 % plus chers."
+      },
+      "surcharge": {
+        "label": "Supplément",
+        "def": "Un montant ajouté à un tarif dans certains cas, par exemple quand la livraison est dans un autre niveau."
+      },
+      "vehicle_class": {
+        "label": "Classe de véhicule",
+        "def": "Un type de véhicule pour les courses ou les livraisons, comme Vélo, Moto ou Moto Confort. Chaque classe a son propre tarif."
+      },
+      "exclusive": {
+        "label": "Classe exclusive",
+        "def": "Une classe dont les courses sont proposées uniquement aux livreurs de cette classe. Les autres ne les voient jamais."
+      },
+      "includedkm": {
+        "label": "Km inclus",
+        "def": "La distance déjà payée par le prix de base. Le prix au km commence après."
+      },
+      "roadfactor": {
+        "label": "Facteur routier",
+        "def": "De combien les vraies routes sont plus longues qu'une ligne droite. 1,3 signifie 30 % de plus."
+      }
+    },
+    "risk": {
+      "title": "Vérifiez avant d'enregistrer",
+      "intro": "Ce changement mérite un second regard :",
+      "back": "Revenir",
+      "confirm": "Oui, enregistrer",
+      "confirm_create": "Oui, créer",
+      "service_area_off": {
+        "title": "Vous désactivez le service",
+        "body": "Les clients ne pourront plus commander de course ni de coursier depuis ce lieu. Seule la dernière version de l'app affiche un message clair ; les anciennes affichent une erreur générique."
+      },
+      "multiplier_high": {
+        "title": "Une forte hausse des prix",
+        "body": "Un multiplicateur supérieur à 1,5 rend tous les tarifs de ce périmètre plus de 50 % plus chers d'un coup. Vérifiez d'abord dans le simulateur."
+      },
+      "multiplier_low": {
+        "title": "Une forte remise",
+        "body": "Un multiplicateur inférieur à 0,8 retire plus de 20 % sur tous les tarifs de ce périmètre : Blink et les livreurs gagnent moins sur chaque trajet."
+      },
+      "distance_mode": {
+        "title": "La livraison sera facturée à la distance",
+        "body": "Les magasins de ce périmètre n'utilisent plus leurs propres frais de livraison. Cela nécessite la dernière version de l'app ; les anciennes peuvent afficher un mauvais prix. Gardez le mode marchand là où les clients n'ont pas encore mis à jour."
+      },
+      "class_app_update": {
+        "title": "Cette classe nécessite la mise à jour de l'app",
+        "body": "Moto Confort n'apparaît que dans la dernière version de l'app. Si vous l'activez avant la sortie de la mise à jour, les clients des anciennes versions ne pourront pas la choisir."
+      },
+      "all_algeria": {
+        "title": "Cela s'applique à toute l'Algérie, sans date de fin",
+        "body": "Aucun lieu n'est choisi et aucune date n'est fixée : le nouveau prix est actif partout dès maintenant et le reste jusqu'à une nouvelle modification."
+      }
+    },
+    "guide": {
+      "title": "Comment fonctionnent les prix",
+      "subtitle": "Deux minutes pour comprendre chaque prix de Blink.",
+      "hide": "Masquer le guide",
+      "show": "Afficher le guide",
+      "layers": {
+        "title": "1. Les prix fonctionnent par couches",
+        "intro": "Chaque prix part d'une valeur par défaut. Un prix personnalisé plus précis peut la remplacer. Plus il est précis, plus il marque de points, et le plus haut score l'emporte.",
+        "default": "Par défaut",
+        "default_desc": "Un seul prix pour toute l'Algérie.",
+        "service": "Service",
+        "service_desc": "Seulement coursier, seulement courses, seulement commandes magasin…",
+        "wilaya": "Wilaya",
+        "wilaya_desc": "Une wilaya, par exemple Tizi Ouzou.",
+        "tier": "Niveau",
+        "tier_desc": "Un type de lieu : Urbain, Bourg, Rural.",
+        "zone": "Zone",
+        "zone_desc": "Une forme dessinée sur la carte. Elle inclut déjà sa wilaya et son niveau.",
+        "partner": "Marchand ou agent",
+        "partner_desc": "Un accord pour un partenaire précis.",
+        "points": "{n} points",
+        "base": "base",
+        "extras_title": "Deux éléments valent pour toutes les couches",
+        "extra_class": "Classe de véhicule : Vélo, Moto et Moto Confort ont chacune leur tarif, et chacune est associée séparément à son propre prix personnalisé.",
+        "extra_dates": "Dates : un prix personnalisé peut commencer et finir un jour précis. En dehors de ces dates, il est ignoré et le meilleur prix suivant s'applique."
+      },
+      "wins": {
+        "title": "2. Quel prix l'emporte ?",
+        "body": "Le prix personnalisé correspondant le plus précis l'emporte. Les points s'additionnent quand un prix correspond sur plusieurs critères : Rural (4) à Tizi Ouzou (2) fait 6 et bat Rural seul (4). Une zone inclut déjà sa wilaya et son niveau, on ne peut donc pas les combiner. Si rien ne correspond, le prix par défaut s'applique. Les lieux hors de toute zone utilisent le niveau hors zone.",
+        "order": "Ordre : marchand ou agent (16) > zone (8) > niveau (4) > wilaya (2) > service (1) > par défaut"
+      },
+      "example": {
+        "title": "3. Un exemple concret",
+        "intro": "Un client commande chez le magasin sintta, dans un village près de Tizi Ouzou.",
+        "s1": "Le magasin est hors de toute zone dessinée, il prend donc le niveau hors zone : Rural.",
+        "s2": "La livraison a un prix Rural, donc le prix du niveau Rural s'applique. Il bat le prix de Tizi Ouzou (2 points) et le prix par défaut.",
+        "s3": "Sauf si sintta a son propre prix personnalisé. Un accord marchand marque 16 et bat le prix Rural (4).",
+        "s4": "Si cet accord a une date de fin, le prix Rural s'applique de nouveau ensuite. Personne n'a à penser à l'annuler."
+      },
+      "formula": {
+        "title": "4. Comment un tarif est calculé",
+        "intro": "Les tarifs coursier et course se construisent en six étapes, toujours dans cet ordre :",
+        "s1": "Mesurer la distance routière : km à vol d'oiseau multipliés par le facteur routier.",
+        "s2": "Estimer le temps de conduite à partir de la distance et de la vitesse du véhicule.",
+        "s3": "Ajouter le prix de base, les km au-delà des km inclus, l'éventuel prix au temps, les arrêts supplémentaires et le supplément de livraison.",
+        "s4": "Multiplier par le multiplicateur de tarif (hausse ou remise).",
+        "s5": "Garder le résultat entre le tarif minimum et le tarif maximum.",
+        "s6": "Arrondir au pas d'arrondi (au-dessus, au plus proche ou en dessous).",
+        "link": "Voir avec des chiffres réels dans l'onglet Formule"
+      },
+      "go": {
+        "title": "5. Où aller pour…",
+        "zones": {
+          "task": "Dessiner un lieu",
+          "where": "Zones",
+          "desc": "Dessinez une ville sur la carte et donnez-lui un niveau."
+        },
+        "tiers": {
+          "task": "Changer tous les villages d'un coup",
+          "where": "Niveaux",
+          "desc": "Fixez un prix pour tout un niveau."
+        },
+        "overrides": {
+          "task": "Accorder un prix spécial à un marchand",
+          "where": "Prix personnalisés",
+          "desc": "Créez un prix pour un marchand, un agent ou un lieu."
+        },
+        "simulator": {
+          "task": "Vérifier ce que paiera un client",
+          "where": "Simulateur",
+          "desc": "Lancez une commande fictive."
+        }
+      }
     }
   }
 }

@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { getTranslations } from "next-intl/server";
 import { PageHeader, SubNav } from "@/components/ui";
 import { requirePathAccess } from "@/lib/auth/staff";
-import { PricingHeaderActions, VehicleClassesProvider } from "@/features/pricing";
+import { PricingHeaderActions, TabIntro, VehicleClassesProvider } from "@/features/pricing";
 import { getCatalog, getOverrides, getPricingAccess, getZones } from "./data";
 
 // Pricing cockpit: Overview · Zones · Tiers · Vehicles · Formula · Overrides · Simulator · History (routed sub-pages).
@@ -34,6 +34,9 @@ export default async function PricingLayout({ children }: { children: ReactNode 
           { href: "/pricing/history", label: t("tabs.history"), icon: "clock" },
         ]}
       />
+      <div className="mt-4">
+        <TabIntro />
+      </div>
       {children}
     </VehicleClassesProvider>
   );

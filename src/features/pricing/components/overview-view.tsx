@@ -12,7 +12,9 @@ import { tierName } from "../zones";
 import type { ScopeNames } from "../labels";
 import { ExtendMenu } from "./extend-menu";
 import { FeeEditModal } from "./fee-edit-modal";
+import { FeeInfo } from "./fee-about";
 import { FeeExampleLine } from "./fee-example";
+import { HowPricingWorks } from "./how-pricing-works";
 import { useClassName } from "./vehicle-classes-context";
 import { legsOf } from "../vehicle-classes";
 
@@ -76,6 +78,8 @@ export function OverviewView({
 
   return (
     <div className="space-y-6">
+      <HowPricingWorks />
+
       <StatGrid cols={4}>
         <StatCard
           label={t("overview.kpi.active")}
@@ -134,9 +138,11 @@ export function OverviewView({
         const list = fees.filter((f) => f.group === g);
         if (!list.length) return null;
         return (
-          <section key={g}>
-            <div className="mb-3">
-              <h2 className="text-sm font-semibold text-text">{t(`groups.${g}`)}</h2>
+          <section key={g} aria-labelledby={`group-${g}`}>
+            <div className="mb-3 border-s-2 border-primary ps-3">
+              <h2 id={`group-${g}`} className="text-sm font-semibold text-text">
+                {t(`groups.${g}`)}
+              </h2>
               <p className="text-[12.5px] text-subtext">{t(`groups.${g}_desc`)}</p>
             </div>
             <div className={GRID[g]}>
@@ -198,10 +204,22 @@ function FeeCard({
 
   return (
     <div className="rounded-xl border border-border bg-card p-4 flex flex-col gap-2 min-w-0">
+      {/* hierarchy: name + info -> value -> server example -> custom prices */}
       <div className="flex items-start justify-between gap-2">
-        <p className="text-xs font-medium text-subtext">{t(`fees.${fee.key}.name`)}</p>
+        <p className="flex min-w-0 items-center gap-1 text-xs font-medium text-subtext">
+          <span className="truncate">{t(`fees.${fee.key}.name`)}</span>
+          <FeeInfo fee={fee} />
+        </p>
         {canEdit && (
-          <Button variant="ghost" size="xs" icon="pencil" onClick={onEdit} aria-label={t("actions.edit")} title={t("actions.edit")} />
+          <Button
+            variant="ghost"
+            size="xs"
+            icon="pencil"
+            onClick={onEdit}
+            aria-label={`${t("actions.edit")}: ${t(`fees.${fee.key}.name`)}`}
+            title={t("actions.edit")}
+            className="focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:outline-none"
+          />
         )}
       </div>
       {tariff ? (

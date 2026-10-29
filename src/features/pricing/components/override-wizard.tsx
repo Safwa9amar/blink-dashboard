@@ -8,6 +8,7 @@ import { Button, FormRow, Modal, Segmented, fInput } from "@/components/ui";
 import { createOverride, previewPricing, updateOverride } from "@/app/d/pricing/action";
 import { fromInputDate, summaryParts, toInputDate, type SummaryParts } from "../cockpit";
 import { fieldDefs, formMatchesValue, formToValue, formatValueShort, valueToForm, type FeeForm } from "../format";
+import { detectRisks, type RiskCode } from "../help";
 import { fmtDay, wilayaName } from "../labels";
 import type {
   CandidateExample,
@@ -24,7 +25,9 @@ import type {
 } from "../types";
 import { WILAYA_OPTIONS } from "../wilayas";
 import { liveTiers, liveZones, tierName } from "../zones";
+import { FeeAbout } from "./fee-about";
 import { BeforeAfter } from "./fee-example";
+import { RiskConfirm } from "./risk-confirm";
 import { FeeValueFields } from "./fee-value-fields";
 import { PartnerPicker } from "./partner-picker";
 import { ScopeChips } from "./scope-chips";
@@ -195,6 +198,8 @@ function Body({
   const [partner, setPartner] = useState<PartnerHit | null>(partnerOf(override) ?? preset?.partner ?? null);
   const [error, setError] = useState<{ text: string; conflictId?: string } | null>(null);
   const [scopeError, setScopeError] = useState<string | null>(null);
+  // A pending confirmation belongs to the numbers, scope and dates it was raised for.
+  const [riskState, setRiskState] = useState<{ codes: RiskCode[]; sig: string } | null>(null);
   const [effective, setEffective] = useState<Partial<Record<PricingKey, FeeValue>>>({});
   const [preview, setPreview] = useState<{ id: string; ex: CandidateExample } | null>(null);
   const [pending, start] = useTransition();
@@ -245,6 +250,10 @@ function Body({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, ctx, key, previewId]);
+
+  const riskSig = JSON.stringify([previewId, mode, startsAt, endsAt]);
+  const risks = riskState && riskState.sig === riskSig ? riskState.codes : null;
+  const setRisks = (codes: RiskCode[] | null) => setRiskState(codes ? { codes, sig: riskSig } : null);
 
   const chooseFee = (next: PricingKey) => {
     const f = fees.find((x) => x.key === next)!;
@@ -313,6 +322,17 @@ function Body({
     }
     setError(null);
     const note = form.note.trim() || null;
+    const found = detectRisks({
+      key: fee.key,
+      candidate: value,
+      current: editing ? override!.value : (effective[fee.key] ?? fee.value),
+      scope: {
+        narrowed: !!(form.zone_id || form.tier || form.wilaya_code || partner),
+        dated: !!(starts || ends),
+      },
+      changed: editing ? !formMatchesValue(fields, form.value, override!.value) : true,
+    });
+    if (found.length && !risks) return setRisks(found);
     start(async () => {
       let res;
       if (editing) {
@@ -389,7 +409,8 @@ function Body({
                       }`}
                     >
                       <span className="block text-[13px] font-semibold text-text">{t(`fees.${f.key}.name`)}</span>
-                      <span className="block text-[12px] text-subtext mt-0.5">
+                      <span className="block text-[12px] text-subtext mt-0.5">{t(`fees.${f.key}.desc`)}</span>
+                      <span className="block text-[12px] font-medium text-text mt-1">
                         {t("wizard.current", { value: formatValueShort(f.key, f.value, tf, className) })}
                       </span>
                     </button>
@@ -415,6 +436,7 @@ function Body({
                 onChange={(v) => setValue("service", v)}
                 className="flex-wrap"
               />
+              <span className="block text-[11.5px] text-subtext mt-1">{t("modal.service_hint")}</span>
             </div>
           )}
           {!!fee.scopes.zone && (
@@ -456,6 +478,7 @@ function Body({
                   </option>
                 ))}
               </select>
+              <span className="block text-[11.5px] text-subtext mt-1">{t("modal.tier_hint")}</span>
             </label>
           )}
           {fee.scopes.wilaya && (
@@ -472,12 +495,14 @@ function Body({
                   </option>
                 ))}
               </select>
+              <span className="block text-[11.5px] text-subtext mt-1">{t("modal.wilaya_hint")}</span>
             </label>
           )}
           {partnerKind && (
             <div>
               <span className="block text-[12px] text-subtext mb-1">{t(`modal.${partnerKind}`)}</span>
               <PartnerPicker kind={partnerKind} value={partner} onChange={setPartner} disabled={!!preset} />
+              <span className="block text-[11.5px] text-subtext mt-1">{t("modal.partner_hint")}</span>
             </div>
           )}
           {scopeError && <p className="text-sm text-danger">{scopeError}</p>}
@@ -496,15 +521,27 @@ function Body({
                   zone={zoneName(override!.zone_id)}
                   tier={tierLabel(override!.tier)}
                   partner={override!.merchant_id || override!.agent_id ? (override!.partner_name ?? "") : null}
+                  startsAt={override!.starts_at}
+                  endsAt={override!.ends_at}
                 />
                 <p className="text-[11.5px] text-subtext mt-1">{t("wizard.scope_locked")}</p>
               </div>
             ) : (
               <div className="mt-1.5">
-                <ScopeChips service={service} wilaya_code={wilaya} zone={zoneName(zoneId)} tier={tierLabel(tier)} partner={partner?.name} />
+                <ScopeChips
+                  service={service}
+                  wilaya_code={wilaya}
+                  zone={zoneName(zoneId)}
+                  tier={tierLabel(tier)}
+                  partner={partner?.name}
+                  startsAt={windowIso.starts_at}
+                  endsAt={windowIso.ends_at}
+                />
               </div>
             )}
           </div>
+
+          <FeeAbout fee={fee} defaultOpen={false} />
 
           <div onChangeCapture={() => (touched.current = true)}>
             <p className="text-[12px] font-bold text-text mb-1">{t("modal.value")}</p>
@@ -520,7 +557,16 @@ function Body({
             />
           </div>
 
-          {shown && <BeforeAfter feeKey={fee.key} before={shown.before} after={shown.after} loading={!fresh} />}
+          {candidate && (
+            <BeforeAfter
+              feeKey={fee.key}
+              before={shown?.before}
+              after={shown?.after}
+              loading={!fresh}
+              valueBefore={formatValueShort(fee.key, effective[fee.key] ?? fee.value, tf, className)}
+              valueAfter={formatValueShort(fee.key, candidate, tf, className)}
+            />
+          )}
 
           <div>
             <p className="text-[12px] font-bold text-text mb-2">{t("wizard.when")}</p>
@@ -532,6 +578,7 @@ function Body({
               value={mode}
               onChange={(v) => setValue("mode", v)}
             />
+            <p className="text-[11.5px] text-subtext mt-1.5">{t(mode === "range" ? "modal.dates_range_hint" : "modal.dates_always_hint")}</p>
             {mode === "range" && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
                 <label className="block">
@@ -552,8 +599,12 @@ function Body({
               className={`${fInput} min-h-[64px]`}
               maxLength={300}
               placeholder={t("modal.note_placeholder")}
+              aria-describedby="wizard-note-hint"
               {...register("note")}
             />
+            <span id="wizard-note-hint" className="block text-[11.5px] text-subtext mt-1">
+              {t("modal.note_hint")}
+            </span>
           </FormRow>
 
           {parts && <p className="rounded-xl border border-border px-3.5 py-2.5 text-[13px] text-text">{summarySentence(parts, tf, locale)}</p>}
@@ -575,6 +626,17 @@ function Body({
         </div>
       )}
 
+      {risks && step === 3 && candidate ? (
+        <div className="mt-5">
+          <RiskConfirm
+            risks={risks}
+            pending={pending}
+            creating={!editing}
+            onBack={() => setRisks(null)}
+            onConfirm={() => void submit()}
+          />
+        </div>
+      ) : (
       <div className="flex items-center justify-between gap-2 mt-5">
         <div>
           {step > 1 && !editing && (
@@ -599,6 +661,7 @@ function Body({
           )}
         </div>
       </div>
+      )}
     </form>
   );
 }

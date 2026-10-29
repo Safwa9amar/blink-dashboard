@@ -35,12 +35,13 @@ export function scopeShort(
   t: TFn,
   names?: ScopeNames,
 ): string {
+  // Place first, then who, then what: "Rural · Tizi Ouzou · Courier".
   const parts = [
-    o.service && t(`services.${o.service}`),
     o.zone_id && (names?.zone?.(o.zone_id) ?? t("scope.zone_generic")),
     o.tier && (names?.tier?.(o.tier) ?? o.tier),
     o.wilaya_code && wilayaName(o.wilaya_code, locale),
     (o.merchant_id || o.agent_id) && (o.partner_name || t("partner.generic")),
+    o.service && t(`services.${o.service}`),
   ].filter(Boolean) as string[];
   return parts.length ? parts.join(" · ") : t("scope.everywhere");
 }

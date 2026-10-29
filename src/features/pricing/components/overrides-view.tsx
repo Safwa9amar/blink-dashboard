@@ -3,7 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { Badge, Button, DataTable, EmptyState, FilterPills, Modal, Segmented, fInput, type Column } from "@/components/ui";
+import { Badge, Button, DashIcon, DataTable, EmptyState, FilterPills, Modal, Segmented, fInput, type Column } from "@/components/ui";
 import { archiveOverride } from "@/app/d/pricing/action";
 import { STATUS_FILTERS, filterByStatus, statusCounts, type StatusFilter } from "../cockpit";
 import { formatValueInline, formatValueShort } from "../format";
@@ -85,6 +85,8 @@ export function OverridesView({
   const visible = useMemo(() => filterByStatus(overrides, status, now), [overrides, status, now]);
   const rows = highlight ? [...visible].sort((a, b) => Number(b.id === highlight) - Number(a.id === highlight)) : visible;
 
+  // Nothing exists yet (not just nothing matching the filters): invite the first custom price.
+  const noneAtAll = overrides.length === 0 && ![...params.keys()].some((k) => k !== "view");
   const partnerFilter = params.get("merchant_id") || params.get("agent_id");
   const partnerName = overrides.find((o) => o.merchant_id === partnerFilter || o.agent_id === partnerFilter)?.partner_name;
 
@@ -249,9 +251,10 @@ export function OverridesView({
         <p className="text-sm text-danger">{error}</p>
       ) : rows.length === 0 ? (
         <EmptyState
-          title={t("overrides.empty")}
-          description={t("overrides.empty_hint")}
-          actionLabel={canEdit ? t("overrides.new") : undefined}
+          icon={<DashIcon name="tag" className="w-10 h-10" />}
+          title={noneAtAll ? t("overrides.empty_none_title") : t("overrides.empty")}
+          description={noneAtAll ? t("overrides.empty_none_body") : t("overrides.empty_hint")}
+          actionLabel={canEdit ? (noneAtAll ? t("overrides.empty_none_cta") : t("overrides.new")) : undefined}
           onAction={canEdit ? () => setCreating(true) : undefined}
         />
       ) : view === "calendar" ? (

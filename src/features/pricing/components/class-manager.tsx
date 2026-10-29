@@ -7,6 +7,9 @@ import { useLocale, useTranslations } from "next-intl";
 import { Badge, Button, Card, EmptyState, FormRow, Modal, Toggle, fInput } from "@/components/ui";
 import { archiveVehicleClass, createVehicleClass, updateVehicleClass } from "@/app/d/pricing/action";
 import { BASE_VEHICLES, CLASS_SERVICES, type BaseVehicle, type ClassService, type VehicleClass } from "../types";
+import { classEnableRisk, type RiskCode } from "../help";
+import { RiskConfirm } from "./risk-confirm";
+import { Term } from "./term";
 import { COMFORT_CODE, classNameOrNull, isAppPendingClass, isClassCode, liveClasses, nextClassOrder } from "../vehicle-classes";
 
 interface ClassForm {
@@ -31,6 +34,8 @@ export function VehiclesView({ classes, canEdit, error }: { classes: VehicleClas
   const [archiving, setArchiving] = useState<VehicleClass | null>(null);
   const [archiveError, setArchiveError] = useState<{ text: string; riders?: number; overrides?: number; orders?: number } | null>(null);
   const [rowError, setRowError] = useState<string | null>(null);
+  // Enabling a class the live app cannot show yet asks first.
+  const [toggling, setToggling] = useState<VehicleClass | null>(null);
   const [pending, start] = useTransition();
   const list = liveClasses(classes);
   const archived = classes.filter((c) => c.archived_at);
@@ -43,6 +48,11 @@ export function VehiclesView({ classes, canEdit, error }: { classes: VehicleClas
       if (!res.ok) return setRowError(res.error);
       router.refresh();
     });
+  };
+
+  const askToggle = (c: VehicleClass) => {
+    if (classEnableRisk({ code: c.code, wasEnabled: c.enabled, enabled: !c.enabled }).length) setToggling(c);
+    else toggleEnabled(c);
   };
 
   if (error) return <p className="text-sm text-danger">{error}</p>;
@@ -67,7 +77,7 @@ export function VehiclesView({ classes, canEdit, error }: { classes: VehicleClas
       >
         {rowError && <p className="text-sm text-danger mb-3">{rowError}</p>}
         {!list.length ? (
-          <EmptyState title={t("vehicles.empty")} />
+          <EmptyState title={t("empty.vehicles_title")} description={t("empty.vehicles_body")} actionLabel={canEdit ? t("vehicles.add") : undefined} onAction={canEdit ? () => setEditing("new") : undefined} />
         ) : (
           <ul className="divide-y divide-border">
             {list.map((c) => (
@@ -94,7 +104,7 @@ export function VehiclesView({ classes, canEdit, error }: { classes: VehicleClas
                 <span className="text-[12px] text-subtext tabular-nums shrink-0">{t("vehicles.riders", { count: c.rider_count ?? 0 })}</span>
                 <div className="flex items-center gap-2 shrink-0">
                   {canEdit ? (
-                    <Toggle on={c.enabled} onClick={() => toggleEnabled(c)} label={t("vehicles.enabled")} disabled={pending} />
+                    <Toggle on={c.enabled} onClick={() => askToggle(c)} label={t("vehicles.enabled")} disabled={pending} />
                   ) : (
                     <Badge variant={c.enabled ? "success" : "default"}>{c.enabled ? t("vehicles.on") : t("vehicles.off")}</Badge>
                   )}
@@ -154,6 +164,18 @@ export function VehiclesView({ classes, canEdit, error }: { classes: VehicleClas
               />
             )}
           </Modal>
+          <Modal open={!!toggling} onClose={() => setToggling(null)} title={t("risk.title")}>
+            <RiskConfirm
+              risks={["class_app_update"]}
+              pending={pending}
+              onBack={() => setToggling(null)}
+              onConfirm={() => {
+                const c = toggling!;
+                setToggling(null);
+                toggleEnabled(c);
+              }}
+            />
+          </Modal>
           <Modal open={!!archiving} onClose={() => setArchiving(null)} title={t("vehicles.archive_title")}>
             <p className="text-sm text-subtext mb-4">
               {t("vehicles.archive_body", { name: archiving ? (classNameOrNull(classes, archiving.code, locale) ?? archiving.code) : "" })}
@@ -212,6 +234,7 @@ function ClassFormBody({
 }) {
   const t = useTranslations("pricing");
   const [message, setMessage] = useState<string | null>(null);
+  const [risks, setRisks] = useState<RiskCode[] | null>(null);
   const [pending, start] = useTransition();
   const {
     register,
@@ -242,6 +265,8 @@ function ClassFormBody({
     const sort_order = Math.round(Number(f.sort_order));
     const note = f.note.trim() || null;
     const services = CLASS_SERVICES.filter((s) => f.services.includes(s));
+    const found = classEnableRisk({ code: cls?.code ?? f.code.trim(), wasEnabled: cls?.enabled ?? false, enabled: f.enabled });
+    if (found.length && !risks) return setRisks(found);
     setMessage(null);
     start(async () => {
       const body = { names, base_vehicle: f.base_vehicle, services, exclusive: f.exclusive, enabled: f.enabled, sort_order, note };
@@ -316,7 +341,10 @@ function ClassFormBody({
       </fieldset>
       <div className="flex items-start justify-between gap-3 rounded-xl border border-border px-3 py-2.5">
         <div>
-          <p className="text-[13px] text-text">{t("vehicles.exclusive")}</p>
+          <p className="flex items-center text-[13px] text-text">
+            {t("vehicles.exclusive")}
+            <Term term="exclusive" icon />
+          </p>
           <p className="text-[11.5px] text-subtext">{t("vehicles.exclusive_hint")}</p>
         </div>
         <Controller control={control} name="exclusive" render={({ field }) => <Toggle on={field.value} onClick={() => field.onChange(!field.value)} label={t("vehicles.exclusive")} />} />
@@ -333,14 +361,18 @@ function ClassFormBody({
         <textarea className={`${fInput} min-h-[56px]`} maxLength={300} {...register("note")} />
       </FormRow>
       {message && <p className="text-sm text-danger">{message}</p>}
-      <div className="flex justify-end gap-2">
-        <Button type="button" variant="ghost" size="sm" onClick={onClose} disabled={pending}>
-          {t("actions.cancel")}
-        </Button>
-        <Button type="submit" size="sm" loading={pending}>
-          {cls ? t("actions.save") : t("actions.create")}
-        </Button>
-      </div>
+      {risks ? (
+        <RiskConfirm risks={risks} pending={pending} creating={!cls} onBack={() => setRisks(null)} onConfirm={() => void submit()} />
+      ) : (
+        <div className="flex justify-end gap-2">
+          <Button type="button" variant="ghost" size="sm" onClick={onClose} disabled={pending}>
+            {t("actions.cancel")}
+          </Button>
+          <Button type="submit" size="sm" loading={pending}>
+            {cls ? t("actions.save") : t("actions.create")}
+          </Button>
+        </div>
+      )}
     </form>
   );
 }

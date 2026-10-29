@@ -6,10 +6,13 @@ import { useForm, useWatch } from "react-hook-form";
 import { useLocale, useTranslations } from "next-intl";
 import { Badge, Button, Modal } from "@/components/ui";
 import { archiveOverride, createOverride, previewPricing, updateDefault, updateOverride } from "@/app/d/pricing/action";
-import { fieldDefs, formToValue, formatValueInline, valueToForm, type FeeForm } from "../format";
+import { fieldDefs, formMatchesValue, formToValue, formatValueInline, valueToForm, type FeeForm } from "../format";
+import { detectRisks, type RiskCode } from "../help";
 import type { CandidateExample, Fee, Override, Tier, TFn } from "../types";
 import { tierName } from "../zones";
+import { FeeAbout } from "./fee-about";
 import { BeforeAfter } from "./fee-example";
+import { RiskConfirm } from "./risk-confirm";
 import { FeeValueFields } from "./fee-value-fields";
 import { useZoneData } from "./use-zone-data";
 import { useClassName } from "./vehicle-classes-context";
@@ -68,6 +71,7 @@ function Body({ fee, onClose, tiers: providedTiers, target }: { fee: Fee; onClos
   const candidateKey = JSON.stringify(candidate);
   const [preview, setPreview] = useState<{ id: string; ex: CandidateExample } | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [riskState, setRiskState] = useState<{ codes: RiskCode[]; sig: string } | null>(null);
   const [pending, start] = useTransition();
   const ctx = useMemo(
     () => (target ? { tier: target.tier, ...(target.service ? { service: target.service } : {}) } : {}),
@@ -90,12 +94,15 @@ function Body({ fee, onClose, tiers: providedTiers, target }: { fee: Fee; onClos
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [candidateKey, fee.key, ctx]);
 
+  // Editing the fields again withdraws a pending confirmation: the warnings were about the old numbers.
+  const risks = riskState && riskState.sig === candidateKey ? riskState.codes : null;
+  const setRisks = (codes: RiskCode[] | null) => setRiskState(codes ? { codes, sig: candidateKey } : null);
+  const changed = !!live && !formMatchesValue(fields, live as FeeForm, startValue);
+
   const fresh = preview && preview.id === candidateKey ? preview.ex : null;
   const shown = preview?.ex;
 
-  const submit = handleSubmit((form) => {
-    const value = formToValue(fields, form);
-    if (!value) return;
+  const save = (value: NonNullable<typeof candidate>) => {
     setMessage(null);
     start(async () => {
       const res = target
@@ -112,6 +119,7 @@ function Body({ fee, onClose, tiers: providedTiers, target }: { fee: Fee; onClos
         : await updateDefault(fee.key, value, fee.updated_at);
       if (!res.ok) {
         // Stale: refresh so `fee` carries the new updated_at, but keep what the user typed.
+        setRisks(null);
         if (res.stale) {
           setMessage(t("errors.stale_modal"));
           router.refresh();
@@ -123,6 +131,15 @@ function Body({ fee, onClose, tiers: providedTiers, target }: { fee: Fee; onClos
       router.refresh();
       onClose();
     });
+  };
+
+  const submit = handleSubmit((form) => {
+    const value = formToValue(fields, form);
+    if (!value) return;
+    // A tier price covers one kind of place; a default covers all of Algeria, with no end date.
+    const found = detectRisks({ key: fee.key, candidate: value, current: startValue, scope: { narrowed: !!target, dated: false }, changed });
+    if (found.length && !risks) return setRisks(found);
+    save(value);
   });
 
   // Removing a tier price makes the tier fall back to the default again.
@@ -156,6 +173,7 @@ function Body({ fee, onClose, tiers: providedTiers, target }: { fee: Fee; onClos
           </p>
         )}
       </div>
+      <FeeAbout fee={fee} />
       <FeeValueFields
         fields={fields}
         register={register as never}
@@ -164,8 +182,20 @@ function Body({ fee, onClose, tiers: providedTiers, target }: { fee: Fee; onClos
         errors={errors as never}
         disabled={pending}
       />
-      {shown ? <BeforeAfter feeKey={fee.key} before={shown.before} after={shown.after} loading={!fresh} /> : null}
+      {candidate && (changed || shown) ? (
+        <BeforeAfter
+          feeKey={fee.key}
+          before={shown?.before}
+          after={shown?.after}
+          loading={!fresh}
+          valueBefore={formatValueInline(fee.key, startValue, tf, className)}
+          valueAfter={formatValueInline(fee.key, candidate, tf, className)}
+        />
+      ) : null}
       {message && <p className="text-sm text-danger">{message}</p>}
+      {risks && candidate ? (
+        <RiskConfirm risks={risks} pending={pending} onBack={() => setRisks(null)} onConfirm={() => save(candidate)} />
+      ) : (
       <div className="flex items-center justify-between gap-2">
         <div>
           {target?.override && (
@@ -183,6 +213,7 @@ function Body({ fee, onClose, tiers: providedTiers, target }: { fee: Fee; onClos
           </Button>
         </div>
       </div>
+      )}
     </form>
   );
 }

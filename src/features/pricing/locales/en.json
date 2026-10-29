@@ -3,7 +3,7 @@
     "title": "Pricing & Fees",
     "description": "Every Blink price and partner rate, with scoped and dated overrides",
     "tabs": {
-      "overrides": "Overrides",
+      "overrides": "Custom prices",
       "history": "History",
       "overview": "Overview",
       "simulator": "Simulator",
@@ -27,71 +27,160 @@
     "fees": {
       "service_fee": {
         "name": "Service fee",
-        "desc": "Flat amount charged once per checkout on store and shopper orders"
+        "desc": "Flat amount charged once per checkout on store and shopper orders",
+        "what": "A small flat fee added to a customer's checkout when they order from stores or use a shopper.",
+        "who_pays": "The customer.",
+        "who_earns": "Blink.",
+        "applies_to": "Store orders and shopper orders. Not rides, courier trips or Blink Cash.",
+        "example": "A customer buys from 2 stores in one checkout and the fee is 1.50 DA. They pay 1.50 DA once, not 3 DA.",
+        "caution": "The service fee is charged once per checkout, even when the cart holds several stores."
       },
       "courier_fare": {
         "name": "Courier fare",
-        "desc": "Delivery price per vehicle: base, included km, price per km, max km"
+        "desc": "Delivery price per vehicle: base, included km, price per km, max km",
+        "what": "The price of sending a parcel: a base price, some included kilometres, then a price for every extra km. Each vehicle class has its own prices.",
+        "who_pays": "The customer who sends the parcel.",
+        "who_earns": "The rider, after Blink's commission.",
+        "applies_to": "Courier orders: a parcel picked up in one place and delivered to one or more places.",
+        "example": "Moto: base 250 DA with 3 km included and 40 DA per km after. A 5 km parcel costs 250 + 2 × 40 = 330 DA, before any multiplier.",
+        "caution": "Extra stops add the extra stop fee. A new vehicle class only shows correctly in the latest app."
       },
       "ride_fare": {
         "name": "Ride fare",
-        "desc": "Ride price: base, included km, price per km, max km"
+        "desc": "Ride price: base, included km, price per km, max km",
+        "what": "The price of a passenger ride: a base price, some included kilometres, then a price for every extra km. Each vehicle class has its own prices.",
+        "who_pays": "The passenger.",
+        "who_earns": "The rider, after Blink's commission.",
+        "applies_to": "Ride requests.",
+        "example": "Moto: base 200 DA with 3 km included and 40 DA per km after. A 6 km ride costs 200 + 3 × 40 = 320 DA, before any multiplier.",
+        "caution": "Moto Comfort needs the latest app. Keep it switched off in Vehicles until the update is out."
       },
       "fare_multiplier": {
         "name": "Fare multiplier",
-        "desc": "Manual surge or discount applied to courier and ride fares"
+        "desc": "Manual surge or discount applied to courier and ride fares",
+        "what": "One dial that makes every fare in its scope dearer or cheaper. ×1.00 changes nothing, ×1.20 adds 20%, ×0.90 takes 10% off.",
+        "who_pays": "The customer.",
+        "who_earns": "The rider and Blink, because the commission is a share of the fare.",
+        "applies_to": "Courier fares, ride fares and marketplace delivery priced by distance.",
+        "example": "A 5 km ride costs 320 DA. With ×1.20 it becomes 384 DA, then rounds to 390 DA.",
+        "caution": "A big multiplier raises every fare in its scope at once. Check it in the Simulator, and use a dated custom price for a short rush or promotion."
       },
       "rider_commission_rate": {
         "name": "Rider commission",
-        "desc": "Share of the fare Blink keeps from each trip"
+        "desc": "Share of the fare Blink keeps from each trip",
+        "what": "The share of each trip's fare that Blink keeps. The rider receives the rest.",
+        "who_pays": "The rider, out of their fare.",
+        "who_earns": "Blink.",
+        "applies_to": "Trips of every service: store, shopper, courier and ride.",
+        "example": "At 15% on a 330 DA fare, Blink keeps 49.50 DA and the rider receives 280.50 DA.",
+        "caution": "The rate is saved on each order when it is created, so changing it never rewrites earnings or dues already recorded."
       },
       "merchant_commission_rate": {
         "name": "Merchant commission",
-        "desc": "Share of delivered sales Blink keeps"
+        "desc": "Share of delivered sales Blink keeps",
+        "what": "The share of a merchant's delivered sales that Blink keeps.",
+        "who_pays": "The merchant, out of their sales.",
+        "who_earns": "Blink.",
+        "applies_to": "Store orders once delivered. One merchant can have their own rate.",
+        "example": "At 5%, 10 000 DA of delivered sales means 500 DA of commission.",
+        "caution": "The rate is saved on each order when it is created, so changing it never changes past dues."
       },
       "blink_cash_fee_rate": {
         "name": "Blink Cash fee",
-        "desc": "Fee the rider pays on deposits and withdrawals"
+        "desc": "Fee the rider pays on deposits and withdrawals",
+        "what": "The fee taken on each Blink Cash deposit or withdrawal.",
+        "who_pays": "The rider who deposits or withdraws.",
+        "who_earns": "Blink and the agent who handles it, split by the agent platform share.",
+        "applies_to": "Blink Cash deposits and withdrawals.",
+        "example": "At 2%, moving 5 000 DA costs a fee of 100 DA."
       },
       "agent_platform_share": {
         "name": "Agent platform share",
-        "desc": "Share of each Blink Cash fee that goes to Blink"
+        "desc": "Share of each Blink Cash fee that goes to Blink",
+        "what": "The part of each Blink Cash fee that goes to Blink. The agent keeps the rest.",
+        "who_pays": "It comes out of the Blink Cash fee, not from the rider on top.",
+        "who_earns": "Blink gets this share, the agent gets the rest.",
+        "applies_to": "Blink Cash fees handled by agents. One agent can have their own share.",
+        "example": "Of a 100 DA fee with a 20% share, Blink keeps 20 DA and the agent keeps 80 DA."
       },
       "rider_cancel_penalty": {
         "name": "Rider cancel penalty",
-        "desc": "Amount charged when a rider cancels an accepted job"
+        "desc": "Amount charged when a rider cancels an accepted job",
+        "what": "A fixed amount charged to a rider who cancels a job after accepting it.",
+        "who_pays": "The rider who cancels.",
+        "who_earns": "Blink.",
+        "applies_to": "Accepted jobs of every service: store, shopper, courier and ride.",
+        "example": "With a penalty of 200 DA, a rider who accepts a ride and then cancels pays 200 DA."
       },
       "stamp_duty_rate": {
         "name": "Stamp duty",
-        "desc": "Rate applied to merchant sales"
+        "desc": "Rate applied to merchant sales",
+        "what": "A tax taken on merchant sales.",
+        "who_pays": "The merchant, out of their sales.",
+        "who_earns": "The tax authority. Blink collects and passes it on.",
+        "applies_to": "Delivered store orders. It is one value for all of Algeria.",
+        "example": "At 1%, 10 000 DA of sales means 100 DA of stamp duty."
       },
       "agent_tax_rate": {
         "name": "Agent withholding tax",
-        "desc": "Withheld from the agent's share"
+        "desc": "Withheld from the agent's share",
+        "what": "A tax withheld from the agent's own share of Blink Cash fees.",
+        "who_pays": "The agent, out of their share.",
+        "who_earns": "The tax authority. Blink withholds it and passes it on.",
+        "applies_to": "Blink Cash fees processed by agents. It is one value for all of Algeria.",
+        "example": "At 1%, on 80 DA of agent share, 0.80 DA is withheld."
       },
       "dues_payment_fee_rate": {
         "name": "Dues payment fee",
-        "desc": "Fee on merchant and agent dues payments"
+        "desc": "Fee on merchant and agent dues payments",
+        "what": "A processing fee charged when a merchant or an agent pays the dues they owe to Blink.",
+        "who_pays": "The merchant or agent who pays the dues.",
+        "who_earns": "Blink.",
+        "applies_to": "Dues payments by merchants and agents. It is one value for all of Algeria.",
+        "example": "At 0.2%, paying 50 000 DA of dues costs a fee of 100 DA."
       },
       "fare_formula": {
         "name": "Fare formula",
-        "desc": "Road factor, speeds, rounding, min and max fare, stop and boarding time"
+        "desc": "Road factor, speeds, rounding, min and max fare, stop and boarding time",
+        "what": "The fixed recipe that turns a distance into a price: road factor, speeds, rounding, minimum and maximum fare, and time at stops.",
+        "who_pays": "The customer, through every courier, ride and distance-priced delivery fare.",
+        "applies_to": "Courier, rides and marketplace delivery in distance mode.",
+        "example": "A 4 km straight line times a road factor of 1.3 is 5.2 km of road. A fare of 331 DA rounds up to 340 DA with a step of 10 DA.",
+        "caution": "Changing the formula changes many prices at once. Test it in the Simulator first."
       },
       "dropoff_surcharge": {
         "name": "Drop-off surcharge",
-        "desc": "Extra charge priced at the drop-off place, optionally only when the tier changes"
+        "desc": "Extra charge priced at the drop-off place, optionally only when the tier changes",
+        "what": "An extra fee added when the drop-off is in a different kind of place than the pickup, for example city to village.",
+        "who_pays": "The customer, inside the fare.",
+        "who_earns": "Shared between the rider and Blink, like the rest of the fare.",
+        "applies_to": "Courier, rides and distance-priced delivery. It is looked up at the drop-off place (the last drop-off for courier).",
+        "example": "Surcharge 100 DA, only when the tier changes: city to village adds 100 DA, village to another village adds nothing."
       },
       "service_area": {
         "name": "Service area",
-        "desc": "Turn Blink on or off for a place; when off, quotes there are unavailable"
+        "desc": "Turn Blink on or off for a place; when off, quotes there are unavailable",
+        "what": "Switches Blink on or off for a place. When off, nobody can order a ride or courier from there.",
+        "applies_to": "Courier and ride requests whose pickup is in the scope.",
+        "example": "Switch it off for the zone \"Desert road\": customers there see that Blink is not available and cannot order.",
+        "caution": "Off blocks new orders right away. Only the latest app shows a clear \"out of service area\" message; older apps show a generic error."
       },
       "zone_defaults": {
         "name": "Unzoned tier",
-        "desc": "The tier for points outside every drawn zone"
+        "desc": "The tier for points outside every drawn zone",
+        "what": "The tier used for any point outside every drawn zone.",
+        "applies_to": "Every price that depends on the place: courier, rides and store delivery. It can be set for one wilaya.",
+        "example": "You only drew Tizi Ouzou city and the unzoned tier is Rural. A village outside the city is priced as Rural.",
+        "caution": "Changing it re-prices every place you have not drawn in its scope."
       },
       "store_delivery": {
         "name": "Marketplace delivery",
-        "desc": "Delivery fee on store orders: the merchant's own fee, or priced by distance per vehicle class, with a min and max"
+        "desc": "Delivery fee on store orders: the merchant's own fee, or priced by distance per vehicle class, with a min and max",
+        "what": "How a store order's delivery fee is decided: the store's own fee (merchant mode) or a price from the distance between store and customer (distance mode).",
+        "who_pays": "The customer, once per store in the order.",
+        "applies_to": "Store orders in the marketplace.",
+        "example": "Distance mode with base 250 DA, 3 km included and 40 DA per km: a store 5 km away charges 330 DA. In merchant mode it charges its own fee, for example 200 DA.",
+        "caution": "Distance mode needs the latest app. Keep every zone on merchant mode until customers have updated."
       }
     },
     "fields": {
@@ -128,7 +217,7 @@
       "motorcycle": "Motorcycle"
     },
     "units": {
-      "da": "Da",
+      "da": "DA",
       "km": "km",
       "kmh": "km/h",
       "min": "min"
@@ -177,12 +266,15 @@
     },
     "scope": {
       "everywhere": "Everywhere",
-      "zone_generic": "Zone"
+      "zone_generic": "Zone",
+      "until": "until {date}",
+      "from": "from {date}",
+      "all_algeria": "All of Algeria"
     },
     "defaults": {
       "empty": "No fees loaded",
-      "active_overrides": "{count} active overrides",
-      "no_overrides": "No active overrides"
+      "active_overrides": "{count} active custom prices",
+      "no_overrides": "No active custom prices"
     },
     "overrides": {
       "col": {
@@ -196,8 +288,8 @@
       "always": "Always",
       "from": "From {date}",
       "until": "Until {date}",
-      "new": "New override",
-      "empty": "No overrides match",
+      "new": "New custom price",
+      "empty": "No custom prices match",
       "highlighted": "Showing the conflicting override first",
       "filter": {
         "all_fees": "All fees",
@@ -211,7 +303,10 @@
         "table": "Table",
         "calendar": "Calendar"
       },
-      "empty_hint": "Change the filters or create an override."
+      "empty_hint": "Change the filters, or create a custom price.",
+      "empty_none_title": "Create a custom price",
+      "empty_none_body": "A custom price replaces the default for one place, service, merchant or agent, and can stop on a date. Use it for a city, a promotion or a special deal.",
+      "empty_none_cta": "Create a custom price"
     },
     "modal": {
       "service": "Service",
@@ -233,7 +328,14 @@
       "any_zone": "Any zone",
       "zone_hint": "A zone already implies its wilaya and tier.",
       "tier": "Tier",
-      "any_tier": "Any tier"
+      "any_tier": "Any tier",
+      "service_hint": "Leave on \"Any service\" to cover all of them.",
+      "tier_hint": "A tier covers every place of that kind, for example all villages.",
+      "wilaya_hint": "Limits the price to one wilaya. Leave empty for all of Algeria.",
+      "partner_hint": "A deal for this partner only. Nobody else is affected.",
+      "dates_always_hint": "No end date: the price stays until someone changes or archives it.",
+      "dates_range_hint": "Outside these dates the custom price is ignored and the default applies.",
+      "note_hint": "Optional. Visible in the history, so write the reason for the next person."
     },
     "archive": {
       "title": "Archive override",
@@ -279,7 +381,12 @@
         "source": "Source"
       },
       "override": "Override",
-      "default": "Default"
+      "default": "Default",
+      "title": "What changes",
+      "value_before": "Now",
+      "value_after": "After",
+      "loading": "Checking with the server...",
+      "unchanged": "Nothing changed yet."
     },
     "partner": {
       "search_merchant": "Search a merchant by name, email or phone",
@@ -311,11 +418,15 @@
       "zone_in_use": "This zone still has live overrides. Archive or end them first.",
       "tier_in_use": "This tier is still used by a live zone, override or the unzoned setting.",
       "class_in_use": "This class is still used by riders, live overrides or open orders, so it cannot be archived.",
-      "class_mismatch": "That class belongs to a different base vehicle than the rider's."
+      "class_mismatch": "That class belongs to a different base vehicle than the rider's.",
+      "number_named": "Type a number for \"{field}\".",
+      "range_named": "\"{field}\" must be between {min} and {max} {unit}.",
+      "integer_named": "\"{field}\" must be a whole number, without decimals.",
+      "required_named": "Choose a value for \"{field}\"."
     },
     "header": {
       "simulate": "Simulate an order",
-      "new_override": "New override"
+      "new_override": "New custom price"
     },
     "edit": {
       "title": "Edit default",
@@ -365,7 +476,7 @@
     "overview": {
       "empty": "No fees loaded",
       "kpi": {
-        "active": "Active overrides",
+        "active": "Active custom prices",
         "active_sub": "across {count, plural, one {# wilaya} other {# wilayas}}",
         "partners": "Partner deals",
         "partners_sub": "{merchants} merchants · {agents} agents",
@@ -379,8 +490,8 @@
       }
     },
     "wizard": {
-      "create_title": "New override",
-      "edit_title": "Edit override",
+      "create_title": "New custom price",
+      "edit_title": "Edit custom price",
       "step": "Step {n} of 3",
       "steps": {
         "1": "What",
@@ -494,7 +605,7 @@
     },
     "zones": {
       "unzoned": "Unzoned",
-      "banner": "Points outside every zone are priced as <b>{tier}</b>.",
+      "banner": "Points <unzoned>outside every zone</unzoned> are priced as <b>{tier}</b>.",
       "banner_change": "Change",
       "banner_exceptions": "Per-wilaya exceptions",
       "unsaved": "{count, plural, one {# zone shape changed} other {# zone shapes changed}} and not saved yet",
@@ -579,13 +690,14 @@
       "archive_title": "Archive tier",
       "archive_body": "Archive the tier “{tier}”? It disappears from pickers; existing history is kept.",
       "see_overrides": "See its overrides",
-      "prices": "Prices"
+      "prices": "Prices",
+      "matrix_title": "Prices by tier"
     },
     "matrix": {
       "empty": "Nothing to compare yet",
       "empty_hint": "The matrix needs at least one live tier and one fee that can vary by tier.",
-      "hint": "Each cell is the value that applies to that tier.",
-      "hint_edit": "Each cell is the value that applies to that tier. Click a cell to set a tier price or change it.",
+      "hint": "Each cell is the price that applies to that <tier>tier</tier>.",
+      "hint_edit": "Each cell is the price that applies to that <tier>tier</tier>. Click a cell to set a price for the tier or change it. A tier price is a kind of <override>custom price</override>.",
       "legend_override": "Tier price",
       "legend_inherited": "Inherited",
       "tier_price": "Tier price",
@@ -705,6 +817,239 @@
       "default": "default",
       "default_option": "Default ({name})",
       "pending_note": "This class is off until the app update ships."
+    },
+    "intro": {
+      "overview": "Your control room. See every price Blink charges and every rate it keeps, and click a pencil to change one. Start with the guide if you are new.",
+      "zones": "Draw a <zone>zone</zone> around each city or town and give it a <tier>tier</tier>. Anything you do not draw is priced as the <unzoned>unzoned</unzoned> tier. Use this page to say where prices change.",
+      "tiers": "Compare each <tier>tier</tier> side by side and set a price for a whole tier at once, for example every village. Use this page to change prices for a kind of place.",
+      "vehicles": "Define the <vclass>vehicle classes</vclass> riders can have (Bicycle, Moto, Moto Comfort) and which services each one serves. Use this page to switch a class on or off.",
+      "formula": "See how a distance becomes a price, step by step, and test it on the map. Use this page to understand a fare or change the recipe behind all fares.",
+      "overrides": "A custom price (an <override>override</override>) replaces the default for one <scope>scope</scope>: a place, a service, a merchant or an agent. Use this page to add, extend or end special prices.",
+      "simulator": "Pretend to place an order and see exactly what the customer pays and who gets what. Use this page to check a price before or after you change it.",
+      "history": "A log of every pricing change: who changed what, when, and from which value to which. Use this page to answer \"why did this price change?\"."
+    },
+    "empty": {
+      "zones_title": "Draw your first city",
+      "zones_body": "A zone is a shape on the map, such as a city or a town. Until you draw one, every place is priced as the unzoned tier. Use the polygon tool on the map: click around the city, close the shape, then name it and pick its tier.",
+      "zones_import": "Import a GeoJSON file",
+      "history_title": "No pricing changes yet",
+      "history_body": "Every time someone changes a default, a custom price, a zone, a tier or a vehicle class, it is listed here with their name and the old and new value. Nothing has been changed yet.",
+      "vehicles_title": "No vehicle classes yet",
+      "vehicles_body": "Vehicle classes decide which riders can take which jobs and what each trip costs. Add Bicycle and Moto to start."
+    },
+    "about": {
+      "title": "About this setting",
+      "what": "What it is",
+      "who_pays": "Who pays",
+      "who_earns": "Who earns",
+      "applies_to": "Applies to",
+      "varies_by": "Can be different by",
+      "varies_none": "One value for everywhere. It cannot be changed for a single place or partner.",
+      "varies_dates": "dates (a custom price can start and stop on a day)",
+      "example": "Example",
+      "example_live": "With today's value",
+      "caution": "Good to know",
+      "info": "About {fee}",
+      "close": "Close"
+    },
+    "varies": {
+      "zone": "zone",
+      "tier": "tier",
+      "wilaya": "wilaya",
+      "merchant": "merchant",
+      "agent": "agent",
+      "service": "service",
+      "vehicle_class": "vehicle class",
+      "dates": "dates"
+    },
+    "fieldHelp": {
+      "base": "The starting price of a trip, in DA, before any distance is added. For example 250 DA.",
+      "included_km": "Kilometres covered by the base price, so no per-km charge yet. For example 3 km.",
+      "per_km": "Price per km after the included distance, in DA. For example 40 DA/km.",
+      "per_minute": "Optional price per minute of driving, in DA. 0 means time is free. For example 2 DA/min.",
+      "max_km": "Longest trip allowed, in km. Farther trips are shown as too far and cannot be ordered. For example 40 km.",
+      "extra_stop_fee": "Added for each drop-off after the first one on a courier order, in DA. For example 60 DA.",
+      "amount": "A fixed price in DA. For example 200 DA.",
+      "rate": "A percentage of the amount it applies to. For example 5% of 10 000 DA is 500 DA.",
+      "multiplier": "Multiplies the price. 1.00 changes nothing, 1.20 adds 20%, 0.90 takes 10% off.",
+      "road_factor": "Roads are longer than a straight line. Straight-line km are multiplied by this to get driven km. For example 1.3 turns 4 km into 5.2 km.",
+      "rounding_step": "Fares are rounded to a multiple of this amount, in DA. For example 10 DA makes 331 DA become 340 DA.",
+      "rounding_mode": "Which way a fare is rounded to the step.",
+      "min_fare": "A fare is never lower than this, in DA. 0 means no minimum. For example 150 DA.",
+      "max_fare": "A fare is never higher than this, in DA. 0 means no cap. For example 3 000 DA.",
+      "min_ride_km": "Rides shorter than this straight-line distance are refused as too close, in km. For example 0.3 km.",
+      "speed_kmh": "Average speed used to estimate driving time, in km/h. For example 28 km/h for a moto.",
+      "stop_minutes": "Minutes a courier spends at each stop, used for time estimates. For example 3 min.",
+      "boarding_minutes": "Minutes the passenger takes to get on, used for ride time estimates. For example 2 min.",
+      "only_when_tier_changes": "On: charged only when the drop-off tier differs from the pickup tier (city to village). Off: charged on every trip.",
+      "enabled": "On: customers can order here. Off: quotes say the place is out of the service area and orders are blocked.",
+      "unzoned_tier": "The tier used for any point outside every drawn zone. Usually the cheapest kind of place, such as Rural.",
+      "mode": "How the delivery fee is decided. See the two options below.",
+      "min_fee": "Delivery is never cheaper than this, in DA, in both modes. 0 means no minimum. For example 100 DA.",
+      "max_fee": "Delivery is never dearer than this, in DA, in both modes. 0 means no cap. For example 600 DA."
+    },
+    "choices_help": {
+      "rounding_mode": {
+        "up": "Always rounds up. 331 DA becomes 340 DA. Never loses money.",
+        "nearest": "Rounds to the closest step. 331 DA becomes 330 DA, 336 DA becomes 340 DA.",
+        "down": "Always rounds down. 339 DA becomes 330 DA. Cheaper for the customer."
+      },
+      "mode": {
+        "merchant": "Merchant: the customer pays the delivery fee that each store set itself. Nothing changes.",
+        "distance": "Distance: Blink prices delivery from the distance between the store and the customer, using the fare legs below. Needs the latest app."
+      }
+    },
+    "glossary": {
+      "label": "What does {term} mean?",
+      "tier": {
+        "label": "Tier",
+        "def": "A kind of place: city, town or village. Prices can be set for a whole tier at once."
+      },
+      "zone": {
+        "label": "Zone",
+        "def": "A shape drawn on the map, such as a city. Each zone has one tier, and every point inside it is priced with that tier."
+      },
+      "unzoned": {
+        "label": "Unzoned",
+        "def": "Any point outside every drawn zone. It is priced with the unzoned tier, usually Rural."
+      },
+      "override": {
+        "label": "Custom price (override)",
+        "def": "A price that replaces the default for one scope, and can start and end on a date. It is also called an override."
+      },
+      "scope": {
+        "label": "Scope",
+        "def": "Where a custom price applies: a zone, a tier, a wilaya, a service, a merchant or an agent. No scope means everywhere."
+      },
+      "multiplier": {
+        "label": "Multiplier",
+        "def": "A number that scales fares. ×1.00 changes nothing, ×1.20 makes fares 20% dearer."
+      },
+      "surcharge": {
+        "label": "Surcharge",
+        "def": "An extra amount added on top of a fare in certain cases, for example when the drop-off is in another tier."
+      },
+      "vehicle_class": {
+        "label": "Vehicle class",
+        "def": "A type of ride or delivery vehicle, such as Bicycle, Moto or Moto Comfort. Each class has its own fare."
+      },
+      "exclusive": {
+        "label": "Exclusive class",
+        "def": "A class whose jobs are offered only to riders of that class. Other riders never see them."
+      },
+      "includedkm": {
+        "label": "Included km",
+        "def": "Distance already paid for by the base price. The per-km price starts after it."
+      },
+      "roadfactor": {
+        "label": "Road factor",
+        "def": "How much longer real roads are than a straight line. 1.3 means 30% longer."
+      }
+    },
+    "risk": {
+      "title": "Please check before you save",
+      "intro": "This change is worth a second look:",
+      "back": "Go back",
+      "confirm": "Yes, save it",
+      "confirm_create": "Yes, create it",
+      "service_area_off": {
+        "title": "You are switching the service off",
+        "body": "Customers will not be able to order rides or couriers from this place. Only the latest app shows a clear message; older apps show a generic error."
+      },
+      "multiplier_high": {
+        "title": "A big price increase",
+        "body": "A multiplier above 1.5 makes every fare in this scope more than 50% dearer at once. Check it in the Simulator first."
+      },
+      "multiplier_low": {
+        "title": "A big discount",
+        "body": "A multiplier below 0.8 takes more than 20% off every fare in this scope, so Blink and riders earn less on every trip."
+      },
+      "distance_mode": {
+        "title": "Delivery will be priced by distance",
+        "body": "Stores in this scope stop using their own delivery fee. This needs the latest app; older apps may not show the right price. Keep merchant mode where customers have not updated yet."
+      },
+      "class_app_update": {
+        "title": "This class needs the app update",
+        "body": "Moto Comfort only shows in the latest app. If you enable it before the update is out, customers on older versions cannot choose it."
+      },
+      "all_algeria": {
+        "title": "This applies to all of Algeria with no end date",
+        "body": "No place is chosen and no dates are set, so the new price is live everywhere right now and stays until someone changes it again."
+      }
+    },
+    "guide": {
+      "title": "How pricing works",
+      "subtitle": "Two minutes to understand every price in Blink.",
+      "hide": "Hide the guide",
+      "show": "Show the guide",
+      "layers": {
+        "title": "1. Prices come in layers",
+        "intro": "Every price starts from a default. A more specific custom price can replace it. The more specific it is, the more points it scores, and the highest score wins.",
+        "default": "Default",
+        "default_desc": "One price for all of Algeria.",
+        "service": "Service",
+        "service_desc": "Only courier, only rides, only store orders…",
+        "wilaya": "Wilaya",
+        "wilaya_desc": "One wilaya, for example Tizi Ouzou.",
+        "tier": "Tier",
+        "tier_desc": "A kind of place: Urban, Town, Rural.",
+        "zone": "Zone",
+        "zone_desc": "A shape you drew on the map. It already includes its wilaya and tier.",
+        "partner": "Merchant or agent",
+        "partner_desc": "A deal for one named partner.",
+        "points": "{n} points",
+        "base": "base",
+        "extras_title": "Two things work across all layers",
+        "extra_class": "Vehicle class: Bicycle, Moto and Moto Comfort each have their own fare, and each one is matched to its own custom price separately.",
+        "extra_dates": "Dates: a custom price can start and end on a day. Outside those dates it is ignored and the next best price applies."
+      },
+      "wins": {
+        "title": "2. Which price wins?",
+        "body": "The most specific matching custom price wins. Points add up when one custom price matches on several things: Rural (4) in Tizi Ouzou (2) scores 6 and beats Rural alone (4). A zone already includes its wilaya and tier, so it cannot be combined with them. If nothing matches, the default applies. Places outside every zone use the unzoned tier.",
+        "order": "Order: merchant or agent (16) > zone (8) > tier (4) > wilaya (2) > service (1) > default"
+      },
+      "example": {
+        "title": "3. A worked example",
+        "intro": "A customer orders from the store sintta, in a village near Tizi Ouzou.",
+        "s1": "The store is outside every drawn zone, so it takes the unzoned tier: Rural.",
+        "s2": "Delivery has a Rural price, so the Rural tier price applies. It beats the Tizi Ouzou price (2 points) and the default.",
+        "s3": "Unless sintta has its own custom price. A merchant deal scores 16 and beats the Rural price (4).",
+        "s4": "If that deal has an end date, after it the Rural price applies again. Nobody has to remember to undo it."
+      },
+      "formula": {
+        "title": "4. How a fare is calculated",
+        "intro": "Courier and ride fares are built in six steps, always in this order:",
+        "s1": "Measure the road distance: straight-line km times the road factor.",
+        "s2": "Estimate the driving time from the distance and the vehicle speed.",
+        "s3": "Add the base price, the km beyond the included ones, any time charge, extra stops and the drop-off surcharge.",
+        "s4": "Multiply by the fare multiplier (a surge or a discount).",
+        "s5": "Keep the result between the minimum and the maximum fare.",
+        "s6": "Round to the rounding step (up, nearest or down).",
+        "link": "See it with real numbers in the Formula tab"
+      },
+      "go": {
+        "title": "5. Where do I go to…",
+        "zones": {
+          "task": "Draw a place",
+          "where": "Zones",
+          "desc": "Draw a city on the map and give it a tier."
+        },
+        "tiers": {
+          "task": "Change all villages at once",
+          "where": "Tiers",
+          "desc": "Set a price for a whole tier."
+        },
+        "overrides": {
+          "task": "Give one merchant a special deal",
+          "where": "Custom prices",
+          "desc": "Create a price for one merchant, agent or place."
+        },
+        "simulator": {
+          "task": "Check what a customer will pay",
+          "where": "Simulator",
+          "desc": "Run a pretend order."
+        }
+      }
     }
   }
 }
