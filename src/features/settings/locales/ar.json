@@ -37,8 +37,7 @@
       "updating": "جاري التحديث...",
       "password_mismatch": "كلمتا المرور غير متطابقتين",
       "password_updated": "تم تحديث كلمة المرور بنجاح",
-      "session_timeout": "مهلة الجلسة (بالدقائق)",
-      "require_2fa": "تطلب المصادقة الثنائية"
+      "session_timeout": "مهلة الجلسة (بالدقائق)"
     },
     "appearance": {
       "title": "المظهر",
