@@ -48,3 +48,11 @@ describe("assuranceLevels", () => {
     expect(assuranceLevels(undefined, jwt({ aal: "aal1" })).nextLevel).toBe("aal1");
   });
 });
+
+describe("decideGate — temporary password", () => {
+  it("sends staff with a temporary password to the password change, after the MFA step", () => {
+    expect(decideGate({ ...base, mustChangePassword: true }).status).toBe("password_change");
+    expect(decideGate({ ...base, mustChangePassword: true, nextLevel: "aal2" }).status).toBe("mfa_required");
+    expect(decideGate({ ...base, staffRole: null, mustChangePassword: true }).status).toBe("not_staff");
+  });
+});

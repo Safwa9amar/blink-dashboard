@@ -72,22 +72,22 @@ export async function recordPasskeyChange(change: Change): Promise<{ logged: boo
     const { data, error } = await admin.auth.admin.passkey.listPasskeys({ userId });
     if (!error) count = data?.length ?? 0;
   } catch {
-    // admin client without the passkey flag: fall back to trusting the authenticated user
+    // count stays null
   }
+  // Without the real count the claim can't be checked: log nothing rather than trust the client.
+  if (count === null) return { logged: false };
 
   const last = await lastEventNote(admin, userId, ["passkey_added", "passkey_removed"]);
   const lastCount = last?.note?.match(/^count=(\d+)$/)?.[1];
-  if (count !== null) {
-    const baseline = lastCount !== undefined ? Number(lastCount) : change === "added" ? 0 : count + 1;
-    if (change === "added" && count <= baseline) return { logged: false };
-    if (change === "removed" && count >= baseline) return { logged: false };
-  }
+  const baseline = lastCount !== undefined ? Number(lastCount) : change === "added" ? 0 : count + 1;
+  if (change === "added" && count <= baseline) return { logged: false };
+  if (change === "removed" && count >= baseline) return { logged: false };
 
   await logAccessEvent(admin, {
     actorId: userId,
     targetId: userId,
     action: change === "added" ? "passkey_added" : "passkey_removed",
-    note: count !== null ? `count=${count}` : null,
+    note: `count=${count}`,
   });
   return { logged: true };
 }

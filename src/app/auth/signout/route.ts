@@ -6,6 +6,10 @@ const REASONS = ["no_access", "session_expired"];
 
 // GET so a server redirect (e.g. the staff layout rejecting a non-staff account) can land here.
 export async function GET(request: NextRequest) {
+  // Another site can't sign staff out by embedding this URL; our own redirects are same-origin.
+  if (request.headers.get("sec-fetch-site") === "cross-site") {
+    return NextResponse.redirect(`${await requestOrigin()}/login`);
+  }
   const supabase = await createClient();
   await supabase.auth.signOut();
   const reason = request.nextUrl.searchParams.get("reason") ?? request.nextUrl.searchParams.get("error");

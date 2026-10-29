@@ -5,6 +5,7 @@ export type StaffGate =
   | { status: "ok"; id: string; role: StaffRole }
   | { status: "signed_out" }
   | { status: "mfa_required" }
+  | { status: "password_change" }
   | { status: "not_staff" };
 
 export function decideGate(input: {
@@ -16,15 +17,18 @@ export function decideGate(input: {
   lookupFailed?: boolean;
   currentLevel: string | null | undefined;
   nextLevel: string | null | undefined;
+  /** Signed in with a temporary password (app_metadata.must_change_password). */
+  mustChangePassword?: boolean;
 }): StaffGate {
   if (!input.userId) return { status: "signed_out" };
   // A verified factor exists but this session hasn't passed it: not authorized anywhere.
   if (input.nextLevel === "aal2" && input.currentLevel !== "aal2") return { status: "mfa_required" };
-  if (input.preMigration) return { status: "ok", id: input.userId, role: "super_admin" };
-  if (input.lookupFailed) return { status: "not_staff" };
-  return isStaffRole(input.staffRole)
-    ? { status: "ok", id: input.userId, role: input.staffRole }
-    : { status: "not_staff" };
+  if (input.lookupFailed && !input.preMigration) return { status: "not_staff" };
+  const role: StaffRole | null = input.preMigration ? "super_admin" : isStaffRole(input.staffRole) ? input.staffRole : null;
+  if (!role) return { status: "not_staff" };
+  // A temporary password must be replaced before anything else, server actions included.
+  if (input.mustChangePassword) return { status: "password_change" };
+  return { status: "ok", id: input.userId, role };
 }
 
 /** `aal` claim of an access token, decoded without verifying (callers verify it first). */

@@ -39,6 +39,7 @@ export const getStaffGate = cache(async (): Promise<StaffGate> => {
     staffRole: (data as { staff_role?: unknown } | null)?.staff_role ?? null,
     preMigration: error?.code === "42703",
     lookupFailed: !!error && error.code !== "42703",
+    mustChangePassword: user.app_metadata?.must_change_password === true,
     ...levels,
   });
 });
@@ -64,6 +65,7 @@ export async function hasStaffRole(...allowed: StaffRole[]): Promise<boolean> {
 export function redirectForGate(gate: Exclude<StaffGate, { status: "ok" }>): never {
   if (gate.status === "signed_out") redirect("/login");
   if (gate.status === "mfa_required") redirect("/login/mfa");
+  if (gate.status === "password_change") redirect("/login/password");
   redirect("/auth/signout?reason=no_access");
 }
 

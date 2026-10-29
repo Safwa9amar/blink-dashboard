@@ -43,8 +43,10 @@ export async function requestSignInCode(email: string, locale: string): Promise<
       emailRedirectTo: `${await requestOrigin()}/auth/confirm?next=/&lang=${cleanLocale(locale)}`,
     },
   });
-  const key = mapAuthError(error);
-  return key ? { ok: false, error: key } : { ok: true };
+  // Same answer as for unknown emails: a rate-limit / banned error only ever happens for a
+  // real staff account, so surfacing it would tell an attacker which emails are staff.
+  if (error) console.error("[auth] sign-in code not sent:", error.code ?? error.message);
+  return { ok: true };
 }
 
 /** Emails a password-reset link + code to staff accounts; generic success otherwise. */
@@ -56,8 +58,8 @@ export async function requestPasswordReset(email: string, locale: string): Promi
   const { error } = await createAnonAuthClient().auth.resetPasswordForEmail(clean, {
     redirectTo: `${await requestOrigin()}/auth/confirm?next=/login/reset&lang=${cleanLocale(locale)}`,
   });
-  const key = mapAuthError(error);
-  return key ? { ok: false, error: key } : { ok: true };
+  if (error) console.error("[auth] reset email not sent:", error.code ?? error.message);
+  return { ok: true };
 }
 
 /**
@@ -84,7 +86,8 @@ export async function checkDashboardAccess(): Promise<Result> {
 
 type Amr = { method?: string; timestamp?: number };
 
-// True when this session came from a recovery / one-time-code verification in the last 15 min.
+// True when this session came from a password-recovery verification (emailed link or code)
+// in the last 15 min. Email-code sign-ins ("otp") don't count: they aren't a reset.
 async function hasFreshRecovery(supabase: Awaited<ReturnType<typeof createClient>>): Promise<boolean> {
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims;
@@ -94,11 +97,11 @@ async function hasFreshRecovery(supabase: Awaited<ReturnType<typeof createClient
   const detailed = amr.filter((e): e is Amr => typeof e === "object" && e !== null);
   if (detailed.length > 0) {
     return detailed.some(
-      (e) => (e.method === "recovery" || e.method === "otp") && typeof e.timestamp === "number" && e.timestamp >= now - RESET_WINDOW_S,
+      (e) => e.method === "recovery" && typeof e.timestamp === "number" && e.timestamp >= now - RESET_WINDOW_S,
     );
   }
   // RFC-8176 string form carries no timestamps: fall back to the token's issue time.
-  const hasMethod = amr.some((m) => m === "recovery" || m === "otp");
+  const hasMethod = amr.some((m) => m === "recovery");
   return hasMethod && typeof claims.iat === "number" && claims.iat >= now - RESET_WINDOW_S;
 }
 
@@ -110,6 +113,8 @@ export async function completePasswordReset(newPassword: string): Promise<Result
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "link_expired" };
   if (!(await hasFreshRecovery(supabase))) return { ok: false, error: "reset_expired" };
+  const { data: row } = await supabase.from("users").select("staff_role").eq("id", user.id).single();
+  if (!isStaffRole((row as { staff_role?: unknown } | null)?.staff_role)) return { ok: false, error: "no_access" };
 
   const weak = validateNewPassword(newPassword);
   if (weak) return { ok: false, error: weak };
