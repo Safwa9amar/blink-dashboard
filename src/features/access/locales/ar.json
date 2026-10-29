@@ -148,7 +148,15 @@
       "suspended": "أُوقف",
       "reinstated": "أُعيد تفعيله",
       "password_reset": "أُعيد تعيين كلمة المرور",
-      "password_changed": "تغيّرت كلمة المرور"
+      "password_changed": "تغيّرت كلمة المرور",
+      "password_recovered": "أُعيد تعيين كلمة المرور عبر البريد",
+      "mfa_enrolled": "فُعّلت المصادقة الثنائية",
+      "mfa_removed": "عُطّلت المصادقة الثنائية",
+      "passkey_added": "أُضيف مفتاح مرور",
+      "passkey_removed": "حُذف مفتاح مرور",
+      "mfa_reset": "أُعيد تعيين المصادقة الثنائية",
+      "passkeys_reset": "حُذفت مفاتيح المرور",
+      "reset_email_sent": "أُرسل بريد إعادة التعيين"
     },
     "errors": {
       "not_authorized": "غير مسموح لك بتنفيذ هذا الإجراء.",

@@ -148,7 +148,15 @@
       "suspended": "Suspended",
       "reinstated": "Reinstated",
       "password_reset": "Password reset",
-      "password_changed": "Password changed"
+      "password_changed": "Password changed",
+      "password_recovered": "Password reset by email",
+      "mfa_enrolled": "Two-factor turned on",
+      "mfa_removed": "Two-factor turned off",
+      "passkey_added": "Passkey added",
+      "passkey_removed": "Passkey removed",
+      "mfa_reset": "Two-factor reset",
+      "passkeys_reset": "Passkeys removed",
+      "reset_email_sent": "Reset email sent"
     },
     "errors": {
       "not_authorized": "You are not allowed to do this.",

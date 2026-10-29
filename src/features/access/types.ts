@@ -9,7 +9,7 @@ export type { StaffRole } from "@/lib/auth/access";
 //  - suspended:       auth-banned, blocked from signing in
 export type StaffStatus = "active" | "must_change" | "never_signed_in" | "suspended";
 
-// Audit-trail actions stored in `staff_access_events.action`.
+// Audit-trail actions stored in `staff_access_events.action` (the column's CHECK lists the same set).
 export type AccessEventAction =
   | "created"
   | "granted"
@@ -18,7 +18,17 @@ export type AccessEventAction =
   | "suspended"
   | "reinstated"
   | "password_reset"
-  | "password_changed";
+  | "password_changed"
+  // Self-service sign-in security (account owner is actor and target).
+  | "password_recovered"
+  | "mfa_enrolled"
+  | "mfa_removed"
+  | "passkey_added"
+  | "passkey_removed"
+  // Super-admin actions on another staff member.
+  | "mfa_reset"
+  | "passkeys_reset"
+  | "reset_email_sent";
 
 // A non-staff user offered by the "Grant access" search.
 export interface CandidateHit {

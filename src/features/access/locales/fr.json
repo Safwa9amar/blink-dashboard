@@ -148,7 +148,15 @@
       "suspended": "Suspendu",
       "reinstated": "Rétabli",
       "password_reset": "Mot de passe réinitialisé",
-      "password_changed": "Mot de passe modifié"
+      "password_changed": "Mot de passe modifié",
+      "password_recovered": "Mot de passe réinitialisé par e-mail",
+      "mfa_enrolled": "Double authentification activée",
+      "mfa_removed": "Double authentification désactivée",
+      "passkey_added": "Clé d'accès ajoutée",
+      "passkey_removed": "Clé d'accès supprimée",
+      "mfa_reset": "Double authentification réinitialisée",
+      "passkeys_reset": "Clés d'accès supprimées",
+      "reset_email_sent": "E-mail de réinitialisation envoyé"
     },
     "errors": {
       "not_authorized": "Vous n'avez pas l'autorisation d'effectuer cette action.",

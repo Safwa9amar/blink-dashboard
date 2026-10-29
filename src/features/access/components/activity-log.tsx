@@ -16,6 +16,14 @@ const ACTIONS: AccessEventAction[] = [
   "reinstated",
   "password_reset",
   "password_changed",
+  "password_recovered",
+  "mfa_enrolled",
+  "mfa_removed",
+  "passkey_added",
+  "passkey_removed",
+  "mfa_reset",
+  "passkeys_reset",
+  "reset_email_sent",
 ];
 
 const ACTION_VARIANT: Record<AccessEventAction, Variant> = {
@@ -27,6 +35,14 @@ const ACTION_VARIANT: Record<AccessEventAction, Variant> = {
   reinstated: "primary",
   password_reset: "warning",
   password_changed: "default",
+  password_recovered: "default",
+  mfa_enrolled: "success",
+  mfa_removed: "warning",
+  passkey_added: "success",
+  passkey_removed: "warning",
+  mfa_reset: "danger",
+  passkeys_reset: "danger",
+  reset_email_sent: "info",
 };
 
 export function ActivityLog({ events }: { events: AccessEventRow[] }) {
