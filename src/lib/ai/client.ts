@@ -188,6 +188,22 @@ export async function unloadModel(
   await nativePost(root, "/api/v1/models/unload", { instance_id: opts.model }, opts.signal);
 }
 
+// A failed chat reply as an AIError. OpenRouter answers a revoked or wrong key
+// with a bare "User not found." (401), so name the real problem instead.
+function replyError(
+  base: string,
+  status: number,
+  json: { error?: { message?: string } | string } | null
+): AIError {
+  if (isOpenRouter(base) && status === 401) {
+    return new AIError(
+      "OpenRouter refused the API key — OPENROUTER_API_KEY is missing, revoked or wrong on the dashboard server."
+    );
+  }
+  const detail = typeof json?.error === "string" ? json.error : json?.error?.message;
+  return new AIError(detail || `The AI server returned ${status}.`);
+}
+
 async function nativePost(
   root: string,
   path: string,
@@ -243,10 +259,7 @@ export async function chat(opts: ChatOptions): Promise<string> {
     }
 
     const json = (await res.json().catch(() => null)) as ChatCompletionResponse | null;
-    if (!res.ok || !json) {
-      const detail = typeof json?.error === "string" ? json.error : json?.error?.message;
-      throw new AIError(detail || `The AI server returned ${res.status}.`);
-    }
+    if (!res.ok || !json) throw replyError(base, res.status, json);
     const msg = json.choices?.[0]?.message;
     const content = extractText(msg?.content) || (msg?.reasoning_content ?? "");
     if (!content.trim()) {
@@ -309,8 +322,7 @@ export async function* chatStream(
       const json = (await res.json().catch(() => null)) as
         | { error?: { message?: string } | string }
         | null;
-      const detail = typeof json?.error === "string" ? json.error : json?.error?.message;
-      throw new AIError(detail || `The AI server returned ${res.status}.`);
+      throw replyError(base, res.status, json);
     }
 
     const reader = res.body.getReader();
