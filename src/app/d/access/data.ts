@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isStaffRole, type StaffRole } from "@/lib/auth/access";
+import { countVerifiedTotp } from "@/features/access/security";
 import type { AccessEventAction, StaffStatus } from "@/features/access/types";
 
 export interface StaffMemberRow {
@@ -13,6 +14,10 @@ export interface StaffMemberRow {
   status: StaffStatus;
   lastSignInAt: string | null;
   createdAt: string;
+  /** Verified authenticator factors; null when the lookup failed. */
+  mfaFactors: number | null;
+  /** Registered passkeys; null when unknown (passkeys disabled or lookup failed). */
+  passkeyCount: number | null;
 }
 
 export interface AccessEventRow {
@@ -40,6 +45,30 @@ interface UserRow {
 const fullName = (u: { first_name?: string | null; last_name?: string | null; email?: string | null }) =>
   [u.first_name, u.last_name].filter(Boolean).join(" ").trim() || (u.email ? u.email.split("@")[0] : "");
 
+type Admin = Awaited<ReturnType<typeof createAdminClient>>;
+
+/** Verified TOTP factor count, or null if the admin lookup fails. */
+async function loadMfaFactorCount(supabase: Admin, userId: string): Promise<number | null> {
+  try {
+    const { data, error } = await supabase.auth.admin.mfa.listFactors({ userId });
+    if (error || !data) return null;
+    return countVerifiedTotp(data.factors);
+  } catch {
+    return null;
+  }
+}
+
+/** Passkey count, or null when passkeys are disabled / the lookup fails. */
+async function loadPasskeyCount(supabase: Admin, userId: string): Promise<number | null> {
+  try {
+    const { data, error } = await supabase.auth.admin.passkey.listPasskeys({ userId });
+    if (error || !data) return null;
+    return data.length;
+  } catch {
+    return null;
+  }
+}
+
 export async function loadStaff(): Promise<StaffMemberRow[]> {
   const supabase = await createAdminClient();
   const { data, error } = await supabase
@@ -51,7 +80,11 @@ export async function loadStaff(): Promise<StaffMemberRow[]> {
   const rows = await Promise.all(
     (data as UserRow[]).map(async (u): Promise<StaffMemberRow | null> => {
       if (!isStaffRole(u.staff_role)) return null;
-      const { data: res } = await supabase.auth.admin.getUserById(u.id);
+      const [{ data: res }, mfaFactors, passkeyCount] = await Promise.all([
+        supabase.auth.admin.getUserById(u.id),
+        loadMfaFactorCount(supabase, u.id),
+        loadPasskeyCount(supabase, u.id),
+      ]);
       const au = res?.user;
       const email = u.email || au?.email || "";
       const bannedUntil = (au as { banned_until?: string | null } | undefined)?.banned_until;
@@ -75,6 +108,8 @@ export async function loadStaff(): Promise<StaffMemberRow[]> {
         status,
         lastSignInAt,
         createdAt: au?.created_at ?? u.created_at ?? "",
+        mfaFactors,
+        passkeyCount,
       };
     }),
   );

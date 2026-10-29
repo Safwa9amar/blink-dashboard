@@ -3,9 +3,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { Button, DataTable, SearchBox, StatCard, type Column } from "@/components/ui";
+import { Button, DashIcon, DataTable, SearchBox, StatCard, type Column } from "@/components/ui";
 import { formatDay } from "@/features/promotions";
-import { resetStaffPassword, revokeStaffAccess, suspendStaff } from "@/app/d/access/action";
+import {
+  removeStaffPasskeys,
+  resetStaffPassword,
+  resetStaffTwoFactor,
+  revokeStaffAccess,
+  sendStaffResetEmail,
+  suspendStaff,
+} from "@/app/d/access/action";
 import type { StaffMemberRow } from "@/app/d/access/data";
 import { STAFF_ROLES, type StaffRole, type StaffStatus } from "../data";
 import { RoleBadge } from "./role-badge";
@@ -19,7 +26,7 @@ import { FIELD, useErrorText } from "./shared";
 const STATUSES: StaffStatus[] = ["active", "must_change", "never_signed_in", "suspended"];
 const WEEK_MS = 7 * 24 * 3600 * 1000;
 
-type ConfirmKind = "revoke" | "suspend" | "reinstate" | "reset";
+type ConfirmKind = "revoke" | "suspend" | "reinstate" | "reset" | "reset_email" | "reset_mfa" | "remove_passkeys";
 type Dialog =
   | { type: "add" }
   | { type: "grant"; query?: string }
@@ -112,7 +119,15 @@ export function MembersPanel({ staff, currentUserId }: { staff: StaffMemberRow[]
       return;
     }
     const res =
-      kind === "revoke" ? await revokeStaffAccess(m.id) : await suspendStaff(m.id, kind === "suspend");
+      kind === "revoke"
+        ? await revokeStaffAccess(m.id)
+        : kind === "reset_email"
+          ? await sendStaffResetEmail(m.id)
+          : kind === "reset_mfa"
+            ? await resetStaffTwoFactor(m.id)
+            : kind === "remove_passkeys"
+              ? await removeStaffPasskeys(m.id)
+              : await suspendStaff(m.id, kind === "suspend");
     setBusy(false);
     if (res.error) return setActionError(errorText(res.error));
     finish();
@@ -140,6 +155,28 @@ export function MembersPanel({ staff, currentUserId }: { staff: StaffMemberRow[]
           {m.phone && (
             <div className="text-xs text-subtext" dir="ltr">
               <bdi>{m.phone}</bdi>
+            </div>
+          )}
+          {((m.mfaFactors ?? 0) > 0 || (m.passkeyCount ?? 0) > 0) && (
+            <div className="mt-1 flex flex-wrap items-center gap-1.5">
+              {(m.mfaFactors ?? 0) > 0 && (
+                <span
+                  title={t("security.mfa_on")}
+                  className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-[10px] font-bold text-success"
+                >
+                  <DashIcon name="shield" className="h-3 w-3" />
+                  {t("security.mfa_badge")}
+                </span>
+              )}
+              {(m.passkeyCount ?? 0) > 0 && (
+                <span
+                  title={t("security.passkeys", { count: m.passkeyCount ?? 0 })}
+                  className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold text-subtext"
+                >
+                  <DashIcon name="lock" className="h-3 w-3" />
+                  {t("security.passkeys_badge", { count: m.passkeyCount ?? 0 })}
+                </span>
+              )}
             </div>
           )}
         </div>
@@ -198,6 +235,36 @@ export function MembersPanel({ staff, currentUserId }: { staff: StaffMemberRow[]
                   >
                     {t("row.reset_password")}
                   </MenuItem>
+                  <MenuItem
+                    disabled={self}
+                    title={self ? t("guard.self") : undefined}
+                    onClick={() => {
+                      close();
+                      setDialog({ type: "confirm", kind: "reset_email", m });
+                    }}
+                  >
+                    {t("row.reset_email")}
+                  </MenuItem>
+                  {(m.mfaFactors ?? 0) > 0 && (
+                    <MenuItem
+                      onClick={() => {
+                        close();
+                        setDialog({ type: "confirm", kind: "reset_mfa", m });
+                      }}
+                    >
+                      {t("row.reset_mfa")}
+                    </MenuItem>
+                  )}
+                  {(m.passkeyCount ?? 0) > 0 && (
+                    <MenuItem
+                      onClick={() => {
+                        close();
+                        setDialog({ type: "confirm", kind: "remove_passkeys", m });
+                      }}
+                    >
+                      {t("row.remove_passkeys")}
+                    </MenuItem>
+                  )}
                   <MenuItem
                     disabled={suspended ? false : !!blocked}
                     title={suspended ? undefined : blocked}

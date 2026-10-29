@@ -60,10 +60,13 @@
     "row": {
       "change_role": "Change role",
       "more": "More actions",
-      "reset_password": "Reset password",
+      "reset_password": "Set a temporary password",
       "suspend": "Suspend",
       "reinstate": "Reinstate",
-      "revoke": "Revoke access"
+      "revoke": "Revoke access",
+      "reset_email": "Email a reset link",
+      "reset_mfa": "Reset two-factor",
+      "remove_passkeys": "Remove passkeys"
     },
     "confirm": {
       "revoke": {
@@ -85,6 +88,21 @@
         "title": "Reset password",
         "desc": "Generate a new temporary password for {name}? Their current password stops working immediately.",
         "action": "Reset password"
+      },
+      "reset_email": {
+        "title": "Email a reset link",
+        "desc": "Send a password reset link to {name}'s email address? Their current password keeps working until they use it. Delivery depends on the email service being configured; if it isn't, set a temporary password instead.",
+        "action": "Send link"
+      },
+      "reset_mfa": {
+        "title": "Reset two-factor",
+        "desc": "Remove every authenticator app from {name}'s account? Use this when they lost their phone. They can sign in with their password or an email code and set two-factor up again.",
+        "action": "Reset two-factor"
+      },
+      "remove_passkeys": {
+        "title": "Remove passkeys",
+        "desc": "Remove every passkey from {name}'s account? They can still sign in with their password or an email code and add a new passkey.",
+        "action": "Remove passkeys"
       }
     },
     "add": {
@@ -171,7 +189,10 @@
       "weak_password": "Password must be at least 10 characters with a letter and a digit.",
       "same_password": "The new password must be different from the current one.",
       "not_signed_in": "You are not signed in.",
-      "generic": "Something went wrong. Please try again."
+      "generic": "Something went wrong. Please try again.",
+      "nothing_to_reset": "There is nothing to reset for this account.",
+      "email_failed": "The email could not be sent. Check the email service or set a temporary password instead.",
+      "email_rate_limited": "Too many emails were sent recently. Please wait a minute and try again."
     },
     "roles": {
       "super_admin": {
@@ -198,6 +219,12 @@
         "name": "HR Admin",
         "desc": "People management: customers, platform users, riders and verification."
       }
+    },
+    "security": {
+      "mfa_badge": "2FA",
+      "mfa_on": "Two-factor authentication is on",
+      "passkeys_badge": "{count, plural, one {# passkey} other {# passkeys}}",
+      "passkeys": "{count, plural, one {# passkey} other {# passkeys}} registered"
     }
   }
 }

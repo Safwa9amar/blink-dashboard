@@ -60,10 +60,13 @@
     "row": {
       "change_role": "Changer le rôle",
       "more": "Plus d'actions",
-      "reset_password": "Réinitialiser le mot de passe",
+      "reset_password": "Définir un mot de passe temporaire",
       "suspend": "Suspendre",
       "reinstate": "Rétablir",
-      "revoke": "Révoquer l'accès"
+      "revoke": "Révoquer l'accès",
+      "reset_email": "Envoyer un lien de réinitialisation",
+      "reset_mfa": "Réinitialiser la double authentification",
+      "remove_passkeys": "Supprimer les clés d'accès"
     },
     "confirm": {
       "revoke": {
@@ -85,6 +88,21 @@
         "title": "Réinitialiser le mot de passe",
         "desc": "Générer un nouveau mot de passe temporaire pour {name} ? Son mot de passe actuel cessera de fonctionner immédiatement.",
         "action": "Réinitialiser"
+      },
+      "reset_email": {
+        "title": "Envoyer un lien de réinitialisation",
+        "desc": "Envoyer un lien de réinitialisation du mot de passe à l'adresse e-mail de {name} ? Son mot de passe actuel reste valable tant qu'il n'utilise pas le lien. L'envoi dépend de la configuration du service e-mail ; sinon, définissez un mot de passe temporaire.",
+        "action": "Envoyer le lien"
+      },
+      "reset_mfa": {
+        "title": "Réinitialiser la double authentification",
+        "desc": "Retirer toutes les applications d'authentification du compte de {name} ? À utiliser s'il a perdu son téléphone. Il pourra se connecter avec son mot de passe ou un code par e-mail, puis la reconfigurer.",
+        "action": "Réinitialiser"
+      },
+      "remove_passkeys": {
+        "title": "Supprimer les clés d'accès",
+        "desc": "Supprimer toutes les clés d'accès du compte de {name} ? Il pourra toujours se connecter avec son mot de passe ou un code par e-mail et en ajouter une nouvelle.",
+        "action": "Supprimer les clés"
       }
     },
     "add": {
@@ -171,7 +189,10 @@
       "weak_password": "Le mot de passe doit contenir au moins 10 caractères, avec une lettre et un chiffre.",
       "same_password": "Le nouveau mot de passe doit être différent de l'actuel.",
       "not_signed_in": "Vous n'êtes pas connecté.",
-      "generic": "Une erreur est survenue. Veuillez réessayer."
+      "generic": "Une erreur est survenue. Veuillez réessayer.",
+      "nothing_to_reset": "Il n'y a rien à réinitialiser pour ce compte.",
+      "email_failed": "L'e-mail n'a pas pu être envoyé. Vérifiez le service e-mail ou définissez un mot de passe temporaire.",
+      "email_rate_limited": "Trop d'e-mails ont été envoyés récemment. Patientez une minute puis réessayez."
     },
     "roles": {
       "super_admin": {
@@ -198,6 +219,12 @@
         "name": "Admin RH",
         "desc": "Gestion des personnes : clients, utilisateurs, livreurs et vérification."
       }
+    },
+    "security": {
+      "mfa_badge": "2FA",
+      "mfa_on": "La double authentification est activée",
+      "passkeys_badge": "{count, plural, one {# clé d'accès} other {# clés d'accès}}",
+      "passkeys": "{count, plural, one {# clé d'accès enregistrée} other {# clés d'accès enregistrées}}"
     }
   }
 }
