@@ -17,6 +17,8 @@ export async function createAdminClient() {
   if (serviceKey) {
     return createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceKey, {
       cookies: { getAll: () => [], setAll: () => {} },
+      // auth.admin.passkey.* throws unless the experimental passkey API is switched on.
+      auth: { experimental: { passkey: true } },
     });
   }
   return createSsrClient();
