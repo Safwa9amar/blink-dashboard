@@ -7,6 +7,7 @@ export default function PricingTiersClient(props: {
   overrides: Override[];
   tiers: Tier[];
   canEdit: boolean;
+  highlightTier?: string;
   error?: string;
 }) {
   return <TiersView {...props} />;

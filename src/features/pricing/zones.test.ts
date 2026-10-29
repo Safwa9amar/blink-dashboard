@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { exportZones, formatArea, geometryToLatLngs, isHexColor, isTierCode, layerGeometry, liveTiers, nextTierOrder, normalizeGeometry, parseGeoJson, tierColor, tierName } from "./zones";
-import type { Tier, Zone } from "./types";
+import { canPriceZone, zoneLiveOverrides, zonePriceFees, exportZones, formatArea, geometryToLatLngs, isHexColor, isTierCode, layerGeometry, liveTiers, nextTierOrder, normalizeGeometry, parseGeoJson, tierColor, tierName } from "./zones";
+import type { Fee, Override, Tier, Zone } from "./types";
 
 const ring = [[3, 36], [3.1, 36], [3.1, 36.1], [3, 36]];
 const poly = { type: "Polygon", coordinates: [ring] };
@@ -109,5 +109,36 @@ describe("export / geometry helpers", () => {
     expect(formatArea(0.456)).toBe("0.46");
     expect(formatArea(12.44)).toBe("12.4");
     expect(formatArea(250.7)).toBe("251");
+  });
+});
+
+describe("zone pricing helpers", () => {
+  const ov = (p: Partial<Override>): Override =>
+    ({ id: "o1", key: "ride_fare", service: null, zone_id: "z1", status: "active", ...p }) as Override;
+
+  it("only saved, live zones can be priced", () => {
+    expect(canPriceZone(zone({}))).toBe(true);
+    expect(canPriceZone(zone({ archived_at: "2026-10-01T00:00:00Z" }))).toBe(false);
+    expect(canPriceZone(zone({ id: "" }))).toBe(false);
+    expect(canPriceZone(undefined)).toBe(false);
+  });
+
+  it("lists a zone's active and scheduled overrides, ordered by fee", () => {
+    const list = [
+      ov({ id: "a", key: "ride_fare" }),
+      ov({ id: "b", key: "courier_fare" }),
+      ov({ id: "c", status: "ended" }),
+      ov({ id: "d", status: "archived" }),
+      ov({ id: "e", zone_id: "z2" }),
+      ov({ id: "f", zone_id: null }),
+      ov({ id: "g", key: "ride_fare", status: "scheduled", service: "a" }),
+    ];
+    expect(zoneLiveOverrides(list, "z1").map((o) => o.id)).toEqual(["b", "a", "g"]);
+    expect(zoneLiveOverrides(list, "none")).toEqual([]);
+  });
+
+  it("keeps only fees with a zone scope", () => {
+    const fee = (key: string, zone: boolean) => ({ key, scopes: zone ? { zone: true } : { wilaya: true } }) as unknown as Fee;
+    expect(zonePriceFees([fee("a", true), fee("b", false)]).map((f) => f.key)).toEqual(["a"]);
   });
 });

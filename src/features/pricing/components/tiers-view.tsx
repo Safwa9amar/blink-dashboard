@@ -19,11 +19,14 @@ export function TiersView({
   tiers,
   canEdit,
   error,
+  highlightTier,
 }: {
   fees: Fee[];
   overrides: Override[];
   tiers: Tier[];
   canEdit: boolean;
+  /** Tier code to emphasise (from `?tier=`). */
+  highlightTier?: string;
   error?: string;
 }) {
   const t = useTranslations("pricing");
@@ -65,7 +68,11 @@ export function TiersView({
             <tr className="bg-muted/40">
               <th className="text-start font-semibold text-subtext px-4 py-3 min-w-[200px]">{t("overrides.col.fee")}</th>
               {matrix.tiers.map((x) => (
-                <th key={x.code} className="text-start font-semibold text-text px-3 py-3 min-w-[170px]">
+                <th
+                  key={x.code}
+                  className={`text-start font-semibold text-text px-3 py-3 min-w-[170px] ${x.code === highlightTier ? "bg-soft-pink" : ""}`}
+                  aria-current={x.code === highlightTier ? "true" : undefined}
+                >
                   <span className="inline-flex items-center gap-2">
                     <span className="w-3 h-3 rounded-full" style={{ background: x.color }} />
                     {tierName(tiers, x.code, locale)}
@@ -97,7 +104,7 @@ export function TiersView({
                     </>
                   );
                   return (
-                    <td key={tier.code} className="px-2 py-1.5">
+                    <td key={tier.code} className={`px-2 py-1.5 ${tier.code === highlightTier ? "bg-soft-pink/40" : ""}`}>
                       {canEdit ? (
                         <button
                           type="button"

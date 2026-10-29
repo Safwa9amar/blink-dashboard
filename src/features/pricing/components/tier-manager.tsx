@@ -53,6 +53,9 @@ export function TierManager({ tiers, canEdit }: { tiers: Tier[]; canEdit: boolea
                 {t("tiers_card.usage", { zones: x.zone_count, overrides: x.override_count })} · <code>{x.code}</code>
               </p>
             </div>
+            <Link href={`/pricing/tiers?tier=${encodeURIComponent(x.code)}`} className="text-[12px] font-semibold text-primary shrink-0">
+              {t("tiers_card.prices")}
+            </Link>
             {canEdit && (
               <div className="flex items-center gap-1 shrink-0">
                 <Button variant="secondary" size="xs" icon="pencil" onClick={() => setEditing(x)} aria-label={t("actions.edit")} />

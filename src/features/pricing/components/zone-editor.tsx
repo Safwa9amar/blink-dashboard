@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useLocale, useTranslations } from "next-intl";
-import { Button, FormRow, fInput } from "@/components/ui";
+import { Badge, Button, FormRow, fInput } from "@/components/ui";
 import { createZone, updateZone } from "@/app/d/pricing/action";
-import type { Tier, Zone, ZoneGeometry } from "../types";
-import { liveTiers, formatArea, tierName } from "../zones";
+import { formatValueShort } from "../format";
+import type { Fee, Override, TFn, Tier, Zone, ZoneGeometry } from "../types";
+import { canPriceZone, liveTiers, formatArea, tierName, zoneLiveOverrides, zonePriceFees } from "../zones";
+import { useClassName } from "./vehicle-classes-context";
 
 interface ZoneForm {
   name: string;
@@ -25,6 +27,10 @@ export function ZoneEditor({
   geometry,
   tiers,
   readOnly,
+  fees = [],
+  overrides = [],
+  onSetPrices,
+  onEditOverride,
   onClose,
   onSaved,
   onArchive,
@@ -33,12 +39,21 @@ export function ZoneEditor({
   geometry?: ZoneGeometry | null;
   tiers: Tier[];
   readOnly?: boolean;
+  /** Catalog + overrides of the page: power the "set prices" button and the zone's price list. */
+  fees?: Fee[];
+  overrides?: Override[];
+  onSetPrices?: (zone: Zone) => void;
+  onEditOverride?: (override: Override) => void;
   onClose: () => void;
   onSaved: () => void;
   onArchive?: (zone: Zone) => void;
 }) {
   const t = useTranslations("pricing");
   const locale = useLocale();
+  const tf = t as unknown as TFn;
+  const className = useClassName();
+  const zoneOverrides = useMemo(() => (zone ? zoneLiveOverrides(overrides, zone.id) : []), [overrides, zone]);
+  const showPrices = !!zone && canPriceZone(zone) && !readOnly && !!onSetPrices && zonePriceFees(fees).length > 0;
   const choices = liveTiers(tiers);
   const {
     register,
@@ -151,6 +166,42 @@ export function ZoneEditor({
             </dd>
           </div>
         </dl>
+      )}
+
+      {zone && canPriceZone(zone) && (
+        <section className="rounded-lg border border-border p-3 space-y-2" aria-label={t("zones.prices.title")}>
+          <div className="flex items-center justify-between gap-2">
+            <h4 className="text-[12.5px] font-semibold text-text">{t("zones.prices.title")}</h4>
+            {showPrices && (
+              <Button type="button" size="xs" icon="plus" onClick={() => onSetPrices(zone)} disabled={pending}>
+                {t("zones.prices.set")}
+              </Button>
+            )}
+          </div>
+          {zoneOverrides.length === 0 ? (
+            <p className="text-[12px] text-subtext">{t("zones.prices.none")}</p>
+          ) : (
+            <ul className="divide-y divide-border">
+              {zoneOverrides.map((o) => (
+                <li key={o.id} className="flex items-center gap-2 py-1.5">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[12.5px] font-semibold text-text truncate">
+                      {t(`fees.${o.key}.name`)}
+                      {o.service && <span className="ms-1.5 font-normal text-subtext">· {t(`services.${o.service}`)}</span>}
+                    </p>
+                    <p className="text-[12px] text-subtext truncate">{formatValueShort(o.key, o.value, tf, className)}</p>
+                  </div>
+                  {o.status === "scheduled" && <Badge variant="info">{t("status.scheduled")}</Badge>}
+                  {!readOnly && onEditOverride && (
+                    <Button type="button" variant="ghost" size="xs" onClick={() => onEditOverride(o)} disabled={pending}>
+                      {t("actions.edit")}
+                    </Button>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       )}
 
       {message && <p className="text-sm text-danger">{message}</p>}

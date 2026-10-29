@@ -6,9 +6,10 @@ import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Badge, Button, Card, EmptyState, Modal } from "@/components/ui";
 import { archiveZone, lookupZone, updateZone } from "@/app/d/pricing/action";
-import { exportZones, formatArea, liveZones, tierColor, tierName } from "../zones";
-import type { Fee, Tier, Zone, ZoneGeometry, ZoneLookup } from "../types";
+import { canPriceZone, exportZones, formatArea, liveZones, tierColor, tierName, zonePriceFees } from "../zones";
+import type { Fee, Override, Tier, Zone, ZoneGeometry, ZoneLookup } from "../types";
 import { FeeEditModal } from "./fee-edit-modal";
+import { OverrideWizard } from "./override-wizard";
 import { TierManager } from "./tier-manager";
 import { ZoneEditor } from "./zone-editor";
 import { ZoneImportModal } from "./zone-import-modal";
@@ -23,6 +24,7 @@ export function ZonesView({
   tiers,
   unzonedTier,
   fees,
+  overrides = [],
   canEdit,
   error,
 }: {
@@ -30,6 +32,8 @@ export function ZonesView({
   tiers: Tier[];
   unzonedTier: string;
   fees: Fee[];
+  /** Overrides of all zones (the editor lists the selected zone's live ones). */
+  overrides?: Override[];
   canEdit: boolean;
   error?: string;
 }) {
@@ -48,12 +52,18 @@ export function ZonesView({
   const [removeError, setRemoveError] = useState<{ text: string; count?: number } | null>(null);
   const [importing, setImporting] = useState(false);
   const [editDefaults, setEditDefaults] = useState(false);
+  // The override wizard, opened from the zone panel / lookup popup: a new override on `zoneId`, or editing one.
+  const [wizard, setWizard] = useState<{ zoneId?: string; override?: Override } | null>(null);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [busy, start] = useTransition();
 
   const zoneDefaults = fees.find((f) => f.key === "zone_defaults") ?? null;
   const editing = editingId ? (live.find((z) => z.id === editingId) ?? null) : null;
   const dirtyIds = Object.keys(dirty);
+  const canSetPrices = canEdit && zonePriceFees(fees).length > 0;
+  const priceZone = (zone: Zone) => {
+    if (canPriceZone(zone)) setWizard({ zoneId: zone.id });
+  };
 
   const select = (id: string) => {
     setSelectedId(id);
@@ -190,7 +200,25 @@ export function ZonesView({
             canEdit={canEdit}
             lang={locale}
             lookupAt={lookup ? { lat: lookup.lat, lng: lookup.lng } : null}
-            lookupContent={lookup ? <ZoneLookupCard loading={lookup.loading} error={lookup.error} data={lookup.data} tiers={tiers} /> : null}
+            lookupContent={
+              lookup ? (
+                <ZoneLookupCard
+                  loading={lookup.loading}
+                  error={lookup.error}
+                  data={lookup.data}
+                  tiers={tiers}
+                  canEdit={canEdit}
+                  onSetZonePrices={
+                    canSetPrices
+                      ? (zoneId) => {
+                          const zone = live.find((z) => z.id === zoneId);
+                          if (zone) priceZone(zone);
+                        }
+                      : undefined
+                  }
+                />
+              ) : null
+            }
             onSelect={setSelectedId}
             onCreate={(g) => {
               setEditingId(null);
@@ -226,6 +254,10 @@ export function ZonesView({
               geometry={dirty[editing.id] ?? null}
               tiers={tiers}
               readOnly={!canEdit}
+              fees={fees}
+              overrides={overrides}
+              onSetPrices={canSetPrices ? priceZone : undefined}
+              onEditOverride={(o) => setWizard({ override: o })}
               onClose={() => setEditingId(null)}
               onSaved={refreshed}
               onArchive={(z) => {
@@ -278,6 +310,16 @@ export function ZonesView({
 
       {canEdit && (
         <>
+          <OverrideWizard
+            open={!!wizard}
+            onClose={() => setWizard(null)}
+            fees={fees}
+            zones={zones}
+            tiers={tiers}
+            override={wizard?.override ?? null}
+            scopePreset={wizard?.zoneId ? { zone_id: wizard.zoneId } : null}
+            onSaved={() => router.refresh()}
+          />
           <ZoneImportModal open={importing} onClose={() => setImporting(false)} tiers={tiers} />
           <FeeEditModal fee={editDefaults ? zoneDefaults : null} tiers={tiers} onClose={() => setEditDefaults(false)} />
           <Modal open={!!removing} onClose={cancelArchive} title={t("zones.archive_title")}>

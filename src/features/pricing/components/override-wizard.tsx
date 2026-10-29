@@ -49,6 +49,12 @@ export interface OverridePreset {
   partner: PartnerHit;
 }
 
+/**
+ * Pre-set scope for a new override: a zone (which already implies its wilaya and tier, so those stay
+ * empty) or a tier. The fee is still chosen in step 1, limited to fees that accept that scope.
+ */
+export type ScopePreset = { zone_id: string; tier?: undefined } | { tier: string; zone_id?: undefined };
+
 const GROUPS: FeeGroup[] = ["customer", "partner", "tax", "formula", "zones"];
 const hasScope = (f: Fee) =>
   !!f.scopes.service?.length || f.scopes.wilaya || f.scopes.merchant || f.scopes.agent || !!f.scopes.zone || !!f.scopes.tier;
@@ -66,6 +72,7 @@ export function OverrideWizard({
   override,
   preset,
   initialKey,
+  scopePreset,
   onSaved,
   zones,
   tiers,
@@ -76,6 +83,8 @@ export function OverrideWizard({
   override?: Override | null;
   preset?: OverridePreset | null;
   initialKey?: PricingKey;
+  /** New override with the zone / tier already chosen (ignored when editing). */
+  scopePreset?: ScopePreset | null;
   onSaved?: () => void;
   /** Zones / tiers already loaded by the page; fetched on open when omitted. */
   zones?: Zone[];
@@ -95,6 +104,7 @@ export function OverrideWizard({
           override={override}
           preset={preset}
           initialKey={initialKey}
+          scopePreset={override ? null : scopePreset}
           onClose={onClose}
           onSaved={onSaved}
           zones={zones}
@@ -110,6 +120,7 @@ function Body({
   override,
   preset,
   initialKey,
+  scopePreset,
   onClose,
   onSaved,
   zones: providedZones,
@@ -119,6 +130,7 @@ function Body({
   override?: Override | null;
   preset?: OverridePreset | null;
   initialKey?: PricingKey;
+  scopePreset?: ScopePreset | null;
   onClose: () => void;
   onSaved?: () => void;
   zones?: Zone[];
@@ -137,8 +149,14 @@ function Body({
   const tierLabel = (code: string | null | undefined) => (code ? tierName(allTiers, code, locale) : null);
 
   const selectable = useMemo(
-    () => fees.filter((f) => hasScope(f) && (!preset || f.scopes[preset.kind])),
-    [fees, preset],
+    () =>
+      fees.filter(
+        (f) =>
+          hasScope(f) &&
+          (!preset || f.scopes[preset.kind]) &&
+          (!scopePreset || (scopePreset.zone_id ? !!f.scopes.zone : !!f.scopes.tier)),
+      ),
+    [fees, preset, scopePreset],
   );
   const [key, setKey] = useState<PricingKey | null>(
     override?.key ?? (initialKey && selectable.some((f) => f.key === initialKey) ? initialKey : null),
@@ -152,8 +170,8 @@ function Body({
     defaultValues: {
       service: override?.service ?? "",
       wilaya_code: override?.wilaya_code ?? "",
-      zone_id: override?.zone_id ?? "",
-      tier: override?.tier ?? "",
+      zone_id: override?.zone_id ?? scopePreset?.zone_id ?? "",
+      tier: override?.tier ?? scopePreset?.tier ?? "",
       mode: override?.starts_at || override?.ends_at ? "range" : "always",
       starts_at: toInputDate(override?.starts_at),
       ends_at: toInputDate(override?.ends_at),
@@ -238,12 +256,13 @@ function Body({
       ...getValues(),
       service: "",
       wilaya_code: "",
-      zone_id: "",
-      tier: "",
+      zone_id: scopePreset?.zone_id ?? "",
+      tier: scopePreset?.tier ?? "",
       value: valueToForm(fieldDefs(f), f.value),
     });
     if (!preset) setPartner(null);
-    setStep(2);
+    // A preset zone / tier is the scope: skip the scope step (Back still reaches it).
+    setStep(scopePreset ? 3 : 2);
   };
 
   const scopeOk = !!service || !!wilaya || !!zoneId || !!tier || (!!partner && !!partnerKind);

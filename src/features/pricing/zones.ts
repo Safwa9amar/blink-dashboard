@@ -1,4 +1,4 @@
-import type { GeoFeature, GeoFeatureCollection, Position, Tier, Zone, ZoneGeometry } from "./types";
+import type { Fee, GeoFeature, GeoFeatureCollection, Override, Position, Tier, Zone, ZoneGeometry } from "./types";
 
 // Pure helpers for the zones map: tier lookups, GeoJSON parse / export. No map code here.
 
@@ -7,6 +7,19 @@ export const FALLBACK_TIER_COLOR = "#6B7280";
 
 export const liveTiers = (tiers: Tier[]) => tiers.filter((t) => !t.archived_at).sort((a, b) => a.sort_order - b.sort_order);
 export const liveZones = (zones: Zone[]) => zones.filter((z) => !z.archived_at);
+
+/** A zone can be priced once it is saved (has an id) and not archived. */
+export const canPriceZone = (zone: Pick<Zone, "id" | "archived_at"> | null | undefined): boolean => !!zone?.id && !zone.archived_at;
+
+/** Overrides pinned to a zone that still matter: currently active or scheduled, ordered by fee key. */
+export function zoneLiveOverrides(overrides: Override[], zoneId: string): Override[] {
+  return overrides
+    .filter((o) => o.zone_id === zoneId && (o.status === "active" || o.status === "scheduled"))
+    .sort((a, b) => a.key.localeCompare(b.key) || (a.service ?? "").localeCompare(b.service ?? ""));
+}
+
+/** Fees that accept a zone scope: the only ones the "set prices" wizard may offer for a zone. */
+export const zonePriceFees = (fees: Fee[]): Fee[] => fees.filter((f) => !!f.scopes.zone);
 
 /** The tier's name in the active locale (code when the tier is unknown). */
 export function tierName(tiers: Tier[], code: string | null | undefined, locale: string): string {

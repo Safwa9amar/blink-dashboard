@@ -549,7 +549,14 @@
           "out_of_service_area": "not served",
           "unknown": "n/a"
         },
-        "merchant_fee": "merchant's fee"
+        "merchant_fee": "merchant's fee",
+        "set_zone_prices": "Set prices for {zone}",
+        "set_tier_prices": "Set {tier} prices"
+      },
+      "prices": {
+        "title": "Prices for this zone",
+        "set": "Set prices for this zone",
+        "none": "No zone-specific prices yet. The zone uses its tier's prices."
       }
     },
     "tiers_card": {
@@ -571,7 +578,8 @@
       "order": "Order",
       "archive_title": "Archive tier",
       "archive_body": "Archive the tier “{tier}”? It disappears from pickers; existing history is kept.",
-      "see_overrides": "See its overrides"
+      "see_overrides": "See its overrides",
+      "prices": "Prices"
     },
     "matrix": {
       "empty": "Nothing to compare yet",

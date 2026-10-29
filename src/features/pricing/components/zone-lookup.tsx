@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { Badge, Skeleton } from "@/components/ui";
+import { Badge, Button, Skeleton } from "@/components/ui";
 import { formatDa, num } from "../format";
 import { wilayaName } from "../labels";
 import type { TFn, Tier, ZoneLookup } from "../types";
@@ -14,11 +15,16 @@ export function ZoneLookupCard({
   error,
   data,
   tiers,
+  canEdit = false,
+  onSetZonePrices,
 }: {
   loading: boolean;
   error?: string;
   data: ZoneLookup | null;
   tiers: Tier[];
+  canEdit?: boolean;
+  /** Opens the override wizard on the zone under the clicked point. */
+  onSetZonePrices?: (zoneId: string) => void;
 }) {
   const t = useTranslations("pricing");
   const tf = t as unknown as TFn;
@@ -54,6 +60,16 @@ export function ZoneLookupCard({
           ))}
         </ul>
       </div>
+      {canEdit && place.zone && onSetZonePrices && (
+        <Button type="button" size="xs" icon="plus" onClick={() => onSetZonePrices(place.zone!.id)}>
+          {t("zones.lookup.set_zone_prices", { zone: place.zone.name })}
+        </Button>
+      )}
+      {canEdit && !place.zone && (
+        <Link href={`/pricing/tiers?tier=${encodeURIComponent(place.tier)}`} className="inline-block text-[12px] font-semibold text-primary">
+          {t("zones.lookup.set_tier_prices", { tier: tierName(tiers, place.tier, locale) })}
+        </Link>
+      )}
     </div>
   );
 }

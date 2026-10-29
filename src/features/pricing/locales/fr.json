@@ -549,7 +549,14 @@
           "out_of_service_area": "non desservi",
           "unknown": "n/d"
         },
-        "merchant_fee": "tarif du marchand"
+        "merchant_fee": "tarif du marchand",
+        "set_zone_prices": "Définir les prix de {zone}",
+        "set_tier_prices": "Définir les prix {tier}"
+      },
+      "prices": {
+        "title": "Prix de cette zone",
+        "set": "Définir les prix de cette zone",
+        "none": "Aucun prix propre à cette zone. Elle utilise les prix de son niveau."
       }
     },
     "tiers_card": {
@@ -571,7 +578,8 @@
       "order": "Ordre",
       "archive_title": "Archiver le niveau",
       "archive_body": "Archiver le niveau « {tier} » ? Il disparaît des sélecteurs ; l'historique est conservé.",
-      "see_overrides": "Voir ses exceptions"
+      "see_overrides": "Voir ses exceptions",
+      "prices": "Prix"
     },
     "matrix": {
       "empty": "Rien à comparer pour l'instant",
