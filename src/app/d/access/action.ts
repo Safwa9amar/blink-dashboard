@@ -2,8 +2,11 @@
 
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
+import { getLocale } from "next-intl/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { createAnonAuthClient } from "@/lib/supabase/anon";
+import { requestOrigin } from "@/lib/auth/origin";
 import { getStaffActor } from "@/lib/auth/staff";
 import { isStaffRole, type StaffRole } from "@/lib/auth/access";
 import { logAccessEvent } from "@/features/access/audit";
@@ -255,6 +258,77 @@ export async function resetStaffPassword(userId: string): Promise<{ error: strin
   await logAccessEvent(supabase, { actorId: actor.id, targetId: userId, action: "password_reset" });
   refresh();
   return { error: null, tempPassword };
+}
+
+export async function resetStaffTwoFactor(userId: string): Promise<{ error: string | null }> {
+  const actor = await requireSuperAdmin();
+  if (!actor) return { error: "not_authorized" };
+
+  const supabase = await createAdminClient();
+  const target = await getTarget(supabase, userId);
+  if (!target || !target.staffRole) return { error: "not_found" };
+
+  const { data, error: listError } = await supabase.auth.admin.mfa.listFactors({ userId });
+  if (listError || !data) return { error: "generic" };
+  if (data.factors.length === 0) return { error: "nothing_to_reset" };
+  for (const f of data.factors) {
+    const { error } = await supabase.auth.admin.mfa.deleteFactor({ id: f.id, userId });
+    if (error) return { error: "generic" };
+  }
+
+  await logAccessEvent(supabase, { actorId: actor.id, targetId: userId, action: "mfa_reset" });
+  refresh();
+  return { error: null };
+}
+
+export async function removeStaffPasskeys(userId: string): Promise<{ error: string | null }> {
+  const actor = await requireSuperAdmin();
+  if (!actor) return { error: "not_authorized" };
+
+  const supabase = await createAdminClient();
+  const target = await getTarget(supabase, userId);
+  if (!target || !target.staffRole) return { error: "not_found" };
+
+  let passkeys: { id: string }[];
+  try {
+    const { data, error } = await supabase.auth.admin.passkey.listPasskeys({ userId });
+    if (error || !data) return { error: "generic" };
+    passkeys = data;
+  } catch {
+    return { error: "generic" };
+  }
+  if (passkeys.length === 0) return { error: "nothing_to_reset" };
+  try {
+    for (const p of passkeys) {
+      const { error } = await supabase.auth.admin.passkey.deletePasskey({ userId, passkeyId: p.id });
+      if (error) return { error: "generic" };
+    }
+  } catch {
+    return { error: "generic" };
+  }
+
+  await logAccessEvent(supabase, { actorId: actor.id, targetId: userId, action: "passkeys_reset" });
+  refresh();
+  return { error: null };
+}
+
+export async function sendStaffResetEmail(userId: string): Promise<{ error: string | null }> {
+  const actor = await requireSuperAdmin();
+  if (!actor) return { error: "not_authorized" };
+  if (actor.id === userId) return { error: "self_action" };
+
+  const supabase = await createAdminClient();
+  const target = await getTarget(supabase, userId);
+  if (!target || !target.staffRole || !target.email) return { error: "not_found" };
+
+  const locale = await getLocale();
+  const redirectTo = `${await requestOrigin()}/auth/confirm?next=/login/reset&lang=${locale}`;
+  const { error } = await createAnonAuthClient().auth.resetPasswordForEmail(target.email, { redirectTo });
+  if (error) return { error: /rate|seconds|limit/i.test(error.message) ? "email_rate_limited" : "email_failed" };
+
+  await logAccessEvent(supabase, { actorId: actor.id, targetId: userId, action: "reset_email_sent" });
+  refresh();
+  return { error: null };
 }
 
 // Any signed-in user (a flagged account has no usable dashboard role yet, so no staff gate).

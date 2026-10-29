@@ -50,6 +50,8 @@ export interface StaffMember {
   staffRole: StaffRole;
   status: StaffStatus;
   lastActive: string; // ISO date
+  mfaFactors?: number | null; // verified authenticator factors (null = unknown)
+  passkeyCount?: number | null; // registered passkeys (null = unknown)
 }
 
 // One entry in the access audit trail (who changed whose access, and when).
