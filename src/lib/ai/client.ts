@@ -7,7 +7,15 @@
 // remote providers). All failures surface as `AIError` with a message safe to
 // show an operator.
 
-import { AI_BASE_URL, AI_MODEL, AI_TIMEOUT_MS, OPENROUTER_BASE_URL, OPENROUTER_API_KEY, OPENROUTER_MODEL } from "./config";
+import {
+  AI_BASE_URL,
+  AI_MODEL,
+  AI_TIMEOUT_MS,
+  OPENROUTER_BASE_URL,
+  OPENROUTER_API_KEY,
+  OPENROUTER_FALLBACK_MODELS,
+  OPENROUTER_MODEL,
+} from "./config";
 import { AIError, type ChatOptions, type LMModel } from "./types";
 import type { Provider } from "./providers";
 import { parseDraftJSON } from "./parse";
@@ -24,8 +32,12 @@ interface ChatCompletionResponse {
   choices?: Array<{
     message?: { content?: string | ContentPart[] | null; reasoning_content?: string | null };
   }>;
-  error?: { message?: string } | string;
+  error?: ReplyErrorBody;
 }
+
+// OpenRouter puts the provider's own reason in `metadata.raw` and wraps it in a
+// generic "Provider returned error".
+type ReplyErrorBody = { message?: string; metadata?: { raw?: unknown; provider_name?: string } } | string;
 
 function extractText(content: string | ContentPart[] | null | undefined): string {
   if (typeof content === "string") return content;
@@ -189,19 +201,31 @@ export async function unloadModel(
 }
 
 // A failed chat reply as an AIError. OpenRouter answers a revoked or wrong key
-// with a bare "User not found." (401), so name the real problem instead.
-function replyError(
-  base: string,
-  status: number,
-  json: { error?: { message?: string } | string } | null
-): AIError {
+// with a bare "User not found." (401), and wraps a provider's failure in
+// "Provider returned error", so name the real problem instead.
+function replyError(base: string, status: number, json: { error?: ReplyErrorBody } | null): AIError {
   if (isOpenRouter(base) && status === 401) {
     return new AIError(
       "OpenRouter refused the API key — OPENROUTER_API_KEY is missing, revoked or wrong on the dashboard server."
     );
   }
-  const detail = typeof json?.error === "string" ? json.error : json?.error?.message;
-  return new AIError(detail || `The AI server returned ${status}.`);
+  const err = json?.error;
+  if (typeof err === "string") return new AIError(err);
+  const raw = typeof err?.metadata?.raw === "string" ? err.metadata.raw.slice(0, 200) : "";
+  if (isOpenRouter(base) && (status === 429 || raw)) {
+    return new AIError(
+      `The AI model is busy or rate-limited${err?.metadata?.provider_name ? ` (${err.metadata.provider_name})` : ""}` +
+        `${raw ? `: ${raw.replace(/[.\s]+$/, "")}.` : "."} Try again in a minute, or pick another model in Settings → AI.`
+    );
+  }
+  return new AIError(err?.message || `The AI server returned ${status}.`);
+}
+
+// OpenRouter tries `models` in order when a provider fails (at most 3 ids).
+function withFallbacks(body: Record<string, unknown>, base: string, model: string): Record<string, unknown> {
+  if (!isOpenRouter(base)) return body;
+  const models = [model, ...OPENROUTER_FALLBACK_MODELS.filter((m) => m !== model)].slice(0, 3);
+  return models.length > 1 ? { ...body, models } : body;
 }
 
 async function nativePost(
@@ -244,7 +268,7 @@ export async function chat(opts: ChatOptions): Promise<string> {
 
   try {
     const model = opts.model || (await resolveModel(base, signal));
-    const body = buildChatBody(model, { ...opts, temperature, maxTokens }, false);
+    const body = withFallbacks(buildChatBody(model, { ...opts, temperature, maxTokens }, false), base, model);
 
     let res: Response;
     try {
@@ -305,7 +329,7 @@ export async function* chatStream(
 
   try {
     const model = opts.model || (await resolveModel(base, signal));
-    const body = buildChatBody(model, { ...opts, temperature, maxTokens }, true);
+    const body = withFallbacks(buildChatBody(model, { ...opts, temperature, maxTokens }, true), base, model);
 
     let res: Response;
     try {
@@ -351,12 +375,15 @@ export async function* chatStream(
           choices?: Array<{
             delta?: { content?: string | ContentPart[] | null; reasoning_content?: string | null };
           }>;
+          error?: ReplyErrorBody;
         };
         try {
           json = JSON.parse(data);
         } catch {
           continue; // keep-alive or a split frame — skip
         }
+        // OpenRouter reports a provider failure after the 200 as an `error` frame.
+        if (json.error) throw replyError(base, 200, json);
         const delta = json.choices?.[0]?.delta;
         if (!delta) continue;
         const content = extractText(delta.content);
