@@ -301,7 +301,9 @@ export default function RiderDetailClient({ profile: p, vehicleClass, docs, orde
                 <tbody className="divide-y divide-border">
                   {orders.data.map((o) => (
                     <tr key={o.id}>
-                      <td className={`${td} font-mono text-primary`}>#{shortRef(o.id)}</td>
+                      <td className={`${td} font-mono text-primary`}>
+                        <Link href={`/orders/${o.id}`} className="hover:underline">#{shortRef(o.id)}</Link>
+                      </td>
                       <td className={td}>{o.store || dash}</td>
                       <td className={td}>{label(o.type)}</td>
                       <td className={td}><Badge variant={statusVariant(o.status)}>{label(o.status)}</Badge></td>
@@ -335,7 +337,9 @@ export default function RiderDetailClient({ profile: p, vehicleClass, docs, orde
                 <tbody className="divide-y divide-border">
                   {trips.data.map((r) => (
                     <tr key={r.id}>
-                      <td className={`${td} font-mono text-primary`}>#{shortRef(r.id)}</td>
+                      <td className={`${td} font-mono text-primary`}>
+                        <Link href={`/trips/${r.id}`} className="hover:underline">#{shortRef(r.id)}</Link>
+                      </td>
                       <td className={`${td} max-w-[14rem] truncate`} title={`${r.from} → ${r.to}`}>
                         {r.from || dash} → {r.to || dash}
                       </td>

@@ -82,7 +82,7 @@ export default function OrdersClient({ orders, error }: OrdersClientProps) {
   return (
     <div>
       <PageHeader title={t("title")} description={t("description")} />
-      <DataTable columns={columns} data={orders} error={error} emptyMessage={t("empty")} />
+      <DataTable columns={columns} data={orders} error={error} emptyMessage={t("empty")} rowHref={(row) => `/orders/${row.id as string}`} />
     </div>
   );
 }

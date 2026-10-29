@@ -53,9 +53,9 @@ Navigation is a module workspace: an icon rail of modules, a module menu of page
 | `/` (overview)  | counts of users, rider_profiles, orders, trips, transactions | —                                                                                              |
 | `/inbox` + top-bar bell | `staff_notifications` via the blink-server RPCs `staff_inbox` / `staff_inbox_unread` (service role, filtered to the kinds the role may see) | **yes** — read marks (`staff_inbox_mark_read`, `staff_inbox_mark_all_read`) through [src/lib/shell/actions.ts](src/lib/shell/actions.ts) |
 | `/users`        | `users` table                                                | **yes** — [src/app/d/users/action.ts](src/app/d/users/action.ts) (toggle active, edit, delete) |
-| `/orders`       | `orders` (limit 50)                                          | —                                                                                              |
+| `/orders` (+ `/[id]`) | `orders` (limit 50, service role); detail ⨝ customer / rider (`users`) + `stores` + `store_drivers` + `customer_coupons` + `pricing_zones`, plus the order's `trips` (mappers in `@/features/orders`); route map = `OpsMap` with the `route_path` GPS trail | — |
 | `/riders`       | `rider_profiles` ⨝ `users` (name, phone, `users.wilaya`) ⨝ `vehicles` by `user_id`, newest first, limit 1000 (service role); client-side search + pagination; detail panel shows vehicle specs and gray card / insurance (motorcycles only) | — |
-| `/trips`        | `trips` (limit 50)                                           | —                                                                                              |
+| `/trips` (+ `/[id]`) | `trips` (limit 50, service role); detail ⨝ rider / customer (`users`) + the linked `orders` row (mappers in `@/features/trips`) | — |
 | `/blink-cash`   | `transactions` (limit 50) — feeds the **Ledger** tab & Overview "latest activity" | —                                                                         |
 | `/agents`       | `users` (role agent) ⨝ `agent_profiles` ⨝ `agent_shops` (service role, limit 1000); list shows the shop + its review status, detail panel shows profile, shop and weekly hours | **yes** — edit / delete ([action.ts](src/app/d/agents/action.ts)) |
 | `/promotions` (+ `/new`, `/[id]`, `/analytics`) | `promotions` + `rpc('promotion_stats')` / `rpc('promotion_daily')` (service role; loaders in [data.ts](src/app/d/promotions/data.ts)) | **yes** — create / edit / pause / duplicate / archive / delete, cover upload to the `news` bucket ([action.ts](src/app/d/promotions/action.ts), gated by `getStaffActor`) |
@@ -91,7 +91,7 @@ A feature folder holds:
 - **`locales/{en,fr,ar}.json`** — the feature's own strings (all 13 have these).
 - some features also keep a **`store.ts`** (Zustand) for client-side state: `deep-links`, `marketplace`, `notifications`.
 
-> **Route vs. feature:** a route under `src/app/d/<name>/` may compose a matching feature (e.g. `/coupons` → `@/features/coupons`), or hold its view directly in `client.tsx` with co-located locales and no feature folder — this is the case for the Supabase-backed list routes `orders`, `trips`, and `blink-cash` (the latter composes the `@/features/blink-cash` components but fetches the `transactions` ledger in its own `page.tsx`).
+> **Route vs. feature:** a route under `src/app/d/<name>/` may compose a matching feature (e.g. `/coupons` → `@/features/coupons`), or hold its view directly in `client.tsx` with co-located locales and no feature folder — this is the case for the `orders` / `trips` list views (their `[id]` detail pages use the row mappers and shared detail components in `@/features/orders` / `@/features/trips`) and `blink-cash` (the latter composes the `@/features/blink-cash` components but fetches the `transactions` ledger in its own `page.tsx`).
 
 **`src/components/`** holds only cross-feature code: `ui/` (the shared UI kit, below) and standalone chrome — `dashboard-shell.tsx`, `shell/`, `theme-switcher.tsx`, `language-switcher.tsx`, `motion-scrollbar.tsx`.
 

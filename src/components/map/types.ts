@@ -25,6 +25,13 @@ export interface MapLine {
   kind?: MarkerKind;
 }
 
+/** A solid multi-point line, e.g. a rider's recorded GPS trail. */
+export interface MapPath {
+  id: string;
+  points: [number, number][];
+  kind?: MarkerKind;
+}
+
 /** A sized, shaded circle for aggregated areas (demand cells). */
 export interface MapCircle {
   id: string;
@@ -43,6 +50,7 @@ export interface MapCircle {
 export interface OpsMapProps {
   markers?: MapMarker[];
   lines?: MapLine[];
+  paths?: MapPath[];
   circles?: MapCircle[];
   height?: number;
   /** Change it to re-fit the view to the data (e.g. on range change); polling refreshes keep the view. */

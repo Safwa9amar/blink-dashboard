@@ -7,7 +7,7 @@ import "leaflet/dist/leaflet.css";
 import { useEffect, useMemo } from "react";
 import { CircleMarker, MapContainer, Polyline, Popup, TileLayer, Tooltip, useMap } from "react-leaflet";
 import type { LatLngBoundsExpression } from "leaflet";
-import type { MapCircle, MapLine, MapMarker, MarkerKind, OpsMapProps } from "./types";
+import type { MapCircle, MapLine, MapMarker, MapPath, MarkerKind, OpsMapProps } from "./types";
 
 const ALGIERS: [number, number] = [36.7538, 3.0588];
 
@@ -52,14 +52,15 @@ function FitBounds({ points, fitKey }: { points: [number, number][]; fitKey?: st
   return null;
 }
 
-export default function OpsMapInner({ markers = [], lines = [], circles = [], height = 420, fitKey, className = "" }: OpsMapProps) {
+export default function OpsMapInner({ markers = [], lines = [], paths = [], circles = [], height = 420, fitKey, className = "" }: OpsMapProps) {
   const dark = typeof document !== "undefined" && document.documentElement.getAttribute("data-theme") === "dark";
   const points = useMemo<[number, number][]>(
     () => [
       ...markers.map((m) => [m.lat, m.lng] as [number, number]),
       ...circles.map((c) => [c.lat, c.lng] as [number, number]),
+      ...paths.flatMap((p) => p.points),
     ],
-    [markers, circles]
+    [markers, circles, paths]
   );
 
   return (
@@ -85,6 +86,9 @@ export default function OpsMapInner({ markers = [], lines = [], circles = [], he
         ))}
         {lines.map((l: MapLine) => (
           <Polyline key={l.id} positions={[l.from, l.to]} pathOptions={{ color: cssColor(l.kind ?? "pickup"), weight: 2, opacity: 0.6, dashArray: "4 6" }} />
+        ))}
+        {paths.map((p: MapPath) => (
+          <Polyline key={p.id} positions={p.points} pathOptions={{ color: cssColor(p.kind ?? "pickup"), weight: 4, opacity: 0.8 }} />
         ))}
         {markers.map((m: MapMarker) => (
           <CircleMarker

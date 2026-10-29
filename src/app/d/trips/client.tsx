@@ -67,7 +67,7 @@ export default function TripsClient({ trips, error }: TripsClientProps) {
   return (
     <div>
       <PageHeader title={t("title")} description={t("description")} />
-      <DataTable columns={columns} data={trips} error={error} emptyMessage={t("empty")} />
+      <DataTable columns={columns} data={trips} error={error} emptyMessage={t("empty")} rowHref={(row) => `/trips/${row.id as string}`} />
     </div>
   );
 }
