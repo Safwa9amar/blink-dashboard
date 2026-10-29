@@ -5,7 +5,7 @@ import { cache } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { canAccessPath, defaultPathFor, type StaffRole } from "./access";
-import { decideGate, type StaffGate } from "./gate";
+import { assuranceLevels, decideGate, type StaffGate } from "./gate";
 
 // Resolves the viewer's gate state: signed out, needs the second factor, not staff, or ok.
 //
@@ -21,8 +21,14 @@ export const getStaffGate = cache(async (): Promise<StaffGate> => {
   } = await supabase.auth.getUser();
   if (!user) return { status: "signed_out" };
 
-  const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-  const levels = { currentLevel: aal?.currentLevel, nextLevel: aal?.nextLevel };
+  // Never mfa.getAuthenticatorAssuranceLevel() here: without a token argument it reads the
+  // factor list from the session cookie, which the browser can edit to skip the second step.
+  // `user` is server-verified (getUser hits Auth), and getSession() returns the access token
+  // getUser() just validated, so its `aal` claim can be trusted.
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const levels = assuranceLevels(user.factors, session?.access_token);
   if (levels.nextLevel === "aal2" && levels.currentLevel !== "aal2") {
     return decideGate({ userId: user.id, staffRole: null, ...levels });
   }

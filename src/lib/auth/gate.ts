@@ -26,3 +26,25 @@ export function decideGate(input: {
     ? { status: "ok", id: input.userId, role: input.staffRole }
     : { status: "not_staff" };
 }
+
+/** `aal` claim of an access token, decoded without verifying (callers verify it first). */
+export function tokenAal(jwt: string | null | undefined): string | null {
+  const part = jwt?.split(".")[1];
+  if (!part) return null;
+  try {
+    const json = JSON.parse(Buffer.from(part.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf8"));
+    return typeof json?.aal === "string" ? json.aal : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Assurance levels from a server-verified user (its factors) and its validated token. */
+export function assuranceLevels(
+  factors: readonly { status?: string }[] | null | undefined,
+  accessToken: string | null | undefined,
+): { currentLevel: string | null; nextLevel: string | null } {
+  const currentLevel = tokenAal(accessToken);
+  const nextLevel = factors?.some((f) => f.status === "verified") ? "aal2" : currentLevel;
+  return { currentLevel, nextLevel };
+}

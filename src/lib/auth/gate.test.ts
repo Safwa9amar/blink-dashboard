@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { decideGate } from "./gate";
+import { assuranceLevels, decideGate, tokenAal } from "./gate";
 
 const base = { userId: "u1", staffRole: "super_admin", currentLevel: "aal1", nextLevel: "aal1" };
 
@@ -30,5 +30,21 @@ describe("decideGate", () => {
       id: "u1",
       role: "super_admin",
     });
+  });
+});
+
+const jwt = (payload: object) => `h.${Buffer.from(JSON.stringify(payload)).toString("base64url")}.sig`;
+
+describe("assuranceLevels", () => {
+  it("reads aal from the token and demands aal2 once a factor is verified", () => {
+    expect(tokenAal(jwt({ aal: "aal1" }))).toBe("aal1");
+    expect(tokenAal("garbage")).toBeNull();
+    expect(assuranceLevels([{ status: "verified" }], jwt({ aal: "aal1" }))).toEqual({ currentLevel: "aal1", nextLevel: "aal2" });
+    expect(assuranceLevels([{ status: "verified" }], jwt({ aal: "aal2" }))).toEqual({ currentLevel: "aal2", nextLevel: "aal2" });
+  });
+
+  it("ignores unverified factors", () => {
+    expect(assuranceLevels([{ status: "unverified" }], jwt({ aal: "aal1" }))).toEqual({ currentLevel: "aal1", nextLevel: "aal1" });
+    expect(assuranceLevels(undefined, jwt({ aal: "aal1" })).nextLevel).toBe("aal1");
   });
 });
