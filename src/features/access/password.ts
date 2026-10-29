@@ -23,11 +23,5 @@ export function generateTempPassword(): string {
   return chars.join("");
 }
 
-export const MIN_PASSWORD_LENGTH = 10;
-
-/** Returns an `access.errors.*` key, or null when the password is acceptable. */
-export function validateNewPassword(pw: string, current?: string): "weak_password" | "same_password" | null {
-  if (pw.length < MIN_PASSWORD_LENGTH || !/[A-Za-z]/.test(pw) || !/\d/.test(pw)) return "weak_password";
-  if (current && pw === current) return "same_password";
-  return null;
-}
+// The policy itself lives in ./password-policy (no node imports, so client forms can use it).
+export { MIN_PASSWORD_LENGTH, validateNewPassword } from "./password-policy";

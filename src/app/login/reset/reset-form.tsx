@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui";
 import { createClient } from "@/lib/supabase/client";
-import { MIN_PASSWORD_LENGTH } from "@/features/access/password";
+import { MIN_PASSWORD_LENGTH } from "@/features/access/password-policy";
 import { AuthShell, ErrorBox } from "../auth-shell";
 import { PasswordField } from "../password-field";
 import { completePasswordReset } from "../action";
