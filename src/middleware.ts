@@ -54,8 +54,9 @@ export async function middleware(request: NextRequest) {
       return await updateSession(request);
     }
 
-    // /login stays at /login (shared between both)
-    if (pathname.startsWith("/login")) {
+    // /login and /auth stay at their own path (shared between both surfaces, never
+    // rewritten to /d/*).
+    if (pathname === "/login" || pathname.startsWith("/login/") || pathname.startsWith("/auth/")) {
       return await updateSession(request);
     }
 
@@ -63,10 +64,11 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next();
     }
 
-    // Rewrite all dashboard subdomain requests to /d/* internally
+    // Rewrite all dashboard subdomain requests to /d/* internally, gating them on the
+    // session first so signed-out visitors get /login?next=<public path>.
     const url = request.nextUrl.clone();
     url.pathname = `/d${pathname === "/" ? "" : pathname}`;
-    return NextResponse.rewrite(url);
+    return await updateSession(request, url);
   }
 
   // Main domain — block dashboard internal routes
