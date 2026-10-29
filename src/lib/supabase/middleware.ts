@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { bounceSignedIn } from "@/lib/auth/redirect";
 
 // The dashboard is served from `/d/*` internally but its public URLs have no `/d`
 // prefix (`/orders/123`). `?next=` must hold the public one.
@@ -8,9 +9,6 @@ function publicPath(pathname: string, search: string): string {
   return p + search;
 }
 
-// Signed-in users have no business on these; everything else under /login and /auth
-// (password change, reset, MFA challenge, email-link confirm, sign-out) stays reachable.
-const SIGNED_OUT_ONLY = new Set(["/login", "/login/forgot"]);
 
 /**
  * Refreshes the Supabase session and gates the dashboard.
@@ -59,7 +57,10 @@ export async function updateSession(request: NextRequest, rewriteTo?: URL) {
   }
 
   // Authenticated on the sign-in screens → dashboard home.
-  if (user && SIGNED_OUT_ONLY.has(pathname.replace(/\/+$/, "") || "/")) {
+  // Page loads only — never the sign-in form's server-action POSTs (see bounceSignedIn).
+  // Everything else under /login and /auth (password change, reset, MFA, confirm, sign-out)
+  // stays reachable when signed in.
+  if (user && bounceSignedIn(request.method, pathname)) {
     const url = request.nextUrl.clone();
     url.pathname = "/";
     url.search = "";

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { safeNext } from "./redirect";
+import { bounceSignedIn, safeNext } from "./redirect";
 
 describe("safeNext", () => {
   it("keeps same-site relative paths", () => {
@@ -15,5 +15,20 @@ describe("safeNext", () => {
     expect(safeNext("/\\evil.com")).toBe("/");
     expect(safeNext("/login")).toBe("/");
     expect(safeNext("/auth/confirm?x=1", "/inbox")).toBe("/inbox");
+  });
+});
+
+describe("bounceSignedIn", () => {
+  it("bounces signed-in page loads off the sign-in screens", () => {
+    expect(bounceSignedIn("GET", "/login")).toBe(true);
+    expect(bounceSignedIn("GET", "/login/forgot/")).toBe(true);
+    expect(bounceSignedIn("HEAD", "/login")).toBe(true);
+  });
+
+  it("never bounces the sign-in form's server actions or the other auth screens", () => {
+    expect(bounceSignedIn("POST", "/login")).toBe(false);
+    expect(bounceSignedIn("GET", "/login/mfa")).toBe(false);
+    expect(bounceSignedIn("GET", "/login/reset")).toBe(false);
+    expect(bounceSignedIn("GET", "/auth/confirm")).toBe(false);
   });
 });
