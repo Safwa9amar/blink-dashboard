@@ -142,10 +142,19 @@ export type SummaryScope = {
   wilaya_code?: string | null;
   partnerKind?: "merchant" | "agent" | null;
   partnerName?: string | null;
+  /** Display names (already resolved) of the zone / tier the override is scoped to. */
+  zoneName?: string | null;
+  tierName?: string | null;
 };
 
 export type SummaryParts = {
-  who: { partner: { kind: "merchant" | "agent"; name: string } | null; service: string | null; wilaya: string | null };
+  who: {
+    partner: { kind: "merchant" | "agent"; name: string } | null;
+    service: string | null;
+    wilaya: string | null;
+    zone: string | null;
+    tier: string | null;
+  };
   key: PricingKey;
   before: string;
   after: string;
@@ -183,7 +192,13 @@ export function summaryParts(input: {
   const win = from && until ? "both" : from ? "from" : until ? "until" : "none";
   const partner = scope.partnerKind && scope.partnerName ? { kind: scope.partnerKind, name: scope.partnerName } : null;
   return {
-    who: { partner, service: scope.service || null, wilaya: scope.wilaya_code || null },
+    who: {
+      partner,
+      service: scope.service || null,
+      wilaya: scope.wilaya_code || null,
+      zone: scope.zoneName || null,
+      tier: scope.tierName || null,
+    },
     key: fee.key,
     before,
     after,

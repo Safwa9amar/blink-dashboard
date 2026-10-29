@@ -1,6 +1,9 @@
 export * from "./types";
 export * from "./format";
 export * from "./cockpit";
+export * from "./zones";
+export * from "./matrix";
+export * from "./formula";
 export { WILAYA_OPTIONS, wilayaLabel } from "./wilayas";
 export { OverviewView } from "./components/overview-view";
 export { OverridesView } from "./components/overrides-view";
@@ -8,3 +11,6 @@ export { HistoryView } from "./components/history-view";
 export { SimulatorView } from "./components/simulator-view";
 export { PricingHeaderActions } from "./components/header-actions";
 export { PricingDealsCard } from "./components/deals-card";
+export { ZonesView } from "./components/zones-view";
+export { TiersView } from "./components/tiers-view";
+export { FormulaView } from "./components/formula-view";

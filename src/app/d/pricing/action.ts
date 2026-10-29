@@ -20,6 +20,15 @@ import type {
   SimulateBody,
   SimulateResult,
   PricingKey,
+  Tier,
+  TierInput,
+  TierPatch,
+  Zone,
+  ZoneInput,
+  ZoneLookup,
+  ZonePatch,
+  ZonesPayload,
+  GeoFeatureCollection,
 } from "@/features/pricing";
 import { PRICING_KEYS } from "@/features/pricing";
 
@@ -28,8 +37,27 @@ import { PRICING_KEYS } from "@/features/pricing";
 import { PRICING_READ_ROLES, PRICING_WRITE_ROLES } from "./roles";
 const NS = "pricing";
 const ID_RE = /^[0-9a-f-]{36}$/i;
+const TIER_RE = /^[a-z][a-z0-9_]{1,23}$/;
 
-async function fail(res: Extract<BlinkApiResult<unknown>, { ok: false }>): Promise<{ ok: false; error: string; stale?: boolean; conflictId?: string; status?: number; code?: string }> {
+async function fail(res: Extract<BlinkApiResult<unknown>, { ok: false }>): Promise<Extract<ActionResult, { ok: false }>> {
+  const bodyCode = (res.body as { code?: unknown } | null | undefined)?.code;
+  const errCode = res.code ?? (typeof bodyCode === "string" ? bodyCode : undefined);
+  if (res.status === 409 && (errCode === "zone_in_use" || errCode === "tier_in_use" || res.error === "zone_in_use" || res.error === "tier_in_use")) {
+    const code = errCode ?? res.error;
+    const count = (res.body as { override_count?: unknown } | null | undefined)?.override_count;
+    const t = await getTranslations(`${NS}.errors`);
+    return {
+      ok: false,
+      status: 409,
+      code,
+      error: t(code),
+      ...(typeof count === "number" ? { overrideCount: count } : {}),
+    };
+  }
+  if (res.status === 400 && errCode === "geometry") {
+    const t = await getTranslations(`${NS}.errors`);
+    return { ok: false, status: 400, code: "geometry", error: t("geometry", { detail: res.error }) };
+  }
   if (res.status === 409) {
     const t = await getTranslations(`${NS}.errors`);
     if (res.error === "stale") {
@@ -41,12 +69,11 @@ async function fail(res: Extract<BlinkApiResult<unknown>, { ok: false }>): Promi
       return { ok: false, error: t("overlap"), conflictId: typeof id === "string" ? id : undefined };
     }
   }
-  const code = (res.body as { code?: unknown } | null | undefined)?.code;
   return {
     ok: false,
     error: await blinkApiErrorMessage(NS, res),
     status: res.status,
-    ...(typeof code === "string" ? { code } : {}),
+    ...(errCode ? { code: errCode } : {}),
   };
 }
 
@@ -193,4 +220,85 @@ export async function listMerchantStores(merchantId: string): Promise<StoreHit[]
     name: s.name ?? s.id,
     city: s.city ?? "",
   }));
+}
+
+// ---- zones & tiers -------------------------------------------------------------------
+
+/** Zones + tiers (+ the unzoned tier) — lazily fetched by editors opened outside /pricing/zones. */
+export async function loadZones(includeArchived = false): Promise<ActionResult<ZonesPayload>> {
+  const res = await blinkApi<ZonesPayload>(`/pricing/admin/zones?include_archived=${includeArchived}`, { roles: PRICING_READ_ROLES });
+  if (!res.ok) return fail(res);
+  return { ok: true, data: res.data };
+}
+
+export async function createZone(input: ZoneInput): Promise<ActionResult<Zone>> {
+  const res = await blinkApi<{ zone: Zone }>("/pricing/admin/zones", { method: "POST", body: input, roles: PRICING_WRITE_ROLES });
+  if (!res.ok) return fail(res);
+  done();
+  return { ok: true, data: res.data.zone };
+}
+
+export async function updateZone(id: string, patch: ZonePatch): Promise<ActionResult<Zone>> {
+  if (!ID_RE.test(id)) return { ok: false, error: await blinkApiErrorMessage(NS, { status: 400, error: "Bad id" }) };
+  const res = await blinkApi<{ zone: Zone }>(`/pricing/admin/zones/${id}`, { method: "PATCH", body: patch, roles: PRICING_WRITE_ROLES });
+  if (!res.ok) return fail(res);
+  done();
+  return { ok: true, data: res.data.zone };
+}
+
+/** Archive (soft delete). Fails with `zone_in_use` while live overrides still use the zone. */
+export async function archiveZone(id: string): Promise<ActionResult<Zone>> {
+  if (!ID_RE.test(id)) return { ok: false, error: await blinkApiErrorMessage(NS, { status: 400, error: "Bad id" }) };
+  const res = await blinkApi<{ zone: Zone }>(`/pricing/admin/zones/${id}`, { method: "DELETE", roles: PRICING_WRITE_ROLES });
+  if (!res.ok) return fail(res);
+  done();
+  return { ok: true, data: res.data.zone };
+}
+
+/** All-or-nothing GeoJSON import; every feature gets `tier`, its name from `name_property`. */
+export async function importZones(
+  geojson: GeoFeatureCollection,
+  tier: string,
+  nameProperty = "name"
+): Promise<ActionResult<Zone[]>> {
+  const res = await blinkApi<{ zones: Zone[] }>("/pricing/admin/zones/import", {
+    method: "POST",
+    body: { geojson, tier, name_property: nameProperty },
+    roles: PRICING_WRITE_ROLES,
+  });
+  if (!res.ok) return fail(res);
+  done();
+  return { ok: true, data: res.data.zones };
+}
+
+/** What a map click is priced as: place, effective values and sample fares (all from the server). */
+export async function lookupZone(lat: number, lng: number): Promise<ActionResult<ZoneLookup>> {
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return { ok: false, error: await blinkApiErrorMessage(NS, { status: 400, error: "Bad point" }) };
+  const res = await blinkApi<ZoneLookup>(`/pricing/admin/zones/lookup?lat=${lat}&lng=${lng}`, { roles: PRICING_READ_ROLES });
+  if (!res.ok) return fail(res);
+  return { ok: true, data: res.data };
+}
+
+export async function createTier(input: TierInput): Promise<ActionResult<Tier>> {
+  const res = await blinkApi<{ tier: Tier }>("/pricing/admin/tiers", { method: "POST", body: input, roles: PRICING_WRITE_ROLES });
+  if (!res.ok) return fail(res);
+  done();
+  return { ok: true, data: res.data.tier };
+}
+
+export async function updateTier(code: string, patch: TierPatch): Promise<ActionResult<Tier>> {
+  if (!TIER_RE.test(code)) return { ok: false, error: await blinkApiErrorMessage(NS, { status: 400, error: "Bad code" }) };
+  const res = await blinkApi<{ tier: Tier }>(`/pricing/admin/tiers/${code}`, { method: "PATCH", body: patch, roles: PRICING_WRITE_ROLES });
+  if (!res.ok) return fail(res);
+  done();
+  return { ok: true, data: res.data.tier };
+}
+
+/** Archive a tier. Fails with `tier_in_use` while a live zone / override / `zone_defaults` uses it. */
+export async function archiveTier(code: string): Promise<ActionResult<Tier>> {
+  if (!TIER_RE.test(code)) return { ok: false, error: await blinkApiErrorMessage(NS, { status: 400, error: "Bad code" }) };
+  const res = await blinkApi<{ tier: Tier }>(`/pricing/admin/tiers/${code}`, { method: "DELETE", roles: PRICING_WRITE_ROLES });
+  if (!res.ok) return fail(res);
+  done();
+  return { ok: true, data: res.data.tier };
 }

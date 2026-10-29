@@ -7,16 +7,20 @@ import { Badge, Button, EmptyState, StatCard, StatGrid } from "@/components/ui";
 import { endingSoon, overviewKpis } from "../cockpit";
 import { bigValue, formatDa, formatValueShort } from "../format";
 import { fmtDay, intlLocale, overrideShort, scopeShort } from "../labels";
-import type { Change, Fee, FeeGroup, Override, PricingKey, TFn } from "../types";
+import type { Change, Fee, FeeGroup, Override, PricingKey, TFn, Tier, Zone } from "../types";
+import { tierName } from "../zones";
+import type { ScopeNames } from "../labels";
 import { ExtendMenu } from "./extend-menu";
 import { FeeEditModal } from "./fee-edit-modal";
 import { FeeExampleLine } from "./fee-example";
 
-const GROUPS: FeeGroup[] = ["customer", "partner", "tax"];
+const GROUPS: FeeGroup[] = ["customer", "partner", "tax", "formula", "zones"];
 const GRID: Record<FeeGroup, string> = {
   customer: "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3",
   partner: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3",
   tax: "grid grid-cols-1 md:grid-cols-3 gap-3",
+  formula: "grid grid-cols-1 md:grid-cols-3 gap-3",
+  zones: "grid grid-cols-1 md:grid-cols-3 gap-3",
 };
 
 function relative(iso: string, nowMs: number, locale: string): string {
@@ -36,6 +40,8 @@ export function OverviewView({
   canEdit,
   error,
   nowIso,
+  zones = [],
+  tiers = [],
 }: {
   fees: Fee[];
   overrides: Override[];
@@ -43,6 +49,8 @@ export function OverviewView({
   canEdit: boolean;
   error?: string;
   nowIso: string;
+  zones?: Zone[];
+  tiers?: Tier[];
 }) {
   const t = useTranslations("pricing");
   const tf = t as unknown as TFn;
@@ -50,6 +58,10 @@ export function OverviewView({
   const now = useMemo(() => new Date(nowIso), [nowIso]);
   const [editingKey, setEditingKey] = useState<PricingKey | null>(null);
 
+  const names: ScopeNames = {
+    zone: (id) => zones.find((z) => z.id === id)?.name ?? t("scope.zone_generic"),
+    tier: (code) => tierName(tiers, code, locale),
+  };
   const kpis = useMemo(() => overviewKpis(overrides, now), [overrides, now]);
   const soon = useMemo(() => endingSoon(overrides, now), [overrides, now]);
   const feeOf = (key: string) => fees.find((f) => f.key === key);
@@ -101,7 +113,7 @@ export function OverviewView({
                     {t("overview.ending.line", {
                       fee: t(`fees.${o.key}.name`),
                       value: formatValueShort(o.key, o.value, tf),
-                      scope: scopeShort(o, locale, tf),
+                      scope: scopeShort(o, locale, tf, names),
                       days: daysLeft,
                       date: fmtDay(o.ends_at!, locale),
                       back: fee ? formatValueShort(o.key, fee.value, tf) : "—",
@@ -129,7 +141,8 @@ export function OverviewView({
                 <FeeCard
                   key={fee.key}
                   fee={fee}
-                  compact={g === "tax"}
+                  compact={g !== "customer" && g !== "partner"}
+                  names={names}
                   overrides={overrides.filter((o) => o.key === fee.key && o.status === "active")}
                   canEdit={canEdit}
                   onEdit={() => setEditingKey(fee.key)}
@@ -140,7 +153,7 @@ export function OverviewView({
         );
       })}
 
-      {canEdit && <FeeEditModal fee={editing} onClose={() => setEditingKey(null)} />}
+      {canEdit && <FeeEditModal fee={editing} tiers={tiers} onClose={() => setEditingKey(null)} />}
     </div>
   );
 }
@@ -150,8 +163,10 @@ function FeeCard({
   overrides,
   canEdit,
   compact,
+  names,
   onEdit,
 }: {
+  names: ScopeNames;
   fee: Fee;
   overrides: Override[];
   canEdit: boolean;
@@ -209,7 +224,7 @@ function FeeCard({
           ) : (
             <Badge variant="primary" className="max-w-full truncate normal-case">
               {overrides.length === 1
-                ? overrideShort(overrides[0], locale, tf)
+                ? overrideShort(overrides[0], locale, tf, names)
                 : t("defaults.active_overrides", { count: overrides.length })}
             </Badge>
           )}

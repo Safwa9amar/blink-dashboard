@@ -6,7 +6,10 @@
       "overrides": "Dérogations",
       "history": "Historique",
       "overview": "Vue d'ensemble",
-      "simulator": "Simulateur"
+      "simulator": "Simulateur",
+      "zones": "Zones",
+      "tiers": "Niveaux",
+      "formula": "Formule"
     },
     "groups": {
       "customer": "Prix clients",
@@ -14,7 +17,11 @@
       "partner": "Gains partenaires",
       "partner_desc": "Commissions, parts et pénalités des livreurs, marchands et agents",
       "tax": "Taxes et traitement",
-      "tax_desc": "Droit de timbre, retenue et frais de paiement"
+      "tax_desc": "Droit de timbre, retenue et frais de paiement",
+      "formula": "Formule de tarif",
+      "formula_desc": "Les constantes derrière chaque tarif de livraison et de course",
+      "zones": "Zones et couverture",
+      "zones_desc": "Où chaque niveau s'applique et où Blink opère"
     },
     "fees": {
       "service_fee": {
@@ -64,6 +71,22 @@
       "dues_payment_fee_rate": {
         "name": "Frais de paiement des dus",
         "desc": "Frais sur les paiements de dus des marchands et agents"
+      },
+      "fare_formula": {
+        "name": "Formule de tarif",
+        "desc": "Facteur routier, vitesses, arrondi, tarif min et max, durée d'arrêt et d'embarquement"
+      },
+      "dropoff_surcharge": {
+        "name": "Supplément de destination",
+        "desc": "Supplément calculé au lieu de dépose, éventuellement seulement si le niveau change"
+      },
+      "service_area": {
+        "name": "Zone de service",
+        "desc": "Active ou coupe Blink pour un lieu ; désactivé, les devis y sont indisponibles"
+      },
+      "zone_defaults": {
+        "name": "Niveau hors zone",
+        "desc": "Le niveau des points situés hors de toute zone dessinée"
       }
     },
     "fields": {
@@ -74,7 +97,23 @@
       "extra_stop_fee": "Arrêt supplémentaire",
       "amount": "Montant",
       "multiplier": "Multiplicateur",
-      "rate": "Taux"
+      "rate": "Taux",
+      "road_factor": "Facteur routier",
+      "rounding_step": "Pas d'arrondi",
+      "rounding_mode": "Mode d'arrondi",
+      "min_fare": "Tarif minimum",
+      "max_fare": "Tarif maximum (0 = sans plafond)",
+      "min_ride_km": "Distance minimale de course",
+      "speed_kmh_bicycle": "Vitesse vélo",
+      "speed_kmh_motorcycle": "Vitesse moto",
+      "stop_minutes": "Minutes par arrêt",
+      "boarding_minutes": "Minutes d'embarquement",
+      "per_minute": "Par minute de conduite",
+      "only_when_tier_changes": "Seulement si le niveau change",
+      "enabled": "Service disponible",
+      "unzoned_tier": "Niveau hors de toute zone",
+      "on": "Activé",
+      "off": "Désactivé"
     },
     "vehicle": {
       "bicycle": "Vélo",
@@ -82,10 +121,17 @@
     },
     "units": {
       "da": "Da",
-      "km": "km"
+      "km": "km",
+      "kmh": "km/h",
+      "min": "min"
     },
     "fmt": {
-      "fare": "{base} + {perKm}/km au-delà de {included} km (max {max} km)"
+      "fare": "{base} + {perKm}/km au-delà de {included} km (max {max} km)",
+      "per_minute": "+ {perMin}/min",
+      "formula": "Routes ×{road} · arrondi {mode} à {step}",
+      "surcharge_tier": "{amount} si le niveau change",
+      "service_on": "En service",
+      "service_off": "Hors service"
     },
     "example": {
       "before": "Actuel",
@@ -97,7 +143,8 @@
       "cancel": "Annuler",
       "create": "Créer",
       "archive": "Archiver",
-      "change": "Changer"
+      "change": "Changer",
+      "close": "Fermer"
     },
     "status": {
       "active": "Active",
@@ -116,7 +163,8 @@
       "withdrawal": "Retrait"
     },
     "scope": {
-      "everywhere": "Partout"
+      "everywhere": "Partout",
+      "zone_generic": "Zone"
     },
     "defaults": {
       "empty": "Aucun frais chargé",
@@ -141,7 +189,9 @@
       "filter": {
         "all_fees": "Tous les frais",
         "all_wilayas": "Toutes les wilayas",
-        "partner": "Partenaire"
+        "partner": "Partenaire",
+        "all_zones": "Toutes les zones",
+        "all_tiers": "Tous les niveaux"
       },
       "today": "Aujourd'hui",
       "view": {
@@ -165,7 +215,12 @@
       "tz_hint": "Heures d'Algérie (Africa/Algiers).",
       "note": "Note",
       "note_placeholder": "Pourquoi cet accord existe",
-      "see_conflict": "Voir la dérogation en conflit"
+      "see_conflict": "Voir la dérogation en conflit",
+      "zone": "Zone",
+      "any_zone": "Toutes les zones",
+      "zone_hint": "Une zone implique déjà sa wilaya et son niveau.",
+      "tier": "Niveau",
+      "any_tier": "Tous les niveaux"
     },
     "archive": {
       "title": "Archiver la dérogation",
@@ -183,12 +238,23 @@
         "update_default": "Valeur par défaut modifiée",
         "create_override": "Dérogation créée",
         "update_override": "Dérogation modifiée",
-        "archive_override": "Dérogation archivée"
+        "archive_override": "Dérogation archivée",
+        "create_zone": "Zone créée",
+        "update_zone": "Zone modifiée",
+        "archive_zone": "Zone archivée",
+        "create_tier": "Niveau créé",
+        "update_tier": "Niveau modifié",
+        "archive_tier": "Niveau archivé"
       },
       "empty": "Aucun changement",
       "all_actors": "Toutes les personnes",
       "open_override": "Ouvrir la dérogation",
-      "load_more": "Charger plus"
+      "load_more": "Charger plus",
+      "entity": {
+        "pricing_zone": "Zone",
+        "pricing_tier": "Niveau"
+      },
+      "open_zones": "Ouvrir les zones"
     },
     "preview": {
       "col": {
@@ -220,14 +286,23 @@
       "overlap": "Une autre dérogation de même portée chevauche cette période.",
       "number": "Saisissez un nombre",
       "range": "Entre {min} et {max}",
-      "stale_modal": "Ce tarif a été modifié par quelqu'un d'autre — la dernière valeur est chargée ; vérifiez et enregistrez à nouveau."
+      "stale_modal": "Ce tarif a été modifié par quelqu'un d'autre — la dernière valeur est chargée ; vérifiez et enregistrez à nouveau.",
+      "required": "Obligatoire",
+      "integer": "Saisissez un nombre entier",
+      "geometry": "Cette forme n'est pas valide ({detail})",
+      "zone_in_use": "Cette zone a encore des exceptions actives. Archivez-les ou terminez-les d'abord.",
+      "tier_in_use": "Ce niveau est encore utilisé par une zone, une exception active ou le réglage hors zone."
     },
     "header": {
       "simulate": "Simuler une commande",
       "new_override": "Nouvelle dérogation"
     },
     "edit": {
-      "title": "Modifier la valeur par défaut"
+      "title": "Modifier la valeur par défaut",
+      "tier_title": "Modifier le prix du niveau",
+      "tier_has_override": "Ce niveau a son propre prix.",
+      "tier_inherits": "Utilise la valeur par défaut pour l'instant : {value}",
+      "remove_tier_price": "Retirer le prix du niveau"
     },
     "vehicle_short": {
       "motorcycle": "moto",
@@ -245,7 +320,9 @@
       "rider_cancel_penalty": "Une annulation coûte {output} au livreur",
       "stamp_duty_rate": "Sur {input} de ventes, le timbre est de {output}",
       "agent_tax_rate": "Sur {input} de part agent, {output} sont retenus",
-      "dues_payment_fee_rate": "Payer {input} de dus coûte {output}"
+      "dues_payment_fee_rate": "Payer {input} de dus coûte {output}",
+      "fare_formula": "{km} km en {vehicle} : {output}",
+      "dropoff_surcharge": "{output} à la destination"
     },
     "extend": {
       "label": "Prolonger",
@@ -289,7 +366,7 @@
       "current": "Actuel {value}",
       "none": "Aucun frais ne peut être dérogé.",
       "scope_hint": "Choisissez où s'applique la dérogation. Au moins un critère est requis.",
-      "scope_required": "Choisissez au moins un service, une wilaya ou un partenaire.",
+      "scope_required": "Choisissez au moins un service, une zone, un niveau, une wilaya ou un partenaire.",
       "scope_locked": "La portée d'une dérogation existante ne peut pas changer.",
       "when": "Quand",
       "always": "Toujours",
@@ -349,11 +426,187 @@
       },
       "values_used": "Valeurs utilisées ({count})",
       "unavailable": {
-        "too_far": "Cette distance dépasse le maximum du service : aucun prix."
+        "too_far": "Cette distance dépasse le maximum du service : aucun prix.",
+        "too_close": "Le départ et la destination sont trop proches pour une course : aucun prix.",
+        "out_of_service_area": "Ce lieu est hors de la zone de service : aucun prix."
       },
       "store": "Magasin",
       "store_none": "Aucun magasin précis",
-      "delivery_fee_store": "Frais de livraison du magasin"
+      "delivery_fee_store": "Frais de livraison du magasin",
+      "pickup": "Départ",
+      "dropoff": "Destination",
+      "clear_points": "Effacer les points",
+      "route_hint": "Facultatif : cliquez sur la carte pour placer un départ et une destination",
+      "km_from_map": "Le serveur mesure la distance entre ces deux points.",
+      "breakdown": "Construction du tarif",
+      "place": "Tarifé à",
+      "steps": {
+        "base": "Tarif de base",
+        "distance": "Distance",
+        "time": "Temps de conduite",
+        "extra_stops": "Arrêts supplémentaires",
+        "dropoff_surcharge": "Supplément de destination",
+        "multiplier": "Multiplicateur",
+        "clamp": "Tarif min / max",
+        "rounding": "Arrondi"
+      }
+    },
+    "choices": {
+      "rounding_mode": {
+        "up": "Vers le haut",
+        "nearest": "Au plus proche",
+        "down": "Vers le bas"
+      }
+    },
+    "zones": {
+      "unzoned": "Hors zone",
+      "banner": "Les points hors de toute zone sont tarifés comme <b>{tier}</b>.",
+      "banner_change": "Modifier",
+      "banner_exceptions": "Exceptions par wilaya",
+      "unsaved": "{count, plural, one {# forme de zone modifiée} other {# formes de zone modifiées}}, pas encore enregistrée(s)",
+      "discard": "Annuler",
+      "save_shapes": "Enregistrer les formes",
+      "map_hint": "Cliquez n'importe où sur la carte pour voir comment ce point est tarifé.",
+      "map_hint_edit": "Dessinez un polygone avec la barre d'outils, ou cliquez sur la carte pour voir le tarif d'un point.",
+      "export": "Exporter en GeoJSON",
+      "list_title": "Zones",
+      "list_desc": "{count, plural, one {# zone active} other {# zones actives}}",
+      "empty": "Aucune zone pour l'instant",
+      "empty_hint": "Dessinez une ville sur la carte, ou importez un fichier GeoJSON.",
+      "details": "Détails",
+      "priority_short": "priorité {n}",
+      "area_value": "{km2} km²",
+      "new_title": "Nouvelle zone",
+      "edit_title": "Zone",
+      "new_hint": "Nommez le polygone que vous venez de dessiner et choisissez son niveau.",
+      "shape_changed": "La forme a été modifiée sur la carte ; l'enregistrement l'applique.",
+      "name": "Nom",
+      "tier": "Niveau",
+      "priority": "Priorité",
+      "priority_hint": "Quand des zones se chevauchent, la priorité la plus haute l'emporte, puis la plus petite surface.",
+      "area": "Surface",
+      "overrides": "Exceptions qui l'utilisent",
+      "archive_title": "Archiver la zone",
+      "archive_body": "Archiver « {name} » ? Les points à l'intérieur seront tarifés selon la zone restante, ou le niveau hors zone.",
+      "see_overrides": "Voir {count, plural, one {l'exception} other {les # exceptions}}",
+      "import": {
+        "button": "Importer un GeoJSON",
+        "title": "Importer des zones",
+        "hint": "Une FeatureCollection de polygones (200 maximum). Toutes les zones reçoivent le niveau ci-dessous ; l'import est tout ou rien.",
+        "choose": "Choisir un fichier",
+        "found": "{count, plural, one {# polygone trouvé} other {# polygones trouvés}}",
+        "tier": "Niveau pour toutes les zones",
+        "name_property": "Propriété du nom",
+        "submit": "Importer",
+        "errors": {
+          "json": "Ce fichier n'est pas un JSON valide.",
+          "shape": "Un GeoJSON de type FeatureCollection, Feature ou polygone est attendu.",
+          "empty": "Le fichier ne contient aucun élément.",
+          "too_many": "200 éléments maximum par import.",
+          "geometry": "Chaque élément doit être un polygone ou multipolygone aux contours fermés."
+        }
+      },
+      "lookup": {
+        "samples": "Tarifs d'exemple (5 km de route)",
+        "unzoned_note": "Hors de toute zone : tarifé comme {tier}.",
+        "unavailable": {
+          "too_far": "trop loin",
+          "too_close": "trop près",
+          "out_of_service_area": "non desservi",
+          "unknown": "n/d"
+        }
+      }
+    },
+    "tiers_card": {
+      "title": "Niveaux",
+      "desc": "Classes de lieux : ville, bourg, village. Les zones et les prix pointent vers un niveau.",
+      "add": "Ajouter un niveau",
+      "empty": "Aucun niveau",
+      "usage": "{zones, plural, one {# zone} other {# zones}} · {overrides, plural, one {# exception} other {# exceptions}}",
+      "new_title": "Nouveau niveau",
+      "edit_title": "Modifier le niveau",
+      "code": "Code",
+      "code_hint": "Minuscules, chiffres et tirets bas, en commençant par une lettre. Il ne pourra plus changer.",
+      "code_invalid": "2 à 24 caractères : a-z, 0-9, _, en commençant par une lettre",
+      "name_en": "Nom (anglais)",
+      "name_fr": "Nom (français)",
+      "name_ar": "Nom (arabe)",
+      "color": "Couleur",
+      "color_invalid": "Utilisez une couleur #RRGGBB",
+      "order": "Ordre",
+      "archive_title": "Archiver le niveau",
+      "archive_body": "Archiver le niveau « {tier} » ? Il disparaît des sélecteurs ; l'historique est conservé.",
+      "see_overrides": "Voir ses exceptions"
+    },
+    "matrix": {
+      "empty": "Rien à comparer pour l'instant",
+      "empty_hint": "La matrice nécessite au moins un niveau actif et un tarif pouvant varier selon le niveau.",
+      "hint": "Chaque cellule est la valeur qui s'applique à ce niveau.",
+      "hint_edit": "Chaque cellule est la valeur qui s'applique à ce niveau. Cliquez sur une cellule pour définir ou modifier le prix du niveau.",
+      "legend_override": "Prix du niveau",
+      "legend_inherited": "Hérité",
+      "tier_price": "Prix du niveau",
+      "inherited_default": "Par défaut",
+      "inherited_tier": "Tous services (niveau)"
+    },
+    "formula": {
+      "title": "Comment un tarif est calculé",
+      "desc": "Six étapes fixes, dans cet ordre. Les valeurs affichées sont les valeurs par défaut actuelles ; cliquez pour modifier.",
+      "note": "Les prix de zone et de niveau remplacent ces valeurs pour les trajets tarifés à cet endroit. La distance coursier additionne le départ et chaque destination.",
+      "edit_param": "Modifier {fee}",
+      "steps": {
+        "km": {
+          "title": "Distance routière",
+          "desc": "Km à vol d'oiseau × facteur routier, arrondi à 0,1 km."
+        },
+        "time": {
+          "title": "Temps de conduite",
+          "desc": "Km de route ÷ vitesse du véhicule × 60."
+        },
+        "raw": {
+          "title": "Prix brut",
+          "desc": "Base + km au-delà des km inclus × prix par km + minutes × prix par minute + arrêts supplémentaires + supplément de destination."
+        },
+        "scale": {
+          "title": "Multiplicateur",
+          "desc": "Prix brut × multiplicateur de tarif (hausse ou remise)."
+        },
+        "clamp": {
+          "title": "Minimum et maximum",
+          "desc": "Jamais sous le tarif minimum ; jamais au-dessus du maximum s'il est défini."
+        },
+        "round": {
+          "title": "Arrondi",
+          "desc": "Arrondi au pas d'arrondi, vers le haut, au plus proche ou vers le bas."
+        }
+      },
+      "params": {
+        "road_factor": "Facteur routier",
+        "speed_bicycle": "Vitesse vélo",
+        "speed_motorcycle": "Vitesse moto",
+        "courier_moto_base": "Base coursier moto",
+        "courier_moto_included": "Km inclus coursier moto",
+        "courier_moto_per_km": "Coursier moto par km",
+        "courier_moto_per_minute": "Coursier moto par minute",
+        "courier_bike_base": "Base coursier vélo",
+        "courier_bike_per_km": "Coursier vélo par km",
+        "extra_stop_fee": "Arrêt supplémentaire",
+        "ride_base": "Base course",
+        "ride_per_km": "Course par km",
+        "ride_per_minute": "Course par minute",
+        "dropoff_surcharge": "Supplément de destination",
+        "multiplier": "Multiplicateur",
+        "min_fare": "Tarif minimum",
+        "max_fare": "Tarif maximum",
+        "rounding_step": "Pas d'arrondi",
+        "rounding_mode": "Mode d'arrondi"
+      },
+      "example_title": "Exemple chiffré",
+      "example_desc": "Calculé par le serveur avec les prix actuels, étape par étape.",
+      "input_mode": "Distance depuis",
+      "two_points": "Deux points sur la carte",
+      "pick_two": "Choisissez un départ et une destination sur la carte.",
+      "no_breakdown": "Le serveur n'a pas fourni le détail des étapes pour ce résultat."
     }
   }
 }

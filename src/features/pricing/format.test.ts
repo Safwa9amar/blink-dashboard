@@ -1,0 +1,79 @@
+import { describe, expect, it } from "vitest";
+import { fieldDefs, formMatchesValue, formToValue, formatValueInline, isNumericUnit, valueToForm } from "./format";
+import type { Fee, TFn } from "./types";
+
+const formulaFee = {
+  key: "fare_formula",
+  fields: [
+    { path: "road_factor", unit: "multiplier", min: 1, max: 3, step: 0.01 },
+    { path: "rounding_mode", unit: "choice", min: 0, max: 0, step: 1, options: ["up", "nearest", "down"] },
+    { path: "speed_kmh.bicycle", unit: "kmh", min: 5, max: 120, step: 1 },
+    { path: "stop_minutes", unit: "min", min: 0, max: 60, step: 1 },
+  ],
+} as unknown as Fee;
+
+const surchargeFee = {
+  key: "dropoff_surcharge",
+  fields: [
+    { path: "amount", unit: "da", min: 0, max: 5000, step: 1 },
+    { path: "only_when_tier_changes", unit: "bool", min: 0, max: 0, step: 1 },
+  ],
+} as unknown as Fee;
+
+const zoneFee = { key: "zone_defaults", fields: [{ path: "unzoned_tier", unit: "tier", min: 0, max: 0, step: 1 }] } as unknown as Fee;
+const legFee = { key: "courier_fare", fields: [{ path: "bicycle.per_minute", unit: "da", min: 0, max: 1000, step: 1 }] } as unknown as Fee;
+
+describe("fieldDefs for the new units", () => {
+  it("maps kmh / min / bool / choice / tier and keeps options", () => {
+    const defs = fieldDefs(formulaFee);
+    expect(defs.map((d) => d.unit)).toEqual(["x", "choice", "kmh", "min"]);
+    expect(defs[1].options).toEqual(["up", "nearest", "down"]);
+    expect(isNumericUnit("kmh")).toBe(true);
+    expect(isNumericUnit("bool")).toBe(false);
+    expect(fieldDefs(zoneFee)[0].unit).toBe("tier");
+  });
+  it("labels nested non-fare paths by their full path, fare legs by the leaf", () => {
+    expect(fieldDefs(formulaFee)[2].label).toBe("speed_kmh_bicycle");
+    expect(fieldDefs(legFee)[0]).toMatchObject({ label: "per_minute", vehicle: "bicycle" });
+  });
+});
+
+describe("formToValue / valueToForm round trip", () => {
+  it("converts bool, choice and nested kmh fields", () => {
+    const defs = fieldDefs(formulaFee);
+    const form = { road_factor: "1.3", rounding_mode: "nearest", speed_kmh_bicycle: "14", stop_minutes: "3" };
+    expect(formToValue(defs, form)).toEqual({ road_factor: 1.3, rounding_mode: "nearest", speed_kmh: { bicycle: 14 }, stop_minutes: 3 });
+    const s = fieldDefs(surchargeFee);
+    expect(formToValue(s, { amount: "100", only_when_tier_changes: "true" })).toEqual({ amount: 100, only_when_tier_changes: true });
+    expect(formToValue(s, { amount: "100", only_when_tier_changes: "false" })).toEqual({ amount: 100, only_when_tier_changes: false });
+  });
+  it("rejects missing / invalid input", () => {
+    const s = fieldDefs(surchargeFee);
+    expect(formToValue(s, { amount: "100", only_when_tier_changes: "" })).toBeNull();
+    expect(formToValue(s, { amount: "abc", only_when_tier_changes: "true" })).toBeNull();
+    expect(formToValue(fieldDefs(zoneFee), { unzoned_tier: "" })).toBeNull();
+    expect(formToValue(fieldDefs(zoneFee), { unzoned_tier: "rural" })).toEqual({ unzoned_tier: "rural" });
+  });
+  it("loads values into the form as strings", () => {
+    const s = fieldDefs(surchargeFee);
+    expect(valueToForm(s, { amount: 100, only_when_tier_changes: true } as never)).toEqual({ amount: "100", only_when_tier_changes: "true" });
+  });
+  it("treats a leg stored without per_minute as 0", () => {
+    expect(valueToForm(fieldDefs(legFee), { bicycle: { base: 1 } } as never)).toEqual({ bicycle_per_minute: "0" });
+  });
+  it("compares non-numeric fields as text", () => {
+    const s = fieldDefs(surchargeFee);
+    const value = { amount: 100, only_when_tier_changes: true } as never;
+    expect(formMatchesValue(s, { amount: "100", only_when_tier_changes: "true" }, value)).toBe(true);
+    expect(formMatchesValue(s, { amount: "100", only_when_tier_changes: "false" }, value)).toBe(false);
+  });
+});
+
+describe("formatValueInline for the new keys", () => {
+  const t: TFn = (k, v) => `${k}${v ? JSON.stringify(v) : ""}`;
+  it("describes surcharge, service area and the unzoned tier", () => {
+    expect(formatValueInline("service_area", { enabled: false } as never, t)).toBe("fmt.service_off");
+    expect(formatValueInline("zone_defaults", { unzoned_tier: "rural" } as never, t)).toBe("rural");
+    expect(formatValueInline("dropoff_surcharge", { amount: 50, only_when_tier_changes: true } as never, t)).toContain("fmt.surcharge_tier");
+  });
+});

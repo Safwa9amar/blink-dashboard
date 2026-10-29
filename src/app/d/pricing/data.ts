@@ -2,7 +2,7 @@ import { cache } from "react";
 import { requirePathAccess } from "@/lib/auth/staff";
 import { blinkApi } from "@/lib/blink-api";
 import { blinkApiErrorMessage } from "@/lib/blink-api-errors";
-import type { Change, Fee, Override, OverrideFilters } from "@/features/pricing";
+import type { Change, Fee, Override, OverrideFilters, ZonesPayload } from "@/features/pricing";
 import { PRICING_READ_ROLES, PRICING_WRITE_ROLES } from "./roles";
 
 // Server loaders for the /pricing routes. Every loader gates on the section first.
@@ -41,3 +41,13 @@ export async function getHistory(key?: string, limit = 100): Promise<Loaded<Chan
   if (!res.ok) return { data: [], error: await blinkApiErrorMessage(NS, res) };
   return { data: res.data.changes };
 }
+
+const EMPTY_ZONES: ZonesPayload = { zones: [], tiers: [], unzoned_tier: "" };
+
+/** Zones + tiers + the unzoned tier (cached per request: layout and page share one call). */
+export const getZones = cache(async (): Promise<Loaded<ZonesPayload>> => {
+  await requirePathAccess(SECTION);
+  const res = await blinkApi<ZonesPayload>("/pricing/admin/zones?include_archived=true", { roles: PRICING_READ_ROLES });
+  if (!res.ok) return { data: EMPTY_ZONES, error: await blinkApiErrorMessage(NS, res) };
+  return { data: res.data };
+});

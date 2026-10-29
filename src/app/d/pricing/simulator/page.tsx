@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/dash-metadata";
 import type { SimScenario } from "@/features/pricing";
-import { getPricingAccess } from "../data";
+import { getPricingAccess, getZones } from "../data";
 import Client from "./client";
 
 export function generateMetadata(): Promise<Metadata> {
@@ -18,5 +18,6 @@ export default async function PricingSimulatorPage({
   await getPricingAccess();
   const { scenario } = await searchParams;
   const s = SCENARIOS.find((x) => x === scenario);
-  return <Client scenario={s} />;
+  const zones = await getZones();
+  return <Client scenario={s} zones={zones.data.zones} tiers={zones.data.tiers} />;
 }

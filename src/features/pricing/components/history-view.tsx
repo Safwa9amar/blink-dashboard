@@ -7,17 +7,35 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Badge, Button, EmptyState, fInput } from "@/components/ui";
 import { formatValueInline } from "../format";
 import { fmtTime, intlLocale } from "../labels";
-import { PRICING_KEYS, type Change, type TFn } from "../types";
+import { PRICING_KEYS, type Change, type ChangeAction, type EntitySnapshot, type FeeValue, type PricingKey, type TFn } from "../types";
 
 export const HISTORY_STEPS = [50, 100, 200] as const;
 
 const dayKey = (iso: string) => new Date(new Date(iso).getTime() + 3_600_000).toISOString().slice(0, 10);
-const ACTION_VARIANT = {
+const ACTION_VARIANT: Record<ChangeAction, "info" | "success" | "warning" | "danger"> = {
   update_default: "info",
   create_override: "success",
   update_override: "warning",
   archive_override: "danger",
-} as const;
+  create_zone: "success",
+  update_zone: "warning",
+  archive_zone: "danger",
+  create_tier: "success",
+  update_tier: "warning",
+  archive_tier: "danger",
+};
+
+const isEntityKey = (k: Change["key"]): k is "pricing_zone" | "pricing_tier" => k === "pricing_zone" || k === "pricing_tier";
+
+/** "Downtown Oran · Urban" / "Rural (#D97706)" — a zone or tier row snapshot on one line. */
+function snapshotLine(key: "pricing_zone" | "pricing_tier", snap: EntitySnapshot | FeeValue | null): string {
+  if (!snap) return "—";
+  const row = snap as EntitySnapshot;
+  const str = (v: unknown) => (typeof v === "string" && v ? v : null);
+  if (key === "pricing_zone") return [str(row.name), str(row.tier)].filter(Boolean).join(" · ") || "—";
+  const names = row.names as { en?: string } | undefined;
+  return [str(names?.en) ?? str(row.code), str(row.color)].filter(Boolean).join(" · ") || "—";
+}
 
 export function HistoryView({ changes, error, limit }: { changes: Change[]; error?: string; limit: number }) {
   const t = useTranslations("pricing");
@@ -92,14 +110,33 @@ export function HistoryView({ changes, error, limit }: { changes: Change[]; erro
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                         <span className="text-[13px] font-semibold text-text">{c.actor_name || "—"}</span>
                         <Badge variant={ACTION_VARIANT[c.action]}>{t(`history.action.${c.action}`)}</Badge>
-                        <span className="text-[13px] font-semibold text-text">{t(`fees.${c.key}.name`)}</span>
+                        <span className="text-[13px] font-semibold text-text">
+                          {isEntityKey(c.key) ? t(`history.entity.${c.key}`) : t(`fees.${c.key}.name`)}
+                        </span>
                         <span className="text-xs text-subtext ms-auto">{fmtTime(c.created_at, locale)}</span>
                       </div>
                       <p className="text-sm mt-1.5">
-                        <span className="text-subtext">{c.before ? formatValueInline(c.key, c.before, tf) : "—"}</span>
+                        <span className="text-subtext">
+                          {isEntityKey(c.key)
+                            ? snapshotLine(c.key, c.before)
+                            : c.before
+                              ? formatValueInline(c.key as PricingKey, c.before as FeeValue, tf)
+                              : "—"}
+                        </span>
                         <span className="mx-1.5 text-subtext rtl:inline-block rtl:rotate-180">→</span>
-                        <span className="text-text font-semibold">{c.after ? formatValueInline(c.key, c.after, tf) : "—"}</span>
+                        <span className="text-text font-semibold">
+                          {isEntityKey(c.key)
+                            ? snapshotLine(c.key, c.after)
+                            : c.after
+                              ? formatValueInline(c.key as PricingKey, c.after as FeeValue, tf)
+                              : "—"}
+                        </span>
                       </p>
+                      {isEntityKey(c.key) && (
+                        <Link href="/pricing/zones" className="inline-block mt-1.5 text-xs font-semibold text-primary">
+                          {t("history.open_zones")}
+                        </Link>
+                      )}
                       {c.override_id && (
                         <Link
                           href={`/pricing/overrides?key=${c.key}&highlight=${c.override_id}`}

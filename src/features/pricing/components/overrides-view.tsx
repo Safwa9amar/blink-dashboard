@@ -7,8 +7,9 @@ import { Badge, Button, DataTable, EmptyState, FilterPills, Modal, Segmented, fI
 import { archiveOverride } from "@/app/d/pricing/action";
 import { STATUS_FILTERS, filterByStatus, statusCounts, type StatusFilter } from "../cockpit";
 import { formatValueInline, formatValueShort } from "../format";
-import { PRICING_KEYS, type Fee, type Override, type OverrideStatus, type TFn } from "../types";
+import { PRICING_KEYS, type Fee, type Override, type OverrideStatus, type TFn, type Tier, type Zone } from "../types";
 import { WILAYA_OPTIONS } from "../wilayas";
+import { liveTiers, liveZones, tierName } from "../zones";
 import { ExtendMenu } from "./extend-menu";
 import { OverrideCalendar } from "./override-calendar";
 import { OverrideWizard } from "./override-wizard";
@@ -41,6 +42,8 @@ export function OverridesView({
   error,
   highlight,
   nowIso,
+  zones = [],
+  tiers = [],
 }: {
   overrides: Override[];
   fees: Fee[];
@@ -48,6 +51,8 @@ export function OverridesView({
   error?: string;
   highlight?: string;
   nowIso: string;
+  zones?: Zone[];
+  tiers?: Tier[];
 }) {
   const t = useTranslations("pricing");
   const tf = t as unknown as TFn;
@@ -81,6 +86,9 @@ export function OverridesView({
   const partnerFilter = params.get("merchant_id") || params.get("agent_id");
   const partnerName = overrides.find((o) => o.merchant_id === partnerFilter || o.agent_id === partnerFilter)?.partner_name;
 
+  const zoneLabel = (id: string | null | undefined) => (id ? (zones.find((z) => z.id === id)?.name ?? t("scope.zone_generic")) : null);
+  const tierLabel = (code: string | null | undefined) => (code ? tierName(tiers, code, locale) : null);
+
   const columns: Column<Override>[] = [
     {
       key: "key",
@@ -95,6 +103,8 @@ export function OverridesView({
         <ScopeChips
           service={o.service}
           wilaya_code={o.wilaya_code}
+          zone={zoneLabel(o.zone_id)}
+          tier={tierLabel(o.tier)}
           partner={o.merchant_id || o.agent_id ? (o.partner_name ?? o.merchant_id ?? o.agent_id) : null}
         />
       ),
@@ -190,6 +200,18 @@ export function OverridesView({
           WILAYA_OPTIONS.map((w) => ({ value: w.code, label: `${w.code} · ${locale === "ar" ? w.name_ar : w.name}` })),
           t("overrides.filter.all_wilayas"),
         )}
+        {sel(
+          "zone_id",
+          params.get("zone_id"),
+          liveZones(zones).map((z) => ({ value: z.id, label: z.name })),
+          t("overrides.filter.all_zones"),
+        )}
+        {sel(
+          "tier",
+          params.get("tier"),
+          liveTiers(tiers).map((x) => ({ value: x.code, label: tierName(tiers, x.code, locale) })),
+          t("overrides.filter.all_tiers"),
+        )}
         {partnerFilter && (
           <button
             onClick={() => {
@@ -242,6 +264,8 @@ export function OverridesView({
             open={creating}
             onClose={() => setCreating(false)}
             fees={fees}
+            zones={zones}
+            tiers={tiers}
             initialKey={(params.get("key") as Override["key"]) || undefined}
             onSaved={() => router.refresh()}
           />
@@ -249,6 +273,8 @@ export function OverridesView({
             open={!!editing}
             onClose={() => setEditing(null)}
             fees={fees}
+            zones={zones}
+            tiers={tiers}
             override={editing}
             onSaved={() => router.refresh()}
           />

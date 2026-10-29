@@ -6,7 +6,10 @@
       "overrides": "Overrides",
       "history": "History",
       "overview": "Overview",
-      "simulator": "Simulator"
+      "simulator": "Simulator",
+      "zones": "Zones",
+      "tiers": "Tiers",
+      "formula": "Formula"
     },
     "groups": {
       "customer": "Customer prices",
@@ -14,7 +17,11 @@
       "partner": "Partner earnings",
       "partner_desc": "Commissions, shares and penalties for riders, merchants and agents",
       "tax": "Taxes & processing",
-      "tax_desc": "Stamp duty, withholding and payment fees"
+      "tax_desc": "Stamp duty, withholding and payment fees",
+      "formula": "Fare formula",
+      "formula_desc": "The constants behind every courier and ride fare",
+      "zones": "Zones & service area",
+      "zones_desc": "Where each tier applies and where Blink serves"
     },
     "fees": {
       "service_fee": {
@@ -64,6 +71,22 @@
       "dues_payment_fee_rate": {
         "name": "Dues payment fee",
         "desc": "Fee on merchant and agent dues payments"
+      },
+      "fare_formula": {
+        "name": "Fare formula",
+        "desc": "Road factor, speeds, rounding, min and max fare, stop and boarding time"
+      },
+      "dropoff_surcharge": {
+        "name": "Drop-off surcharge",
+        "desc": "Extra charge priced at the drop-off place, optionally only when the tier changes"
+      },
+      "service_area": {
+        "name": "Service area",
+        "desc": "Turn Blink on or off for a place; when off, quotes there are unavailable"
+      },
+      "zone_defaults": {
+        "name": "Unzoned tier",
+        "desc": "The tier for points outside every drawn zone"
       }
     },
     "fields": {
@@ -74,7 +97,23 @@
       "extra_stop_fee": "Extra stop fee",
       "amount": "Amount",
       "multiplier": "Multiplier",
-      "rate": "Rate"
+      "rate": "Rate",
+      "road_factor": "Road factor",
+      "rounding_step": "Rounding step",
+      "rounding_mode": "Rounding mode",
+      "min_fare": "Minimum fare",
+      "max_fare": "Maximum fare (0 = no cap)",
+      "min_ride_km": "Minimum ride distance",
+      "speed_kmh_bicycle": "Bicycle speed",
+      "speed_kmh_motorcycle": "Motorcycle speed",
+      "stop_minutes": "Minutes per stop",
+      "boarding_minutes": "Boarding minutes",
+      "per_minute": "Per driving minute",
+      "only_when_tier_changes": "Only when the tier changes",
+      "enabled": "Service available",
+      "unzoned_tier": "Tier outside every zone",
+      "on": "On",
+      "off": "Off"
     },
     "vehicle": {
       "bicycle": "Bicycle",
@@ -82,10 +121,17 @@
     },
     "units": {
       "da": "Da",
-      "km": "km"
+      "km": "km",
+      "kmh": "km/h",
+      "min": "min"
     },
     "fmt": {
-      "fare": "{base} + {perKm}/km beyond {included} km (max {max} km)"
+      "fare": "{base} + {perKm}/km beyond {included} km (max {max} km)",
+      "per_minute": "+ {perMin}/min",
+      "formula": "Roads ×{road} · round {mode} to {step}",
+      "surcharge_tier": "{amount} when the tier changes",
+      "service_on": "In service",
+      "service_off": "Out of service"
     },
     "example": {
       "before": "Now",
@@ -97,7 +143,8 @@
       "cancel": "Cancel",
       "create": "Create",
       "archive": "Archive",
-      "change": "Change"
+      "change": "Change",
+      "close": "Close"
     },
     "status": {
       "active": "Active",
@@ -116,7 +163,8 @@
       "withdrawal": "Withdrawal"
     },
     "scope": {
-      "everywhere": "Everywhere"
+      "everywhere": "Everywhere",
+      "zone_generic": "Zone"
     },
     "defaults": {
       "empty": "No fees loaded",
@@ -141,7 +189,9 @@
       "filter": {
         "all_fees": "All fees",
         "all_wilayas": "All wilayas",
-        "partner": "Partner"
+        "partner": "Partner",
+        "all_zones": "All zones",
+        "all_tiers": "All tiers"
       },
       "today": "Today",
       "view": {
@@ -165,7 +215,12 @@
       "tz_hint": "Times are in Algeria time (Africa/Algiers).",
       "note": "Note",
       "note_placeholder": "Why this deal exists",
-      "see_conflict": "See the conflicting override"
+      "see_conflict": "See the conflicting override",
+      "zone": "Zone",
+      "any_zone": "Any zone",
+      "zone_hint": "A zone already implies its wilaya and tier.",
+      "tier": "Tier",
+      "any_tier": "Any tier"
     },
     "archive": {
       "title": "Archive override",
@@ -183,12 +238,23 @@
         "update_default": "Default updated",
         "create_override": "Override created",
         "update_override": "Override updated",
-        "archive_override": "Override archived"
+        "archive_override": "Override archived",
+        "create_zone": "Zone created",
+        "update_zone": "Zone updated",
+        "archive_zone": "Zone archived",
+        "create_tier": "Tier created",
+        "update_tier": "Tier updated",
+        "archive_tier": "Tier archived"
       },
       "empty": "No changes yet",
       "all_actors": "All people",
       "open_override": "Open override",
-      "load_more": "Load more"
+      "load_more": "Load more",
+      "entity": {
+        "pricing_zone": "Zone",
+        "pricing_tier": "Tier"
+      },
+      "open_zones": "Open zones"
     },
     "preview": {
       "col": {
@@ -220,14 +286,23 @@
       "overlap": "Another override with the same scope overlaps this period.",
       "number": "Enter a number",
       "range": "Between {min} and {max}",
-      "stale_modal": "This fee was changed by someone else — the latest value is loaded; review and save again."
+      "stale_modal": "This fee was changed by someone else — the latest value is loaded; review and save again.",
+      "required": "Required",
+      "integer": "Enter a whole number",
+      "geometry": "This shape is not valid ({detail})",
+      "zone_in_use": "This zone still has live overrides. Archive or end them first.",
+      "tier_in_use": "This tier is still used by a live zone, override or the unzoned setting."
     },
     "header": {
       "simulate": "Simulate an order",
       "new_override": "New override"
     },
     "edit": {
-      "title": "Edit default"
+      "title": "Edit default",
+      "tier_title": "Edit tier price",
+      "tier_has_override": "This tier has its own price.",
+      "tier_inherits": "Using the default for now: {value}",
+      "remove_tier_price": "Remove tier price"
     },
     "vehicle_short": {
       "motorcycle": "moto",
@@ -245,7 +320,9 @@
       "rider_cancel_penalty": "A cancellation costs the rider {output}",
       "stamp_duty_rate": "On {input} of sales, stamp duty is {output}",
       "agent_tax_rate": "On {input} of agent share, {output} is withheld",
-      "dues_payment_fee_rate": "Paying {input} of dues costs {output}"
+      "dues_payment_fee_rate": "Paying {input} of dues costs {output}",
+      "fare_formula": "{km} km by {vehicle}: {output}",
+      "dropoff_surcharge": "{output} at the drop-off"
     },
     "extend": {
       "label": "Extend",
@@ -289,7 +366,7 @@
       "current": "Now {value}",
       "none": "No fee can be overridden.",
       "scope_hint": "Pick where this override applies. At least one is required.",
-      "scope_required": "Pick at least a service, a wilaya or a partner.",
+      "scope_required": "Pick at least a service, a zone, a tier, a wilaya or a partner.",
       "scope_locked": "The scope cannot change on an existing override.",
       "when": "When",
       "always": "Always",
@@ -349,11 +426,187 @@
       },
       "values_used": "Values used ({count})",
       "unavailable": {
-        "too_far": "This distance is beyond the maximum for this service, so there is no price."
+        "too_far": "This distance is beyond the maximum for this service, so there is no price.",
+        "too_close": "The pickup and drop-off are too close for a ride, so there is no price.",
+        "out_of_service_area": "This place is outside the service area, so there is no price."
       },
       "store": "Store",
       "store_none": "No specific store",
-      "delivery_fee_store": "Store's delivery fee"
+      "delivery_fee_store": "Store's delivery fee",
+      "pickup": "Pickup",
+      "dropoff": "Drop-off",
+      "clear_points": "Clear points",
+      "route_hint": "Optional: click the map to set a pickup and a drop-off",
+      "km_from_map": "The server measures the distance from these two points.",
+      "breakdown": "How the fare is built",
+      "place": "Priced at",
+      "steps": {
+        "base": "Base fare",
+        "distance": "Distance",
+        "time": "Driving time",
+        "extra_stops": "Extra stops",
+        "dropoff_surcharge": "Drop-off surcharge",
+        "multiplier": "Multiplier",
+        "clamp": "Min / max fare",
+        "rounding": "Rounding"
+      }
+    },
+    "choices": {
+      "rounding_mode": {
+        "up": "Round up",
+        "nearest": "Nearest",
+        "down": "Round down"
+      }
+    },
+    "zones": {
+      "unzoned": "Unzoned",
+      "banner": "Points outside every zone are priced as <b>{tier}</b>.",
+      "banner_change": "Change",
+      "banner_exceptions": "Per-wilaya exceptions",
+      "unsaved": "{count, plural, one {# zone shape changed} other {# zone shapes changed}} and not saved yet",
+      "discard": "Discard",
+      "save_shapes": "Save shapes",
+      "map_hint": "Click anywhere on the map to see how that point is priced.",
+      "map_hint_edit": "Draw a polygon with the toolbar, or click the map to see how a point is priced.",
+      "export": "Export GeoJSON",
+      "list_title": "Zones",
+      "list_desc": "{count, plural, one {# live zone} other {# live zones}}",
+      "empty": "No zones yet",
+      "empty_hint": "Draw a city or town on the map, or import a GeoJSON file.",
+      "details": "Details",
+      "priority_short": "priority {n}",
+      "area_value": "{km2} km²",
+      "new_title": "New zone",
+      "edit_title": "Zone",
+      "new_hint": "Name the polygon you just drew and pick its tier.",
+      "shape_changed": "The shape was edited on the map; saving applies it.",
+      "name": "Name",
+      "tier": "Tier",
+      "priority": "Priority",
+      "priority_hint": "When zones overlap, the higher priority wins, then the smaller area.",
+      "area": "Area",
+      "overrides": "Overrides using it",
+      "archive_title": "Archive zone",
+      "archive_body": "Archive “{name}”? Points inside it are priced by the tier of whatever zone is left, or the unzoned tier.",
+      "see_overrides": "See the {count, plural, one {override} other {# overrides}}",
+      "import": {
+        "button": "Import GeoJSON",
+        "title": "Import zones",
+        "hint": "A FeatureCollection of polygons (up to 200). All zones get the tier below; the import is all or nothing.",
+        "choose": "Choose a file",
+        "found": "{count, plural, one {# polygon found} other {# polygons found}}",
+        "tier": "Tier for all zones",
+        "name_property": "Name property",
+        "submit": "Import",
+        "errors": {
+          "json": "This file is not valid JSON.",
+          "shape": "Expected a GeoJSON FeatureCollection, Feature or polygon.",
+          "empty": "The file has no features.",
+          "too_many": "At most 200 features per import.",
+          "geometry": "Every feature must be a polygon or multipolygon with closed rings."
+        }
+      },
+      "lookup": {
+        "samples": "Sample fares (5 road km)",
+        "unzoned_note": "Outside every zone: priced as {tier}.",
+        "unavailable": {
+          "too_far": "too far",
+          "too_close": "too close",
+          "out_of_service_area": "not served",
+          "unknown": "n/a"
+        }
+      }
+    },
+    "tiers_card": {
+      "title": "Tiers",
+      "desc": "Classes of place, like city, town and village. Zones and prices point at a tier.",
+      "add": "Add tier",
+      "empty": "No tiers",
+      "usage": "{zones, plural, one {# zone} other {# zones}} · {overrides, plural, one {# override} other {# overrides}}",
+      "new_title": "New tier",
+      "edit_title": "Edit tier",
+      "code": "Code",
+      "code_hint": "Lowercase letters, digits and underscores, starting with a letter. It cannot change later.",
+      "code_invalid": "2 to 24 characters: a-z, 0-9, _, starting with a letter",
+      "name_en": "Name (English)",
+      "name_fr": "Name (French)",
+      "name_ar": "Name (Arabic)",
+      "color": "Color",
+      "color_invalid": "Use a #RRGGBB color",
+      "order": "Order",
+      "archive_title": "Archive tier",
+      "archive_body": "Archive the tier “{tier}”? It disappears from pickers; existing history is kept.",
+      "see_overrides": "See its overrides"
+    },
+    "matrix": {
+      "empty": "Nothing to compare yet",
+      "empty_hint": "The matrix needs at least one live tier and one fee that can vary by tier.",
+      "hint": "Each cell is the value that applies to that tier.",
+      "hint_edit": "Each cell is the value that applies to that tier. Click a cell to set a tier price or change it.",
+      "legend_override": "Tier price",
+      "legend_inherited": "Inherited",
+      "tier_price": "Tier price",
+      "inherited_default": "Default",
+      "inherited_tier": "All services (tier)"
+    },
+    "formula": {
+      "title": "How a fare is computed",
+      "desc": "Six fixed steps, in this order. The values shown are today's defaults; click one to edit it.",
+      "note": "Zone and tier prices replace these defaults for trips priced there. Courier distance adds up pickup to every drop-off.",
+      "edit_param": "Edit {fee}",
+      "steps": {
+        "km": {
+          "title": "Road distance",
+          "desc": "Straight-line km × road factor, rounded to 0.1 km."
+        },
+        "time": {
+          "title": "Driving time",
+          "desc": "Road km ÷ vehicle speed × 60."
+        },
+        "raw": {
+          "title": "Raw price",
+          "desc": "Base + km beyond the included ones × price per km + minutes × price per minute + extra stops + drop-off surcharge."
+        },
+        "scale": {
+          "title": "Multiplier",
+          "desc": "Raw price × fare multiplier (surge or discount)."
+        },
+        "clamp": {
+          "title": "Minimum and maximum",
+          "desc": "Never below the minimum fare; never above the maximum when one is set."
+        },
+        "round": {
+          "title": "Rounding",
+          "desc": "Rounded to the rounding step, up, nearest or down."
+        }
+      },
+      "params": {
+        "road_factor": "Road factor",
+        "speed_bicycle": "Bicycle speed",
+        "speed_motorcycle": "Motorcycle speed",
+        "courier_moto_base": "Courier moto base",
+        "courier_moto_included": "Courier moto included km",
+        "courier_moto_per_km": "Courier moto per km",
+        "courier_moto_per_minute": "Courier moto per minute",
+        "courier_bike_base": "Courier bike base",
+        "courier_bike_per_km": "Courier bike per km",
+        "extra_stop_fee": "Extra stop",
+        "ride_base": "Ride base",
+        "ride_per_km": "Ride per km",
+        "ride_per_minute": "Ride per minute",
+        "dropoff_surcharge": "Drop-off surcharge",
+        "multiplier": "Multiplier",
+        "min_fare": "Minimum fare",
+        "max_fare": "Maximum fare",
+        "rounding_step": "Rounding step",
+        "rounding_mode": "Rounding mode"
+      },
+      "example_title": "Worked example",
+      "example_desc": "Computed by the server with today's prices, step by step.",
+      "input_mode": "Distance from",
+      "two_points": "Two map points",
+      "pick_two": "Pick a pickup and a drop-off on the map.",
+      "no_breakdown": "The server sent no step breakdown for this result."
     }
   }
 }

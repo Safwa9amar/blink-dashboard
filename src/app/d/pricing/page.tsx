@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/dash-metadata";
-import { getCatalog, getHistory, getOverrides, getPricingAccess } from "./data";
+import { getCatalog, getHistory, getOverrides, getPricingAccess, getZones } from "./data";
 import Client from "./client";
 
 export function generateMetadata(): Promise<Metadata> {
@@ -9,11 +9,13 @@ export function generateMetadata(): Promise<Metadata> {
 
 export default async function PricingOverviewPage() {
   const { canEdit } = await getPricingAccess();
-  const [catalog, overrides, history] = await Promise.all([getCatalog(), getOverrides({}), getHistory(undefined, 1)]);
+  const [catalog, overrides, history, zones] = await Promise.all([getCatalog(), getOverrides({}), getHistory(undefined, 1), getZones()]);
   return (
     <Client
       fees={catalog.data}
       overrides={overrides.data}
+      zones={zones.data.zones}
+      tiers={zones.data.tiers}
       lastChange={history.data[0] ?? null}
       canEdit={canEdit}
       error={catalog.error}

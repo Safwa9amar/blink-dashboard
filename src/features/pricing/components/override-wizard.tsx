@@ -18,17 +18,23 @@ import type {
   PartnerHit,
   PartnerKind,
   PricingKey,
+  Tier,
   TFn,
+  Zone,
 } from "../types";
 import { WILAYA_OPTIONS } from "../wilayas";
+import { liveTiers, liveZones, tierName } from "../zones";
 import { BeforeAfter } from "./fee-example";
 import { FeeValueFields } from "./fee-value-fields";
 import { PartnerPicker } from "./partner-picker";
 import { ScopeChips } from "./scope-chips";
+import { useZoneData } from "./use-zone-data";
 
 interface FormShape {
   service: string;
   wilaya_code: string;
+  zone_id: string;
+  tier: string;
   mode: "always" | "range";
   starts_at: string;
   ends_at: string;
@@ -41,8 +47,9 @@ export interface OverridePreset {
   partner: PartnerHit;
 }
 
-const GROUPS: FeeGroup[] = ["customer", "partner", "tax"];
-const hasScope = (f: Fee) => !!f.scopes.service?.length || f.scopes.wilaya || f.scopes.merchant || f.scopes.agent;
+const GROUPS: FeeGroup[] = ["customer", "partner", "tax", "formula", "zones"];
+const hasScope = (f: Fee) =>
+  !!f.scopes.service?.length || f.scopes.wilaya || f.scopes.merchant || f.scopes.agent || !!f.scopes.zone || !!f.scopes.tier;
 
 const partnerOf = (o: Override | null | undefined): PartnerHit | null =>
   o && (o.merchant_id || o.agent_id)
@@ -58,6 +65,8 @@ export function OverrideWizard({
   preset,
   initialKey,
   onSaved,
+  zones,
+  tiers,
 }: {
   open: boolean;
   onClose: () => void;
@@ -66,6 +75,9 @@ export function OverrideWizard({
   preset?: OverridePreset | null;
   initialKey?: PricingKey;
   onSaved?: () => void;
+  /** Zones / tiers already loaded by the page; fetched on open when omitted. */
+  zones?: Zone[];
+  tiers?: Tier[];
 }) {
   const t = useTranslations("pricing");
   return (
@@ -75,7 +87,18 @@ export function OverrideWizard({
       title={override ? t("wizard.edit_title") : t("wizard.create_title")}
       widthClassName="max-w-2xl"
     >
-      <Body fees={fees} override={override} preset={preset} initialKey={initialKey} onClose={onClose} onSaved={onSaved} />
+      {open && (
+        <Body
+          fees={fees}
+          override={override}
+          preset={preset}
+          initialKey={initialKey}
+          onClose={onClose}
+          onSaved={onSaved}
+          zones={zones}
+          tiers={tiers}
+        />
+      )}
     </Modal>
   );
 }
@@ -87,6 +110,8 @@ function Body({
   initialKey,
   onClose,
   onSaved,
+  zones: providedZones,
+  tiers: providedTiers,
 }: {
   fees: Fee[];
   override?: Override | null;
@@ -94,11 +119,19 @@ function Body({
   initialKey?: PricingKey;
   onClose: () => void;
   onSaved?: () => void;
+  zones?: Zone[];
+  tiers?: Tier[];
 }) {
   const t = useTranslations("pricing");
   const tf = t as unknown as TFn;
   const locale = useLocale();
   const editing = !!override;
+  const zoneData = useZoneData({ zones: providedZones, tiers: providedTiers });
+  const allTiers = zoneData.tiers;
+  const pickableZones = useMemo(() => liveZones(zoneData.zones), [zoneData.zones]);
+  const pickableTiers = useMemo(() => liveTiers(allTiers), [allTiers]);
+  const zoneName = (id: string | null | undefined) => (id ? (zoneData.zones.find((z) => z.id === id)?.name ?? t("scope.zone_generic")) : null);
+  const tierLabel = (code: string | null | undefined) => (code ? tierName(allTiers, code, locale) : null);
 
   const selectable = useMemo(
     () => fees.filter((f) => hasScope(f) && (!preset || f.scopes[preset.kind])),
@@ -116,6 +149,8 @@ function Body({
     defaultValues: {
       service: override?.service ?? "",
       wilaya_code: override?.wilaya_code ?? "",
+      zone_id: override?.zone_id ?? "",
+      tier: override?.tier ?? "",
       mode: override?.starts_at || override?.ends_at ? "range" : "always",
       starts_at: toInputDate(override?.starts_at),
       ends_at: toInputDate(override?.ends_at),
@@ -125,6 +160,8 @@ function Body({
   });
   const service = useWatch({ control, name: "service" });
   const wilaya = useWatch({ control, name: "wilaya_code" });
+  const zoneId = useWatch({ control, name: "zone_id" });
+  const tier = useWatch({ control, name: "tier" });
   const mode = useWatch({ control, name: "mode" });
   const startsAt = useWatch({ control, name: "starts_at" });
   const endsAt = useWatch({ control, name: "ends_at" });
@@ -143,9 +180,11 @@ function Body({
     () => ({
       ...(service ? { service } : {}),
       ...(wilaya ? { wilaya_code: wilaya } : {}),
+      ...(zoneId ? { zone_id: zoneId } : {}),
+      ...(tier ? { tier } : {}),
       ...(partner && partnerKind ? { [`${partnerKind}_id`]: partner.id } : {}),
     }),
-    [service, wilaya, partner, partnerKind],
+    [service, wilaya, zoneId, tier, partner, partnerKind],
   );
 
   // Step 3: value currently effective for the scope pre-fills the fields (until the user types).
@@ -192,13 +231,15 @@ function Body({
       ...getValues(),
       service: "",
       wilaya_code: "",
+      zone_id: "",
+      tier: "",
       value: valueToForm(fieldDefs(f), f.value),
     });
     if (!preset) setPartner(null);
     setStep(2);
   };
 
-  const scopeOk = !!service || !!wilaya || (!!partner && !!partnerKind);
+  const scopeOk = !!service || !!wilaya || !!zoneId || !!tier || (!!partner && !!partnerKind);
   const goToStep3 = () => {
     if (!scopeOk) return setScopeError(t("wizard.scope_required"));
     setScopeError(null);
@@ -219,6 +260,8 @@ function Body({
             wilaya_code: wilaya,
             partnerKind: partner ? partnerKind : null,
             partnerName: partner?.name,
+            zoneName: zoneName(zoneId),
+            tierName: tierLabel(tier),
           },
           before: formatValueShort(fee.key, effective[fee.key] ?? fee.value, tf),
           after: formatValueShort(fee.key, candidate, tf),
@@ -259,6 +302,8 @@ function Body({
           key: fee.key,
           ...(form.service ? { service: form.service } : {}),
           ...(form.wilaya_code ? { wilaya_code: form.wilaya_code } : {}),
+          ...(form.zone_id ? { zone_id: form.zone_id } : {}),
+          ...(form.tier ? { tier: form.tier } : {}),
           ...(partner && partnerKind ? { [`${partnerKind}_id`]: partner.id } : {}),
           value,
           starts_at: starts,
@@ -346,10 +391,54 @@ function Body({
               />
             </div>
           )}
+          {!!fee.scopes.zone && (
+            <label className="block">
+              <span className="block text-[12px] text-subtext mb-1">{t("modal.zone")}</span>
+              <select
+                className={fInput}
+                {...register("zone_id", {
+                  onChange: (e) => {
+                    // A zone already implies its wilaya and tier.
+                    if (e.target.value) {
+                      setValue("wilaya_code", "");
+                      setValue("tier", "");
+                    }
+                  },
+                })}
+              >
+                <option value="">{t("modal.any_zone")}</option>
+                {pickableZones.map((z) => (
+                  <option key={z.id} value={z.id}>
+                    {z.name} · {tierName(allTiers, z.tier, locale)}
+                  </option>
+                ))}
+              </select>
+              <span className="block text-[11.5px] text-subtext mt-1">{t("modal.zone_hint")}</span>
+            </label>
+          )}
+          {!!fee.scopes.tier && (
+            <label className="block">
+              <span className="block text-[12px] text-subtext mb-1">{t("modal.tier")}</span>
+              <select
+                className={fInput}
+                {...register("tier", { onChange: (e) => e.target.value && setValue("zone_id", "") })}
+              >
+                <option value="">{t("modal.any_tier")}</option>
+                {pickableTiers.map((x) => (
+                  <option key={x.code} value={x.code}>
+                    {tierName(allTiers, x.code, locale)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
           {fee.scopes.wilaya && (
             <label className="block">
               <span className="block text-[12px] text-subtext mb-1">{t("modal.wilaya")}</span>
-              <select className={fInput} {...register("wilaya_code")}>
+              <select
+                className={fInput}
+                {...register("wilaya_code", { onChange: (e) => e.target.value && setValue("zone_id", "") })}
+              >
                 <option value="">{t("modal.any_wilaya")}</option>
                 {WILAYA_OPTIONS.map((w) => (
                   <option key={w.code} value={w.code}>
@@ -378,13 +467,15 @@ function Body({
                 <ScopeChips
                   service={override!.service}
                   wilaya_code={override!.wilaya_code}
+                  zone={zoneName(override!.zone_id)}
+                  tier={tierLabel(override!.tier)}
                   partner={override!.merchant_id || override!.agent_id ? (override!.partner_name ?? "") : null}
                 />
                 <p className="text-[11.5px] text-subtext mt-1">{t("wizard.scope_locked")}</p>
               </div>
             ) : (
               <div className="mt-1.5">
-                <ScopeChips service={service} wilaya_code={wilaya} partner={partner?.name} />
+                <ScopeChips service={service} wilaya_code={wilaya} zone={zoneName(zoneId)} tier={tierLabel(tier)} partner={partner?.name} />
               </div>
             )}
           </div>
@@ -397,6 +488,8 @@ function Body({
               fields={fields}
               register={register as never}
               prefix="value."
+              control={control as never}
+              tiers={allTiers}
               errors={formState.errors.value as Record<string, { message?: string }> | undefined}
             />
           </div>
@@ -488,6 +581,8 @@ function Body({
 function summarySentence(p: SummaryParts, t: TFn, locale: string): string {
   const who = [
     p.who.service && t(`services.${p.who.service}`),
+    p.who.zone,
+    p.who.tier,
     p.who.wilaya && wilayaName(p.who.wilaya, locale),
     p.who.partner && p.who.partner.name,
   ]
