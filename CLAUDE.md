@@ -95,7 +95,7 @@ A feature folder holds:
 
 **`src/components/`** holds only cross-feature code: `ui/` (the shared UI kit, below) and standalone chrome — `dashboard-shell.tsx`, `shell/`, `theme-switcher.tsx`, `language-switcher.tsx`, `motion-scrollbar.tsx`.
 
-**`src/lib/`** is cross-cutting infra: `supabase/{server,client,middleware}.ts` (server client uses cookie sessions; `client.ts` is the browser factory; `middleware.ts` does the auth refresh/gate), `theme.ts` (color tokens mirroring the mobile app), `dash-metadata.ts` (`pageMeta()` builds per-page `<title>` from translations), `use-document-title.ts` (client hook for live badge titles).
+**`src/lib/`** is cross-cutting infra: `supabase/{server,client,middleware}.ts` (server client uses cookie sessions; `client.ts` is the browser factory; `middleware.ts` does the auth refresh/gate), `theme.ts` (color tokens mirroring the mobile app), `dash-metadata.ts` (`pageMeta()` builds per-page `<title>` from translations), `use-document-title.ts` (client hook for live badge titles). Auth emails (password reset, sign-in code, the Access page's "send reset email") don't use Supabase's mailer: `auth/auth-email.ts` mints the token with `auth.admin.generateLink`, builds the `/auth/confirm?token_hash=…` link itself and sends it over SMTP (`email/smtp.ts`, en/fr/ar templates in `email/auth-templates.ts`, same `SMTP_*` env names as blink-server). With no `SMTP_*` env (local dev) it falls back to Supabase's mailer.
 
 ### App page triad (`src/app/d/<name>/`)
 

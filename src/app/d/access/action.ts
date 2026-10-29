@@ -5,8 +5,7 @@ import { revalidatePath } from "next/cache";
 import { getLocale } from "next-intl/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-import { createAnonAuthClient } from "@/lib/supabase/anon";
-import { requestOrigin } from "@/lib/auth/origin";
+import { sendAuthEmail, toAuthLang } from "@/lib/auth/auth-email";
 import { getStaffActor } from "@/lib/auth/staff";
 import { isStaffRole, type StaffRole } from "@/lib/auth/access";
 import { logAccessEvent } from "@/features/access/audit";
@@ -321,10 +320,9 @@ export async function sendStaffResetEmail(userId: string): Promise<{ error: stri
   const target = await getTarget(supabase, userId);
   if (!target || !target.staffRole || !target.email) return { error: "not_found" };
 
-  const locale = await getLocale();
-  const redirectTo = `${await requestOrigin()}/auth/confirm?next=/login/reset&lang=${locale}`;
-  const { error } = await createAnonAuthClient().auth.resetPasswordForEmail(target.email, { redirectTo });
-  if (error) return { error: /rate|seconds|limit/i.test(error.message) ? "email_rate_limited" : "email_failed" };
+  const lang = toAuthLang(await getLocale());
+  const sent = await sendAuthEmail({ userId, email: target.email, type: "recovery", lang });
+  if (!sent.ok) return { error: sent.reason === "rate_limited" ? "email_rate_limited" : "email_failed" };
 
   await logAccessEvent(supabase, { actorId: actor.id, targetId: userId, action: "reset_email_sent" });
   refresh();

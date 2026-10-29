@@ -2,29 +2,24 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createAnonAuthClient } from "@/lib/supabase/anon";
 import { isStaffRole } from "@/lib/auth/access";
-import { requestOrigin } from "@/lib/auth/origin";
+import { sendAuthEmail, toAuthLang } from "@/lib/auth/auth-email";
 import { logAccessEvent } from "@/features/access/audit";
 import { validateNewPassword } from "@/features/access/password";
 import { mapAuthError, type AuthErrorKey } from "./errors";
 
 type Result = { ok: true } | { ok: false; error: AuthErrorKey };
 
-const LOCALES = ["en", "fr", "ar"];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const RESET_WINDOW_S = 15 * 60;
 
-function cleanLocale(locale: string): string {
-  return LOCALES.includes(locale) ? locale : "en";
-}
-
-// Whether a staff account (users row with a valid staff_role) exists for this email.
-async function isStaffEmail(email: string): Promise<boolean> {
+// The id of the staff account (users row with a valid staff_role) for this email, if any.
+async function staffUserId(email: string): Promise<string | null> {
   const admin = await createAdminClient();
   const escaped = email.replace(/[\\%_]/g, (c) => `\\${c}`);
-  const { data } = await admin.from("users").select("staff_role").ilike("email", escaped).limit(5);
-  return (data ?? []).some((r: { staff_role?: unknown }) => isStaffRole(r.staff_role));
+  const { data } = await admin.from("users").select("id, staff_role").ilike("email", escaped).limit(5);
+  const row = (data ?? []).find((r: { staff_role?: unknown }) => isStaffRole(r.staff_role));
+  return (row as { id?: string } | undefined)?.id ?? null;
 }
 
 /**
@@ -34,18 +29,12 @@ async function isStaffEmail(email: string): Promise<boolean> {
 export async function requestSignInCode(email: string, locale: string): Promise<Result> {
   const clean = email.trim().toLowerCase();
   if (!EMAIL_RE.test(clean)) return { ok: true };
-  if (!(await isStaffEmail(clean))) return { ok: true };
+  const userId = await staffUserId(clean);
+  if (!userId) return { ok: true };
 
-  const { error } = await createAnonAuthClient().auth.signInWithOtp({
-    email: clean,
-    options: {
-      shouldCreateUser: false,
-      emailRedirectTo: `${await requestOrigin()}/auth/confirm?next=/&lang=${cleanLocale(locale)}`,
-    },
-  });
-  // Same answer as for unknown emails: a rate-limit / banned error only ever happens for a
-  // real staff account, so surfacing it would tell an attacker which emails are staff.
-  if (error) console.error("[auth] sign-in code not sent:", error.code ?? error.message);
+  // Same answer when sending fails: a rate-limit error only ever happens for a real staff
+  // account, so surfacing it would tell an attacker which emails are staff.
+  await sendAuthEmail({ userId, email: clean, type: "magiclink", lang: toAuthLang(locale) });
   return { ok: true };
 }
 
@@ -53,12 +42,10 @@ export async function requestSignInCode(email: string, locale: string): Promise<
 export async function requestPasswordReset(email: string, locale: string): Promise<Result> {
   const clean = email.trim().toLowerCase();
   if (!EMAIL_RE.test(clean)) return { ok: true };
-  if (!(await isStaffEmail(clean))) return { ok: true };
+  const userId = await staffUserId(clean);
+  if (!userId) return { ok: true };
 
-  const { error } = await createAnonAuthClient().auth.resetPasswordForEmail(clean, {
-    redirectTo: `${await requestOrigin()}/auth/confirm?next=/login/reset&lang=${cleanLocale(locale)}`,
-  });
-  if (error) console.error("[auth] reset email not sent:", error.code ?? error.message);
+  await sendAuthEmail({ userId, email: clean, type: "recovery", lang: toAuthLang(locale) });
   return { ok: true };
 }
 
