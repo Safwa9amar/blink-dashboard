@@ -29,6 +29,8 @@ import { FeeValueFields } from "./fee-value-fields";
 import { PartnerPicker } from "./partner-picker";
 import { ScopeChips } from "./scope-chips";
 import { useZoneData } from "./use-zone-data";
+import { useClassName } from "./vehicle-classes-context";
+import { mergeLegs } from "../vehicle-classes";
 
 interface FormShape {
   service: string;
@@ -125,6 +127,7 @@ function Body({
   const t = useTranslations("pricing");
   const tf = t as unknown as TFn;
   const locale = useLocale();
+  const className = useClassName();
   const editing = !!override;
   const zoneData = useZoneData({ zones: providedZones, tiers: providedTiers });
   const allTiers = zoneData.tiers;
@@ -155,7 +158,11 @@ function Body({
       starts_at: toInputDate(override?.starts_at),
       ends_at: toInputDate(override?.ends_at),
       note: override?.note ?? "",
-      value: valueToForm(fieldDefs(fees.find((f) => f.key === key)), override?.value ?? fees.find((f) => f.key === key)?.value),
+      // An override may carry only some classes' legs: the rest start from the default.
+      value: valueToForm(
+        fieldDefs(fees.find((f) => f.key === key)),
+        override ? mergeLegs(fees.find((f) => f.key === key)?.value as FeeValue, override.value) : fees.find((f) => f.key === key)?.value,
+      ),
     },
   });
   const service = useWatch({ control, name: "service" });
@@ -263,10 +270,10 @@ function Body({
             zoneName: zoneName(zoneId),
             tierName: tierLabel(tier),
           },
-          before: formatValueShort(fee.key, effective[fee.key] ?? fee.value, tf),
-          after: formatValueShort(fee.key, candidate, tf),
+          before: formatValueShort(fee.key, effective[fee.key] ?? fee.value, tf, className),
+          after: formatValueShort(fee.key, candidate, tf, className),
           // Editing: `before` includes this override itself; once it is gone the default applies.
-          revertTo: editing ? formatValueShort(fee.key, fee.value, tf) : undefined,
+          revertTo: editing ? formatValueShort(fee.key, fee.value, tf, className) : undefined,
           window: windowIso,
           now,
         })
@@ -364,7 +371,7 @@ function Body({
                     >
                       <span className="block text-[13px] font-semibold text-text">{t(`fees.${f.key}.name`)}</span>
                       <span className="block text-[12px] text-subtext mt-0.5">
-                        {t("wizard.current", { value: formatValueShort(f.key, f.value, tf) })}
+                        {t("wizard.current", { value: formatValueShort(f.key, f.value, tf, className) })}
                       </span>
                     </button>
                   ))}

@@ -28,6 +28,8 @@ import {
 import { reviewRiderDocument } from "@/app/d/verification/partner-action";
 import { PartnerNotice, type PartnerNoticeValue } from "@/features/verification/components/partner-notice";
 import { RequestVerificationDialog } from "@/features/riders/components/request-verification-dialog";
+import { RiderClassPicker } from "@/features/pricing/components/rider-class-picker";
+import type { VehicleClass } from "@/features/pricing";
 import { requestRiderVerification } from "./action";
 
 export interface RiderStats {
@@ -36,8 +38,16 @@ export interface RiderStats {
   volume: Block<number>;
 }
 
+/** Vehicle-class picker data; null hides the picker (no pricing access, or the server has no classes). */
+export interface RiderClassInfo {
+  classes: VehicleClass[];
+  current: string | null;
+  canEdit: boolean;
+}
+
 interface Props {
   profile: RiderProfileView;
+  vehicleClass: RiderClassInfo | null;
   docs: Block<RiderDocSlot[]>;
   orders: Block<ActivityOrder[]>;
   trips: Block<ActivityTrip[]>;
@@ -54,9 +64,10 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-export default function RiderDetailClient({ profile: p, docs, orders, trips, transactions, stats }: Props) {
+export default function RiderDetailClient({ profile: p, vehicleClass, docs, orders, trips, transactions, stats }: Props) {
   const t = useTranslations("riders");
   const tv = useTranslations("verification");
+  const tp = useTranslations("pricing");
   const router = useRouter();
   const locale = useLocale();
   const [requesting, setRequesting] = useState(false);
@@ -184,6 +195,17 @@ export default function RiderDetailClient({ profile: p, docs, orders, trips, tra
               <Field label={t("detail.type")}>
                 {p.vehicleType ? <Badge variant={p.vehicleType === "motorcycle" ? "info" : "default"}>{t(`types.${p.vehicleType}`)}</Badge> : dash}
               </Field>
+              {vehicleClass && (
+                <Field label={tp("rider_class.label")}>
+                  <RiderClassPicker
+                    userId={p.id}
+                    vehicleType={p.vehicleType}
+                    classes={vehicleClass.classes}
+                    current={vehicleClass.current}
+                    canEdit={vehicleClass.canEdit}
+                  />
+                </Field>
+              )}
               <Field label={t("detail.brand")}>{p.vehicle?.brand || dash}</Field>
               <Field label={t("detail.model")}>{p.vehicle?.model || dash}</Field>
               <Field label={t("detail.plate")}>

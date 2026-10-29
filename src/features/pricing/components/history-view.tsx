@@ -7,6 +7,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Badge, Button, EmptyState, fInput } from "@/components/ui";
 import { formatValueInline } from "../format";
 import { fmtTime, intlLocale } from "../labels";
+import { useClassName } from "./vehicle-classes-context";
 import { PRICING_KEYS, type Change, type ChangeAction, type EntitySnapshot, type FeeValue, type PricingKey, type TFn } from "../types";
 
 export const HISTORY_STEPS = [50, 100, 200] as const;
@@ -23,16 +24,25 @@ const ACTION_VARIANT: Record<ChangeAction, "info" | "success" | "warning" | "dan
   create_tier: "success",
   update_tier: "warning",
   archive_tier: "danger",
+  create_vehicle_class: "success",
+  update_vehicle_class: "warning",
+  archive_vehicle_class: "danger",
 };
 
-const isEntityKey = (k: Change["key"]): k is "pricing_zone" | "pricing_tier" => k === "pricing_zone" || k === "pricing_tier";
+type EntityKey = "pricing_zone" | "pricing_tier" | "vehicle_class";
+const isEntityKey = (k: Change["key"]): k is EntityKey => k === "pricing_zone" || k === "pricing_tier" || k === "vehicle_class";
 
 /** "Downtown Oran · Urban" / "Rural (#D97706)" — a zone or tier row snapshot on one line. */
-function snapshotLine(key: "pricing_zone" | "pricing_tier", snap: EntitySnapshot | FeeValue | null): string {
+function snapshotLine(key: EntityKey, snap: EntitySnapshot | FeeValue | null): string {
   if (!snap) return "—";
   const row = snap as EntitySnapshot;
   const str = (v: unknown) => (typeof v === "string" && v ? v : null);
   if (key === "pricing_zone") return [str(row.name), str(row.tier)].filter(Boolean).join(" · ") || "—";
+  if (key === "vehicle_class") {
+    const n = row.names as { en?: string } | undefined;
+    const state = typeof row.enabled === "boolean" ? (row.enabled ? "on" : "off") : null;
+    return [str(n?.en) ?? str(row.code), str(row.base_vehicle), state].filter(Boolean).join(" · ") || "—";
+  }
   const names = row.names as { en?: string } | undefined;
   return [str(names?.en) ?? str(row.code), str(row.color)].filter(Boolean).join(" · ") || "—";
 }
@@ -41,6 +51,7 @@ export function HistoryView({ changes, error, limit }: { changes: Change[]; erro
   const t = useTranslations("pricing");
   const tf = t as unknown as TFn;
   const locale = useLocale();
+  const className = useClassName();
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -120,7 +131,7 @@ export function HistoryView({ changes, error, limit }: { changes: Change[]; erro
                           {isEntityKey(c.key)
                             ? snapshotLine(c.key, c.before)
                             : c.before
-                              ? formatValueInline(c.key as PricingKey, c.before as FeeValue, tf)
+                              ? formatValueInline(c.key as PricingKey, c.before as FeeValue, tf, className)
                               : "—"}
                         </span>
                         <span className="mx-1.5 text-subtext rtl:inline-block rtl:rotate-180">→</span>
@@ -128,13 +139,16 @@ export function HistoryView({ changes, error, limit }: { changes: Change[]; erro
                           {isEntityKey(c.key)
                             ? snapshotLine(c.key, c.after)
                             : c.after
-                              ? formatValueInline(c.key as PricingKey, c.after as FeeValue, tf)
+                              ? formatValueInline(c.key as PricingKey, c.after as FeeValue, tf, className)
                               : "—"}
                         </span>
                       </p>
                       {isEntityKey(c.key) && (
-                        <Link href="/pricing/zones" className="inline-block mt-1.5 text-xs font-semibold text-primary">
-                          {t("history.open_zones")}
+                        <Link
+                          href={c.key === "vehicle_class" ? "/pricing/vehicles" : "/pricing/zones"}
+                          className="inline-block mt-1.5 text-xs font-semibold text-primary"
+                        >
+                          {c.key === "vehicle_class" ? t("history.open_vehicles") : t("history.open_zones")}
                         </Link>
                       )}
                       {c.override_id && (

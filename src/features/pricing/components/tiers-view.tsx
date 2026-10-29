@@ -7,6 +7,7 @@ import { buildTierMatrix, type MatrixCell, type MatrixRow } from "../matrix";
 import { formatValueShort } from "../format";
 import type { Fee, Override, TFn, Tier } from "../types";
 import { tierName } from "../zones";
+import { useClassName } from "./vehicle-classes-context";
 import { FeeEditModal, type TierTarget } from "./fee-edit-modal";
 
 type Pick = { fee: Fee; target: TierTarget };
@@ -28,6 +29,7 @@ export function TiersView({
   const t = useTranslations("pricing");
   const tf = t as unknown as TFn;
   const locale = useLocale();
+  const className = useClassName();
   const matrix = useMemo(() => buildTierMatrix(fees, overrides, tiers), [fees, overrides, tiers]);
   const [picked, setPicked] = useState<Pick | null>(null);
   // Derived from the current props so a refresh after a save hands the modal the fresh fee / override.
@@ -81,7 +83,7 @@ export function TiersView({
                 </td>
                 {row.cells.map((cell, i) => {
                   const tier = matrix.tiers[i];
-                  const value = formatValueShort(row.fee.key, cell.value, tf);
+                  const value = formatValueShort(row.fee.key, cell.value, tf, className);
                   const cls =
                     cell.kind === "override"
                       ? "border-primary bg-soft-pink text-text font-semibold"

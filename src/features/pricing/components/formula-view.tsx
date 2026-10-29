@@ -6,11 +6,25 @@ import { Badge, Button, Card, Segmented, Skeleton, fInput } from "@/components/u
 import { simulatePricing } from "@/app/d/pricing/action";
 import { resolvePipeline, type ResolvedParam } from "../formula";
 import { formatDa, num } from "../format";
-import type { Fee, FeeVehicle, LatLng, PricingKey, SimulateBody, SimulateResult, TFn, Tier, Zone } from "../types";
+import type { Fee, LatLng, PricingKey, SimulateBody, SimulateResult, TFn, Tier, Zone } from "../types";
 import { liveTiers, liveZones, tierName } from "../zones";
 import { BreakdownList, PlaceLine } from "./breakdown-list";
 import { FeeEditModal } from "./fee-edit-modal";
 import { PointPicker } from "./point-picker";
+import { VehiclePicker, useServiceClassCodes } from "./vehicle-picker";
+import { useClassName } from "./vehicle-classes-context";
+import { pickVehicle } from "../vehicle-classes";
+
+/** Params of a step in runs by service (courier / ride / store), so per-class legs read as blocks. */
+function groupParams(params: ResolvedParam[]): { service?: string; params: ResolvedParam[] }[] {
+  const out: { service?: string; params: ResolvedParam[] }[] = [];
+  for (const p of params) {
+    const last = out[out.length - 1];
+    if (last && last.service === p.service) last.params.push(p);
+    else out.push({ service: p.service, params: [p] });
+  }
+  return out;
+}
 
 const numOrUndef = (s: string) => {
   const n = Number(s.trim().replace(",", "."));
@@ -38,8 +52,12 @@ export function FormulaView({
   const editing = editingKey ? (fees.find((f) => f.key === editingKey) ?? null) : null;
   const steps = resolvePipeline(fees);
 
-  const [scenario, setScenario] = useState<"courier" | "ride">("courier");
-  const [vehicle, setVehicle] = useState<FeeVehicle>("motorcycle");
+  const className = useClassName();
+  const [scenario, setScenario] = useState<"courier" | "ride" | "store">("courier");
+  const [vehicleChoice, setVehicle] = useState("");
+  const courierCodes = useServiceClassCodes("courier");
+  const rideCodes = useServiceClassCodes("ride");
+  const vehicle = pickVehicle(scenario === "ride" ? rideCodes : courierCodes, vehicleChoice);
   const [km, setKm] = useState("5");
   const [byMap, setByMap] = useState(false);
   const [pickup, setPickup] = useState<LatLng | null>(null);
@@ -52,10 +70,15 @@ export function FormulaView({
   const [loading, setLoading] = useState(true);
   const seq = useRef(0);
 
-  const routed = byMap && !!pickup && !!dropoff;
+  // Marketplace delivery is priced between the store and the customer: it needs both points.
+  const storeScenario = scenario === "store";
+  const mapMode = byMap || storeScenario;
+  const routed = mapMode && !!pickup && !!dropoff;
+  const waitingForPoints = storeScenario && !routed;
   const bodyKey = JSON.stringify([scenario, vehicle, km, routed, pickup, dropoff, zoneId, tier]);
   useEffect(() => {
     const id = ++seq.current;
+    if (waitingForPoints) return;
     const body: SimulateBody = {
       scenario,
       context: {
@@ -66,6 +89,7 @@ export function FormulaView({
       inputs: {
         ...(routed ? {} : { km: numOrUndef(km) }),
         ...(scenario === "courier" ? { vehicle, stops: 1 } : {}),
+        ...(scenario === "ride" && rideCodes.length > 1 ? { vehicle } : {}),
       },
     };
     const timer = setTimeout(async () => {
@@ -84,6 +108,11 @@ export function FormulaView({
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bodyKey]);
+
+  // Marketplace waits for its two points: whatever the last request returned is not shown meanwhile.
+  const view = waitingForPoints ? null : result;
+  const viewFailure = waitingForPoints ? null : failure;
+  const viewLoading = !waitingForPoints && loading;
 
   if (error) return <p className="text-sm text-danger">{error}</p>;
 
@@ -122,11 +151,14 @@ export function FormulaView({
                 <div className="min-w-0 flex-1">
                   <p className="text-[13px] font-bold text-text">{t(`formula.steps.${s.id}.title`)}</p>
                   <p className="text-[12.5px] text-subtext mt-0.5">{t(`formula.steps.${s.id}.desc`)}</p>
-                  <ul className="mt-2.5 flex flex-wrap gap-2">
-                    {s.params.map((p) => {
+                  {groupParams(s.params).map((grp) => (
+                  <div key={grp.service ?? "all"} className="mt-2.5">
+                  {grp.service && <p className="text-[11px] font-bold uppercase tracking-wide text-subtext mb-1">{t(`formula.service.${grp.service}`)}</p>}
+                  <ul className="flex flex-wrap gap-2">
+                    {grp.params.map((p) => {
                       const chip = (
                         <>
-                          <span className="text-subtext">{t(`formula.params.${p.label}`)}</span>
+                          <span className="text-subtext">{p.classCode ? `${className(p.classCode)} · ${t(`fields.${p.label}`)}` : t(`formula.params.${p.label}`)}</span>
                           <span className="ms-1.5 font-bold text-text tabular-nums">{show(p)}</span>
                         </>
                       );
@@ -148,6 +180,8 @@ export function FormulaView({
                       );
                     })}
                   </ul>
+                  </div>
+                  ))}
                 </div>
               </div>
             </li>
@@ -161,6 +195,7 @@ export function FormulaView({
           options={[
             ["courier", t("simulator.scenario.courier")],
             ["ride", t("simulator.scenario.ride")],
+            ["store", t("formula.scenario_marketplace")],
           ]}
           value={scenario}
           onChange={(v) => {
@@ -170,31 +205,27 @@ export function FormulaView({
           className="mb-4"
         />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {scenario === "courier" && (
+          {(scenario === "courier" || (scenario === "ride" && rideCodes.length > 1)) && (
             <div>
               <span className="block text-[12px] text-subtext mb-1">{t("simulator.vehicle")}</span>
-              <Segmented
-                options={[
-                  ["motorcycle", t("vehicle.motorcycle")],
-                  ["bicycle", t("vehicle.bicycle")],
-                ]}
-                value={vehicle}
-                onChange={setVehicle}
-              />
+              <VehiclePicker service={scenario === "ride" ? "ride" : "courier"} value={vehicle} onChange={setVehicle} />
             </div>
           )}
-          <label className="block">
-            <span className="block text-[12px] text-subtext mb-1">{t("formula.input_mode")}</span>
-            <Segmented
-              options={[
-                ["km", t("simulator.km")],
-                ["map", t("formula.two_points")],
-              ]}
-              value={byMap ? "map" : "km"}
-              onChange={(v) => setByMap(v === "map")}
-            />
-          </label>
-          {!byMap && (
+          {storeScenario && <p className="sm:col-span-2 text-[12px] text-subtext">{t("formula.store_note")}</p>}
+          {!storeScenario && (
+            <label className="block">
+              <span className="block text-[12px] text-subtext mb-1">{t("formula.input_mode")}</span>
+              <Segmented
+                options={[
+                  ["km", t("simulator.km")],
+                  ["map", t("formula.two_points")],
+                ]}
+                value={byMap ? "map" : "km"}
+                onChange={(v) => setByMap(v === "map")}
+              />
+            </label>
+          )}
+          {!mapMode && (
             <label className="block">
               <span className="block text-[12px] text-subtext mb-1">{t("simulator.km")}</span>
               <input type="number" inputMode="decimal" min={0} className={fInput} value={km} onChange={(e) => setKm(e.target.value)} />
@@ -238,13 +269,13 @@ export function FormulaView({
           </label>
         </div>
 
-        {byMap && (
+        {mapMode && (
           <div className="mt-3 space-y-2">
             <div className="flex items-center justify-between gap-2">
               <Segmented
                 options={[
-                  ["pickup", t("simulator.pickup")],
-                  ["dropoff", t("simulator.dropoff")],
+                  ["pickup", storeScenario ? t("simulator.store_point") : t("simulator.pickup")],
+                  ["dropoff", storeScenario ? t("simulator.customer_point") : t("simulator.dropoff")],
                 ]}
                 value={pickMode}
                 onChange={setPickMode}
@@ -276,28 +307,35 @@ export function FormulaView({
                 } else setDropoff(p);
               }}
             />
-            {!routed && <p className="text-[11.5px] text-subtext">{t("formula.pick_two")}</p>}
+            {!routed && <p className="text-[11.5px] text-subtext">{storeScenario ? t("formula.pick_two_store") : t("formula.pick_two")}</p>}
           </div>
         )}
 
-        <div className={`mt-5 ${loading && result ? "opacity-60 transition-opacity" : ""}`}>
-          {failure && <p className="text-sm text-danger">{failure}</p>}
-          {!result && loading && !failure && <Skeleton className="h-32 w-full" />}
-          {result && (
+        <div className={`mt-5 ${viewLoading && view ? "opacity-60 transition-opacity" : ""}`}>
+          {viewFailure && <p className="text-sm text-danger">{viewFailure}</p>}
+          {!view && viewLoading && !viewFailure && <Skeleton className="h-32 w-full" />}
+          {view && (
             <div className="space-y-3">
-              {result.unavailable ? (
-                <p className="text-sm font-semibold text-warning">{t(`simulator.unavailable.${result.unavailable}`)}</p>
+              {view.unavailable ? (
+                <p className="text-sm font-semibold text-warning">{t(`simulator.unavailable.${view.unavailable}`)}</p>
               ) : (
                 <>
                   <div>
                     <p className="text-xs font-medium text-subtext uppercase tracking-wide">{t("simulator.customer_pays")}</p>
-                    <p className="text-3xl font-bold text-text tabular-nums">{formatDa(result.payer_total, tf)}</p>
+                    <p className="text-3xl font-bold text-text tabular-nums">{formatDa(view.payer_total, tf)}</p>
                   </div>
-                  {result.place && <PlaceLine place={result.place} tiers={tiers} />}
-                  {result.breakdown && result.breakdown.length > 0 ? (
-                    <BreakdownList lines={result.breakdown} />
+                  {view.place && <PlaceLine place={view.place} tiers={tiers} />}
+                  {storeScenario && view.delivery_mode && (
+                    <div className="flex flex-wrap items-center gap-1.5 text-[12.5px]">
+                      <span className="text-subtext">{t("simulator.delivery_priced")}</span>
+                      <Badge variant={view.delivery_mode === "distance" ? "primary" : "default"}>{t(`fmt.store_mode.${view.delivery_mode}`)}</Badge>
+                      {view.delivery_mode === "distance" && view.vehicle && <Badge variant="info">{className(view.vehicle)}</Badge>}
+                    </div>
+                  )}
+                  {view.breakdown && view.breakdown.length > 0 ? (
+                    <BreakdownList lines={view.breakdown} />
                   ) : (
-                    <Badge>{t("formula.no_breakdown")}</Badge>
+                    <Badge>{storeScenario && view.delivery_mode === "merchant" ? t("formula.merchant_no_breakdown") : t("formula.no_breakdown")}</Badge>
                   )}
                 </>
               )}

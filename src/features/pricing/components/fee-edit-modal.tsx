@@ -12,6 +12,8 @@ import { tierName } from "../zones";
 import { BeforeAfter } from "./fee-example";
 import { FeeValueFields } from "./fee-value-fields";
 import { useZoneData } from "./use-zone-data";
+import { useClassName } from "./vehicle-classes-context";
+import { mergeLegs } from "../vehicle-classes";
 
 /** Edit a tier's price instead of the default: creates the undated tier-only override, or patches it. */
 export type TierTarget = {
@@ -49,10 +51,12 @@ function Body({ fee, onClose, tiers: providedTiers, target }: { fee: Fee; onClos
   const t = useTranslations("pricing");
   const tf = t as unknown as TFn;
   const locale = useLocale();
+  const className = useClassName();
   const router = useRouter();
   const { tiers } = useZoneData({ tiers: providedTiers });
   const fields = useMemo(() => fieldDefs(fee), [fee]);
-  const startValue = target ? (target.override?.value ?? target.initialValue ?? fee.value) : fee.value;
+  // A tier price may carry only some classes' legs: the rest start from the default.
+  const startValue = target ? (target.override ? mergeLegs(fee.value, target.override.value) : (target.initialValue ?? fee.value)) : fee.value;
   const {
     register,
     handleSubmit,
@@ -143,12 +147,12 @@ function Body({ fee, onClose, tiers: providedTiers, target }: { fee: Fee; onClos
             <Badge variant="primary">{tierName(tiers, target.tier, locale)}</Badge>
             {target.service && <Badge variant="info">{t(`services.${target.service}`)}</Badge>}
             <span className="text-[12px] text-subtext">
-              {target.override ? t("edit.tier_has_override") : t("edit.tier_inherits", { value: formatValueInline(fee.key, fee.value, tf) })}
+              {target.override ? t("edit.tier_has_override") : t("edit.tier_inherits", { value: formatValueInline(fee.key, fee.value, tf, className) })}
             </span>
           </div>
         ) : (
           <p className="text-[12px] text-subtext mt-1">
-            {t("modal.current_default", { value: formatValueInline(fee.key, fee.value, tf) })}
+            {t("modal.current_default", { value: formatValueInline(fee.key, fee.value, tf, className) })}
           </p>
         )}
       </div>

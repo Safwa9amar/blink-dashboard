@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { fieldDefs, formMatchesValue, formToValue, formatValueInline, isNumericUnit, valueToForm } from "./format";
+import { fieldDefs, formMatchesValue, formToValue, formatValueInline, formatValueShort, isNumericUnit, valueToForm } from "./format";
 import type { Fee, TFn } from "./types";
 
 const formulaFee = {
@@ -34,7 +34,7 @@ describe("fieldDefs for the new units", () => {
   });
   it("labels nested non-fare paths by their full path, fare legs by the leaf", () => {
     expect(fieldDefs(formulaFee)[2].label).toBe("speed_kmh_bicycle");
-    expect(fieldDefs(legFee)[0]).toMatchObject({ label: "per_minute", vehicle: "bicycle" });
+    expect(fieldDefs(legFee)[0]).toMatchObject({ label: "per_minute", classCode: "bicycle" });
   });
 });
 
@@ -75,5 +75,55 @@ describe("formatValueInline for the new keys", () => {
     expect(formatValueInline("service_area", { enabled: false } as never, t)).toBe("fmt.service_off");
     expect(formatValueInline("zone_defaults", { unzoned_tier: "rural" } as never, t)).toBe("rural");
     expect(formatValueInline("dropoff_surcharge", { amount: 50, only_when_tier_changes: true } as never, t)).toContain("fmt.surcharge_tier");
+  });
+});
+
+describe("vehicle classes in field defs", () => {
+  const classFee = {
+    key: "ride_fare",
+    fields: [
+      { path: "motorcycle_comfort.base", unit: "da", min: 0, max: 5000, step: 1, class: "motorcycle_comfort" },
+      { path: "motorcycle_comfort.per_km", unit: "da", min: 0, max: 500, step: 1, class: "motorcycle_comfort" },
+      { path: "motorcycle.base", unit: "da", min: 0, max: 5000, step: 1, class: "motorcycle" },
+    ],
+  } as unknown as Fee;
+  it("tags fields with the class the server names and labels them by leaf", () => {
+    const defs = fieldDefs(classFee);
+    expect(defs.map((d) => d.classCode)).toEqual(["motorcycle_comfort", "motorcycle_comfort", "motorcycle"]);
+    expect(defs[0]).toMatchObject({ label: "base", name: "motorcycle_comfort_base" });
+  });
+  it("derives the class from a leg path on an old catalog (no `class`)", () => {
+    const defs = fieldDefs({ key: "ride_fare", fields: [{ path: "motorcycle.base", unit: "da", min: 0, max: 1, step: 1 }] } as unknown as Fee);
+    expect(defs[0].classCode).toBe("motorcycle");
+  });
+  it("round-trips a value with a staff-defined class", () => {
+    const defs = fieldDefs(classFee);
+    const form = valueToForm(defs, { motorcycle_comfort: { base: 300, per_km: 50 }, motorcycle: { base: 250 } } as never);
+    expect(form).toEqual({ motorcycle_comfort_base: "300", motorcycle_comfort_per_km: "50", motorcycle_base: "250" });
+    expect(formToValue(defs, form)).toEqual({ motorcycle_comfort: { base: 300, per_km: 50 }, motorcycle: { base: 250 } });
+  });
+});
+
+describe("store_delivery formatting", () => {
+  const t: TFn = (k, v) => `${k}${v ? JSON.stringify(v) : ""}`;
+  const leg = (base: number) => ({ base, included_km: 3, per_km: 40, per_minute: 0, max_km: 40 });
+  it("shows the mode, the legs only in distance mode and the clamp", () => {
+    const merchant = { mode: "merchant", min_fee: 0, max_fee: 0, bicycle: leg(140) } as never;
+    expect(formatValueInline("store_delivery", merchant, t)).toBe("fmt.store_mode.merchant");
+    const distance = { mode: "distance", min_fee: 100, max_fee: 500, bicycle: leg(140), motorcycle: leg(250) } as never;
+    const lines = formatValueInline("store_delivery", distance, t, (c) => c.toUpperCase());
+    expect(lines).toContain("fmt.store_mode.distance");
+    expect(lines).toContain("BICYCLE");
+    expect(lines).toContain("MOTORCYCLE");
+    expect(lines).toContain("fmt.store_clamp");
+  });
+  it("short form lists each class base, or the mode", () => {
+    const distance = { mode: "distance", min_fee: 0, max_fee: 0, bicycle: leg(140), motorcycle: leg(250) } as never;
+    expect(formatValueShort("store_delivery", distance, t)).toBe("140 units.da / 250 units.da");
+    expect(formatValueShort("store_delivery", { mode: "merchant" } as never, t)).toBe("fmt.store_mode.merchant");
+  });
+  it("lists every class of a ride fare, including Comfort", () => {
+    const ride = { motorcycle: leg(250), motorcycle_comfort: leg(300) } as never;
+    expect(formatValueShort("ride_fare", ride, t)).toBe("250 units.da / 300 units.da");
   });
 });

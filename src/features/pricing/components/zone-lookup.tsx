@@ -6,6 +6,7 @@ import { formatDa, num } from "../format";
 import { wilayaName } from "../labels";
 import type { TFn, Tier, ZoneLookup } from "../types";
 import { tierName } from "../zones";
+import { useClassName } from "./vehicle-classes-context";
 
 /** Popup body for a map click: where the point is priced and what a 5 km trip costs there (server numbers). */
 export function ZoneLookupCard({
@@ -22,6 +23,7 @@ export function ZoneLookupCard({
   const t = useTranslations("pricing");
   const tf = t as unknown as TFn;
   const locale = useLocale();
+  const className = useClassName();
   if (loading) return <Skeleton className="h-24 w-52" />;
   if (error || !data) return <p className="text-xs text-danger">{error ?? t("errors.generic", { detail: "" })}</p>;
   const { place, samples } = data;
@@ -39,10 +41,14 @@ export function ZoneLookupCard({
           {samples.map((s, i) => (
             <li key={i} className="flex items-center justify-between gap-3">
               <span>
-                {t(`simulator.scenario.${s.scenario}`)} · {t(`vehicle_short.${s.vehicle}`)} · {num(s.km)} {t("units.km")}
+                {t(`simulator.scenario.${s.scenario}`)} · {className(s.vehicle)} · {num(s.km)} {t("units.km")}
               </span>
               <span className="font-semibold tabular-nums">
-                {s.available && s.fare !== null ? formatDa(s.fare, tf) : t(`zones.lookup.unavailable.${s.unavailable ?? "unknown"}`)}
+                {s.scenario === "store" && s.mode !== "distance" && s.fare === null
+                  ? t("zones.lookup.merchant_fee")
+                  : s.available && s.fare !== null
+                    ? formatDa(s.fare, tf)
+                    : t(`zones.lookup.unavailable.${s.unavailable ?? "unknown"}`)}
               </span>
             </li>
           ))}

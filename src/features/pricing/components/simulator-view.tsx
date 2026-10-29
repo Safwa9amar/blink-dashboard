@@ -15,6 +15,9 @@ import { BreakdownList, PlaceLine } from "./breakdown-list";
 import { PartnerPicker } from "./partner-picker";
 import { PointPicker } from "./point-picker";
 import { ScopeChips } from "./scope-chips";
+import { VehiclePicker, useServiceClassCodes } from "./vehicle-picker";
+import { useClassName, useVehicleClasses } from "./vehicle-classes-context";
+import { pickVehicle } from "../vehicle-classes";
 
 const SCENARIOS: SimScenario[] = ["store", "courier", "ride", "deposit", "withdrawal"];
 const PARTY_BAR: Record<SimParty, string> = {
@@ -33,7 +36,8 @@ interface SimForm {
   at: string;
   subtotal: string;
   delivery_fee: string;
-  vehicle: "motorcycle" | "bicycle";
+  /** A vehicle class code; "" = the first class offered for the scenario. */
+  vehicle: string;
   km: string;
   stops: string;
   amount: string;
@@ -56,8 +60,12 @@ export function SimulatorView({
   const t = useTranslations("pricing");
   const tf = t as unknown as TFn;
   const locale = useLocale();
+  const className = useClassName();
+  const hasClasses = useVehicleClasses().length > 0;
+  const courierCodes = useServiceClassCodes("courier");
+  const rideCodes = useServiceClassCodes("ride");
   const { register, control, setValue } = useForm<SimForm>({
-    defaultValues: { wilaya_code: "", zone_id: "", tier: "", store_id: "", at: "", subtotal: "", delivery_fee: "", vehicle: "motorcycle", km: "", stops: "", amount: "" },
+    defaultValues: { wilaya_code: "", zone_id: "", tier: "", store_id: "", at: "", subtotal: "", delivery_fee: "", vehicle: "", km: "", stops: "", amount: "" },
   });
   const f = useWatch({ control });
   const [scenario, setScenario] = useState<SimScenario>(initialScenario);
@@ -89,7 +97,11 @@ export function SimulatorView({
   // With both points picked the server derives the km (and places, surcharge, service area).
   const routed = tripScenario && !!pickup && !!dropoff;
   const zoneScoped = scenario !== "deposit" && scenario !== "withdrawal";
-  const bodyKey = JSON.stringify([scenario, f, storeId, merchant?.id, agent?.id, pickup, dropoff]);
+  // Marketplace delivery: the store (or a picked point) and the customer's drop-off feed `store_delivery`.
+  const storePoints = scenario === "store";
+  const pointScenario = tripScenario || storePoints;
+  const vehicle = pickVehicle(scenario === "ride" ? rideCodes : courierCodes, f.vehicle);
+  const bodyKey = JSON.stringify([scenario, f, vehicle, storeId, merchant?.id, agent?.id, pickup, dropoff]);
   useEffect(() => {
     const id = ++seq.current;
     // Any change to the scenario or an input invalidates the previous failure.
@@ -100,8 +112,9 @@ export function SimulatorView({
         ...(f.wilaya_code ? { wilaya_code: f.wilaya_code } : {}),
         ...(zoneScoped && f.zone_id ? { zone_id: f.zone_id } : {}),
         ...(zoneScoped && f.tier ? { tier: f.tier } : {}),
-        ...(tripScenario && pickup ? { pickup } : {}),
-        ...(tripScenario && dropoff ? { dropoff } : {}),
+        // A picked store is the pickup; the map point only stands in for it when no store is chosen.
+        ...(pointScenario && pickup && !(storePoints && storeId) ? { pickup } : {}),
+        ...(pointScenario && dropoff ? { dropoff } : {}),
         ...(scenario === "store" && merchant ? { merchant_id: merchant.id } : {}),
         ...(storeId ? { store_id: storeId } : {}),
         ...((scenario === "deposit" || scenario === "withdrawal") && agent ? { agent_id: agent.id } : {}),
@@ -112,7 +125,8 @@ export function SimulatorView({
           ? { subtotal: numOrUndef(f.subtotal ?? ""), delivery_fee: numOrUndef(f.delivery_fee ?? "") }
           : {}),
         ...(tripScenario ? { km: routed ? undefined : numOrUndef(f.km ?? "") } : {}),
-        ...(scenario === "courier" ? { stops: numOrUndef(f.stops ?? ""), vehicle: f.vehicle } : {}),
+        ...(scenario === "courier" ? { stops: numOrUndef(f.stops ?? ""), vehicle } : {}),
+        ...(scenario === "ride" && hasClasses && vehicle ? { vehicle } : {}),
         ...(scenario === "deposit" || scenario === "withdrawal" ? { amount: numOrUndef(f.amount ?? "") } : {}),
       },
     };
@@ -142,6 +156,14 @@ export function SimulatorView({
     <input type="number" inputMode="decimal" min={0} className={fInput} placeholder={ph} {...register(name)} />
   );
 
+  const deliveryLine =
+    scenario === "store" && result?.delivery_mode ? (
+      <div className="flex flex-wrap items-center gap-1.5 text-[12.5px]">
+        <span className="text-subtext">{t("simulator.delivery_priced")}</span>
+        <Badge variant={result.delivery_mode === "distance" ? "primary" : "default"}>{t(`fmt.store_mode.${result.delivery_mode}`)}</Badge>
+        {result.delivery_mode === "distance" && result.vehicle && <Badge variant="info">{className(result.vehicle)}</Badge>}
+      </div>
+    ) : null;
   const payerKey = scenario === "deposit" ? "rider_pays" : scenario === "withdrawal" ? "rider_receives" : "customer_pays";
   const lines = (result?.lines ?? []).filter((l) => l.amount !== 0);
   const total = lines.reduce((s, l) => s + Math.abs(l.amount), 0);
@@ -230,18 +252,17 @@ export function SimulatorView({
             <>
               <div>
                 <span className="block text-[12px] text-subtext mb-1">{t("simulator.vehicle")}</span>
-                <Segmented
-                  options={[
-                    ["motorcycle", t("vehicle.motorcycle")],
-                    ["bicycle", t("vehicle.bicycle")],
-                  ]}
-                  value={f.vehicle ?? "motorcycle"}
-                  onChange={(v) => setValue("vehicle", v)}
-                />
+                <VehiclePicker service="courier" value={vehicle} onChange={(v) => setValue("vehicle", v)} />
               </div>
               {!routed && label(t("simulator.km"), numInput("km", "5"))}
               {label(t("simulator.stops"), numInput("stops", "1"))}
             </>
+          )}
+          {scenario === "ride" && hasClasses && (
+            <div>
+              <span className="block text-[12px] text-subtext mb-1">{t("simulator.vehicle")}</span>
+              <VehiclePicker service="ride" value={vehicle} onChange={(v) => setValue("vehicle", v)} />
+            </div>
           )}
           {scenario === "ride" && !routed && label(t("simulator.km"), numInput("km", "5"))}
           {(scenario === "deposit" || scenario === "withdrawal") && (
@@ -253,17 +274,19 @@ export function SimulatorView({
               </div>
             </>
           )}
-          {tripScenario && (
+          {pointScenario && (
             <div className="sm:col-span-2 space-y-2">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-[12px] text-subtext">{t("simulator.route_hint")}</span>
+                <span className="text-[12px] text-subtext">
+                  {storePoints ? (storeId ? t("simulator.store_route_hint_store") : t("simulator.store_route_hint")) : t("simulator.route_hint")}
+                </span>
                 <div className="flex items-center gap-2">
                   <Segmented
                     options={[
-                      ["pickup", t("simulator.pickup")],
-                      ["dropoff", t("simulator.dropoff")],
+                      ["pickup", storePoints ? t("simulator.store_point") : t("simulator.pickup")],
+                      ["dropoff", storePoints ? t("simulator.customer_point") : t("simulator.dropoff")],
                     ]}
-                    value={pickMode}
+                    value={storePoints && storeId ? "dropoff" : pickMode}
                     onChange={setPickMode}
                   />
                   {(pickup || dropoff) && (
@@ -287,13 +310,14 @@ export function SimulatorView({
                 pickupLabel={t("simulator.pickup")}
                 dropoffLabel={t("simulator.dropoff")}
                 onPick={(p) => {
-                  if (pickMode === "pickup") {
+                  if (pickMode === "pickup" && !(storePoints && storeId)) {
                     setPickup(p);
                     setPickMode("dropoff");
                   } else setDropoff(p);
                 }}
               />
               {routed && <p className="text-[11.5px] text-subtext">{t("simulator.km_from_map")}</p>}
+              {storePoints && <p className="text-[11.5px] text-subtext">{t("simulator.store_km_from_map")}</p>}
             </div>
           )}
           <p className="text-[11.5px] text-subtext sm:col-span-2">{t("modal.tz_hint")}</p>
@@ -320,9 +344,10 @@ export function SimulatorView({
               <Card>
                 <p className="text-xs font-medium text-subtext uppercase tracking-wide">{t(`simulator.${payerKey}`)}</p>
                 <p className="text-4xl font-bold text-text tabular-nums mt-1 mb-5">{formatDa(result.payer_total, tf)}</p>
-                {result.place && (
-                  <div className="mb-4">
-                    <PlaceLine place={result.place} tiers={tiers} />
+                {(result.place || deliveryLine) && (
+                  <div className="mb-4 space-y-2">
+                    {result.place && <PlaceLine place={result.place} tiers={tiers} />}
+                    {deliveryLine}
                   </div>
                 )}
                 {result.breakdown && result.breakdown.length > 0 && (
@@ -383,7 +408,7 @@ export function SimulatorView({
                       {result.values.map((v) => (
                         <tr key={v.key} className="border-t border-border align-top">
                           <td className="py-2 pe-3 font-semibold text-text">{t(`fees.${v.key}.name`)}</td>
-                          <td className="py-2 pe-3 text-text">{formatValueInline(v.key, v.value, tf)}</td>
+                          <td className="py-2 pe-3 text-text">{formatValueInline(v.key, v.value, tf, className)}</td>
                           <td className="py-2">
                             {v.override_id ? (
                               <Link

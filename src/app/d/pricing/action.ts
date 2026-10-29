@@ -29,6 +29,10 @@ import type {
   ZonePatch,
   ZonesPayload,
   GeoFeatureCollection,
+  VehicleClass,
+  VehicleClassInput,
+  VehicleClassPatch,
+  RiderClassState,
 } from "@/features/pricing";
 import { PRICING_KEYS } from "@/features/pricing";
 
@@ -53,6 +57,22 @@ async function fail(res: Extract<BlinkApiResult<unknown>, { ok: false }>): Promi
       error: t(code),
       ...(typeof count === "number" ? { overrideCount: count } : {}),
     };
+  }
+  if (res.status === 409 && (errCode === "class_in_use" || res.error === "class_in_use")) {
+    const b = res.body as { rider_count?: unknown; override_count?: unknown; open_orders?: unknown } | null | undefined;
+    const n = (v: unknown) => (typeof v === "number" ? v : undefined);
+    const t = await getTranslations(`${NS}.errors`);
+    return {
+      ok: false,
+      status: 409,
+      code: "class_in_use",
+      error: t("class_in_use"),
+      usage: { riders: n(b?.rider_count), overrides: n(b?.override_count), orders: n(b?.open_orders) },
+    };
+  }
+  if (res.status === 400 && errCode === "class") {
+    const t = await getTranslations(`${NS}.errors`);
+    return { ok: false, status: 400, code: "class", error: t("class_mismatch") };
   }
   if (res.status === 400 && errCode === "geometry") {
     const t = await getTranslations(`${NS}.errors`);
@@ -148,11 +168,11 @@ export async function previewPricing(
   return { ok: true, data: res.data };
 }
 
-/** The fee catalog — lazily fetched by the override modal when opened outside /pricing. */
-export async function loadCatalog(): Promise<ActionResult<Fee[]>> {
-  const res = await blinkApi<{ fees: Fee[] }>("/pricing/admin/catalog", { roles: PRICING_READ_ROLES });
+/** The fee catalog (+ vehicle classes) — lazily fetched by the override modal when opened outside /pricing. */
+export async function loadCatalog(): Promise<ActionResult<{ fees: Fee[]; classes: VehicleClass[] }>> {
+  const res = await blinkApi<{ fees: Fee[]; vehicle_classes?: VehicleClass[] }>("/pricing/admin/catalog", { roles: PRICING_READ_ROLES });
   if (!res.ok) return fail(res);
-  return { ok: true, data: res.data.fees };
+  return { ok: true, data: { fees: res.data.fees, classes: res.data.vehicle_classes ?? [] } };
 }
 
 /** One partner's overrides (merchant / agent "Pricing deals" card) + whether the viewer may edit. */
@@ -301,4 +321,67 @@ export async function archiveTier(code: string): Promise<ActionResult<Tier>> {
   if (!res.ok) return fail(res);
   done();
   return { ok: true, data: res.data.tier };
+}
+
+// ---- vehicle classes -----------------------------------------------------------------
+
+const CLASS_RE = /^[a-z][a-z0-9_]{1,23}$/;
+/** The list / write replies name the class(es) `vehicle_classes` / `vehicle_class` (the catalog does); `classes` / `class` are tolerated. */
+type ClassList = { vehicle_classes?: VehicleClass[]; classes?: VehicleClass[] };
+type ClassOne = { vehicle_class?: VehicleClass; class?: VehicleClass };
+const listOf = (d: ClassList) => d.vehicle_classes ?? d.classes ?? [];
+const oneOf = (d: ClassOne) => (d.vehicle_class ?? d.class) as VehicleClass;
+
+/** Classes with rider counts; archived ones too, so the manager can show them. */
+export async function loadVehicleClasses(includeArchived = true): Promise<ActionResult<VehicleClass[]>> {
+  const res = await blinkApi<ClassList>(`/pricing/admin/vehicle-classes?include_archived=${includeArchived}`, { roles: PRICING_READ_ROLES });
+  if (!res.ok) return fail(res);
+  return { ok: true, data: listOf(res.data) };
+}
+
+export async function createVehicleClass(input: VehicleClassInput): Promise<ActionResult<VehicleClass>> {
+  const res = await blinkApi<ClassOne>("/pricing/admin/vehicle-classes", { method: "POST", body: input, roles: PRICING_WRITE_ROLES });
+  if (!res.ok) return fail(res);
+  done();
+  return { ok: true, data: oneOf(res.data) };
+}
+
+export async function updateVehicleClass(code: string, patch: VehicleClassPatch): Promise<ActionResult<VehicleClass>> {
+  if (!CLASS_RE.test(code)) return { ok: false, error: await blinkApiErrorMessage(NS, { status: 400, error: "Bad code" }) };
+  const res = await blinkApi<ClassOne>(`/pricing/admin/vehicle-classes/${code}`, { method: "PATCH", body: patch, roles: PRICING_WRITE_ROLES });
+  if (!res.ok) return fail(res);
+  done();
+  return { ok: true, data: oneOf(res.data) };
+}
+
+/** Archive a class. Fails with `class_in_use` while riders, live overrides or open orders use it. */
+export async function archiveVehicleClass(code: string): Promise<ActionResult<VehicleClass>> {
+  if (!CLASS_RE.test(code)) return { ok: false, error: await blinkApiErrorMessage(NS, { status: 400, error: "Bad code" }) };
+  const res = await blinkApi<ClassOne>(`/pricing/admin/vehicle-classes/${code}`, { method: "DELETE", roles: PRICING_WRITE_ROLES });
+  if (!res.ok) return fail(res);
+  done();
+  return { ok: true, data: oneOf(res.data) };
+}
+
+/** A rider's assigned class (null = the default class of their base vehicle). */
+export async function getRiderVehicleClass(userId: string): Promise<ActionResult<RiderClassState>> {
+  if (!ID_RE.test(userId)) return { ok: false, error: await blinkApiErrorMessage(NS, { status: 400, error: "Bad id" }) };
+  const res = await blinkApi<RiderClassState>(`/pricing/admin/riders/${userId}/vehicle-class`, { roles: PRICING_READ_ROLES });
+  if (!res.ok) return fail(res);
+  return { ok: true, data: res.data };
+}
+
+/** Assign a class (or `null` for the default). 400 `class` when its base vehicle differs from the rider's. */
+export async function setRiderVehicleClass(userId: string, vehicleClass: string | null): Promise<ActionResult<RiderClassState>> {
+  if (!ID_RE.test(userId)) return { ok: false, error: await blinkApiErrorMessage(NS, { status: 400, error: "Bad id" }) };
+  if (vehicleClass !== null && !CLASS_RE.test(vehicleClass)) return { ok: false, error: await blinkApiErrorMessage(NS, { status: 400, error: "Bad code" }) };
+  const res = await blinkApi<RiderClassState>(`/pricing/admin/riders/${userId}/vehicle-class`, {
+    method: "PUT",
+    body: { vehicle_class: vehicleClass },
+    roles: PRICING_WRITE_ROLES,
+  });
+  if (!res.ok) return fail(res);
+  revalidatePath(`/d/riders/${userId}`);
+  revalidatePath("/d/pricing/vehicles");
+  return { ok: true, data: res.data };
 }

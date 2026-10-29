@@ -14,3 +14,7 @@ export { PricingDealsCard } from "./components/deals-card";
 export { ZonesView } from "./components/zones-view";
 export { TiersView } from "./components/tiers-view";
 export { FormulaView } from "./components/formula-view";
+export * from "./vehicle-classes";
+export { VehiclesView } from "./components/class-manager";
+export { RiderClassPicker } from "./components/rider-class-picker";
+export { VehicleClassesProvider } from "./components/vehicle-classes-context";

@@ -9,7 +9,8 @@
       "simulator": "Simulator",
       "zones": "Zones",
       "tiers": "Tiers",
-      "formula": "Formula"
+      "formula": "Formula",
+      "vehicles": "Vehicles"
     },
     "groups": {
       "customer": "Customer prices",
@@ -87,6 +88,10 @@
       "zone_defaults": {
         "name": "Unzoned tier",
         "desc": "The tier for points outside every drawn zone"
+      },
+      "store_delivery": {
+        "name": "Marketplace delivery",
+        "desc": "Delivery fee on store orders: the merchant's own fee, or priced by distance per vehicle class, with a min and max"
       }
     },
     "fields": {
@@ -113,7 +118,10 @@
       "enabled": "Service available",
       "unzoned_tier": "Tier outside every zone",
       "on": "On",
-      "off": "Off"
+      "off": "Off",
+      "mode": "Pricing mode",
+      "min_fee": "Minimum fee (0 = none)",
+      "max_fee": "Maximum fee (0 = no cap)"
     },
     "vehicle": {
       "bicycle": "Bicycle",
@@ -131,7 +139,12 @@
       "formula": "Roads ×{road} · round {mode} to {step}",
       "surcharge_tier": "{amount} when the tier changes",
       "service_on": "In service",
-      "service_off": "Out of service"
+      "service_off": "Out of service",
+      "store_mode": {
+        "merchant": "Merchant's fee",
+        "distance": "By distance"
+      },
+      "store_clamp": "min {min} · max {max}"
     },
     "example": {
       "before": "Now",
@@ -244,7 +257,10 @@
         "archive_zone": "Zone archived",
         "create_tier": "Tier created",
         "update_tier": "Tier updated",
-        "archive_tier": "Tier archived"
+        "archive_tier": "Tier archived",
+        "create_vehicle_class": "Vehicle class created",
+        "update_vehicle_class": "Vehicle class updated",
+        "archive_vehicle_class": "Vehicle class archived"
       },
       "empty": "No changes yet",
       "all_actors": "All people",
@@ -252,9 +268,11 @@
       "load_more": "Load more",
       "entity": {
         "pricing_zone": "Zone",
-        "pricing_tier": "Tier"
+        "pricing_tier": "Tier",
+        "vehicle_class": "Vehicle class"
       },
-      "open_zones": "Open zones"
+      "open_zones": "Open zones",
+      "open_vehicles": "Open vehicles"
     },
     "preview": {
       "col": {
@@ -291,7 +309,9 @@
       "integer": "Enter a whole number",
       "geometry": "This shape is not valid ({detail})",
       "zone_in_use": "This zone still has live overrides. Archive or end them first.",
-      "tier_in_use": "This tier is still used by a live zone, override or the unzoned setting."
+      "tier_in_use": "This tier is still used by a live zone, override or the unzoned setting.",
+      "class_in_use": "This class is still used by riders, live overrides or open orders, so it cannot be archived.",
+      "class_mismatch": "That class belongs to a different base vehicle than the rider's."
     },
     "header": {
       "simulate": "Simulate an order",
@@ -322,7 +342,8 @@
       "agent_tax_rate": "On {input} of agent share, {output} is withheld",
       "dues_payment_fee_rate": "Paying {input} of dues costs {output}",
       "fare_formula": "{km} km by {vehicle}: {output}",
-      "dropoff_surcharge": "{output} at the drop-off"
+      "dropoff_surcharge": "{output} at the drop-off",
+      "store_delivery": "{km} km by {vehicle}: {output}"
     },
     "extend": {
       "label": "Extend",
@@ -336,7 +357,10 @@
       "per_km": "Per km after",
       "bike_first": "Bicycle, first {km} km",
       "extra_stop": "Extra drop-off",
-      "ride_sub": "+ {perKm}/km after {included} km"
+      "ride_sub": "+ {perKm}/km after {included} km",
+      "class_first": "{name}, first {km} km",
+      "class_per_km": "{name}, per km after",
+      "leg_sub": "{name}: + {perKm}/km after {included} km"
     },
     "overview": {
       "empty": "No fees loaded",
@@ -449,13 +473,23 @@
         "multiplier": "Multiplier",
         "clamp": "Min / max fare",
         "rounding": "Rounding"
-      }
+      },
+      "store_route_hint": "Optional: click the map to set the store and the customer's drop-off",
+      "store_route_hint_store": "The chosen store is the pickup: click the map for the customer's drop-off",
+      "store_point": "Store",
+      "customer_point": "Customer",
+      "store_km_from_map": "With a store and a drop-off, the server prices delivery by the store's marketplace rule.",
+      "delivery_priced": "Delivery priced"
     },
     "choices": {
       "rounding_mode": {
         "up": "Round up",
         "nearest": "Nearest",
         "down": "Round down"
+      },
+      "mode": {
+        "merchant": "Merchant's own fee",
+        "distance": "By distance"
       }
     },
     "zones": {
@@ -514,7 +548,8 @@
           "too_close": "too close",
           "out_of_service_area": "not served",
           "unknown": "n/a"
-        }
+        },
+        "merchant_fee": "merchant's fee"
       }
     },
     "tiers_card": {
@@ -599,14 +634,69 @@
         "min_fare": "Minimum fare",
         "max_fare": "Maximum fare",
         "rounding_step": "Rounding step",
-        "rounding_mode": "Rounding mode"
+        "rounding_mode": "Rounding mode",
+        "mode": "Pricing mode",
+        "min_fee": "Marketplace min fee",
+        "max_fee": "Marketplace max fee"
       },
       "example_title": "Worked example",
       "example_desc": "Computed by the server with today's prices, step by step.",
       "input_mode": "Distance from",
       "two_points": "Two map points",
       "pick_two": "Pick a pickup and a drop-off on the map.",
-      "no_breakdown": "The server sent no step breakdown for this result."
+      "no_breakdown": "The server sent no step breakdown for this result.",
+      "scenario_marketplace": "Marketplace",
+      "store_note": "Marketplace delivery is priced between a store and the customer: pick both points on the map.",
+      "pick_two_store": "Click the map to set the store, then the customer's drop-off.",
+      "merchant_no_breakdown": "Merchant mode: the store's own fee, no steps.",
+      "service": {
+        "courier": "Courier",
+        "ride": "Ride",
+        "store": "Marketplace delivery"
+      }
+    },
+    "vehicles": {
+      "title": "Vehicle classes",
+      "desc": "Bicycle, Moto, Moto Comfort and any class you add. Each class has its own fare legs and serves some services.",
+      "comfort_note_title": "Moto Comfort stays off until the app update ships",
+      "comfort_note": "The live app cannot show a third ride option yet, so Moto Comfort is disabled. Once the app update is out, turn it on with the Enabled switch below. Riders are given a class by staff on their detail page.",
+      "add": "Add class",
+      "empty": "No vehicle classes yet",
+      "order_n": "order {n}",
+      "services": {
+        "ride": "Ride",
+        "courier": "Courier",
+        "store": "Store orders"
+      },
+      "exclusive": "Exclusive",
+      "exclusive_hint": "Only riders of this class take its jobs.",
+      "badge_off": "Off until the app update",
+      "enabled": "Enabled",
+      "enabled_hint": "Off = not offered in quotes or to customers.",
+      "on": "On",
+      "off": "Off",
+      "riders": "{count, plural, one {# rider} other {# riders}}",
+      "archived": "Archived classes ({count})",
+      "new_title": "New vehicle class",
+      "edit_title": "Edit vehicle class",
+      "archive_title": "Archive vehicle class",
+      "archive_body": "Archive “{name}”? It disappears from pickers and quotes; its history is kept.",
+      "in_use_detail": "Still in use: {riders} riders, {overrides} overrides, {orders} open orders.",
+      "code": "Code",
+      "code_hint": "Lowercase letters, digits and underscores, 2–24 characters. It cannot be changed later.",
+      "code_invalid": "Start with a letter; use lowercase letters, digits and underscores (2–24).",
+      "base_vehicle": "Base vehicle",
+      "order": "Order",
+      "services_label": "Services this class serves",
+      "services_required": "Pick at least one service.",
+      "comfort_enable_warning": "Only enable Moto Comfort once the app update that can show it is live."
+    },
+    "rider_class": {
+      "label": "Vehicle class",
+      "no_vehicle": "No vehicle type yet",
+      "default": "default",
+      "default_option": "Default ({name})",
+      "pending_note": "This class is off until the app update ships."
     }
   }
 }

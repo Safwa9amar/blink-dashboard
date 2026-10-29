@@ -9,7 +9,8 @@
       "simulator": "Simulateur",
       "zones": "Zones",
       "tiers": "Niveaux",
-      "formula": "Formule"
+      "formula": "Formule",
+      "vehicles": "Véhicules"
     },
     "groups": {
       "customer": "Prix clients",
@@ -87,6 +88,10 @@
       "zone_defaults": {
         "name": "Niveau hors zone",
         "desc": "Le niveau des points situés hors de toute zone dessinée"
+      },
+      "store_delivery": {
+        "name": "Livraison marketplace",
+        "desc": "Frais de livraison des commandes en magasin : le tarif propre du marchand, ou calculé à la distance par classe de véhicule, avec un min et un max"
       }
     },
     "fields": {
@@ -113,7 +118,10 @@
       "enabled": "Service disponible",
       "unzoned_tier": "Niveau hors de toute zone",
       "on": "Activé",
-      "off": "Désactivé"
+      "off": "Désactivé",
+      "mode": "Mode de tarification",
+      "min_fee": "Frais minimum (0 = aucun)",
+      "max_fee": "Frais maximum (0 = sans plafond)"
     },
     "vehicle": {
       "bicycle": "Vélo",
@@ -131,7 +139,12 @@
       "formula": "Routes ×{road} · arrondi {mode} à {step}",
       "surcharge_tier": "{amount} si le niveau change",
       "service_on": "En service",
-      "service_off": "Hors service"
+      "service_off": "Hors service",
+      "store_mode": {
+        "merchant": "Tarif du marchand",
+        "distance": "À la distance"
+      },
+      "store_clamp": "min {min} · max {max}"
     },
     "example": {
       "before": "Actuel",
@@ -244,7 +257,10 @@
         "archive_zone": "Zone archivée",
         "create_tier": "Niveau créé",
         "update_tier": "Niveau modifié",
-        "archive_tier": "Niveau archivé"
+        "archive_tier": "Niveau archivé",
+        "create_vehicle_class": "Classe de véhicule créée",
+        "update_vehicle_class": "Classe de véhicule modifiée",
+        "archive_vehicle_class": "Classe de véhicule archivée"
       },
       "empty": "Aucun changement",
       "all_actors": "Toutes les personnes",
@@ -252,9 +268,11 @@
       "load_more": "Charger plus",
       "entity": {
         "pricing_zone": "Zone",
-        "pricing_tier": "Niveau"
+        "pricing_tier": "Niveau",
+        "vehicle_class": "Classe de véhicule"
       },
-      "open_zones": "Ouvrir les zones"
+      "open_zones": "Ouvrir les zones",
+      "open_vehicles": "Ouvrir les véhicules"
     },
     "preview": {
       "col": {
@@ -291,7 +309,9 @@
       "integer": "Saisissez un nombre entier",
       "geometry": "Cette forme n'est pas valide ({detail})",
       "zone_in_use": "Cette zone a encore des exceptions actives. Archivez-les ou terminez-les d'abord.",
-      "tier_in_use": "Ce niveau est encore utilisé par une zone, une exception active ou le réglage hors zone."
+      "tier_in_use": "Ce niveau est encore utilisé par une zone, une exception active ou le réglage hors zone.",
+      "class_in_use": "Cette classe est encore utilisée par des livreurs, des remplacements actifs ou des commandes ouvertes : impossible de l'archiver.",
+      "class_mismatch": "Cette classe correspond à un autre véhicule de base que celui du livreur."
     },
     "header": {
       "simulate": "Simuler une commande",
@@ -322,7 +342,8 @@
       "agent_tax_rate": "Sur {input} de part agent, {output} sont retenus",
       "dues_payment_fee_rate": "Payer {input} de dus coûte {output}",
       "fare_formula": "{km} km en {vehicle} : {output}",
-      "dropoff_surcharge": "{output} à la destination"
+      "dropoff_surcharge": "{output} à la destination",
+      "store_delivery": "{km} km en {vehicle} : {output}"
     },
     "extend": {
       "label": "Prolonger",
@@ -336,7 +357,10 @@
       "per_km": "Par km ensuite",
       "bike_first": "Vélo, {km} premiers km",
       "extra_stop": "Dépose en plus",
-      "ride_sub": "+ {perKm}/km après {included} km"
+      "ride_sub": "+ {perKm}/km après {included} km",
+      "class_first": "{name}, {km} premiers km",
+      "class_per_km": "{name}, par km ensuite",
+      "leg_sub": "{name} : + {perKm}/km après {included} km"
     },
     "overview": {
       "empty": "Aucun frais chargé",
@@ -449,13 +473,23 @@
         "multiplier": "Multiplicateur",
         "clamp": "Tarif min / max",
         "rounding": "Arrondi"
-      }
+      },
+      "store_route_hint": "Facultatif : cliquez sur la carte pour placer le magasin et la dépose du client",
+      "store_route_hint_store": "Le magasin choisi est le point de départ : cliquez sur la carte pour la dépose du client",
+      "store_point": "Magasin",
+      "customer_point": "Client",
+      "store_km_from_map": "Avec un magasin et une dépose, le serveur calcule la livraison selon la règle marketplace du magasin.",
+      "delivery_priced": "Livraison calculée"
     },
     "choices": {
       "rounding_mode": {
         "up": "Vers le haut",
         "nearest": "Au plus proche",
         "down": "Vers le bas"
+      },
+      "mode": {
+        "merchant": "Tarif du marchand",
+        "distance": "À la distance"
       }
     },
     "zones": {
@@ -514,7 +548,8 @@
           "too_close": "trop près",
           "out_of_service_area": "non desservi",
           "unknown": "n/d"
-        }
+        },
+        "merchant_fee": "tarif du marchand"
       }
     },
     "tiers_card": {
@@ -599,14 +634,69 @@
         "min_fare": "Tarif minimum",
         "max_fare": "Tarif maximum",
         "rounding_step": "Pas d'arrondi",
-        "rounding_mode": "Mode d'arrondi"
+        "rounding_mode": "Mode d'arrondi",
+        "mode": "Mode de tarification",
+        "min_fee": "Frais min marketplace",
+        "max_fee": "Frais max marketplace"
       },
       "example_title": "Exemple chiffré",
       "example_desc": "Calculé par le serveur avec les prix actuels, étape par étape.",
       "input_mode": "Distance depuis",
       "two_points": "Deux points sur la carte",
       "pick_two": "Choisissez un départ et une destination sur la carte.",
-      "no_breakdown": "Le serveur n'a pas fourni le détail des étapes pour ce résultat."
+      "no_breakdown": "Le serveur n'a pas fourni le détail des étapes pour ce résultat.",
+      "scenario_marketplace": "Marketplace",
+      "store_note": "La livraison marketplace se calcule entre un magasin et le client : placez les deux points sur la carte.",
+      "pick_two_store": "Cliquez sur la carte pour placer le magasin, puis la dépose du client.",
+      "merchant_no_breakdown": "Mode marchand : le tarif propre du magasin, sans étapes.",
+      "service": {
+        "courier": "Coursier",
+        "ride": "Course",
+        "store": "Livraison marketplace"
+      }
+    },
+    "vehicles": {
+      "title": "Classes de véhicule",
+      "desc": "Vélo, Moto, Moto Confort et toute classe ajoutée. Chaque classe a ses propres tarifs et dessert certains services.",
+      "comfort_note_title": "Moto Confort reste désactivée jusqu'à la mise à jour de l'app",
+      "comfort_note": "L'app en production ne peut pas encore afficher une troisième option de course : Moto Confort est donc désactivée. Une fois la mise à jour publiée, activez-la avec l'interrupteur Activée ci-dessous. Le personnel attribue une classe aux livreurs depuis leur fiche.",
+      "add": "Ajouter une classe",
+      "empty": "Aucune classe de véhicule",
+      "order_n": "ordre {n}",
+      "services": {
+        "ride": "Course",
+        "courier": "Coursier",
+        "store": "Commandes magasin"
+      },
+      "exclusive": "Exclusive",
+      "exclusive_hint": "Seuls les livreurs de cette classe prennent ses missions.",
+      "badge_off": "Désactivée jusqu'à la mise à jour",
+      "enabled": "Activée",
+      "enabled_hint": "Désactivée = non proposée dans les devis ni aux clients.",
+      "on": "Oui",
+      "off": "Non",
+      "riders": "{count, plural, one {# livreur} other {# livreurs}}",
+      "archived": "Classes archivées ({count})",
+      "new_title": "Nouvelle classe de véhicule",
+      "edit_title": "Modifier la classe de véhicule",
+      "archive_title": "Archiver la classe de véhicule",
+      "archive_body": "Archiver « {name} » ? Elle disparaît des sélecteurs et des devis ; l'historique est conservé.",
+      "in_use_detail": "Encore utilisée : {riders} livreurs, {overrides} remplacements, {orders} commandes ouvertes.",
+      "code": "Code",
+      "code_hint": "Lettres minuscules, chiffres et tirets bas, 2 à 24 caractères. Non modifiable ensuite.",
+      "code_invalid": "Commencez par une lettre ; minuscules, chiffres et tirets bas (2 à 24).",
+      "base_vehicle": "Véhicule de base",
+      "order": "Ordre",
+      "services_label": "Services desservis par cette classe",
+      "services_required": "Choisissez au moins un service.",
+      "comfort_enable_warning": "N'activez Moto Confort qu'une fois la mise à jour de l'app capable de l'afficher en ligne."
+    },
+    "rider_class": {
+      "label": "Classe de véhicule",
+      "no_vehicle": "Pas encore de type de véhicule",
+      "default": "par défaut",
+      "default_option": "Par défaut ({name})",
+      "pending_note": "Cette classe est désactivée jusqu'à la mise à jour de l'app."
     }
   }
 }

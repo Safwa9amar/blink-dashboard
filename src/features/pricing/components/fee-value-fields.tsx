@@ -6,6 +6,7 @@ import { Toggle, fInput } from "@/components/ui";
 import { isNumericUnit, type FieldDef } from "../format";
 import type { Tier } from "../types";
 import { liveTiers, tierName } from "../zones";
+import { useClassName, useVehicleClasses } from "./vehicle-classes-context";
 
 // Unit-aware inputs for one fee value. Rates are typed as percent, amounts in DA; the
 // parent converts with formToValue(). Fare objects render as one small group per vehicle.
@@ -33,11 +34,14 @@ export function FeeValueFields({
 }) {
   const t = useTranslations("pricing");
   const locale = useLocale();
-  const groups: { vehicle?: "bicycle" | "motorcycle"; fields: FieldDef[] }[] = [];
+  const className = useClassName();
+  const classes = useVehicleClasses();
+  // Legs are grouped by vehicle class (catalog names); other fields stay in their own groups.
+  const groups: { classCode?: string; fields: FieldDef[] }[] = [];
   for (const f of fields) {
     const last = groups[groups.length - 1];
-    if (last && last.vehicle === f.vehicle) last.fields.push(f);
-    else groups.push({ vehicle: f.vehicle, fields: [f] });
+    if (last && last.classCode === f.classCode) last.fields.push(f);
+    else groups.push({ classCode: f.classCode, fields: [f] });
   }
 
   const unitLabel = (f: FieldDef) =>
@@ -156,8 +160,15 @@ export function FeeValueFields({
   return (
     <div className="space-y-4">
       {groups.map((g, gi) => (
-        <div key={gi} className={g.vehicle ? "rounded-xl border border-border p-3" : ""}>
-          {g.vehicle && <p className="text-[12px] font-bold text-text mb-2">{t(`vehicle.${g.vehicle}`)}</p>}
+        <div key={gi} className={g.classCode ? "rounded-xl border border-border p-3" : ""}>
+          {g.classCode && (
+            <p className="text-[12px] font-bold text-text mb-2 flex flex-wrap items-center gap-1.5">
+              {className(g.classCode)}
+              {classes.find((c) => c.code === g.classCode && !c.enabled) && (
+                <span className="text-[10.5px] font-semibold rounded-full bg-warning-light text-warning px-2 py-0.5">{t("vehicles.badge_off")}</span>
+              )}
+            </p>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{g.fields.map(renderField)}</div>
         </div>
       ))}

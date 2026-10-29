@@ -12,6 +12,7 @@ import { WILAYA_OPTIONS } from "../wilayas";
 import { liveTiers, liveZones, tierName } from "../zones";
 import { ExtendMenu } from "./extend-menu";
 import { OverrideCalendar } from "./override-calendar";
+import { useClassName } from "./vehicle-classes-context";
 import { OverrideWizard } from "./override-wizard";
 import { ScopeChips } from "./scope-chips";
 
@@ -55,6 +56,7 @@ export function OverridesView({
   tiers?: Tier[];
 }) {
   const t = useTranslations("pricing");
+  const className = useClassName();
   const tf = t as unknown as TFn;
   const locale = useLocale();
   const router = useRouter();
@@ -114,8 +116,8 @@ export function OverridesView({
       label: t("overrides.col.value"),
       sortable: false,
       render: (o) => (
-        <span className="text-sm text-text" title={formatValueInline(o.key, o.value, tf)}>
-          {formatValueShort(o.key, o.value, tf)}
+        <span className="text-sm text-text" title={formatValueInline(o.key, o.value, tf, className)}>
+          {formatValueShort(o.key, o.value, tf, className)}
         </span>
       ),
     },

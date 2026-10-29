@@ -5,8 +5,10 @@ import { useLocale, useTranslations } from "next-intl";
 import { Badge, Button } from "@/components/ui";
 import { listPartnerOverrides, loadCatalog } from "@/app/d/pricing/action";
 import { formatValueShort } from "../format";
-import type { Fee, Override, PartnerKind, TFn } from "../types";
+import type { Fee, Override, PartnerKind, TFn, VehicleClass } from "../types";
+import { classNameOrNull } from "../vehicle-classes";
 import { OverrideWizard } from "./override-wizard";
+import { VehicleClassesProvider } from "./vehicle-classes-context";
 import { ScopeChips } from "./scope-chips";
 import { STATUS_VARIANT, formatWindow } from "./overrides-view";
 
@@ -30,6 +32,8 @@ export function PricingDealsCard({
   const [hidden, setHidden] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fees, setFees] = useState<Fee[] | null>(null);
+  const [classes, setClasses] = useState<VehicleClass[]>([]);
+  const className = (code: string) => classNameOrNull(classes, code, locale) ?? (code === "bicycle" || code === "motorcycle" ? t(`vehicle.${code}`) : code);
   const [open, setOpen] = useState(false);
 
   const load = useCallback(async () => {
@@ -53,7 +57,8 @@ export function PricingDealsCard({
     if (!fees) {
       const res = await loadCatalog();
       if (!res.ok) return setError(res.error);
-      setFees(res.data);
+      setFees(res.data.fees);
+      setClasses(res.data.classes);
     }
     setOpen(true);
   };
@@ -83,7 +88,7 @@ export function PricingDealsCard({
                 <span className="text-[13px] font-semibold text-text">{t(`fees.${o.key}.name`)}</span>
                 <Badge variant={STATUS_VARIANT[o.status]}>{t(`status.${o.status}`)}</Badge>
               </div>
-              <p className="text-[13px] text-text mt-0.5">{formatValueShort(o.key, o.value, tf)}</p>
+              <p className="text-[13px] text-text mt-0.5">{formatValueShort(o.key, o.value, tf, className)}</p>
               <div className="flex flex-wrap items-center gap-2 mt-1">
                 <ScopeChips service={o.service} wilaya_code={o.wilaya_code} />
                 <span className="text-[11.5px] text-subtext">{formatWindow(o, locale, tf)}</span>
@@ -93,13 +98,15 @@ export function PricingDealsCard({
         </ul>
       )}
       {fees && (
-        <OverrideWizard
-          open={open}
-          onClose={() => setOpen(false)}
-          fees={fees}
-          preset={{ kind, partner: { id: partnerId, name: partnerName, sub: "" } }}
-          onSaved={load}
-        />
+        <VehicleClassesProvider classes={classes}>
+          <OverrideWizard
+            open={open}
+            onClose={() => setOpen(false)}
+            fees={fees}
+            preset={{ kind, partner: { id: partnerId, name: partnerName, sub: "" } }}
+            onSaved={load}
+          />
+        </VehicleClassesProvider>
       )}
     </div>
   );

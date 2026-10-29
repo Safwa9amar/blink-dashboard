@@ -1,4 +1,14 @@
-import type { FareFormula, FareTier, Fee, FeeExample, FeeField, FeeValue, PricingKey, TFn } from "./types";
+import type { FareFormula, FareTier, Fee, FeeExample, FeeField, FeeValue, PricingKey, StoreDeliveryMode, TFn } from "./types";
+import { fieldClass, legsOf } from "./vehicle-classes";
+
+/** Resolves a vehicle class code to a display name (see `useClassName`). */
+export type ClassNamer = (code: string) => string;
+
+/** Name for a class when no catalog names are at hand: the two legacy classes are translated, others show their code. */
+export const legacyClassName =
+  (t: TFn): ClassNamer =>
+  (code) =>
+    code === "bicycle" || code === "motorcycle" ? t(`vehicle.${code}`) : code;
 
 // ---- field definitions (driven by the server catalog: `fee.fields`) ---------------------
 
@@ -16,8 +26,8 @@ export interface FieldDef {
   step: number;
   /** i18n key under `pricing.fields.*` (last path segment). */
   label: string;
-  /** Group heading key under `pricing.vehicle.*` (fare tiers). */
-  vehicle?: "bicycle" | "motorcycle";
+  /** Vehicle class code of a fare-leg field (groups the editor by class). */
+  classCode?: string;
   /** Allowed values for `choice` / `tier` fields (tier: the server's list, else the live tiers). */
   options?: string[];
 }
@@ -48,8 +58,7 @@ export function fieldDefs(fee: Fee | undefined | null): FieldDef[] {
     const path = f.path.split(".");
     const unit = UNIT_MAP[f.unit] ?? "da";
     const pct = unit === "pct";
-    const head = path[0];
-    const vehicle = path.length > 1 && (head === "bicycle" || head === "motorcycle") ? head : undefined;
+    const classCode = fieldClass(path, f.class);
     return {
       name: path.join("_"),
       path,
@@ -58,8 +67,8 @@ export function fieldDefs(fee: Fee | undefined | null): FieldDef[] {
       max: pct ? rateToPct(f.max) : f.max,
       step: pct ? Number((f.step * 100).toFixed(4)) : f.step,
       // Fare legs share one label set ("base"); other nested fields keep the full path ("speed_kmh_bicycle").
-      label: vehicle || path.length === 1 ? path[path.length - 1] : path.join("_"),
-      vehicle,
+      label: classCode || path.length === 1 ? path[path.length - 1] : path.join("_"),
+      ...(classCode ? { classCode } : {}),
       ...(f.options?.length ? { options: f.options } : {}),
     };
   });
@@ -137,9 +146,9 @@ export const num = (n: number) => (Number.isInteger(n) ? String(n) : String(Numb
 export const formatPct = (rate: number) => `${num(rateToPct(rate))}%`;
 export const formatDa = (n: number, t: TFn) => `${num(n)} ${t("units.da")}`;
 
-function fareLine(vehicle: "bicycle" | "motorcycle", f: FareTier, t: TFn): string {
+function fareLine(name: string, f: FareTier, t: TFn): string {
   const perMin = f.per_minute ? ` ${t("fmt.per_minute", { perMin: formatDa(f.per_minute, t) })}` : "";
-  return `${t(`vehicle.${vehicle}`)}: ${t("fmt.fare", {
+  return `${name}: ${t("fmt.fare", {
     base: formatDa(f.base, t),
     perKm: formatDa(f.per_km, t),
     included: num(f.included_km),
@@ -147,25 +156,44 @@ function fareLine(vehicle: "bicycle" | "motorcycle", f: FareTier, t: TFn): strin
   })}${perMin}`;
 }
 
-/** Human-readable lines for a fee value (one per vehicle for fares). */
-export function formatValueLines(key: PricingKey, value: FeeValue | null | undefined, t: TFn): string[] {
+const legLines = (value: unknown, t: TFn, name: ClassNamer) => legsOf(value).map(([code, leg]) => fareLine(name(code), leg, t));
+const legBases = (value: unknown, t: TFn) => legsOf(value).map(([, leg]) => formatDa(leg.base, t));
+
+function clampLine(v: { min_fee?: number; max_fee?: number }, t: TFn): string | null {
+  const min = v.min_fee ?? 0;
+  const max = v.max_fee ?? 0;
+  if (!min && !max) return null;
+  return t("fmt.store_clamp", { min: formatDa(min, t), max: max ? formatDa(max, t) : "∞" });
+}
+
+/** Human-readable lines for a fee value (one per vehicle class for fares). */
+export function formatValueLines(key: PricingKey, value: FeeValue | null | undefined, t: TFn, names?: ClassNamer): string[] {
   if (!value) return ["—"];
-  const v = value as unknown as Record<string, unknown> & Record<string, FareTier>;
+  const name = names ?? legacyClassName(t);
+  const v = value as unknown as Record<string, unknown>;
   switch (key) {
     case "service_fee":
     case "rider_cancel_penalty":
-      return [formatDa(v.amount as unknown as number, t)];
+      return [formatDa(v.amount as number, t)];
     case "courier_fare": {
-      const lines: string[] = [];
-      if (v.bicycle) lines.push(fareLine("bicycle", v.bicycle, t));
-      if (v.motorcycle) lines.push(fareLine("motorcycle", v.motorcycle, t));
-      lines.push(`${t("fields.extra_stop_fee")}: ${formatDa(v.extra_stop_fee as unknown as number, t)}`);
+      const lines = legLines(value, t, name);
+      lines.push(`${t("fields.extra_stop_fee")}: ${formatDa(v.extra_stop_fee as number, t)}`);
       return lines;
     }
-    case "ride_fare":
-      return v.motorcycle ? [fareLine("motorcycle", v.motorcycle, t)] : ["—"];
+    case "ride_fare": {
+      const lines = legLines(value, t, name);
+      return lines.length ? lines : ["—"];
+    }
+    case "store_delivery": {
+      const mode = (v.mode as StoreDeliveryMode | undefined) ?? "merchant";
+      const lines = [t(`fmt.store_mode.${mode}`)];
+      if (mode === "distance") lines.push(...legLines(value, t, name));
+      const clamp = clampLine(v, t);
+      if (clamp) lines.push(clamp);
+      return lines;
+    }
     case "fare_multiplier":
-      return [`×${num(v.multiplier as unknown as number)}`];
+      return [`×${num(v.multiplier as number)}`];
     case "fare_formula": {
       const f = value as FareFormula;
       return [
@@ -185,22 +213,29 @@ export function formatValueLines(key: PricingKey, value: FeeValue | null | undef
     case "zone_defaults":
       return [(value as { unzoned_tier: string }).unzoned_tier];
     default:
-      return [formatPct(v.rate as unknown as number)];
+      return [formatPct(v.rate as number)];
   }
 }
 
 /** Single-line version for dense tables. */
-export function formatValueInline(key: PricingKey, value: FeeValue | null | undefined, t: TFn): string {
-  return formatValueLines(key, value, t).join(" · ");
+export function formatValueInline(key: PricingKey, value: FeeValue | null | undefined, t: TFn, names?: ClassNamer): string {
+  return formatValueLines(key, value, t, names).join(" · ");
 }
 
 /** Short headline for list cells: "5%", "1.5 Da", "× 1.2", or the fare base prices. */
-export function formatValueShort(key: PricingKey, value: FeeValue | null | undefined, t: TFn): string {
+export function formatValueShort(key: PricingKey, value: FeeValue | null | undefined, t: TFn, names?: ClassNamer): string {
   if (!value) return "—";
-  const v = value as unknown as Record<string, FareTier & number>;
-  if (key === "courier_fare") return `${formatDa(v.bicycle.base, t)} / ${formatDa(v.motorcycle.base, t)}`;
-  if (key === "ride_fare") return formatDa(v.motorcycle.base, t);
-  return formatValueLines(key, value, t)[0];
+  if (key === "courier_fare" || key === "ride_fare") {
+    const bases = legBases(value, t);
+    return bases.length ? bases.join(" / ") : "—";
+  }
+  if (key === "store_delivery") {
+    const v = value as { mode?: StoreDeliveryMode };
+    if (v.mode !== "distance") return t("fmt.store_mode.merchant");
+    const bases = legBases(value, t);
+    return bases.length ? bases.join(" / ") : t("fmt.store_mode.distance");
+  }
+  return formatValueLines(key, value, t, names)[0];
 }
 
 // ---- server-computed examples ----------------------------------------------------
@@ -209,13 +244,13 @@ export function formatValueShort(key: PricingKey, value: FeeValue | null | undef
  * One i18n sentence per fee for a server-built `FeeExample` ("5 km by moto → 330 Da").
  * Pure formatting: every number comes from the server.
  */
-export function exampleSentence(key: PricingKey, ex: FeeExample | null | undefined, t: TFn): string | null {
+export function exampleSentence(key: PricingKey, ex: FeeExample | null | undefined, t: TFn, names?: ClassNamer): string | null {
   if (!ex) return null;
   const output = formatDa(ex.output, t);
   const input = "input" in ex ? formatDa(ex.input, t) : "";
   switch (ex.kind) {
     case "trip_km":
-      return t(`examples.${key}`, { km: num(ex.km), vehicle: t(`vehicle_short.${ex.vehicle}`), output });
+      return t(`examples.${key}`, { km: num(ex.km), vehicle: (names ?? legacyClassName(t))(ex.vehicle), output });
     case "multiplier":
       return t(`examples.${key}`, { km: num(ex.km), input, output });
     case "per_checkout":
@@ -229,10 +264,10 @@ export function exampleSentence(key: PricingKey, ex: FeeExample | null | undefin
 /** Big headline for a fee card: "5%", "1.5 Da", "×1.00"; null for the courier tariff card. */
 export function bigValue(key: PricingKey, value: FeeValue | null | undefined, t: TFn): string {
   if (!value) return "—";
-  const v = value as unknown as Record<string, FareTier & number>;
+  const v = value as unknown as Record<string, number>;
   if (key === "fare_multiplier") return `×${Number(v.multiplier).toFixed(2)}`;
   if (key === "fare_formula") return `×${num((value as FareFormula).road_factor)}`;
-  if (key === "ride_fare") return formatDa(v.motorcycle.base, t);
+  if (key === "ride_fare" || key === "store_delivery") return formatValueShort(key, value, t);
   return formatValueLines(key, value, t)[0];
 }
 

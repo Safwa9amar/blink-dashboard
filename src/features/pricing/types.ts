@@ -17,6 +17,7 @@ export const PRICING_KEYS = [
   "dropoff_surcharge",
   "service_area",
   "zone_defaults",
+  "store_delivery",
 ] as const;
 export type PricingKey = (typeof PRICING_KEYS)[number];
 
@@ -47,14 +48,16 @@ export interface FareFormula {
   boarding_minutes: number;
 }
 
+/** Per-class fare legs, keyed by vehicle class code (`bicycle`, `motorcycle`, `motorcycle_comfort`, ...). */
+export type FareLegs = Record<string, FareTier>;
+
+export type StoreDeliveryMode = "merchant" | "distance";
+
 export interface FeeValueMap {
   service_fee: { amount: number };
-  courier_fare: {
-    bicycle: FareTier;
-    motorcycle: FareTier;
-    extra_stop_fee: number;
-  };
-  ride_fare: { motorcycle: FareTier };
+  /** `extra_stop_fee` plus one leg per vehicle class. */
+  courier_fare: { extra_stop_fee: number; [cls: string]: FareTier | number };
+  ride_fare: FareLegs;
   fare_multiplier: { multiplier: number };
   rider_commission_rate: { rate: number };
   merchant_commission_rate: { rate: number };
@@ -68,6 +71,8 @@ export interface FeeValueMap {
   dropoff_surcharge: { amount: number; only_when_tier_changes: boolean };
   service_area: { enabled: boolean };
   zone_defaults: { unzoned_tier: string };
+  /** Marketplace delivery fee: `mode`, clamp, plus one leg per `store` class (distance mode). */
+  store_delivery: { mode: StoreDeliveryMode; min_fee: number; max_fee: number; [cls: string]: FareTier | number | string };
 }
 /** A fee value — shape depends on the key (see FeeValueMap). */
 export type FeeValue = FeeValueMap[PricingKey];
@@ -92,6 +97,8 @@ export type FeeField = {
   step: number;
   /** Allowed values for `choice` (and `tier`, where they are the live tier codes). */
   options?: string[];
+  /** Vehicle class code this field belongs to (a fare-leg field). Absent on older servers. */
+  class?: string;
 };
 
 export type Fee = {
@@ -108,7 +115,8 @@ export type Fee = {
   example?: FeeExample | null;
 };
 
-export type FeeVehicle = "motorcycle" | "bicycle";
+/** A vehicle class code (`bicycle`, `motorcycle`, or any staff-defined class). */
+export type FeeVehicle = string;
 
 /** Worked example built by blink-server (`src/lib/pricing/examples.ts`). */
 export type FeeExample =
@@ -143,10 +151,11 @@ export type Override = {
   updated_at: string;
 };
 
+export type VehicleClassChangeAction = "create_vehicle_class" | "update_vehicle_class" | "archive_vehicle_class";
 export type FeeChangeAction = "update_default" | "create_override" | "update_override" | "archive_override";
 export type ZoneChangeAction = "create_zone" | "update_zone" | "archive_zone";
 export type TierChangeAction = "create_tier" | "update_tier" | "archive_tier";
-export type ChangeAction = FeeChangeAction | ZoneChangeAction | TierChangeAction;
+export type ChangeAction = FeeChangeAction | ZoneChangeAction | TierChangeAction | VehicleClassChangeAction;
 
 /** `before` / `after` of a zone or tier change: the row snapshot (name, tier, color, ...). */
 export type EntitySnapshot = Record<string, unknown>;
@@ -154,10 +163,11 @@ export type EntitySnapshot = Record<string, unknown>;
 export type Change = {
   id: string;
   /** A fee key, or `pricing_zone` / `pricing_tier` for zone and tier changes. */
-  key: PricingKey | "pricing_zone" | "pricing_tier";
+  key: PricingKey | "pricing_zone" | "pricing_tier" | "vehicle_class";
   override_id: string | null;
   zone_id?: string | null;
   tier?: string | null;
+  vehicle_class?: string | null;
   action: ChangeAction;
   before: FeeValue | EntitySnapshot | null;
   after: FeeValue | EntitySnapshot | null;
@@ -193,8 +203,8 @@ export type PreviewValue = {
 export type PreviewSample = { km?: number; stops?: number; amount?: number };
 
 export type PreviewExamples = {
-  courier_fare?: { bicycle: number; motorcycle: number };
-  ride_fare?: { motorcycle: number };
+  courier_fare?: Record<string, number>;
+  ride_fare?: Record<string, number>;
   blink_cash_fee?: { type: string; amount: number; fees: number };
 };
 
@@ -237,6 +247,7 @@ export type SimulateBody = {
     delivery_fee?: number;
     km?: number;
     stops?: number;
+    /** Any vehicle class code. */
     vehicle?: FeeVehicle;
     amount?: number;
   };
@@ -261,9 +272,13 @@ export type SimulateResult = {
   lines: { party: SimParty; label: SimLabel; amount: number }[];
   values: PreviewValue[];
   unavailable: null | "too_far" | "too_close" | "out_of_service_area";
-  /** Courier / ride only: the fare, step by step. */
+  /** Courier / ride / distance-priced store delivery: the fare, step by step. */
   breakdown?: BreakdownLine[];
   place?: SimPlace | null;
+  /** Store scenario with a store and a drop-off: how delivery was priced. */
+  delivery_mode?: StoreDeliveryMode | null;
+  /** Class that priced the trip, when the server reports it (distance-mode store delivery). */
+  vehicle?: string | null;
 };
 
 export type OverrideInput = {
@@ -356,19 +371,74 @@ export type ZoneLookup = {
     unzoned: boolean;
   };
   values: { key: PricingKey; service: string | null; value: FeeValue; override_id: string | null }[];
-  samples: {
-    scenario: "ride" | "courier";
-    vehicle: FeeVehicle;
-    km: number;
-    fare: number | null;
-    available: boolean;
-    unavailable: string | null;
-  }[];
+  samples: ZoneSample[];
 };
+
+export type ZoneSample = {
+  scenario: "ride" | "courier" | "store";
+  /** Vehicle class code (store: the class chosen in distance mode). */
+  vehicle: FeeVehicle;
+  km: number;
+  /** Store sample: the distance-mode fee, `null` in merchant mode. */
+  fare: number | null;
+  available: boolean;
+  unavailable: string | null;
+  /** Store sample only. */
+  mode?: StoreDeliveryMode;
+};
+
+// ---- vehicle classes ---------------------------------------------------------------
+
+export type BaseVehicle = "bicycle" | "motorcycle";
+export const BASE_VEHICLES: readonly BaseVehicle[] = ["bicycle", "motorcycle"];
+export type ClassService = "ride" | "courier" | "store";
+export const CLASS_SERVICES: readonly ClassService[] = ["ride", "courier", "store"];
+
+export type VehicleClass = {
+  code: string;
+  names: LocalizedNames;
+  base_vehicle: BaseVehicle;
+  services: ClassService[];
+  /** Only riders OF this class take its jobs. */
+  exclusive: boolean;
+  /** Off = not offered in quotes (the live app can't show Moto Comfort yet). */
+  enabled: boolean;
+  sort_order: number;
+  note: string | null;
+  archived_at: string | null;
+  /** List endpoint only (absent in the catalog). */
+  rider_count?: number;
+  updated_at?: string;
+};
+
+export type VehicleClassInput = {
+  code: string;
+  names: LocalizedNames;
+  base_vehicle: BaseVehicle;
+  services: ClassService[];
+  exclusive?: boolean;
+  enabled?: boolean;
+  sort_order?: number;
+  note?: string | null;
+};
+export type VehicleClassPatch = Partial<Omit<VehicleClassInput, "code">> & { expected_updated_at?: string };
+
+/** `GET|PUT /pricing/admin/riders/{user_id}/vehicle-class`. */
+export type RiderClassState = { user_id: string; vehicle_type: BaseVehicle | null; vehicle_class: string | null };
 
 /** Result of a pricing server action. */
 export type ActionResult<T = undefined> =
   | ({ ok: true } & (T extends undefined ? object : { data: T }))
-  | { ok: false; error: string; stale?: boolean; conflictId?: string; status?: number; code?: string; overrideCount?: number };
+  | {
+      ok: false;
+      error: string;
+      stale?: boolean;
+      conflictId?: string;
+      status?: number;
+      code?: string;
+      overrideCount?: number;
+      /** `class_in_use`: what still uses the class, when the server says. */
+      usage?: { riders?: number; overrides?: number; orders?: number };
+    };
 
 export type TFn = (key: string, values?: Record<string, string | number>) => string;

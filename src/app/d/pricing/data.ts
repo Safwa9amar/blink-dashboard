@@ -2,7 +2,7 @@ import { cache } from "react";
 import { requirePathAccess } from "@/lib/auth/staff";
 import { blinkApi } from "@/lib/blink-api";
 import { blinkApiErrorMessage } from "@/lib/blink-api-errors";
-import type { Change, Fee, Override, OverrideFilters, ZonesPayload } from "@/features/pricing";
+import type { Change, Fee, Override, OverrideFilters, VehicleClass, ZonesPayload } from "@/features/pricing";
 import { PRICING_READ_ROLES, PRICING_WRITE_ROLES } from "./roles";
 
 // Server loaders for the /pricing routes. Every loader gates on the section first.
@@ -17,11 +17,23 @@ export const getPricingAccess = cache(async () => {
   return { role, canEdit: PRICING_WRITE_ROLES.includes(role) };
 });
 
-export const getCatalog = cache(async (): Promise<Loaded<Fee[]>> => {
+/** The fee catalog; `classes` are its `vehicle_classes` (empty on a server that predates vehicle classes). */
+export const getCatalog = cache(async (): Promise<Loaded<Fee[]> & { classes: VehicleClass[] }> => {
   await requirePathAccess(SECTION);
-  const res = await blinkApi<{ fees: Fee[] }>("/pricing/admin/catalog", { roles: PRICING_READ_ROLES });
+  const res = await blinkApi<{ fees: Fee[]; vehicle_classes?: VehicleClass[] }>("/pricing/admin/catalog", { roles: PRICING_READ_ROLES });
+  if (!res.ok) return { data: [], classes: [], error: await blinkApiErrorMessage(NS, res) };
+  return { data: res.data.fees, classes: res.data.vehicle_classes ?? [] };
+});
+
+/** Classes with rider counts, archived ones included (the /pricing/vehicles manager). */
+export const getVehicleClasses = cache(async (): Promise<Loaded<VehicleClass[]>> => {
+  await requirePathAccess(SECTION);
+  const res = await blinkApi<{ vehicle_classes?: VehicleClass[]; classes?: VehicleClass[] }>(
+    "/pricing/admin/vehicle-classes?include_archived=true",
+    { roles: PRICING_READ_ROLES },
+  );
   if (!res.ok) return { data: [], error: await blinkApiErrorMessage(NS, res) };
-  return { data: res.data.fees };
+  return { data: res.data.vehicle_classes ?? res.data.classes ?? [] };
 });
 
 export async function getOverrides(filters: OverrideFilters): Promise<Loaded<Override[]>> {

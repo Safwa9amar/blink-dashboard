@@ -2,12 +2,14 @@
 
 import { useTranslations } from "next-intl";
 import { exampleSentence } from "../format";
+import { useClassName } from "./vehicle-classes-context";
 import type { FeeExample, PricingKey, TFn } from "../types";
 
 /** Server example of a fee as a muted sentence; nothing when the server has none. */
 export function FeeExampleLine({ feeKey, example }: { feeKey: PricingKey; example: FeeExample | null | undefined }) {
   const t = useTranslations("pricing") as unknown as TFn;
-  const text = exampleSentence(feeKey, example, t);
+  const className = useClassName();
+  const text = exampleSentence(feeKey, example, t, className);
   if (!text) return null;
   return <p className="text-[12px] text-subtext leading-snug">{text}</p>;
 }
@@ -25,8 +27,9 @@ export function BeforeAfter({
   loading?: boolean;
 }) {
   const t = useTranslations("pricing") as unknown as TFn;
-  const b = exampleSentence(feeKey, before, t);
-  const a = exampleSentence(feeKey, after, t);
+  const className = useClassName();
+  const b = exampleSentence(feeKey, before, t, className);
+  const a = exampleSentence(feeKey, after, t, className);
   if (!b && !a) return null;
   return (
     <div className={`rounded-xl bg-soft-pink px-3.5 py-2.5 space-y-1 text-[12.5px] ${loading ? "opacity-60" : ""}`}>

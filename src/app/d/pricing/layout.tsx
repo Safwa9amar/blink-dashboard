@@ -2,10 +2,10 @@ import type { ReactNode } from "react";
 import { getTranslations } from "next-intl/server";
 import { PageHeader, SubNav } from "@/components/ui";
 import { requirePathAccess } from "@/lib/auth/staff";
-import { PricingHeaderActions } from "@/features/pricing";
+import { PricingHeaderActions, VehicleClassesProvider } from "@/features/pricing";
 import { getCatalog, getOverrides, getPricingAccess, getZones } from "./data";
 
-// Pricing cockpit: Overview · Zones · Tiers · Formula · Overrides · Simulator · History (routed sub-pages).
+// Pricing cockpit: Overview · Zones · Tiers · Vehicles · Formula · Overrides · Simulator · History (routed sub-pages).
 export default async function PricingLayout({ children }: { children: ReactNode }) {
   await requirePathAccess("/pricing");
   const t = await getTranslations("pricing");
@@ -16,7 +16,7 @@ export default async function PricingLayout({ children }: { children: ReactNode 
     getZones(),
   ]);
   return (
-    <div>
+    <VehicleClassesProvider classes={catalog.classes}>
       <PageHeader
         title={t("title")}
         description={t("description")}
@@ -27,6 +27,7 @@ export default async function PricingLayout({ children }: { children: ReactNode 
           { href: "/pricing", label: t("tabs.overview"), icon: "tag" },
           { href: "/pricing/zones", label: t("tabs.zones"), icon: "map" },
           { href: "/pricing/tiers", label: t("tabs.tiers"), icon: "dollar" },
+          { href: "/pricing/vehicles", label: t("tabs.vehicles"), icon: "bike" },
           { href: "/pricing/formula", label: t("tabs.formula"), icon: "trending" },
           { href: "/pricing/overrides", label: t("tabs.overrides"), icon: "grid", count: active.error ? undefined : String(active.data.length) },
           { href: "/pricing/simulator", label: t("tabs.simulator"), icon: "search" },
@@ -34,6 +35,6 @@ export default async function PricingLayout({ children }: { children: ReactNode 
         ]}
       />
       {children}
-    </div>
+    </VehicleClassesProvider>
   );
 }

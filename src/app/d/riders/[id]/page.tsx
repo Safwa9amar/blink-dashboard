@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { requirePathAccess } from "@/lib/auth/staff";
+import { getCurrentStaffRole, requirePathAccess } from "@/lib/auth/staff";
+import { getRiderVehicleClass, loadVehicleClasses } from "@/app/d/pricing/action";
+import { PRICING_WRITE_ROLES } from "@/app/d/pricing/roles";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { pageMeta } from "@/lib/dash-metadata";
 import { riderPathsToSign, buildRiderDocSlots, type RiderDocSlot } from "@/features/verification";
@@ -17,7 +19,7 @@ import {
   type ActivityTx,
 } from "@/features/riders";
 import { signRiderDocPaths } from "../../verification/partner-data";
-import RiderDetailClient, { type RiderStats } from "./client";
+import RiderDetailClient, { type RiderClassInfo, type RiderStats } from "./client";
 
 export function generateMetadata(): Promise<Metadata> {
   return pageMeta("riders");
@@ -93,6 +95,17 @@ export default async function RiderDetailPage({ params }: { params: Promise<{ id
       .then((r) => ({ data: sumTotals(r.data), error: msg(r.error) })),
   ]);
 
+  // Vehicle class picker: skipped quietly when the viewer cannot read pricing or the server predates classes.
+  const [classList, classState, role] = await Promise.all([loadVehicleClasses(false), getRiderVehicleClass(id), getCurrentStaffRole()]);
+  const vehicleClass: RiderClassInfo | null =
+    classList.ok && classState.ok
+      ? {
+          classes: classList.data,
+          current: classState.data.vehicle_class,
+          canEdit: role !== null && PRICING_WRITE_ROLES.includes(role),
+        }
+      : null;
+
   const stats: RiderStats = {
     delivered: toBlock(delivered, 0),
     trips: toBlock(completedTrips, 0),
@@ -107,6 +120,7 @@ export default async function RiderDetailPage({ params }: { params: Promise<{ id
       trips={toBlock<ActivityTrip[]>(trips, [])}
       transactions={toBlock<ActivityTx[]>(txs, [])}
       stats={stats}
+      vehicleClass={vehicleClass}
     />
   );
 }

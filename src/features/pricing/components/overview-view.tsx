@@ -13,6 +13,8 @@ import type { ScopeNames } from "../labels";
 import { ExtendMenu } from "./extend-menu";
 import { FeeEditModal } from "./fee-edit-modal";
 import { FeeExampleLine } from "./fee-example";
+import { useClassName } from "./vehicle-classes-context";
+import { legsOf } from "../vehicle-classes";
 
 const GROUPS: FeeGroup[] = ["customer", "partner", "tax", "formula", "zones"];
 const GRID: Record<FeeGroup, string> = {
@@ -55,6 +57,7 @@ export function OverviewView({
   const t = useTranslations("pricing");
   const tf = t as unknown as TFn;
   const locale = useLocale();
+  const className = useClassName();
   const now = useMemo(() => new Date(nowIso), [nowIso]);
   const [editingKey, setEditingKey] = useState<PricingKey | null>(null);
 
@@ -112,11 +115,11 @@ export function OverviewView({
                   <p className="text-[13px] text-text">
                     {t("overview.ending.line", {
                       fee: t(`fees.${o.key}.name`),
-                      value: formatValueShort(o.key, o.value, tf),
+                      value: formatValueShort(o.key, o.value, tf, className),
                       scope: scopeShort(o, locale, tf, names),
                       days: daysLeft,
                       date: fmtDay(o.ends_at!, locale),
-                      back: fee ? formatValueShort(o.key, fee.value, tf) : "—",
+                      back: fee ? formatValueShort(o.key, fee.value, tf, className) : "—",
                     })}
                   </p>
                   {canEdit && <ExtendMenu override={o} />}
@@ -177,15 +180,19 @@ function FeeCard({
   const tf = t as unknown as TFn;
   const locale = useLocale();
   const href = `/pricing/overrides?key=${fee.key}&status=active`;
-  const v = fee.value as unknown as Record<string, { base: number; included_km: number; per_km: number } & number>;
+  const className = useClassName();
+  const legs = legsOf(fee.value);
+  const extraStop = (fee.value as unknown as { extra_stop_fee?: number }).extra_stop_fee;
 
+  // Courier: the tariff per vehicle class (any class the server lists), then the extra drop-off fee.
   const tariff =
-    fee.key === "courier_fare" && v.motorcycle && v.bicycle
+    fee.key === "courier_fare" && legs.length
       ? [
-          [t("tariff.moto_first", { km: v.motorcycle.included_km }), formatDa(v.motorcycle.base, tf)],
-          [t("tariff.per_km"), formatDa(v.motorcycle.per_km, tf)],
-          [t("tariff.bike_first", { km: v.bicycle.included_km }), formatDa(v.bicycle.base, tf)],
-          [t("tariff.extra_stop"), formatDa(v.extra_stop_fee, tf)],
+          ...legs.flatMap(([code, leg]) => [
+            [t("tariff.class_first", { name: className(code), km: leg.included_km }), formatDa(leg.base, tf)],
+            [t("tariff.class_per_km", { name: className(code) }), formatDa(leg.per_km, tf)],
+          ]),
+          ...(typeof extraStop === "number" ? [[t("tariff.extra_stop"), formatDa(extraStop, tf)]] : []),
         ]
       : null;
 
@@ -211,11 +218,15 @@ function FeeCard({
           {bigValue(fee.key, fee.value, tf)}
         </p>
       )}
-      {fee.key === "ride_fare" && v.motorcycle && (
-        <p className="text-[12px] text-subtext">
-          {t("tariff.ride_sub", { perKm: formatDa(v.motorcycle.per_km, tf), included: v.motorcycle.included_km })}
-        </p>
-      )}
+      {(fee.key === "ride_fare" || fee.key === "store_delivery") &&
+        legs.length > 0 &&
+        (fee.key === "ride_fare" || (fee.value as { mode?: string }).mode === "distance") && (
+          <ul className="text-[12px] text-subtext space-y-0.5">
+            {legs.map(([code, leg]) => (
+              <li key={code}>{t("tariff.leg_sub", { name: className(code), perKm: formatDa(leg.per_km, tf), included: leg.included_km })}</li>
+            ))}
+          </ul>
+        )}
       <FeeExampleLine feeKey={fee.key} example={fee.example} />
       <div className="mt-auto pt-1">
         <Link href={href} className="inline-block max-w-full">
