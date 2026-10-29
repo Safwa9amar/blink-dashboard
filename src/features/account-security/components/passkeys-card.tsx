@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Button, Modal } from "@/components/ui";
 import { createClient } from "@/lib/supabase/client";
@@ -12,7 +12,7 @@ type Passkey = { id: string; friendly_name?: string; created_at: string; last_us
 export function PasskeysCard() {
   const t = useTranslations("accountSecurity.passkeys");
   const locale = useLocale();
-  const supabase = useRef(createClient()).current;
+  const [supabase] = useState(() => createClient());
 
   const [items, setItems] = useState<Passkey[] | null>(null);
   const [disabled, setDisabled] = useState(false);

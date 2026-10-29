@@ -16,7 +16,7 @@ export function TwoFactorCard() {
   const t = useTranslations("accountSecurity");
   const locale = useLocale();
   const router = useRouter();
-  const supabase = useRef(createClient()).current;
+  const [supabase] = useState(() => createClient());
 
   const [factor, setFactor] = useState<Verified | null | undefined>(undefined);
   const [notice, setNotice] = useState("");
