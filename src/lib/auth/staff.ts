@@ -4,44 +4,47 @@
 import { cache } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { canAccessPath, defaultPathFor, isStaffRole, type StaffRole } from "./access";
+import { canAccessPath, defaultPathFor, type StaffRole } from "./access";
+import { decideGate, type StaffGate } from "./gate";
 
-// Resolves the current viewer's dashboard role, or null if they aren't staff.
+// Resolves the viewer's gate state: signed out, needs the second factor, not staff, or ok.
 //
-// TODO(blink-server migration): this reads `users.staff_role`, a column that does NOT
-// exist yet (see ~/blink-server/supabase/migrations — the `staff_role` column + RLS
-// read policies still need to land). Until the migration ships, the SELECT fails with
-// Postgres 42703 (undefined_column); we treat that one case as "pre-migration" and let
-// any authenticated user through as `super_admin` so the console stays usable. Once the
-// column exists, a real row with a null/invalid `staff_role` correctly resolves to null
-// (no dashboard access) and this stub becomes a no-op.
-export async function getCurrentStaffRole(): Promise<StaffRole | null> {
-  return (await getCurrentStaff())?.role ?? null;
-}
-
-// The current viewer's user id + dashboard role, or null if they aren't staff. For
-// server code that also needs the id (e.g. per-staff inbox read state).
-export async function getCurrentStaff(): Promise<{ id: string; role: StaffRole } | null> {
+// TODO(blink-server migration): `users.staff_role` may not exist yet; Postgres 42703
+// (undefined_column) is treated as "pre-migration" and lets any authenticated user through
+// as `super_admin`. A real row with a null/invalid `staff_role` resolves to not_staff.
+// MFA: a session that is aal1 while the user has a verified factor is never authorized.
+// Cached: one auth lookup per request, shared by every guard.
+export const getStaffGate = cache(async (): Promise<StaffGate> => {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return null;
+  if (!user) return { status: "signed_out" };
 
-  const { data, error } = await supabase
-    .from("users")
-    .select("staff_role")
-    .eq("id", user.id)
-    .single();
-
-  if (error) {
-    // 42703 = undefined_column → migration hasn't run. Don't lock anyone out yet.
-    if (error.code === "42703") return { id: user.id, role: "super_admin" };
-    return null;
+  const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  const levels = { currentLevel: aal?.currentLevel, nextLevel: aal?.nextLevel };
+  if (levels.nextLevel === "aal2" && levels.currentLevel !== "aal2") {
+    return decideGate({ userId: user.id, staffRole: null, ...levels });
   }
 
-  const value = (data as { staff_role?: unknown } | null)?.staff_role ?? null;
-  return isStaffRole(value) ? { id: user.id, role: value } : null;
+  const { data, error } = await supabase.from("users").select("staff_role").eq("id", user.id).single();
+  return decideGate({
+    userId: user.id,
+    staffRole: (data as { staff_role?: unknown } | null)?.staff_role ?? null,
+    preMigration: error?.code === "42703",
+    lookupFailed: !!error && error.code !== "42703",
+    ...levels,
+  });
+});
+
+export async function getCurrentStaffRole(): Promise<StaffRole | null> {
+  return (await getCurrentStaff())?.role ?? null;
+}
+
+// The current viewer's user id + dashboard role, or null if they aren't (fully) authorized staff.
+export async function getCurrentStaff(): Promise<{ id: string; role: StaffRole } | null> {
+  const gate = await getStaffGate();
+  return gate.status === "ok" ? { id: gate.id, role: gate.role } : null;
 }
 
 // Mutation guard for server actions (which have no pathname to gate on). Returns true
@@ -51,38 +54,34 @@ export async function hasStaffRole(...allowed: StaffRole[]): Promise<boolean> {
   return role !== null && allowed.includes(role);
 }
 
-// One role lookup per request, shared by every gate a render runs (layout, page and
-// data loaders all call requirePathAccess).
-const roleForRequest = cache(getCurrentStaffRole);
+/** Maps a non-ok gate to its redirect (never returns). */
+export function redirectForGate(gate: Exclude<StaffGate, { status: "ok" }>): never {
+  if (gate.status === "signed_out") redirect("/login");
+  if (gate.status === "mfa_required") redirect("/login/mfa");
+  redirect("/auth/signout?reason=no_access");
+}
 
 /**
  * Server gate for one dashboard section (`path` = its nav href, e.g. "/merchant-pricing").
- * Redirects a viewer whose staff role can't reach it to their landing page (non-staff
- * to /login) and returns the role otherwise. Call it in the page / data loader that
- * reads the rows, not only in a layout: a layout doesn't re-run on client navigation
- * and renders in parallel with its page, so a layout-only check would still let the
- * page's data reach the RSC payload.
+ * Redirects signed-out → /login, MFA pending → /login/mfa, non-staff → sign-out, a role
+ * that can't reach the section → their landing page; returns the role otherwise. Call it in
+ * the page / data loader that reads the rows, not only in a layout.
  */
 export async function requirePathAccess(path: string): Promise<StaffRole> {
-  const role = await roleForRequest();
-  if (!role) redirect("/login");
-  if (!canAccessPath(role, path)) redirect(defaultPathFor(role));
-  return role;
+  const gate = await getStaffGate();
+  if (gate.status !== "ok") redirectForGate(gate);
+  if (!canAccessPath(gate.role, path)) redirect(defaultPathFor(gate.role));
+  return gate.role;
 }
 
 /**
  * Server-action guard for one dashboard section: returns the signed-in staff user's id
  * and role when their role may reach `path` (via `canAccessPath`), otherwise null.
- * Use it when the action also needs the actor id (e.g. `created_by` / `issued_by`).
  */
 export async function getStaffActor(path: string): Promise<{ id: string; role: StaffRole } | null> {
-  const role = await getCurrentStaffRole();
-  if (!role || !canAccessPath(role, path)) return null;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return user ? { id: user.id, role } : null;
+  const gate = await getStaffGate();
+  if (gate.status !== "ok" || !canAccessPath(gate.role, path)) return null;
+  return { id: gate.id, role: gate.role };
 }
 
 /** True when the signed-in user was issued a temporary password and must set a new one. */
